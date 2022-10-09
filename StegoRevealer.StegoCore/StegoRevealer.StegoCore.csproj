@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Accord.Statistics" Version="3.8.0" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AnalysisMethods\KochZhaoAnalysis\" />
+  </ItemGroup>
+
+</Project>
