@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StegoRevealer.StegoCore
+﻿namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
 {
     public static class IntExtensions
     {
@@ -13,9 +7,9 @@ namespace StegoRevealer.StegoCore
         {
             byte byteValue = (byte)value;
             if (value > 255)
-                byteValue = (byte)255;
+                byteValue = 255;
             else if (value < 0)
-                byteValue = (byte)0;
+                byteValue = 0;
 
             return byteValue;
         }

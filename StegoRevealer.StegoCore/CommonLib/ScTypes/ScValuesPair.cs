@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.StegoCore
+﻿namespace StegoRevealer.StegoCore.CommonLib.ScTypes
 {
     public interface ScValuesPair<T>
     {

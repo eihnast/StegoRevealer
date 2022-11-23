@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StegoRevealer.StegoCore
+﻿namespace StegoRevealer.StegoCore.CommonLib.ScTypes
 {
     public struct Sc2DPoint : ScValuesPair<int>
     {
@@ -16,8 +10,8 @@ namespace StegoRevealer.StegoCore
 
         public Sc2DPoint(int y, int x)
         {
-            this.Y = y;
-            this.X = x;
+            Y = y;
+            X = x;
         }
 
         public ScIndexPair AsPair() => new ScIndexPair(Y, X);

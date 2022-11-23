@@ -1,5 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Diagnostics.CodeAnalysis;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
 {

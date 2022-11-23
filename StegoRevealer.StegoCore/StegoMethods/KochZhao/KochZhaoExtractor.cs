@@ -1,5 +1,7 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Collections;
+﻿using System.Collections;
+using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {

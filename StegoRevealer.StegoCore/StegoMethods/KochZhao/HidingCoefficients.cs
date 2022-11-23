@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+
+namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
     public static class HidingCoefficients
     {

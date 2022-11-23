@@ -1,4 +1,6 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {

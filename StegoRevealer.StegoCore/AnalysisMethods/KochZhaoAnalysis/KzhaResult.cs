@@ -1,9 +1,5 @@
-﻿using StegoRevealer.StegoCore.Logger;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.Logger;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {

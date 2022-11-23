@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {

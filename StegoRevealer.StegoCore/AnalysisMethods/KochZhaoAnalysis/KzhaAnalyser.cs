@@ -1,14 +1,9 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+﻿using System.Globalization;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
 using StegoRevealer.StegoCore.StegoMethods;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
-using StegoRevealer.StegoCore.StegoMethods.Lsb;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {

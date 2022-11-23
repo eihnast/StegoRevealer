@@ -1,7 +1,6 @@
-﻿using Accord.Math.Geometry;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Data.Common;
-using System.Threading.Channels;
+using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {

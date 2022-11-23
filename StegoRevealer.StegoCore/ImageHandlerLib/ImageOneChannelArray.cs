@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
+﻿using StegoRevealer.StegoCore.CommonLib;
+
+namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
     // Класс, представляющий структуру хранения массива значений цветовых каналов пикселей
     public class ImageOneChannelArray

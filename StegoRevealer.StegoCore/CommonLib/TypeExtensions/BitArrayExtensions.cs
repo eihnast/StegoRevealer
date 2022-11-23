@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace StegoRevealer.StegoCore
+namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
 {
     public static class BitArrayExtensions
     {
@@ -21,7 +21,7 @@ namespace StegoRevealer.StegoCore
         // Возвращает байт в виде integer
         public static int AsInt(this BitArray value)
         {
-            return (int)value.AsByte();
+            return value.AsByte();
         }
 
         // Возвращает массив байт

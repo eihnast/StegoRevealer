@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.StegoCore
+﻿namespace StegoRevealer.StegoCore.CommonLib.ScTypes
 {
     public struct ScIndexPair : ScValuesPair<int>
     {
@@ -10,8 +10,8 @@
 
         public ScIndexPair(int firstIndex, int secondIndex)
         {
-            this.FirstIndex = firstIndex;
-            this.SecondIndex = secondIndex;
+            FirstIndex = firstIndex;
+            SecondIndex = secondIndex;
         }
 
         public Sc2DPoint AsPoint() => new Sc2DPoint(FirstIndex, SecondIndex);

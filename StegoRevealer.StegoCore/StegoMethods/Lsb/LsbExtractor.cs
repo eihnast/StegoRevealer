@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using Accord.Math.Geometry;
-using System.Data.Common;
-using System.Threading.Channels;
-using StegoRevealer.StegoCore;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
+using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {

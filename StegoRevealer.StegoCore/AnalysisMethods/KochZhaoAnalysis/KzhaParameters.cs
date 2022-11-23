@@ -1,10 +1,6 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {

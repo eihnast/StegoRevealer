@@ -1,6 +1,7 @@
 ﻿using System.Collections;
+using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 
-namespace StegoRevealer.StegoCore
+namespace StegoRevealer.StegoCore.CommonLib
 {
     public static class PixelsTools
     {
@@ -44,7 +45,7 @@ namespace StegoRevealer.StegoCore
             value = InvertLsb(value, lsbNum);
         }
 
-        
+
 
         // Установка определённых значений для НЗБ
         // (если указаны 3 значения, они будут установлены последовательно в три последних бита

@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using System.Collections;
+using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 
-namespace StegoRevealer.StegoCore
+namespace StegoRevealer.StegoCore.CommonLib
 {
     public static class StringBitsTools
     {

@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
+﻿using StegoRevealer.StegoCore.CommonLib;
+
+namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
     public class ImageHandler
     {

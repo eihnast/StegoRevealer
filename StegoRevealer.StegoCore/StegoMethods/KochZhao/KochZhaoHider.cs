@@ -1,5 +1,5 @@
 ﻿using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Collections;
+using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {

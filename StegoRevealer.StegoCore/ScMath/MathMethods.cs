@@ -1,13 +1,12 @@
 ﻿using Accord.Statistics.Testing;
 using Accord.Math;
-using StegoRevealer.StegoCore.ScMath;
 
-namespace StegoRevealer.StegoCore
+namespace StegoRevealer.StegoCore.ScMath
 {
     public static class MathMethods
     {
         // Вычисление критерия Хи-квадрат
-        public static (double statistic, double pValue) ChiSqr(double[] expected, double[] observed, 
+        public static (double statistic, double pValue) ChiSqr(double[] expected, double[] observed,
             int? degreesOfFreedom = null)
         {
             if (expected.Length < 2)

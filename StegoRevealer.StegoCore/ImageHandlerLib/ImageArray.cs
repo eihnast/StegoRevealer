@@ -1,4 +1,5 @@
 ﻿using System.Threading.Channels;
+using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
