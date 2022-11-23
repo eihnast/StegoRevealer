@@ -1,4 +1,7 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using Accord.Math.Geometry;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Data.Common;
+using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
@@ -11,7 +14,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         // Общие методы
 
         // Возвращает индексы блока из сетки блоков по его линейному индексу
-        public static (int, int) GetBlockByLinearIndex(int linearIndex, KochZhaoParameters parameters)
+        public static Sc2DPoint GetBlockByLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
             ScImageBlocks blocks = parameters.GetImgBlocksGrid();
 
@@ -19,24 +22,27 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             {
                 int line = linearIndex / blocks.BlocksInRow;
                 int column = linearIndex % blocks.BlocksInRow;
-                return (line, column);
+                return new Sc2DPoint(line, column);
             }
             else
             {
-                int line = linearIndex / blocks.BlocksInColumn;
-                int column = linearIndex % blocks.BlocksInColumn;
-                return (line, column);
+                int column = linearIndex / blocks.BlocksInColumn;
+                int line = linearIndex % blocks.BlocksInColumn;
+                return new Sc2DPoint(line, column);
             }
         }
 
         // Возвращает блок по его координатам
         private static IEnumerable<byte[,]> GetBlocksIterator(
-            Func<KochZhaoParameters, int?, IEnumerable<(int, int, int)>> iterator,
+            Func<KochZhaoParameters, int?, IEnumerable<ScPointCoords>> iterator,
             KochZhaoParameters parameters, int? blocksNum = null)
         {
             int blockSize = parameters.GetBlockSize();
-            foreach (var (line, column, channel) in iterator(parameters, blocksNum))
+            foreach (var blockCoords in iterator(parameters, blocksNum))
+            {
+                (int line, int column, int channel) = blockCoords.AsTuple();
                 yield return GetBlockByIndex(line, column, channel, parameters, blockSize);
+            }
 
             yield break;
         }
@@ -63,16 +69,16 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         }
 
         // Возвращает координаты левого верхнего угла блока (координаты блока в массиве пикселей)
-        public static (int y, int x) GetBlockCoords((int y, int x) gridCoords, KochZhaoParameters parameters)
+        public static Sc2DPoint GetBlockCoords(Sc2DPoint gridCoords, KochZhaoParameters parameters)
         {
-            return parameters.ImgBlocksGrid[gridCoords.y, gridCoords.x];
+            return parameters.ImgBlocksGrid[gridCoords.Y, gridCoords.X];
         }
 
 
         // Последовательная итерация
 
         // Возвращает следующий набор индексов блока определённого канала при последовательном доступе
-        public static IEnumerable<(int, int, int)> GetForLinearAccessIndex(
+        public static IEnumerable<ScPointCoords> GetForLinearAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
             int overallCount = 0;
@@ -85,13 +91,17 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             if (!parameters.InterlaceChannels)  // Поканально
             {
-                for (int k = 0; k < parameters.Channels.Count && overallCount <= blocksNum; k++)
+                int channelIndex = 0;
+                while (channelIndex < parameters.Channels.Count && overallCount <= blocksNum)
                 {
-                    var (line, column) = GetBlockByLinearIndex(indexes[k], parameters);  // Индекс блока в сетке
-                    var blockIndex = GetBlockCoords((line, column), parameters);
-                    yield return (blockIndex.y, blockIndex.x, (int)parameters.Channels[k]);
+                    var (line, column) = GetBlockByLinearIndex(indexes[channelIndex], parameters).AsTuple();  // Индекс блока в сетке
+                    var blockIndex = GetBlockCoords(new Sc2DPoint(line, column), parameters);
+                    yield return new ScPointCoords(blockIndex.Y, blockIndex.X, (int)parameters.Channels[channelIndex]);
                     overallCount++;
-                    indexes[k]++;
+                    indexes[channelIndex]++;
+
+                    if (line == parameters.ImgBlocksGrid.BlocksInColumn - 1 && column == parameters.ImgBlocksGrid.BlocksInRow - 1)
+                        channelIndex++;
                 }
 
                 yield break;
@@ -102,9 +112,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 {
                     for (int k = 0; k < parameters.Channels.Count && overallCount <= blocksNum; k++)
                     {
-                        var (line, column) = GetBlockByLinearIndex(indexes[k], parameters);
-                        var blockIndex = GetBlockCoords((line, column), parameters);
-                        yield return (blockIndex.y, blockIndex.x, (int)parameters.Channels[k]);
+                        var (line, column) = GetBlockByLinearIndex(indexes[k], parameters).AsTuple();
+                        var blockIndex = GetBlockCoords(new Sc2DPoint(line, column), parameters);
+                        yield return new ScPointCoords(blockIndex.Y, blockIndex.X, (int)parameters.Channels[k]);
                         overallCount++;
                         indexes[k]++;
                     }
@@ -124,7 +134,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         // Псевдослучайная итерация
 
         // Возвращает индексы блока (левого верхнего угла) по общему линейному индексу блока
-        public static (int, int, int) GetBlockIndexesFromLinearIndex(int linearIndex, KochZhaoParameters parameters)
+        public static ScPointCoords GetBlockIndexesFromLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
             // Вычисление происходит в зависимости от: обхода по матрице, чересканальности
 
@@ -146,12 +156,12 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 blockLinearIndex = linearIndex - channelInnerIndex * (w * h);
             }
 
-            var (line, column) = GetBlockByLinearIndex(blockLinearIndex, parameters);
-            return (line, column, channel);
+            var (line, column) = GetBlockByLinearIndex(blockLinearIndex, parameters).AsTuple();
+            return new ScPointCoords(line, column, channel);
         }
 
         // Возвращает индексы следующего блока при псевдослучайном доступе
-        public static IEnumerable<(int, int, int)> GetForRandomAccessIndex(
+        public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
             ScImageBlocks blocksGrid = parameters.GetImgBlocksGrid();
@@ -166,9 +176,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             for (int i = 0; i < blocksNum; i++)
             {
-                var (y, x, channel) = GetBlockIndexesFromLinearIndex(allLinearIndexes[i], parameters);
-                var blockIndex = GetBlockCoords((y, x), parameters);
-                yield return (blockIndex.y, blockIndex.x, channel);
+                var (y, x, channel) = GetBlockIndexesFromLinearIndex(allLinearIndexes[i], parameters).AsTuple();
+                var blockIndex = GetBlockCoords(new Sc2DPoint(y, x), parameters);
+                yield return new ScPointCoords(blockIndex.Y, blockIndex.X, channel);
             }
 
             yield break;
@@ -238,35 +248,32 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         // Работа с блоком
 
         // Возвращает значения коэффициентов блока из переданного блока
-        public static (int val1, int val2) GetBlockCoeffs(int[,] block, (int coef1, int coef2) coeffs)
+        public static (int val1, int val2) GetBlockCoeffs(int[,] block, ScIndexPair coeffs)
         {
-            return (block[coeffs.coef1, coeffs.coef2], block[coeffs.coef2, coeffs.coef1]);
+            return (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
         }
 
-        public static (double val1, double val2) GetBlockCoeffs(double[,] block, (int coef1, int coef2) coeffs)
+        public static (double val1, double val2) GetBlockCoeffs(double[,] block, ScIndexPair coeffs)
         {
-            return (block[coeffs.coef1, coeffs.coef2], block[coeffs.coef2, coeffs.coef1]);
+            return (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
         }
 
-        public static (int coef1, int coef2) GetCoefIndexesInImgArray(
-            (int y, int x, int ch) coords, (int coef1, int coef2) coeffs)
-        {
-            return (coords.y + coeffs.coef1, coords.x + coeffs.coef2);
-        }
+        public static ScIndexPair GetCoefIndexesInImgArray(ScPointCoords coords, ScIndexPair coeffs) =>
+            new ScIndexPair(coords.Y + coeffs.FirstIndex, coords.X + coeffs.SecondIndex);
 
         // Возвращает значения коэффициентов блока по переданным координатам и массиву пикселей
-        public static (int val1, int val2) GetBlockCoeffs((int y, int x, int ch) coords, (int coef1, int coef2) coeffs,
+        public static (int val1, int val2) GetBlockCoeffs(ScPointCoords coords, ScIndexPair coeffs,
             ImageArray imar)
         {
-            (int coef1, int coef2) realCoeffs = GetCoefIndexesInImgArray(coords, coeffs);
-            return (imar[realCoeffs.coef1, realCoeffs.coef2, coords.ch], 
-                imar[realCoeffs.coef2, realCoeffs.coef1, coords.ch]);
+            ScIndexPair realCoeffs = GetCoefIndexesInImgArray(coords, coeffs);
+            return (imar[realCoeffs.FirstIndex, realCoeffs.SecondIndex, coords.ChannelId], 
+                imar[realCoeffs.SecondIndex, realCoeffs.FirstIndex, coords.ChannelId]);
         }
 
         // Возвращает модифицированные коэффициенты, скрывая в них бит (согласно порогу)
         // Метод перенесён из StegoAnalyzer Core (kz_common.py --> get_modified_coeffs)
         public static (double val1, double val2) GetModifiedCoeffs(
-            (double val1, double val2) coeffs, int threshold, bool incrementFirst)
+            (double val1, double val2) coeffs, double threshold, bool incrementFirst)
         {
             var (coefVal1, coefVal2) = coeffs;  // Модифицируемые значения коэффициентов
             var difference = MathMethods.GetModulesDiff(coefVal1, coefVal2);  // Разница значений коэффициентов

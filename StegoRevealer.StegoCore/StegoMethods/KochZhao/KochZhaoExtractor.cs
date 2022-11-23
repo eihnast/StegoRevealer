@@ -13,6 +13,12 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             Params.HidingOperation = false;
         }
 
+        public KochZhaoExtractor(KochZhaoParameters kzParams)
+        {
+            Params = kzParams;
+            Params.HidingOperation = false;
+        }
+
         public KochZhaoExtractor(ImageHandler img, int? seed = null, bool verticalHiding = false, int threshold = 120)
             : this(img)
         {
@@ -26,6 +32,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return Extract(Params);
         }
 
+        // TODO: невозможно использование кастомного IParams parameters: в лог инфа пишется из Params, создать объект без Params невозможно
         public IExtractResult Extract(IParams parameters)
         {
             KochZhaoExtractResult result = new();

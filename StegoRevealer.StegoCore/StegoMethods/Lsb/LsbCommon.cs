@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.StegoMethods.Lsb
+﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+
+namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {
     /*
      * Случайный обход не учитывает стартовые индексы цветовых байт.
@@ -19,19 +21,19 @@
         // Общие методы
 
         // Возвращает координаты (индексы) пикселя в матрице Width x Heigth по его линейному индексу
-        public static (int, int) GetPixelCoordsByIndex(int index, LsbParameters parameters)
+        public static Sc2DPoint GetPixelCoordsByIndex(int index, LsbParameters parameters)
         {
             if (!parameters.VerticalHiding)
             {
                 int line = index / parameters.Image.ImgArray.Width;
                 int column = index % parameters.Image.ImgArray.Width;
-                return (line, column);
+                return new Sc2DPoint(line, column);
             }
             else
             {
                 int line = index / parameters.Image.ImgArray.Height;
                 int column = index % parameters.Image.ImgArray.Height;
-                return (line, column);
+                return new Sc2DPoint(line, column);
             }
         }
 
@@ -40,7 +42,7 @@
 
         // Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала
         //   при последовательном скрытии
-        public static IEnumerable<(int, int, int)> GetForLinearAccessIndex(int usingColorBytesNum, LsbParameters parameters)
+        public static IEnumerable<ScPointCoords> GetForLinearAccessIndex(int usingColorBytesNum, LsbParameters parameters)
         {
             int overallCount = 0;
 
@@ -53,9 +55,9 @@
             {
                 for (int k = 0; k < parameters.Channels.Count && overallCount <= usingColorBytesNum; k++)
                 {
-                    var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters);
+                    var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters).AsTuple();
                     overallCount++;
-                    yield return (line, column, (int)parameters.Channels[k]);
+                    yield return new ScPointCoords(line, column, (int)parameters.Channels[k]);
                     indexes[k]++;
                 }
 
@@ -67,9 +69,9 @@
                 {
                     for (int k = 0; k < parameters.Channels.Count && overallCount <= usingColorBytesNum; k++)
                     {
-                        var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters);
+                        var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters).AsTuple();
                         overallCount++;
-                        yield return (line, column, (int)parameters.Channels[k]);
+                        yield return new ScPointCoords(line, column, (int)parameters.Channels[k]);
                         indexes[k]++;
                     }
                 }
@@ -103,13 +105,13 @@
                 pixelLinearIndex = index - channelInnerIndex * (w * h);  // Получаем линейный индекс пикселя
             }
 
-            var (line, column) = GetPixelCoordsByIndex(pixelLinearIndex, parameters);
+            var (line, column) = GetPixelCoordsByIndex(pixelLinearIndex, parameters).AsTuple();
             return (line, column, channel);
         }
 
         // Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала
         //   при псевдослучайном скрытии
-        public static IEnumerable<(int, int, int)> GetForRandomAccessIndex(int usingColorBytesNum, LsbParameters parameters)
+        public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(int usingColorBytesNum, LsbParameters parameters)
         {
             var rnd = parameters.Seed.HasValue ? new Random(parameters.Seed.Value) : new Random();
 
@@ -125,7 +127,7 @@
             for (int i = 0; i < Math.Min(usingColorBytesNum, imgLinearLength); i++)
             {
                 var (y, x, channel) = GetImgByteIndexesFromLinearIndex(allLinearIndexes[i], parameters);
-                yield return (y, x, channel);
+                yield return new ScPointCoords(y, x, channel);
             }
 
             yield break;

@@ -19,7 +19,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
             var cnumArr = new int[Params.UseUnitedCnum ? 256 : Params.Channels.Count * 256];
             cnumArr = Enumerable.Repeat(0, cnumArr.Length).ToArray();
-            cnumArr = IncreaseCnum(cnumArr);
+            if (Params.UseIncreasedCnum)
+                cnumArr = IncreaseCnum(cnumArr);
 
             double fullness = 0.0;  // Относительная заполненность контейнера
             int blockNumber = 0;  // Счётчик блоков
@@ -62,7 +63,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 {
                     result.Log($"Блок № {blockNumber}");
                     result.Log($"\tКоординаты блока в сетке блоков: " +
-                        $"({pixelsBlockInfo.blockIndex.indX}, {pixelsBlockInfo.blockIndex.indY})");
+                        $"({pixelsBlockInfo.blockIndex.X}, {pixelsBlockInfo.blockIndex.Y})");
                     result.Log($"\tБлок содержит {pixelsBlockInfo.pixelsList.Count} пикселей");
                     result.Log(string.Format("\tChi-Square: {0:f2}\tP-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
                     result.Log("");
@@ -78,12 +79,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 
 
         // Добавляет цветовую визуализацию блока (добавляет зелёный или красный цвет)
-        private void ColorizeBlock((int y, int x) blockIndexes, ImgChannel channel, int colorOffset = 100)
+        private void ColorizeBlock(Sc2DPoint blockIndexes, ImgChannel channel, int colorOffset = 100)
         {
             var imar = Params.Image.ImgArray;
-            for (int y = 0; y < Math.Min(blockIndexes.y + Params.BlockHeight, imar.Height); y++)
+            for (int y = 0; y < Math.Min(blockIndexes.Y + Params.BlockHeight, imar.Height); y++)
             {
-                for (int x = 0; x < Math.Min(blockIndexes.x + Params.BlockWidth, imar.Width); x++)
+                for (int x = 0; x < Math.Min(blockIndexes.X + Params.BlockWidth, imar.Width); x++)
                 {
                     var colorByte = imar[y, x, (int)channel];
                     var newValue = Convert.ToByte(Math.Min((int)colorByte + colorOffset, 255));
@@ -91,15 +92,6 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 }
             }
         }
-
-        //// Преобразует списки int в массивы double
-        //private double[] GetDoubleArray(List<int> array)
-        //{
-        //    var result = new double[array.Count];
-        //    for (int i = 0; i < array.Count; i++)
-        //        result[i] = Convert.ToDouble(array[i]);
-        //    return result;
-        //}
 
         // Увеличивает значения в массиве cnum на 1
         private int[] IncreaseCnum(int[] cnum)
@@ -253,10 +245,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         private int[] CreateCnumArr(List<ScPixel> pixels) => CreateColorsNumArray(pixels);
 
         // Возвращает одномерный список пикселей следующего блока
-        private IEnumerable<(List<ScPixel> pixelsList, (int indY, int indX) blockIndex)> GetNextBlockPixels()
+        private IEnumerable<(List<ScPixel> pixelsList, Sc2DPoint blockIndex)> GetNextBlockPixels()
         {
-            foreach (var (y, x) in GetNextBlockIndexInGrid())
+            foreach (var blockCoords in GetNextBlockIndexInGrid())
             {
+                (int y, int x) = blockCoords.AsTuple();
                 var imar = Params.Image.ImgArray;
                 List<ScPixel> pixels = new();
 
@@ -270,13 +263,13 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 for (int innerY = 0; innerY < blockRealHeight; innerY++)
                     for (int innerX = 0; innerX < blockRealWidth; innerX++)
                         pixels.Add(imar[Params.BlockHeight * y + innerY, Params.BlockWidth * x + innerX]);
-                yield return (pixels, (y, x));
+                yield return (pixels, new Sc2DPoint(y, x));
             }
 
             yield break;
         }
 
-        private IEnumerable<(int y, int x)> GetNextBlockIndexInGrid()
+        private IEnumerable<Sc2DPoint> GetNextBlockIndexInGrid()
         {
             var blocksInLineNum = Params.Image.ImgArray.Width / Params.BlockWidth;  // Количество блоков в строку
             if (Params.Image.ImgArray.Width % Params.BlockWidth != 0)
@@ -289,13 +282,13 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             {
                 for (int y = 0; y < blocksInColumnNum; y++)
                     for (int x = 0; x < blocksInLineNum; x++)
-                        yield return (y, x);
+                        yield return new Sc2DPoint(y, x);
             }
             else  // Вертикальный обход
             {
                 for (int x = 0; x < blocksInLineNum; x++)
                     for (int y = 0; y < blocksInColumnNum; y++)
-                        yield return (y, x);
+                        yield return new Sc2DPoint(y, x);
             }
 
             yield break;

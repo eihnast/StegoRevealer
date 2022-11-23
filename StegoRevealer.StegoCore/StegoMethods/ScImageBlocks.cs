@@ -9,7 +9,7 @@ namespace StegoRevealer.StegoCore.StegoMethods
         private ImageHandler _img;
 
         // Хранятся индексы левого верхнего пикселя каждого блока
-        private (int, int)[,] _blocksMatrix;
+        private Sc2DPoint[,] _blocksMatrix;
 
 
         private int _blocksInRow = 0;
@@ -27,7 +27,7 @@ namespace StegoRevealer.StegoCore.StegoMethods
         {
             _parameters = parameters;
             _img = _parameters.Image;
-            _blocksMatrix = new (int, int)[0, 0];  // Загулшка для устранения warning
+            _blocksMatrix = new Sc2DPoint[0, 0];  // Загулшка для устранения warning
             UpdateMatrix();
         }
 
@@ -40,13 +40,13 @@ namespace StegoRevealer.StegoCore.StegoMethods
             _blocksInRow = _img.ImgArray.Width / blockSize;
             _blocksInColumn = _img.ImgArray.Height / blockSize;
 
-            _blocksMatrix = new (int, int)[_blocksInColumn, _blocksInRow];
-            for (int y = 0; y < _img.ImgArray.Height; y += blockSize)
-                for (int x = 0; x < _img.ImgArray.Width; x += blockSize)
-                    _blocksMatrix[y / blockSize, x / blockSize] = (y, x);
+            _blocksMatrix = new Sc2DPoint[_blocksInColumn, _blocksInRow];
+            for (int y = 0; y < _img.ImgArray.Height - 1; y += blockSize)
+                for (int x = 0; x < _img.ImgArray.Width - 1; x += blockSize)
+                    _blocksMatrix[y / blockSize, x / blockSize] = new Sc2DPoint(y, x);
         }
 
-        public (int, int) this[int y, int x]
+        public Sc2DPoint this[int y, int x]
         {
             get { return _blocksMatrix[y, x]; }
         }

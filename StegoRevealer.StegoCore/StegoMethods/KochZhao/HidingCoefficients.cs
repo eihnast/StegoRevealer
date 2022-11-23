@@ -3,8 +3,8 @@
     public static class HidingCoefficients
     {
         // Коэффициенты в формате (y, x)
-        public static (int, int) Coeff45 { get { return (3, 4); } }
-        public static (int, int) Coeff35 { get { return (2, 4); } }
-        public static (int, int) Coeff34 { get { return (2, 3); } }
+        public static ScIndexPair Coeff45 = new ScIndexPair(3, 4);
+        public static ScIndexPair Coeff35 = new ScIndexPair(2, 4);
+        public static ScIndexPair Coeff34 = new ScIndexPair(2, 3);
     }
 }

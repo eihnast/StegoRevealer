@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
+﻿using System.Threading.Channels;
+
+namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
     // Класс, представляющий структуру хранения массива значений цветовых каналов пикселей
     public class ImageArray
@@ -8,6 +10,8 @@
         public int Height { get; set; } = 0;
         public int Width { get; set; } = 0;
         public int Depth { get; set; } = 0;
+
+        internal bool LsbInvertedGetter { get; set; } = false;
 
 
         // Проверка, что структура пуста
@@ -65,7 +69,16 @@
         public ScPixel Get(int y, int x)
         {
             if (_img is not null)
+            {
+                if (LsbInvertedGetter)
+                {
+                    var pixel = _img[y, x];
+                    foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
+                        pixel[(int)channel] = PixelsTools.InvertLsb(pixel[(int)channel], 1);
+                    return pixel;
+                }
                 return _img[y, x];
+            }
             else
                 return new ScPixel();
         }
@@ -81,7 +94,17 @@
 
         public byte Get(int y, int x, int z)
         {
-            return _img?[y, x][z] ?? 0;
+            if (_img is null)
+                return 0;
+
+            if (LsbInvertedGetter)
+            {
+                var value = _img[y, x][z];
+                value = PixelsTools.InvertLsb(value, 1);
+                return value;
+            }
+
+            return _img[y, x][z];
         }
 
         public void Set(int y, int x, int z, byte value)

@@ -50,33 +50,46 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
             int usingBlocksNum = Params.GetNeededToHideBlocksNum();  // Количество блоков, нужных для скрытия
             int blockSize = Params.GetBlockSize();  // Используемый размер блока
-            result.Log($"Установлены параметры:\n\t" +
-                $"isRandomHiding = {isRandomHiding}\n\tcontainerVolume = {containerVolume}\n\t" +
-                $"hidingVolume = {hidingVolume}\n\trelativeHidingVolume = {relativeHidingVolume}\n\t" +
-                $"usingBlocksNum = {usingBlocksNum}\n\tblockSize = {blockSize}");
+
+            // Логирование
+            result.Log($"Установлены параметры: isRandomHiding = {isRandomHiding}, containerVolume = {containerVolume}, hidingVolume = {hidingVolume}, " +
+                $"relativeHidingVolume = {relativeHidingVolume}, usingBlocksNum = {usingBlocksNum}, blockSize = {blockSize}");
+            result.Log($"Для скрытия используется порог = {Params.Threshold}");
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
-            Func<KochZhaoParameters, int?, IEnumerable<(int y, int x, int ch)>> iterator
+            Func<KochZhaoParameters, int?, IEnumerable<ScPointCoords>> iterator
                 = isRandomHiding ? KochZhaoCommon.GetForRandomAccessIndex : KochZhaoCommon.GetForLinearAccessIndex;
 
             // Осуществление скрытия
             result.Log("Запущен цикл скрытия");
             int k = 0;  // Индекс бита данных
+            ScPointCoords? firstblockIndex = null;
+            ScPointCoords? lastblockIndex = null;
             foreach (var blockIndex in iterator(Params, usingBlocksNum))
             {
+                if (firstblockIndex is null)
+                    firstblockIndex = blockIndex;
                 if (k >= Params.DataBitLength)
                     break;
 
                 bool bitToHide = Params.DataBitArray[k];  // Бит, который скрываем в блоке
-                var block = KochZhaoCommon.GetBlockByIndex(blockIndex.y, blockIndex.x, blockIndex.ch, Params);
+                var block = KochZhaoCommon.GetBlockByIndex(blockIndex.Y, blockIndex.X, blockIndex.ChannelId, Params);
                 var dctBlock = KochZhaoCommon.DctBlock(block, blockSize);  // Получение матрицы ДКП
                 var newBlock = HideDataBitToDctBlock(dctBlock, bitToHide);  // Скрытие бита в блоке
                 var idctBlock = KochZhaoCommon.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока
                 ChangeBlockInImageArray(idctBlock, blockIndex);
 
                 k++;
+                lastblockIndex = blockIndex;
             }
             result.Log("Завершён цикл скрытия");
+
+            // Логирование
+            if (!isRandomHiding && firstblockIndex is not null && lastblockIndex is not null)
+                result.Log($"Скрытие осуществлено последовательно в блоки: с ({firstblockIndex.Value.Y}, {firstblockIndex.Value.X}, {firstblockIndex.Value.ChannelId}) по " +
+                    $"({lastblockIndex.Value.Y}, {lastblockIndex.Value.X}, {lastblockIndex.Value.ChannelId})");
+            result.Log($"В ходе скрытия должно быть записано {Params.DataBitLength} бит, реально записано {k} бит " +
+                $"({(k == Params.DataBitLength ? "совпадает" : "не совпадает")})");
 
             // Сохранение изображения со внедрённой информацией
             string newImgName = Params.Image.ImgName + "_kz"
@@ -102,7 +115,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 newCoeffValues = KochZhaoCommon.GetModifiedCoeffs(newCoeffValues, -Params.Threshold, false);
 
             // Изменение значений на новые в блоке
-            (int coefInd1, int coefInd2) = Params.HidingCoeffs;
+            (int coefInd1, int coefInd2) = Params.HidingCoeffs.AsTuple();
             dctBlock[coefInd1, coefInd2] = newCoeffValues.val1;
             dctBlock[coefInd2, coefInd1] = newCoeffValues.val2;
 
@@ -111,17 +124,17 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         }
 
         // Записывает значения блока в массив пикселей изображения (одноканальный блок)
-        private void ChangeBlockInImageArray(byte[,] block, (int y, int x, int ch) blockIndex)
+        private void ChangeBlockInImageArray(byte[,] block, ScPointCoords blockIndex)
         {
             // Определение границ блока
             var blockSize = Params.GetBlockSize();
-            int maxY = blockIndex.y + blockSize;
-            int maxX = blockIndex.x + blockSize;
+            int maxY = blockIndex.Y + blockSize;
+            int maxX = blockIndex.X + blockSize;
 
             // Запись в блок новых значений
-            for (int y = blockIndex.y; y < maxY; y++)
-                for (int x = blockIndex.x; x < maxX; x++)
-                    Params.Image.ImgArray[y, x, blockIndex.ch] = block[y - blockIndex.y, x - blockIndex.x];
+            for (int y = blockIndex.Y; y < maxY; y++)
+                for (int x = blockIndex.X; x < maxX; x++)
+                    Params.Image.ImgArray[y, x, blockIndex.ChannelId] = block[y - blockIndex.Y, x - blockIndex.X];
         }
     }
 }

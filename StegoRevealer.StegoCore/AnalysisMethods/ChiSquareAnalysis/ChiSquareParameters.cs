@@ -33,6 +33,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         public double Threshold { get; set; } = 0.95;  // Порог значения p-value
         // Если p-value выше порога, фиксируется обнаружение встраивания
 
+        public bool UseIncreasedCnum { get; set; } = true;
+
 
         public UniqueList<ImgChannel> Channels { get; }  // Анализируемые каналы
             = new UniqueList<ImgChannel> { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };

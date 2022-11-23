@@ -67,7 +67,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public ScImageBlocks ImgBlocksGrid { get { return _imgBlocks; } }
 
 
-        public int Threshold { get; set; } = 120;  // Порог для разницы коэффициентов скрытия
+        public double Threshold { get; set; } = 120;  // Порог для разницы коэффициентов скрытия
 
 
         public override bool InterlaceChannels { get; set; } = true;  // Чередовать ли каналы при скрытии (иначе - поканально)
@@ -95,7 +95,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         }
 
         // Коэффициенты матрицы ДКП для скрытия
-        public (int coef1, int coef2) HidingCoeffs { get; set; } = HidingCoefficients.Coeff45;
+        public ScIndexPair HidingCoeffs { get; set; } = HidingCoefficients.Coeff45;
 
 
         // Возвращает стандарный список стартовых пикселей

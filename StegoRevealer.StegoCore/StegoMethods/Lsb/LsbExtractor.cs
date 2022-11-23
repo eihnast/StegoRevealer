@@ -1,4 +1,7 @@
 ﻿using System.Collections;
+using Accord.Math.Geometry;
+using System.Data.Common;
+using System.Threading.Channels;
 using StegoRevealer.StegoCore;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -50,13 +53,14 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 $"isRandomHiding = {isRandomHiding}\n\tusedColorBytesNum = {usedColorBytesNum}");
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
-            Func<int, LsbParameters, IEnumerable<(int, int, int)>> iterator
+            Func<int, LsbParameters, IEnumerable<ScPointCoords>> iterator
                 = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
-            foreach (var (line, column, channel) in iterator(usedColorBytesNum, lsbParams))
+            foreach (var blockCoords in iterator(usedColorBytesNum, lsbParams))
             {
+                (int line, int column, int channel) = blockCoords.AsTuple();
                 byte colorByte = lsbParams.Image.ImgArray[line, column, channel];
                 BitArray extractedBits = ExtractBitsFromColorByte(colorByte, lsbParams.LsbNum);
                 for (int i = 0; i < extractedBits.Length; i++)

@@ -1,4 +1,7 @@
 ﻿using System.Collections;
+using Accord.Math.Geometry;
+using System.Data.Common;
+using System.Threading.Channels;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
@@ -59,21 +62,22 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 $"usingColorBytesNum = {usingColorBytesNum}");
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
-            Func<int, LsbParameters, IEnumerable<(int, int, int)>> iterator 
+            Func<int, LsbParameters, IEnumerable<ScPointCoords>> iterator 
                 = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
             // Осуществление скрытия
             result.Log("Запущен цикл скрытия");
             int k = 0;  // Индекс бита данных
-            foreach (var (line, column, channel) in iterator(usingColorBytesNum, Params))
+            foreach (var blockCoords in iterator(usingColorBytesNum, Params))
             {
+                (int line, int column, int channel) = blockCoords.AsTuple();
                 if (k >= Params.DataBitLength)
                     break;
 
                 BitArray bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит
                 for (int i = 0; i < Params.LsbNum; i++)
                     bitsToHide[i] = Params.DataBitArray[k + i];
-                HideDataBitToColorByte((line, column, channel), bitsToHide);  // Скрытие в байте цвета
+                HideDataBitToColorByte(new ScPointCoords(line, column, channel), bitsToHide);  // Скрытие в байте цвета
                 k += Params.LsbNum;
             }
             result.Log("Завершён цикл скрытия");
@@ -89,12 +93,12 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         }
 
         // Скрытие 
-        private void HideDataBitToColorByte((int y, int x, int ch) inds, BitArray bits)
+        private void HideDataBitToColorByte(ScPointCoords inds, BitArray bits)
         {
             var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
-            var colorByte = imgArray[inds.y, inds.x, inds.ch];
+            var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
             colorByte = PixelsTools.SetLsbValues(colorByte, bits);  // Установка значений
-            imgArray[inds.y, inds.x, inds.ch] = colorByte;
+            imgArray[inds.Y, inds.X, inds.ChannelId] = colorByte;
         }
     }
 }

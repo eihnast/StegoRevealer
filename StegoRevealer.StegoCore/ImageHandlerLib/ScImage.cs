@@ -51,6 +51,8 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         {
             _file = File.OpenRead(path);
             _imgStream = new SKManagedStream(_file);
+            // var imgCodec = SKCodec.Create(_imgStream);
+            // var imgInfo = new SKImageInfo(imgCodec.Info.Width, imgCodec.Info.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
             _image = SKBitmap.Decode(_imgStream);
         }
 

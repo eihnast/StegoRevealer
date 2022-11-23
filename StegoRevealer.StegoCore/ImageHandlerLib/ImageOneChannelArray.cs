@@ -10,6 +10,8 @@
 
         public ImgChannel Channel { get; }
 
+        internal bool LsbInvertedGetter { get; set; } = false;
+
 
         // Проверка, что структура пуста
         public bool IsEmpty
@@ -55,7 +57,17 @@
 
         public byte Get(int y, int x)
         {
-            return _img?[y, x][(int)Channel] ?? 0;
+            if (_img is null)
+                return 0;
+
+            if (LsbInvertedGetter)
+            {
+                var value = _img[y, x][(int)Channel];
+                value = PixelsTools.InvertLsb(value, 1);
+                return value;
+            }
+
+            return _img[y, x][(int)Channel];
         }
 
         public void Set(int y, int x, byte value)

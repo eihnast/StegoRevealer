@@ -16,6 +16,9 @@
         public string ImgPath { get { return _imgPath; } }
         public string ImgName { get { return Path.GetFileNameWithoutExtension(ImgPath); } }
 
+        private ImageHandler? _invertedHandler = null;
+        public ImageHandler Inverted { get { return GetLsbInvertedVersion(); } }
+
 
         public ImageHandler(string imgPath)
         {
@@ -23,6 +26,15 @@
             _image = ScImage.Load(_imgPath);
             _channelsArray = new ChannelsArray(_image);
             _imgArray = new ImageArray(_image);
+        }
+
+        // Конструктор поверхностного дублирования ImageHandler
+        private ImageHandler(ImageHandler originalHandler) 
+        {
+            _imgPath = originalHandler._imgPath;
+            _image = originalHandler._image;
+            _channelsArray = originalHandler._channelsArray;
+            _imgArray = originalHandler._imgArray;
         }
 
 
@@ -99,7 +111,7 @@
             }
         }
 
-        private void InvertLsbInOneChannel(ImgChannel channel, int lsb)
+        private void InvertLsbInOneChannel(ImgChannel channel, int lsbNum)
         {
             if (_image is null)
                 return;
@@ -111,9 +123,29 @@
                 for (int x = 0; x < _imgArray.Width; x++)
                 {
                     var pixel = _imgArray[y, x];
-                    pixel[channelId] = PixelsTools.InvertLsb(_imgArray[y, x][channelId], lsb);
+                    pixel[channelId] = PixelsTools.InvertLsb(_imgArray[y, x][channelId], lsbNum);
                 }
             }
+        }
+
+        private ImageHandler GetLsbInvertedVersion()
+        {
+            if (_invertedHandler is not null)
+                return _invertedHandler;
+
+            var invertedHandler = new ImageHandler(this);
+            invertedHandler._channelsArray = new ChannelsArray(_image);
+            foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
+            {
+                var oneChannelArray = invertedHandler._channelsArray.GetChannelArray(channel);
+                if (oneChannelArray is not null)
+                    oneChannelArray.LsbInvertedGetter = true;
+            }
+
+            invertedHandler._imgArray = new ImageArray(_image);
+            invertedHandler._imgArray.LsbInvertedGetter = true;
+
+            return invertedHandler;
         }
     }
 }
