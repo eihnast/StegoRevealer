@@ -23,6 +23,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using System.IO;
 using StegoRevealer.StegoCore;
 using System.Globalization;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 
 namespace StegoRevealer.WinUi
 {
