@@ -1,12 +1,5 @@
-﻿using StegoRevealer.WinUi.ViewModels;
-using StegoRevealer.WinUi.Views;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using StegoRevealer.WinUi.ViewModels;
 
 namespace StegoRevealer.WinUi
 {

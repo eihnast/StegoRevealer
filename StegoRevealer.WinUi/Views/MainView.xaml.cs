@@ -40,7 +40,7 @@ namespace StegoRevealer.WinUi.Views
             if (_vm is null)
                 return;
             else
-                _vm.Btn_Click();
+                _vm.SwitchToStegoAnalyzerView();
         }
     }
 }
