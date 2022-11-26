@@ -4,10 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StegoRevealer.WinUi"
+        xmlns:viewmodels="clr-namespace:StegoRevealer.WinUi.ViewModels"
+        xmlns:views="clr-namespace:StegoRevealer.WinUi.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="MainGrid">
-        <Button Content="Button" HorizontalAlignment="Left" Margin="122,0,0,0" VerticalAlignment="Center" Height="88" Width="166" Click="Button_Click" BorderBrush="Black"/>
-        <TextBox x:Name="TextBox1" HorizontalAlignment="Left" Margin="400,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="390" Height="414" FontSize="10" BorderBrush="Black" IsReadOnly="True" VerticalContentAlignment="Top"/>
+        Title="MainWindow" Height="450" Width="800" Background="#FF1D1D1D">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewmodels:MainViewModel}">
+            <views:MainView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:StegoAnalyzerViewModel}">
+            <views:StegoAnalyzerView/>
+        </DataTemplate>
+    </Window.Resources>
+    
+    <Grid x:Name="RootGrid">
+        <ContentControl x:Name="RootContentControl" Content="{Binding CurrentViewModel}"
+                        HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>
