@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ProjectIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="HandyControls" Version="3.3.11" />
     <PackageReference Include="HandyControls.Lang.ru" Version="3.3.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
@@ -20,6 +24,10 @@
 
   <ItemGroup>
     <Folder Include="Updater\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ProjectIcon.png" />
   </ItemGroup>
 
 </Project>

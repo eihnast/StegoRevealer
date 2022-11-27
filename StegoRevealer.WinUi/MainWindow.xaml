@@ -7,7 +7,9 @@
         xmlns:viewmodels="clr-namespace:StegoRevealer.WinUi.ViewModels"
         xmlns:views="clr-namespace:StegoRevealer.WinUi.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF1D1D1D">
+        Height="720" Width="1200"
+        Title="Stego Revealer" Background="#FF1D1D1D" 
+        ScrollViewer.VerticalScrollBarVisibility="Disabled" ResizeMode="CanMinimize" Icon="/ProjectIcon.png">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewmodels:MainViewModel}">
