@@ -54,7 +54,7 @@
                        Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}"
                        FontFamily="Arial" FontWeight="Bold" FontSize="18" Foreground="#FFECECEC"/>
                 <StackPanel Grid.Column="0" Grid.Row="1">
-                    
+                    <CheckBox Content="Метод Хи-квадрат" Foreground="#fff"/>
                 </StackPanel>
             </Grid>
         </Grid>
