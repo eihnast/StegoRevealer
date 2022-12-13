@@ -17,5 +17,10 @@
         public Sc2DPoint AsPoint() => new Sc2DPoint(FirstIndex, SecondIndex);
 
         public (int, int) AsTuple() => (FirstIndex, SecondIndex);
+
+        public override string ToString()
+        {
+            return $"({FirstIndex}; {SecondIndex})";
+        }
     }
 }

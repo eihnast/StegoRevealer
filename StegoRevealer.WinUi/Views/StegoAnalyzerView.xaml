@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:StegoRevealer.WinUi.Views"
              mc:Ignorable="d" 
              d:DesignHeight="720" d:DesignWidth="1280">
+    
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15">
             <Grid.ColumnDefinitions>
@@ -32,11 +33,12 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <Button Content="Выбор изображения" Grid.Column="0" Grid.Row="0"
-                        Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <Label Content="изображение не выбрано" Grid.Column="1" Grid.Row="0"
-                       Margin="10" VerticalAlignment="Center" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}"
-                       FontFamily="Arial" FontSize="14" Foreground="#FFECECEC" FontStyle="Italic"/>
+                <Button x:Name="LoadImageButton" Content="Выбор изображения" Grid.Column="0" Grid.Row="0"
+                        Margin="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="LoadImageButton_Click"
+                        HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="ImagePathLabel" Text="Изображение не выбрано" Grid.Column="1" Grid.Row="0" TextWrapping="Wrap"
+                       Margin="0" VerticalAlignment="Center" HorizontalAlignment="Left" Background="{x:Null}" BorderBrush="{x:Null}"
+                       FontFamily="Arial" FontSize="14" Foreground="#FFECECEC" FontStyle="Italic" IsReadOnly="True"/>
                 <Image Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                        Margin="5"/>
             </Grid>
@@ -50,12 +52,33 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <Label Content="Используемые методы:" Grid.Column="0" Grid.Row="0"
+                <Label Content="Используемые методы:" Grid.Column="0" Grid.Row="0" Padding="0"
                        Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}"
                        FontFamily="Arial" FontWeight="Bold" FontSize="18" Foreground="#FFECECEC"/>
-                <StackPanel Grid.Column="0" Grid.Row="1">
-                    <CheckBox Content="Метод Хи-квадрат" Foreground="#fff"/>
-                </StackPanel>
+                <Grid x:Name="MethodsSelectGrid" Grid.Column="0" Grid.Row="1" Margin="20 10 20 10" IsEnabled="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Column="0" Grid.Row="0" x:Name="IsMethodChiSqrChecked" Height="30" Content="Метод Хи-квадрат"
+                                  IsChecked="True" Foreground="#fff"/>
+                    <Button Grid.Column="1" Grid.Row="0" x:Name="MethodChiSqrParamsBtn" Height="30" Content="Параметры"
+                            HorizontalAlignment="Stretch" Click="MethodChiSqrParamsBtn_Click"/>
+                    <CheckBox Grid.Column="0" Grid.Row="1" x:Name="IsMethodRsChecked" Height="30" Content="Метод Regular-Singular" 
+                                  IsChecked="True" Foreground="#fff"/>
+                    <Button Grid.Column="1" Grid.Row="1" x:Name="MethodRsParamsBtn" Height="30" Content="Параметры"
+                            HorizontalAlignment="Stretch" Click="MethodRsParamsBtn_Click"/>
+                    <CheckBox Grid.Column="0" Grid.Row="2" x:Name="IsMethodKzaChecked" Height="30" Content="Стегоанализ метода Коха-Жао" 
+                                  IsChecked="True" Foreground="#fff"/>
+                    <Button Grid.Column="1" Grid.Row="2" x:Name="MethodKzaParamsBtn" Height="30" Content="Параметры"
+                            HorizontalAlignment="Stretch" Click="MethodKzaParamsBtn_Click"/>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

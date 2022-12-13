@@ -18,6 +18,12 @@
         <DataTemplate DataType="{x:Type viewmodels:StegoAnalyzerViewModel}">
             <views:StegoAnalyzerView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:HiderViewModel}">
+            <views:HiderView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:ExtractorViewModel}">
+            <views:ExtractorView/>
+        </DataTemplate>
     </Window.Resources>
     
     <Grid x:Name="RootGrid">
