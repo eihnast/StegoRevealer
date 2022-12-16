@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HandyControl.Controls;
 using StegoRevealer.WinUi.Lib;
 
 namespace StegoRevealer.WinUi.ViewModels
@@ -13,6 +14,12 @@ namespace StegoRevealer.WinUi.ViewModels
             set => SetField(ref _currentViewModel, value); 
         }
 
+        private MainWindow? _mainWindow = null;
+        public MainWindow? MainWindow
+        {
+            get => _mainWindow;
+            set => _mainWindow = _mainWindow is null ? value : _mainWindow;
+        }
 
         private InstancesList _viewModelsInstances = new();
 

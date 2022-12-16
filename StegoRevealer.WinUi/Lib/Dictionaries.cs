@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.WinUi.Lib.MethodsHelper;
 using StegoRevealer.WinUi.Views.ParametersViews;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,13 @@ namespace StegoRevealer.WinUi.Lib
             { AnalyzerMethod.ChiSquare, typeof(ChiSquareParameters) },
             { AnalyzerMethod.RegularSingular, typeof(RsParameters) },
             { AnalyzerMethod.KochZhaoAnalysis, typeof(KzhaParameters) }
+        };
+
+        public static Dictionary<Type, Type> MethodParametersToDtoMap = new()
+        {
+            { typeof(ChiSquareParameters), typeof(ChiSqrParamsDto) },
+            { typeof(RsParameters), typeof(RsParamsDto) },
+            { typeof(KzhaParameters), typeof(KzhaParamsDto) }
         };
     }
 }

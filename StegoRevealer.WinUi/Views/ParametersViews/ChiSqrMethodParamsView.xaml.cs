@@ -1,4 +1,8 @@
-﻿using System;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.WinUi.Lib.MethodsHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +30,55 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
 
             IsUseUnifiedCathegoriesChecked.Checked += IsUseUnifiedCathegoriesChecked_Checked;
             IsUseUnifiedCathegoriesChecked.Unchecked += IsUseUnifiedCathegoriesChecked_Unchecked;
+        }
+        public ChiSqrMethodParamsView(ChiSqrParamsDto parameters) : this()
+        {
+            SetParameters(parameters);
+        }
+
+
+        private void SetParameters(ChiSqrParamsDto parameters)
+        {
+            IsVisualizeChecked.IsChecked = parameters.Visualize;
+            IsExcludeZeroPairsChecked.IsChecked = parameters.ExcludeZeroPairs;
+            IsUseUnifiedCathegoriesChecked.IsChecked = parameters.UseUnifiedCathegories;
+            UnifyingCathegoriesThreshold.Value = parameters.UnifyingCathegoriesThreshold;
+            IsChannelChecked_Red.IsChecked = parameters.Channels.Contains(ImgChannel.Red);
+            IsChannelChecked_Green.IsChecked = parameters.Channels.Contains(ImgChannel.Green);
+            IsChannelChecked_Blue.IsChecked = parameters.Channels.Contains(ImgChannel.Blue);
+            TraverseChoice_Horizontal.IsChecked = !parameters.IsVerticalTraverse;
+            TraverseChoice_Vertical.IsChecked = parameters.IsVerticalTraverse;
+            PValueThreshold.Value = parameters.Threshold;
+            BlockWidth.Value = parameters.BlockWidth;
+            BlockHeight.Value = parameters.BlockHeight;
+        }
+
+        private ChiSqrParamsDto CollectParameters()
+        {
+            var result = new ChiSqrParamsDto();
+            result.Visualize = IsVisualizeChecked.IsChecked is not null ? IsVisualizeChecked.IsChecked.Value : false;
+            result.ExcludeZeroPairs = IsExcludeZeroPairsChecked.IsChecked is not null ? IsExcludeZeroPairsChecked.IsChecked.Value : false;
+            result.UseUnifiedCathegories = IsUseUnifiedCathegoriesChecked.IsChecked is not null ? IsUseUnifiedCathegoriesChecked.IsChecked.Value : false;
+            result.UnifyingCathegoriesThreshold = (int)UnifyingCathegoriesThreshold.Value;
+
+            result.Channels = new();
+            if (IsChannelChecked_Red.IsChecked.HasValue && IsChannelChecked_Red.IsChecked.Value)
+                result.Channels.Add(ImgChannel.Red);
+            if (IsChannelChecked_Green.IsChecked.HasValue && IsChannelChecked_Green.IsChecked.Value)
+                result.Channels.Add(ImgChannel.Green);
+            if (IsChannelChecked_Blue.IsChecked.HasValue && IsChannelChecked_Blue.IsChecked.Value)
+                result.Channels.Add(ImgChannel.Blue);
+
+            if (TraverseChoice_Vertical.IsChecked.HasValue && TraverseChoice_Horizontal.IsChecked.HasValue)
+                result.IsVerticalTraverse = TraverseChoice_Vertical.IsChecked.Value && !TraverseChoice_Horizontal.IsChecked.Value;
+            else
+                result.IsVerticalTraverse = false;
+
+            result.Threshold = PValueThreshold.Value;
+            result.BlockWidth = (int)BlockWidth.Value;
+            result.BlockHeight = (int)BlockHeight.Value;
+
+            return result;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

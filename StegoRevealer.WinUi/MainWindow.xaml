@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Height="720" Width="1200"
         Title="Stego Revealer" Background="#FF1D1D1D" 
-        ScrollViewer.VerticalScrollBarVisibility="Disabled" ResizeMode="CanMinimize" Icon="/ProjectIcon.png">
+        ScrollViewer.VerticalScrollBarVisibility="Disabled" ResizeMode="CanMinimize" Icon="/ProjectIcon.png"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewmodels:MainViewModel}">

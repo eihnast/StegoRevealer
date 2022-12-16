@@ -14,6 +14,7 @@ namespace StegoRevealer.WinUi
 
             var rootVeiwModel = new RootViewModel();
             var mainWindow = new MainWindow() { DataContext = rootVeiwModel };
+            rootVeiwModel.MainWindow = mainWindow;
             mainWindow.Show();
         }
     }

@@ -73,7 +73,8 @@ namespace StegoRevealer.WinUi.ViewModels
                     return;
 
                 var paramsWindow = new ParametersWindow(analyzerMethod, parameters);
-                paramsWindow.Show();
+                paramsWindow.Owner = _rootViewModel.MainWindow;
+                paramsWindow.ShowDialog();
             }
         }
     }

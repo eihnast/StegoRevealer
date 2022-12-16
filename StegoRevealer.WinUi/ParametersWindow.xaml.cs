@@ -37,8 +37,15 @@ namespace StegoRevealer.WinUi
 
             InitializeComponent();
 
-            RootContentControl.Content = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod]);
-            // Title = ((ImageHandler)_params.GetType().GetProperty("Image").GetValue(_params)).ImgPath;  // Работает
+            if (Dictionaries.MethodParametersToDtoMap.ContainsKey(paramsType))
+            {
+                var paramsDto = Activator.CreateInstance(Dictionaries.MethodParametersToDtoMap[paramsType], _params);
+                RootContentControl.Content = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod], paramsDto);
+            }
+            else
+            {
+                RootContentControl.Content = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod]);
+            }
         }
     }
 }
