@@ -10,6 +10,7 @@ using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using StegoRevealer.WinUi.Views.ParametersViews;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace StegoRevealer.WinUi.ViewModels
@@ -118,6 +119,8 @@ namespace StegoRevealer.WinUi.ViewModels
 
         public void StartAnalysis(Dictionary<AnalyzerMethod, bool> activeMethods)
         {
+            var timer = Stopwatch.StartNew();  // Запуск таймера
+
             ActiveMethods = activeMethods;
 
             var results = CreateValuesByAnalyzerMethodDictionary<IAnalysisResult>();  // Словарь результатов
@@ -155,13 +158,17 @@ namespace StegoRevealer.WinUi.ViewModels
                     results[method] = methodTasks[method]?.Result;
             }
 
+            timer.Stop();  // Остановка таймера
+
+            // Временный вывод результатов
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
             var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
             MessageBox.Show($"Results\n" +
                 (chiRes is not null ? $"Chisqr: {chiRes?.MessageRelativeVolume}\n" : "ChiSqr not analyzed\n") +
                 (rsRes is not null ? $"Rs: {rsRes?.MessageRelativeVolume}\n" : "Rs not analyzed\n") +
-                (kzhaRes  is not null ? $"Kzha: {kzhaRes?.Threshold}, {kzhaRes?.MessageBitsVolume}\n" : "Kzha is not analyzed"));
+                (kzhaRes  is not null ? $"Kzha: {kzhaRes?.Threshold}, {kzhaRes?.MessageBitsVolume}\n" : "Kzha is not analyzed\n") +
+                $"Time (ms): {timer.ElapsedMilliseconds}");
         }
 
         private Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()

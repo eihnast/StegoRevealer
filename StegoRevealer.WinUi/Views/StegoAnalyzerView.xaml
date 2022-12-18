@@ -68,15 +68,15 @@
                     </Grid.RowDefinitions>
 
                     <CheckBox Grid.Column="0" Grid.Row="0" x:Name="IsMethodChiSqrChecked" Height="30" Content="Метод Хи-квадрат"
-                                  IsChecked="True" Foreground="#fff"/>
+                                  IsChecked="True" Foreground="#fff" Checked="IsMethodChiSqrChecked_Checked" Unchecked="IsMethodChiSqrChecked_Unchecked"/>
                     <Button Grid.Column="1" Grid.Row="0" x:Name="MethodChiSqrParamsBtn" Height="30" Content="Параметры"
                             HorizontalAlignment="Stretch" Click="MethodChiSqrParamsBtn_Click"/>
                     <CheckBox Grid.Column="0" Grid.Row="1" x:Name="IsMethodRsChecked" Height="30" Content="Метод Regular-Singular" 
-                                  IsChecked="True" Foreground="#fff"/>
+                                  IsChecked="True" Foreground="#fff" Checked="IsMethodRsChecked_Checked" Unchecked="IsMethodRsChecked_Unchecked"/>
                     <Button Grid.Column="1" Grid.Row="1" x:Name="MethodRsParamsBtn" Height="30" Content="Параметры"
                             HorizontalAlignment="Stretch" Click="MethodRsParamsBtn_Click"/>
                     <CheckBox Grid.Column="0" Grid.Row="2" x:Name="IsMethodKzaChecked" Height="30" Content="Стегоанализ метода Коха-Жао" 
-                                  IsChecked="True" Foreground="#fff"/>
+                                  IsChecked="True" Foreground="#fff" Checked="IsMethodKzaChecked_Checked" Unchecked="IsMethodKzaChecked_Unchecked"/>
                     <Button Grid.Column="1" Grid.Row="2" x:Name="MethodKzaParamsBtn" Height="30" Content="Параметры"
                             HorizontalAlignment="Stretch" Click="MethodKzaParamsBtn_Click"/>
                 </Grid>
