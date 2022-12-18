@@ -2,11 +2,12 @@
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using System.Collections.Generic;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
-    public class KzhaParamsDto
+    public class KzhaParamsDto : BaseParamsDto<KzhaParameters>
     {
         public UniqueList<ImgChannel> Channels { get; set; } = new UniqueList<ImgChannel> { ImgChannel.Blue };
 
@@ -43,6 +44,26 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
 
             TryToExtract = parameters.TryToExtract;
             IsVerticalTraverse = parameters.IsVerticalTraverse;
+        }
+
+        public override void FillParameters(ref KzhaParameters parameters)
+        {
+            if (parameters is null)
+                return;
+
+            parameters.Channels.Clear();
+            foreach (var channel in Channels)
+                parameters.Channels.Add(channel);
+
+            parameters.Threshold = Threshold;
+            parameters.CutCoefficient = CutCoefficient;
+
+            parameters.AnalysisCoeffs = new();
+            foreach (var coeff in AnalysisCoeffs)
+                parameters.AnalysisCoeffs.Add(coeff);
+
+            parameters.TryToExtract = TryToExtract;
+            parameters.IsVerticalTraverse = IsVerticalTraverse;
         }
     }
 }

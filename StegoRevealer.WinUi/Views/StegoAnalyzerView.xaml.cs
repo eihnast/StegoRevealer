@@ -27,9 +27,14 @@ namespace StegoRevealer.WinUi.Views
         private const string FailedImagePathText = "Ошибка получения пути изображения";
         private const string ImageNotSelectedText = "Изображение не выбрано";
 
+        private Dictionary<AnalyzerMethod, bool> ActiveMethods { get; } = new();
+
         #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
         public StegoAnalyzerView()
         {
+            foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
+                ActiveMethods.Add(method, true);
+
             InitializeComponent();
         }
         #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
@@ -60,19 +65,34 @@ namespace StegoRevealer.WinUi.Views
             }
         }
 
-        private void MethodChiSqrParamsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.OpenParametersWindow(AnalyzerMethod.ChiSquare);
-        }
+        private void MethodChiSqrParamsBtn_Click(object sender, RoutedEventArgs e) =>
+            _vm?.OpenParametersWindow(AnalyzerMethod.ChiSquare);
 
-        private void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.OpenParametersWindow(AnalyzerMethod.RegularSingular);
-        }
+        private void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
+            _vm?.OpenParametersWindow(AnalyzerMethod.RegularSingular);
 
-        private void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
-        }
+        private void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
+            _vm?.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
+
+        private void StartAnalysis_Click(object sender, RoutedEventArgs e) =>
+            _vm?.StartAnalysis(ActiveMethods);
+
+        private void IsMethodChiSqrChecked_Checked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.ChiSquare] = true;
+
+        private void IsMethodChiSqrChecked_Unchecked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.ChiSquare] = false;
+
+        private void IsMethodRsChecked_Checked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.RegularSingular] = true;
+
+        private void IsMethodRsChecked_Unchecked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.RegularSingular] = false;
+
+        private void IsMethodKzaChecked_Checked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] = true;
+
+        private void IsMethodKzaChecked_Unchecked(object sender, RoutedEventArgs e) =>
+            ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] = false;
     }
 }

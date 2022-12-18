@@ -1,10 +1,12 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
-    public class ChiSqrParamsDto
+    public class ChiSqrParamsDto : BaseParamsDto<ChiSquareParameters>
     {
         public bool Visualize { get; set; } = true;
 
@@ -45,6 +47,26 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
 
             BlockWidth = parameters.BlockWidth;
             BlockHeight = parameters.BlockHeight;
+        }
+
+        public override void FillParameters(ref ChiSquareParameters parameters)
+        {
+            if (parameters is null)
+                return;
+
+            parameters.Visualize = Visualize;
+            parameters.IsVerticalTraverse = IsVerticalTraverse;
+            parameters.ExcludeZeroPairs = ExcludeZeroPairs;
+            parameters.UseUnifiedCathegories = UseUnifiedCathegories;
+            parameters.UnifyingCathegoriesThreshold = UnifyingCathegoriesThreshold;
+            parameters.Threshold = Threshold;
+
+            parameters.Channels.Clear();
+            foreach (var channel in Channels)
+                parameters.Channels.Add(channel);
+
+            parameters.BlockWidth = BlockWidth;
+            parameters.BlockHeight = BlockHeight;
         }
     }
 }

@@ -15,6 +15,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             Params = new ChiSquareParameters(image);
         }
 
+        public ChiSquareAnalyser(ChiSquareParameters parameters)
+        {
+            Params = parameters;
+        }
+
         public ChiSquareResult Analyse(bool verboseLog = false)
         {
             var result = new ChiSquareResult();
@@ -96,7 +101,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         }
 
         // Увеличивает значения в массиве cnum на 1
-        private int[] IncreaseCnum(int[] cnum)
+        private static int[] IncreaseCnum(int[] cnum)
         {
             int[] newCnum = new int[cnum.Length];
             for (int i = 0; i < cnum.Length; i++)
@@ -206,7 +211,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         }
 
         // Добавляет к первому массиву CnumArr значения второго
-        private void AddCnumArrays(ref int[] mainArray, int[] newArray)
+        private static void AddCnumArrays(ref int[] mainArray, int[] newArray)
         {
             if (mainArray.Length != newArray.Length)
                 throw new ArgumentException("Sizes of mainArray and newArray for adding Cnum is not equal");

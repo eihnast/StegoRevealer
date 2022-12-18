@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib.MethodsHelper;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
     /// <summary>
     /// Логика взаимодействия для RsMethodParamsView.xaml
     /// </summary>
-    public partial class RsMethodParamsView : UserControl
+    public partial class RsMethodParamsView : UserControl, ICollectableParamsView
     {
         public RsMethodParamsView()
         {
@@ -46,7 +47,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
             IsChannelChecked_Blue.IsChecked = parameters.Channels.Contains(ImgChannel.Blue);
         }
 
-        private RsParamsDto CollectParameters()
+        public object CollectParameters()
         {
             var result = new RsParamsDto();
             result.PixelsGroupLength = (int)PixelsGroupLength.Value;

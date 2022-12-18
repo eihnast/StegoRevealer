@@ -18,6 +18,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             Params = new KzhaParameters(image);
         }
 
+        public KzhaAnalyser(KzhaParameters parameters)
+        {
+            Params = parameters;
+        }
+
 
         // Основной метод анализа
         public KzhaResult Analyse(bool verboseLog = false)

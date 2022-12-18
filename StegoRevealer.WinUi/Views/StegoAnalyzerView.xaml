@@ -17,6 +17,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="80px"/>
                 <RowDefinition/>
+                <RowDefinition Height="80px"/>
             </Grid.RowDefinitions>
 
             <Label Content="Стегоанализатор" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
@@ -80,6 +81,9 @@
                             HorizontalAlignment="Stretch" Click="MethodKzaParamsBtn_Click"/>
                 </Grid>
             </Grid>
+
+            <Button x:Name="StartAnalysis" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3"
+                    Content="Запуск" Margin="200 0" HorizontalAlignment="Stretch" MinHeight="50" FontSize="24" FontWeight="Bold" Click="StartAnalysis_Click"/>
         </Grid>
     </Grid>
 </UserControl>

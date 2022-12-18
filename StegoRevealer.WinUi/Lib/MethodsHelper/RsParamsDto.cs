@@ -1,11 +1,13 @@
 ﻿using Accord.IO;
+using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
-    public class RsParamsDto
+    public class RsParamsDto : BaseParamsDto<RsParameters>
     {
         public UniqueList<ImgChannel> Channels { get; set; }
             = new UniqueList<ImgChannel> { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
@@ -25,6 +27,19 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
 
             PixelsGroupLength = parameters.PixelsGroupLength;
             FlippingMask = (int[])parameters.FlippingMask.Clone();
+        }
+
+        public override void FillParameters(ref RsParameters parameters)
+        {
+            if (parameters is null)
+                return;
+
+            parameters.Channels.Clear();
+            foreach (var channel in Channels)
+                parameters.Channels.Add(channel);
+
+            parameters.PixelsGroupLength = PixelsGroupLength;
+            parameters.FlippingMask = (int[])FlippingMask.Clone();
         }
     }
 }

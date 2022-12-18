@@ -15,6 +15,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             Params = new RsParameters(image);
         }
 
+        public RsAnalyser(RsParameters parameters)
+        {
+            Params = parameters;
+        }
+
 
         // Основной метод анализа
         public RsResult Analyse(bool verboseLog = false)

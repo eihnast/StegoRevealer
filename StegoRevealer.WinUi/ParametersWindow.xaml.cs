@@ -1,8 +1,11 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using HandyControl.Data;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using StegoRevealer.WinUi.Views.ParametersViews;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace StegoRevealer.WinUi
@@ -23,6 +27,8 @@ namespace StegoRevealer.WinUi
     public partial class ParametersWindow : Window
     {
         private object _params;
+
+        public Func<object> ParamsReciever { get; init; }
 
         public ParametersWindow(AnalyzerMethod analyzerMethod, object methodParameters)
         {
@@ -37,15 +43,24 @@ namespace StegoRevealer.WinUi
 
             InitializeComponent();
 
+            object? view;
             if (Dictionaries.MethodParametersToDtoMap.ContainsKey(paramsType))
             {
                 var paramsDto = Activator.CreateInstance(Dictionaries.MethodParametersToDtoMap[paramsType], _params);
-                RootContentControl.Content = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod], paramsDto);
+                view = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod], paramsDto);
+                RootContentControl.Content = view;
             }
             else
             {
-                RootContentControl.Content = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod]);
+                view = Activator.CreateInstance(Dictionaries.ParamsViewForAnalyzerMethod[analyzerMethod]);
+                RootContentControl.Content = view;
             }
+
+            var collectableView = view as ICollectableParamsView;
+            if (collectableView is not null)
+                Closing += (object? sender, CancelEventArgs e) => _params = collectableView.CollectParameters();
+
+            ParamsReciever = () => _params;
         }
     }
 }

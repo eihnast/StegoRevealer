@@ -5,6 +5,7 @@ using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.WinUi.Lib.MethodsHelper;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
     /// <summary>
     /// Логика взаимодействия для KzhaMethodParamsView.xaml
     /// </summary>
-    public partial class KzhaMethodParamsView : UserControl
+    public partial class KzhaMethodParamsView : UserControl, ICollectableParamsView
     {
         public List<ScIndexPair> Coefficients { get; set; }
 
@@ -68,7 +69,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
                 CoeffsList.SelectedItems.Add(coeff);
         }
 
-        private KzhaParamsDto CollectParameters()
+        public object CollectParameters()
         {
             var result = new KzhaParamsDto();
             result.TryToExtract = TryToExtract.IsChecked is not null ? TryToExtract.IsChecked.Value : false;

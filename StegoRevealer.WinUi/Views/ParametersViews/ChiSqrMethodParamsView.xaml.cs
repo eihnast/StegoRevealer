@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib.MethodsHelper;
+using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
     /// <summary>
     /// Логика взаимодействия для ChiSqrMethodParamsView.xaml
     /// </summary>
-    public partial class ChiSqrMethodParamsView : UserControl
+    public partial class ChiSqrMethodParamsView : UserControl, ICollectableParamsView
     {
         public ChiSqrMethodParamsView()
         {
@@ -53,7 +54,7 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
             BlockHeight.Value = parameters.BlockHeight;
         }
 
-        private ChiSqrParamsDto CollectParameters()
+        public object CollectParameters()
         {
             var result = new ChiSqrParamsDto();
             result.Visualize = IsVisualizeChecked.IsChecked is not null ? IsVisualizeChecked.IsChecked.Value : false;
