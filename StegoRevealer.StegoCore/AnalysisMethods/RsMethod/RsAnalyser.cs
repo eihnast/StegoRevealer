@@ -31,10 +31,20 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
             foreach (var channel in Params.Channels)
             {
-                var unturnedValues = AnalyseInOneChannel(channel, invertedImage: false);
+                var unturnedCalcTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: false));
+                var invertedCalsTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: true));
+
+                unturnedCalcTask.Start();
+                invertedCalsTask.Start();
+
+                unturnedCalcTask.Wait();
+                invertedCalsTask.Wait();
+
+                var unturnedValues = unturnedCalcTask.Result;
                 result.Log($"Analysis for {channel} channel in original image completed. Regulars num = {unturnedValues.Regulars}, Singulars num = {unturnedValues.Singulars}. " +
                     $"Regulars with inverted mask num = {unturnedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {unturnedValues.SingularsWithInvertedMask}");
-                var invertedValues = AnalyseInOneChannel(channel, invertedImage: true);
+
+                var invertedValues = invertedCalsTask.Result;
                 result.Log($"Analysis for {channel} channel in inverted image completed. Regulars num = {invertedValues.Regulars}, Singulars num = {invertedValues.Singulars}. " +
                     $"Regulars with inverted mask num = {invertedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {invertedValues.SingularsWithInvertedMask}");
 

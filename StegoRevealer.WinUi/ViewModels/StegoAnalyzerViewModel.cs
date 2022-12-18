@@ -140,19 +140,13 @@ namespace StegoRevealer.WinUi.ViewModels
                 methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<IAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
             }
 
-            // Запуск задач
-            var analysisTask = new Task(() =>
-            {
-                // Запуск
-                foreach (var methodTask in methodTasks)
-                    methodTask.Value?.Start();
+            // Запуск
+            foreach (var methodTask in methodTasks)
+                methodTask.Value?.Start();
 
-                // Ожидание
-                foreach (var methodTask in methodTasks)
-                    methodTask.Value?.Wait();
-            });
-            analysisTask.Start();
-            analysisTask.Wait();
+            // Ожидание
+            foreach (var methodTask in methodTasks)
+                methodTask.Value?.Wait();
 
             // Сбор результатов
             foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
