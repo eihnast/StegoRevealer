@@ -2,9 +2,12 @@
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
+    /// <summary>
+    /// Наборы индексов коэффициентов для блоков матрицы пикселей и блоков ДКП<br/>
+    /// Коэффициенты в формате (y, x)
+    /// </summary>
     public static class HidingCoefficients
     {
-        // Коэффициенты в формате (y, x)
         public static ScIndexPair Coeff12 = new ScIndexPair(0, 1);
         public static ScIndexPair Coeff13 = new ScIndexPair(0, 2);
         public static ScIndexPair Coeff14 = new ScIndexPair(0, 3);

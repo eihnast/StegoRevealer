@@ -8,18 +8,25 @@ using StegoRevealer.StegoCore.CommonLib;
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {
     /// <summary>
-    /// 
+    /// Метод скрытия информации в НЗБ
     /// </summary>
     public class LsbHider : IHider
     {
+        /// <summary>
+        /// Параметры метода НЗБ
+        /// </summary>
         public LsbParameters Params { get; set; }
+
 
         public LsbHider(ImageHandler img)
         {
             Params = new LsbParameters(img);
         }
 
-        // Допустимый объём контейнера
+
+        /// <summary>
+        /// Допустимый объём контейнера
+        /// </summary>
         private int GetContainerVolume()
         {
             var (w, h, d) = Params.Image.GetImgSizes();
@@ -27,7 +34,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return pixelsToHideNum * Params.LsbNum;
         }
 
-        // Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
+        /// <summary>
+        /// Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
+        /// </summary>
         private static int GetHidingVolume(int ContainerVolume, int DataVolume)
         {
             if (ContainerVolume > DataVolume)
@@ -35,6 +44,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return ContainerVolume;
         }
 
+        /// <inheritdoc/>
         public IHideResult Hide(string? data)
         {
             LsbHideResult result = new();  // Результаты скрытия
@@ -93,7 +103,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return result;
         }
 
-        // Скрытие 
+        /// <summary>
+        /// Скрытие бита информации в пиксель по переданным координатам
+        /// </summary>
+        /// <param name="inds">Индексы пикселя (и канала)</param>
+        /// <param name="bits">Скрываемый бит</param>
         private void HideDataBitToColorByte(ScPointCoords inds, BitArray bits)
         {
             var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения

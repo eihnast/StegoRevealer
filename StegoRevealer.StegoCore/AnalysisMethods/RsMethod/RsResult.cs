@@ -2,17 +2,24 @@
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
 {
-    public class RsResult : LoggedResult, IAnalysisResult
+    /// <summary>
+    /// Результаты метода стегоанализа Regular-Singular
+    /// </summary>
+    public class RsResult : LoggedResult, ILoggedAnalysisResult
     {
+        /// <inheritdoc/>
         public LoggedResult AsLog()
         {
             return this;
         }
 
-        public double MessageRelativeVolume { get; set; }  // Относительный объём сообщения
 
-        public RsResult()
-        {
-        }
+        /// <summary>
+        /// Относительный объём сообщения
+        /// </summary>
+        public double MessageRelativeVolume { get; set; }
+
+
+        public RsResult() { }
     }
 }

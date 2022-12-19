@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.WinUi", "StegoRevealer.WinUi\StegoRevealer.WinUi.csproj", "{4CA7BC76-4BC9-410B-85BB-FD2B0D3C697C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.WinUi", "StegoRevealer.WinUi\StegoRevealer.WinUi.csproj", "{4CA7BC76-4BC9-410B-85BB-FD2B0D3C697C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.StegoCore", "StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj", "{2425709C-1913-4325-A4DB-634A1AAE1F91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore", "StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj", "{2425709C-1913-4325-A4DB-634A1AAE1F91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

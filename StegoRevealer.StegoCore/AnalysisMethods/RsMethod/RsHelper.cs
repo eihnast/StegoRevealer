@@ -1,16 +1,30 @@
 ﻿namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
 {
+    /// <summary>
+    /// Вспомогательные функции и константы для метода RS
+    /// </summary>
     public static class RsHelper
     {
+        // Константы и стандартные значения параметров метода RS
+
+        /// <summary>
+        /// Стандартное значение размера группы пикселей
+        /// </summary>
         private const int _defaultPixelsGroupLength = 4;
 
-        // Стандартная длина групп пикселей
+        /// <summary>
+        /// Стандартная длина групп пикселей
+        /// </summary>
         public static int DefaultPixelsGroupLength { get; } = _defaultPixelsGroupLength;
 
-        // Стандартная маска флиппинга
+        /// <summary>
+        /// Стандартная маска флиппинга
+        /// </summary>
         public static int[] DefaultFlippingMask { get; } = new int[_defaultPixelsGroupLength] { 1, 0, 0, 1 };
 
-        // Стандартная функция регулярности
+        /// <summary>
+        /// Стандартная функция регулярности
+        /// </summary>
         public static int DefaultRegularityFunction(IList<int> nums)
         {
             int sum = 0;
@@ -19,7 +33,9 @@
             return sum;
         }
 
-        // Стандартная функция прямого флиппинга
+        /// <summary>
+        /// Стандартная функция прямого флиппинга
+        /// </summary>
         public static int DefaultFlipDirect(int value)
         {
             if ((value & 1) > 0)
@@ -27,7 +43,9 @@
             return value + 1;
         }
 
-        // Стандартная функция обратного флиппинга
+        /// <summary>
+        /// Стандартная функция обратного флиппинга
+        /// </summary>
         public static int DefaultFlipBack(int value)
         {
             if ((value & 1) > 0)
@@ -35,21 +53,31 @@
             return value - 1;
         }
 
-        // Стандартная функция нулевого флиппинга
+        /// <summary>
+        /// Стандартная функция нулевого флиппинга
+        /// </summary>
         public static int DefaultFlipNone(int value) => value;
 
 
         // Вспомогательные методы реализации метода Regular-Singular
 
-        // Метод инвертирования маски
+        /// <summary>
+        /// Метод инвертирования маски
+        /// </summary>
         public static int[] InvertMask(int[] mask) =>
             mask.Select(x => x * -1).ToArray();
 
-        // Метод получения стандартной инвертированной маски
+        /// <summary>
+        /// Метод получения стандартной инвертированной маски
+        /// </summary>
         public static int[] GetDefaultInvertedMask() =>
             InvertMask(DefaultFlippingMask);
 
-        // Метод определения типа группы
+        /// <summary>
+        /// Метод определения типа группы
+        /// </summary>
+        /// <param name="beforeFlippingResult">Значение регулярности до флиппинга</param>
+        /// <param name="afterFlippingResult">Значение регулярности после флиппинга</param>
         public static RsGroupType DefineGroupType(int beforeFlippingResult, int afterFlippingResult)
         {
             if (afterFlippingResult > beforeFlippingResult)
@@ -64,7 +92,9 @@
         public static RsGroupType DefineGroupType((int beforeFlippingResult, int afterFlippingResult) regularityResult) =>
             DefineGroupType(regularityResult.beforeFlippingResult, regularityResult.afterFlippingResult);
 
-        // Применить функции флиппинга к группе
+        /// <summary>
+        /// Применить функции флиппинга к группе
+        /// </summary>
         public static int[] ApplyFlipping(int[] group, Func<int, int>[] funcs)
         {
             if (group.Length != funcs.Length)

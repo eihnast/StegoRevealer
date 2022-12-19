@@ -5,24 +5,37 @@ using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
+    // TODO: общее описание параметров и принципов их формирования и влияния на метод Коха-Жао
     /*
-
+     
      */
+    // TODO: эти параметры должны быть разделены на 2 части: параметры метода и параметры формирования частотного представления
+
+    /// <summary>
+    /// Параметры метода Коха-Жао
+    /// </summary>
     public class KochZhaoParameters : StegoMethodParams, IParams
     {
         private const int BlockSize = 8;  // Линейный размер блока матрицы ДКП
         private const int BlockPixelsNum = BlockSize * BlockSize;  // Количестве пикселей в блоке матрицы ДКП
 
+        /// <summary>
+        /// Возвращает размер блока
+        /// </summary>
         public int GetBlockSize() => BlockSize;
 
-
+        /// <inheritdoc/>
         public override bool HidingOperation { get; set; } = true;
 
-        public override int? Seed { get; set; } = null;  // Сид для ГПСЧ при псевдослучайном скрытии (определяет тип скрытия)
+        /// <inheritdoc/>
+        public override int? Seed { get; set; } = null;
+
 
         private string _data = "";
         private BitArray _dataAsBitArray = new BitArray(0);
-        public override string Data  // Скрываемая информация
+
+        /// <inheritdoc/>
+        public override string Data
         {
             get
             {
@@ -38,13 +51,19 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
         }
 
+
+        /// <inheritdoc/>
         public override BitArray DataBitArray { get { return _dataAsBitArray; } }
+
+        /// <inheritdoc/>
         public override int DataBitLength { get { return _dataAsBitArray.Length; } }
 
 
         // Количество извлекаемых бит информации и цветовых байт изображения
         private int _toExtractBitLength = 0;
-        public override int ToExtractBitLength  // Количество извлекаемых бит
+
+        /// <inheritdoc/>
+        public override int ToExtractBitLength
         {
             get
             {
@@ -57,26 +76,49 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 _toExtractBitLength = value;
             }
         }
+
+        /// <inheritdoc/>
         public override int ToExtractColorBytesNum { get { return GetNeededToHideColorBytesNum(ToExtractBitLength); } }
 
 
-        // Переделать - не лист, обеспечивать уникальность
-        public override UniqueList<ImgChannel> Channels { get; }  // Каналы, используемые для скрытия
+        /// <inheritdoc/>
+        public override UniqueList<ImgChannel> Channels { get; }
             = new UniqueList<ImgChannel> { ImgChannel.Blue };
 
+
         private ScImageBlocks _imgBlocks;
+
+        /// <summary>
+        /// Возвращает матрицу блоков
+        /// </summary>
+
         public ScImageBlocks GetImgBlocksGrid() => _imgBlocks;
+
+        /// <summary>
+        /// Матрица блоков изображения
+        /// </summary>
         public ScImageBlocks ImgBlocksGrid { get { return _imgBlocks; } }
 
+        /// <summary>
+        /// Порог для разницы коэффициентов скрытия
+        /// </summary>
+        public double Threshold { get; set; } = 120;
 
-        public double Threshold { get; set; } = 120;  // Порог для разницы коэффициентов скрытия
+
+        /// <inheritdoc/>
+        public override bool InterlaceChannels { get; set; } = true;
+
+        /// <inheritdoc/>
+        public override bool VerticalHiding { get; set; } = false;
 
 
-        public override bool InterlaceChannels { get; set; } = true;  // Чередовать ли каналы при скрытии (иначе - поканально)
-
-        public override bool VerticalHiding { get; set; } = false;  // Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
+        // Стартовые индексы
 
         private StartValues _startBlocks = GetDefaultStartBlocks();
+
+        /// <summary>
+        /// Стартовые блоки процессов скрытия/извлечения
+        /// </summary>
         public StartValues StartBlocks
         {
             get
@@ -90,17 +132,23 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 _startBlocks = value;
             }
         }
+
+        /// <inheritdoc/>
         public override StartValues StartPoints
         {
             get { return StartBlocks; }
             set { StartBlocks = value; }
         }
 
-        // Коэффициенты матрицы ДКП для скрытия
+        /// <summary>
+        /// Коэффициенты матрицы ДКП для скрытия
+        /// </summary>
         public ScIndexPair HidingCoeffs { get; set; } = HidingCoefficients.Coeff45;
 
 
-        // Возвращает стандарный список стартовых пикселей
+        /// <summary>
+        /// Возвращает стандарный список стартовых пикселей
+        /// </summary>
         private static StartValues GetDefaultStartBlocks()
         {
             return new StartValues(
@@ -108,11 +156,14 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             );
         }
 
+
         public KochZhaoParameters(ImageHandler imgHandler) : base(imgHandler)
         {
             _imgBlocks = new ScImageBlocks(this);
         }
 
+
+        /// <inheritdoc/>
         public override void Reset()
         {
             Seed = null;
@@ -129,7 +180,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         }
 
 
-        // Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации (с учётом размера блоков)
+        /// <summary>
+        /// Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации (с учётом размера блоков)
+        /// </summary>
         public override int GetNeededToHideColorBytesNum(int? dataBitLength = null)
         {
             if (dataBitLength is null)
@@ -137,7 +190,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return Convert.ToInt32(Math.Round((double)dataBitLength * BlockPixelsNum, MidpointRounding.ToPositiveInfinity));
         }
 
-        // Количество блоков, которое необходимо для сокрытия (извлечения) всей информации (с учётом размера блоков)
+        /// <summary>
+        /// Количество блоков, которое необходимо для сокрытия (извлечения) всей информации (с учётом размера блоков)
+        /// </summary>
         public int GetNeededToHideBlocksNum(int? dataBitLength = null)
         {
             if (dataBitLength is null)
@@ -146,7 +201,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return dataBitLength.Value >= allBlocksNum ? allBlocksNum : dataBitLength.Value;
         }
 
-        // Количество доступных для скрытия блоков (с учётом стартовых)
+        /// <summary>
+        /// Количество доступных для скрытия блоков (с учётом стартовых)
+        /// </summary>
         private int CalcUsingBlocksNum()
         {
             int allBlocksInChannelNum = _imgBlocks.BlocksInRow * _imgBlocks.BlocksInRow;
@@ -161,10 +218,14 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return blocksNum;
         }
 
-        // Число используемых блоков с учётом заданных стартовых пикселей
+        /// <summary>
+        /// Число используемых блоков с учётом заданных стартовых пикселей
+        /// </summary>
         public int GetUsingBlocksNum() => CalcUsingBlocksNum();
 
-        // Количество всех блоков (с учётом всех каналов)
+        /// <summary>
+        /// Количество всех блоков (с учётом всех каналов)
+        /// </summary>
         public int GetAllBlocksNum()
         {
             return Channels.Count * (_imgBlocks.BlocksInRow * _imgBlocks.BlocksInRow);

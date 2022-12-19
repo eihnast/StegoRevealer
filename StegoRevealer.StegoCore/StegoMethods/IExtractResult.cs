@@ -1,6 +1,6 @@
 ﻿namespace StegoRevealer.StegoCore.StegoMethods
 {
-    public interface IExtractResult : IStegoResult
+    public interface IExtractResult : ILoggedStegoResult
     {
         public string? GetResultData();
     }

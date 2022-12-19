@@ -1,5 +1,8 @@
 ﻿namespace StegoRevealer.StegoCore.ScMath
 {
+    /// <summary>
+    /// Apache-реализация оценки по критерию Хи-квадрат
+    /// </summary>
     public static class ChiSquareApache
     {
 

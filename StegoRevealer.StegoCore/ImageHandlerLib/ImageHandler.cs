@@ -2,23 +2,51 @@
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
+    /// <summary>
+    /// Обработчик изображения (StegoCore-класс представления изображения)
+    /// </summary>
     public class ImageHandler
     {
-        private ScImage _image;
+        private ScImage _image;  // Изображение
 
-        private string _imgPath;
+        private string _imgPath;  // Путь к изображению
 
-        private ChannelsArray _channelsArray;
-        private ImageArray _imgArray;
+        private ChannelsArray _channelsArray;  // Массив пикселей по каналам
+        private ImageArray _imgArray;  // Массив пикселей
 
+
+        /// <summary>
+        /// Является ли изображением формата TrueColor
+        /// </summary>
         public bool IsTrueColor { get { return _image.IsTrueColor; } }
 
+        /// <summary>
+        /// Массив пикселей изображения по каналам
+        /// </summary>
         public ChannelsArray ChannelsArray { get { return _channelsArray; } }
+
+        /// <summary>
+        /// Массив пикселей изображения
+        /// </summary>
         public ImageArray ImgArray { get { return _imgArray; } }
+
+        /// <summary>
+        /// Путь к файлу изображения
+        /// </summary>
         public string ImgPath { get { return _imgPath; } }
+
+        /// <summary>
+        /// Имя файла изображения
+        /// </summary>
         public string ImgName { get { return Path.GetFileNameWithoutExtension(ImgPath); } }
 
-        private ImageHandler? _invertedHandler = null;
+
+        private ImageHandler? _invertedHandler = null;  // Обработчик получения пикселей с "инвертированными" НЗБ
+
+        /// <summary>
+        /// Получение "инвертированного" обработчика - возвращает пиксели с "инвертированными" НЗБ<br/>
+        /// В пикселях с инвертированными НЗБ меняется значение последнего бита интенсивности цвета в каждом канале на противоположное
+        /// </summary>
         public ImageHandler Inverted { get { return GetLsbInvertedVersion(); } }
 
 
@@ -40,18 +68,25 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         }
 
 
-        // Получение значений пикселя
+        /// <summary>
+        /// Получение значений пикселя
+        /// </summary>
         public ScPixel GetPixelValue(int x, int y)
         {
             return _image[y, x];
         }
 
-        // Сохранение изображения
+        /// <summary>
+        /// Сохранение изображения
+        /// </summary>
         public string? Save(string fullPath, ImageFormat format)
         {
             return _image.Save(fullPath, format);
         }
 
+        /// <summary>
+        /// Сохранение изображения
+        /// </summary>
         public string? Save(string newName)
         {
             var directory = Path.GetDirectoryName(ImgPath) ?? "";
@@ -61,19 +96,26 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             return Save(Path.Combine(directory, name + ext), _image.GetFormat());
         }
 
-        // Метод для получения размеров изображения
+        /// <summary>
+        /// Метод для получения размеров изображения
+        /// </summary>
         public (int, int, int) GetImgSizes()
         {
             return (_image.Width, _image.Height, _image.Depth);
         }
         
 
-        // Методы вывода значений массивов пикселей
+        /// <summary>
+        /// Вывод массива пикселей
+        /// </summary>
         public static void PrintImageArray(TextWriter output, ImageHandler imageHandler)
         {
             imageHandler.ImgArray.Print(output);
         }
 
+        /// <summary>
+        /// Вывод массива пикселей
+        /// </summary>
         public void PrintImageArray(TextWriter output)
         {
             PrintImageArray(output, this);
@@ -81,16 +123,26 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
 
 
         // Вспомогательные методы получения каналов по цветам
+
+        /// <summary>
+        /// Массив красных цветов пикселей
+        /// </summary>
         public ImageOneChannelArray? GetRed()
         {
             return _channelsArray.GetChannelArray(ImgChannel.Red);
         }
 
+        /// <summary>
+        /// Массив зелёных цветов пикселей
+        /// </summary>
         public ImageOneChannelArray? GetGreen()
         {
             return _channelsArray.GetChannelArray(ImgChannel.Red);
         }
 
+        /// <summary>
+        /// Массив синих цветов пикселей
+        /// </summary>
         public ImageOneChannelArray? GetBlue()
         {
             return _channelsArray.GetChannelArray(ImgChannel.Red);
@@ -99,6 +151,10 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
 
         // Методы изменения НЗБ
         // Если синхронизация включена, режим будет изменён на OnlyImageArray
+
+        /// <summary>
+        /// Инвертировать НЗБ во всех пикселях в выбранных каналах
+        /// </summary>
         public void InvertAllLsb(ImgChannel[]? channels = null, int lsb = 1)
         {
             if (channels is null)  // Инвертирование по всем каналам
@@ -113,6 +169,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
+        // Инвертирование НЗБ в пикселях в одном цветовом канале
         private void InvertLsbInOneChannel(ImgChannel channel, int lsbNum)
         {
             if (_image is null)
@@ -130,6 +187,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
+        // Получение "инвертированного" обработчика
         private ImageHandler GetLsbInvertedVersion()
         {
             if (_invertedHandler is not null)

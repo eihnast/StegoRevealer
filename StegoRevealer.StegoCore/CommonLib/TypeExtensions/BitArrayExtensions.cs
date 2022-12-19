@@ -2,15 +2,22 @@
 
 namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
 {
+    /// <summary>
+    /// Расширения класса BitArray
+    /// </summary>
     public static class BitArrayExtensions
     {
-        // Содержит ли BitArray только один байт
+        /// <summary>
+        /// Содержит ли BitArray только один байт
+        /// </summary>
         public static bool IsOneByte(this BitArray bitArray)
         {
             return bitArray.Length == 8;
         }
 
-        // Преобразование в байт (если хранит больше одного байта - будет возвращён только первый байт)
+        /// <summary>
+        /// Преобразование в байт (если хранит больше одного байта - будет возвращён только первый байт)
+        /// </summary>
         public static byte AsByte(this BitArray bitArray)
         {
             byte[] resultArray = new byte[1];
@@ -18,13 +25,17 @@ namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
             return resultArray[0];
         }
 
-        // Возвращает байт в виде integer
+        /// <summary>
+        /// Возвращает байт в виде integer
+        /// </summary>
         public static int AsInt(this BitArray value)
         {
             return value.AsByte();
         }
 
-        // Возвращает массив байт
+        /// <summary>
+        /// Возвращает массив байт
+        /// </summary>
         public static byte[] ToBytes(this BitArray bitArray)
         {
             int bytesNum = bitArray.Length / 8;
@@ -39,14 +50,18 @@ namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
                 return resultArray;
         }
 
-        // Новый BitArray из одного байта
+        /// <summary>
+        /// Новый BitArray из одного байта
+        /// </summary>
         public static BitArray NewFromByte(byte value)
         {
             var bitArray = new BitArray(new byte[] { value });
             return bitArray;
         }
 
-        // Новый BitArray из одного integer (обрезает значения до диапазона [0..255])
+        /// <summary>
+        /// Новый BitArray из одного integer (обрезает значения до диапазона [0..255])
+        /// </summary>
         public static BitArray NewFromInt(int value)
         {
             return NewFromByte(value.ToByte());

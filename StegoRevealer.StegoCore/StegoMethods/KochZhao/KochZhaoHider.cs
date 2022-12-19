@@ -3,23 +3,35 @@ using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
+    /// <summary>
+    /// Скрытие информации по методу Коха-Жао
+    /// </summary>
     public class KochZhaoHider : IHider
     {
+        /// <summary>
+        /// Параметры метода Коха-Жао
+        /// </summary>
         public KochZhaoParameters Params { get; set; }
+
 
         public KochZhaoHider(ImageHandler img)
         {
             Params = new KochZhaoParameters(img);
         }
 
-        // Допустимый объём контейнера
+
+        /// <summary>
+        /// Допустимый объём контейнера
+        /// </summary>
         private int GetContainerVolume()
         {
             var blocksNum = Params.GetAllBlocksNum();
             return blocksNum;
         }
 
-        // Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
+        /// <summary>
+        /// Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
+        /// </summary>
         private static int GetHidingVolume(int ContainerVolume, int DataVolume)
         {
             if (ContainerVolume > DataVolume)
@@ -27,6 +39,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return ContainerVolume;
         }
 
+        /// <inheritdoc/>
         public IHideResult Hide(string? data)
         {
             KochZhaoHideResult result = new();
@@ -101,7 +114,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return result;
         }
 
-        // Скрывает бит информации внутри блока
+        /// <summary>
+        /// Скрывает бит информации внутри блока
+        /// </summary>
         private double[,] HideDataBitToDctBlock(double[,] dctBlock, bool bit)
         {
             var coefValues = KochZhaoCommon.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
@@ -123,7 +138,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return dctBlock;
         }
 
-        // Записывает значения блока в массив пикселей изображения (одноканальный блок)
+        /// <summary>
+        /// Записывает значения блока в массив пикселей изображения (одноканальный блок)
+        /// </summary>
         private void ChangeBlockInImageArray(byte[,] block, ScPointCoords blockIndex)
         {
             // Определение границ блока

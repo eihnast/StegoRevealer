@@ -1,8 +1,13 @@
 ﻿namespace StegoRevealer.StegoCore.CommonLib.TypeExtensions
 {
+    /// <summary>
+    /// Расширения класса Int
+    /// </summary>
     public static class IntExtensions
     {
-        // Обрезает int до диапазона [0.255]
+        /// <summary>
+        /// Обрезает int до диапазона [0.255]
+        /// </summary>
         public static byte ToByte(this int value)
         {
             byte byteValue = (byte)value;

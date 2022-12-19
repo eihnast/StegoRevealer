@@ -3,9 +3,17 @@ using Accord.Math;
 
 namespace StegoRevealer.StegoCore.ScMath
 {
+    /// <summary>
+    /// Математические методы
+    /// </summary>
     public static class MathMethods
     {
-        // Вычисление критерия Хи-квадрат
+        /// <summary>
+        /// Вычисление критерия Хи-квадрат
+        /// </summary>
+        /// <param name="expected">Ожидаемые значения</param>
+        /// <param name="observed">Наблюдаемые значения</param>
+        /// <param name="degreesOfFreedom">Количество степеней свободы</param>
         public static (double statistic, double pValue) ChiSqr(double[] expected, double[] observed,
             int? degreesOfFreedom = null)
         {
@@ -15,21 +23,10 @@ namespace StegoRevealer.StegoCore.ScMath
                 degreesOfFreedom = expected.Length - 1;
 
             // var chisqr = new ChiSquareTest(expected, observed, degreesOfFreedom.Value);  // Accord version
-            var chisqr = ChiSquareApache.ChiSquareTest(expected, observed);
+            var chisqr = ChiSquareApache.ChiSquareTest(expected, observed);  // Apache version
             return (chisqr.Statistic, chisqr.PValue);
         }
 
-        //// ???
-        //public static double ChiFromFreqs(double[] expected, double[] observed)
-        //{
-        //    double sum = 0.0;
-        //    for (int i = 0; i < observed.Length; ++i)
-        //    {
-        //        sum += ((observed[i] - expected[i]) *
-        //          (observed[i] - expected[i])) / expected[i];
-        //    }
-        //    return sum;
-        //}
 
         /*
             Матрицы для проверки работы ДКП и ОДКП
@@ -72,7 +69,10 @@ namespace StegoRevealer.StegoCore.ScMath
                 -9.95 11.19 7.81 -16.29 21.46 0.02 5.91 10.68 
         */
 
-        // Вычисление ДКП
+        /// <summary>
+        /// Вычисление ДКП (двумерное)
+        /// </summary>
+        /// <param name="matrix">Матрица значений</param>
         public static double[,] Dct(double[,] matrix)
         {
             double[,] dctMatrix = (double[,])matrix.Clone();
@@ -83,7 +83,10 @@ namespace StegoRevealer.StegoCore.ScMath
             return dctMatrix;
         }
 
-        // Вычисление обратного ДКП
+        /// <summary>
+        /// Вычисление обратного ДКП (двумерное)
+        /// </summary>
+        /// <param name="dctMatrix">Матрица значений ДКП</param>
         public static double[,] Idct(double[,] dctMatrix)
         {
             double[,] matrix = (double[,])dctMatrix.Clone();
@@ -94,43 +97,67 @@ namespace StegoRevealer.StegoCore.ScMath
             return matrix;
         }
 
-        // Вычисление разницы модулей
+
+        /// <summary>
+        /// Вычисление разницы модулей
+        /// </summary>
         public static int GetModulesDiff(int val1, int val2)
         {
             return Math.Abs(val1) - Math.Abs(val2);
         }
 
+        /// <summary>
+        /// Вычисление разницы модулей
+        /// </summary>
         public static int GetModulesDiff((int val1, int val2) values)
         {
             return GetModulesDiff(values.val1, values.val2);
         }
 
+        /// <summary>
+        /// Вычисление разницы модулей
+        /// </summary>
         public static double GetModulesDiff(double val1, double val2)
         {
             return Math.Abs(val1) - Math.Abs(val2);
         }
 
+        /// <summary>
+        /// Вычисление разницы модулей
+        /// </summary>
         public static double GetModulesDiff((double val1, double val2) values)
         {
             return GetModulesDiff(values.val1, values.val2);
         }
 
-        // Вычисление модуля разницы модулей
+
+        /// <summary>
+        /// Вычисление модуля разницы модулей
+        /// </summary>
         public static int GetModulesOfModuleDiffs(int val1, int val2)
         {
             return Math.Abs(GetModulesDiff(val1, val2));
         }
 
+        /// <summary>
+        /// Вычисление модуля разницы модулей
+        /// </summary>
         public static int GetModulesOfModuleDiffs((int val1, int val2) values)
         {
             return GetModulesOfModuleDiffs(values.val1, values.val2);
         }
 
+        /// <summary>
+        /// Вычисление модуля разницы модулей
+        /// </summary>
         public static double GetModulesOfModuleDiffs(double val1, double val2)
         {
             return Math.Abs(GetModulesDiff(val1, val2));
         }
 
+        /// <summary>
+        /// Вычисление модуля разницы модулей
+        /// </summary>
         public static double GetModulesOfModuleDiffs((double val1, double val2) values)
         {
             return GetModulesOfModuleDiffs(values.val1, values.val2);

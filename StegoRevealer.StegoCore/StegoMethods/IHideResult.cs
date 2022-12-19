@@ -2,7 +2,7 @@
 
 namespace StegoRevealer.StegoCore.StegoMethods
 {
-    public interface IHideResult : IStegoResult
+    public interface IHideResult : ILoggedStegoResult
     {
         public string? GetResultPath();
     }

@@ -5,9 +5,16 @@ using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
+    /// <summary>
+    /// Извлечение информации, скрытой по методу Коха-Жао
+    /// </summary>
     public class KochZhaoExtractor : IExtractor
     {
+        /// <summary>
+        /// Параметры метода Коха-Жао
+        /// </summary>
         public KochZhaoParameters Params { get; set; }
+
 
         public KochZhaoExtractor(ImageHandler img)
         {
@@ -29,12 +36,15 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             Params.Threshold = threshold;
         }
 
+
+        /// <inheritdoc/>
         public IExtractResult Extract()
         {
             return Extract(Params);
         }
 
         // TODO: невозможно использование кастомного IParams parameters: в лог инфа пишется из Params, создать объект без Params невозможно
+        /// <inheritdoc/>
         public IExtractResult Extract(IParams parameters)
         {
             KochZhaoExtractResult result = new();
@@ -89,6 +99,10 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return result;
         }
 
+        /// <summary>
+        /// Извлекает бит информации из блока ДКП
+        /// </summary>
+        /// <param name="dctBlock">Блок ДКП</param>
         private bool? ExtractBitFromDctBlock(double[,] dctBlock)
         {
             var coefValues = KochZhaoCommon.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов

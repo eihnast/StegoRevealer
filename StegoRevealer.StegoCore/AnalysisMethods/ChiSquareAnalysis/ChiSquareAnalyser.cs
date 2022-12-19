@@ -4,11 +4,18 @@ using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
+    /// <summary>
+    /// Стегоанализатор по методу Хи-квадрат
+    /// </summary>
     public class ChiSquareAnalyser
     {
         private const string MethodName = "Pair analysis (Chi-Square)";
 
+        /// <summary>
+        /// Параметры метода
+        /// </summary>
         public ChiSquareParameters Params { get; set; }
+
 
         public ChiSquareAnalyser(ImageHandler image)
         {
@@ -20,6 +27,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             Params = parameters;
         }
 
+
+        /// <summary>
+        /// Запуск стегоанализа
+        /// </summary>
+        /// <param name="verboseLog">Вести подробный лог</param>
         public ChiSquareResult Analyse(bool verboseLog = false)
         {
             var result = new ChiSquareResult();
@@ -85,7 +97,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         }
 
 
-        // Добавляет цветовую визуализацию блока (добавляет зелёный или красный цвет)
+        /// <summary>
+        /// Добавляет цветовую визуализацию блока (усиливает/ослабляет один из цветов)
+        /// </summary>
+        /// <param name="blockIndexes">Индексы блока</param>
+        /// <param name="channel">Цветовой канал</param>
+        /// <param name="colorOffset">Смещение цвета в выбранном канале</param>
         private void ColorizeBlock(Sc2DPoint blockIndexes, ImgChannel channel, int colorOffset = 100)
         {
             var imar = Params.Image.ImgArray;
@@ -109,7 +126,13 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             return newCnum;
         }
 
-        // Объединяет низкочастотные категории
+        /// <summary>
+        /// Объединяет низкочастотные категории
+        /// </summary>
+        /// <param name="oldExpected">Список ожидаемых значений категорий</param>
+        /// <param name="oldObserved">Список наблюдаемых значений категорий</param>
+        /// <returns>Новые списки ожидаемых и наблюдаемых значений</returns>
+        /// <exception cref="ArgumentException">Размеры список ожидаемых и наблюдаемых значений не совпадают</exception>
         private (List<double> expected, List<double> observed) UnifyCathegories(
             List<double> oldExpected, List<double> oldObserved)
         {
@@ -188,7 +211,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             return (newExpected, newObserved);
         }
 
-        // Формирует массивы ожидаемых и наблюдаемых значений
+        /// <summary>
+        /// Формирует массивы ожидаемых и наблюдаемых значений
+        /// </summary>
+        /// <param name="cnum">Массив количества появлений цветов</param>
+        /// <returns>Списки ожидаемых и наблюдаемых значений категорий</returns>
         private (List<double> expected, List<double> observed) CreateChiArrays(int[] cnum)
         {
             int arraysLength = cnum.Length / 2;
@@ -220,10 +247,14 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 mainArray[i] += newArray[i];
         }
 
-        // Формирует CnumArr - ColorsNumArray, массив количества интенсивности цветов пикселей
+        /// <summary>
+        /// Формирует CnumArr - ColorsNumArray, массив количества интенсивности цветов пикселей (массив количества появлений цветов)
+        /// </summary>
+        /// <param name="pixels">Одномерный массив всех пикселей</param>
+        /// <returns>Массив количества появлений цветов</returns>
         private int[] CreateColorsNumArray(List<ScPixel> pixels)
         {
-            if (Params.UseUnitedCnum)
+            if (Params.UseUnitedCnum)  // Если считаем только значения интенсивности без учёта канала
             {
                 var cnum = Enumerable.Repeat(0, 256).ToArray();
                 foreach (var pixel in pixels)
@@ -235,7 +266,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                     }
                 return cnum;
             }
-            else
+            else  // Если считаем количество значений интенсивности для каждого канала отдельно
             {
                 var cnum = Enumerable.Repeat(0, Params.Channels.Count * 256).ToArray();
                 foreach (var pixel in pixels)
@@ -251,7 +282,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         }
         private int[] CreateCnumArr(List<ScPixel> pixels) => CreateColorsNumArray(pixels);
 
-        // Возвращает одномерный список пикселей следующего блока
+        /// <summary>
+        /// Возвращает одномерный список пикселей следующего блока
+        /// </summary>
         private IEnumerable<(List<ScPixel> pixelsList, Sc2DPoint blockIndex)> GetNextBlockPixels()
         {
             foreach (var blockCoords in GetNextBlockIndexInGrid())
@@ -276,6 +309,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             yield break;
         }
 
+        /// <summary>
+        /// Возвращает индексы следующего блока с учётом варианта обхода
+        /// </summary>
         private IEnumerable<Sc2DPoint> GetNextBlockIndexInGrid()
         {
             var blocksInLineNum = Params.Image.ImgArray.Width / Params.BlockWidth;  // Количество блоков в строку

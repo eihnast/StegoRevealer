@@ -5,9 +5,16 @@ using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {
+    /// <summary>
+    /// Метод извлечения информации из НЗБ
+    /// </summary>
     public class LsbExtractor : IExtractor
     {
+        /// <summary>
+        /// Параметры метода НЗБ
+        /// </summary>
         public LsbParameters Params { get; set; }
+
 
         public LsbExtractor(ImageHandler img)
         {
@@ -25,11 +32,14 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             Params.LsbNum = lsbNum;
         }
 
+
+        /// <inheritdoc/>
         public IExtractResult Extract()
         {
             return Extract(Params);
         }
 
+        /// <inheritdoc/>
         public IExtractResult Extract(IParams parameters)
         {
             LsbExtractResult result = new();
@@ -74,6 +84,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return result;
         }
 
+        /// <summary>
+        /// Метод извлечения бита из цветового байта
+        /// </summary>
         private BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum)
         {
             var bits = new BitArray(lsbNum);

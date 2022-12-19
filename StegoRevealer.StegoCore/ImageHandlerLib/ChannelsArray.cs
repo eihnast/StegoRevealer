@@ -1,13 +1,19 @@
 ﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
+    /// <summary>
+    /// Массивы пикселей изображения по каналам
+    /// </summary>
     public class ChannelsArray
     {
-        private readonly ScImage? _img = null;
-        private readonly Dictionary<ImgChannel, ImageOneChannelArray?> _channelsArray;
+        private readonly ScImage? _img = null;  // Изображение
+        private readonly Dictionary<ImgChannel, ImageOneChannelArray?> _channelsArray;  // Массивы значений в одном канале
+        
         private bool _channelsStructChanged = true;
 
-        // Количество "активных" каналов (реально используемых структурой)
         private int _channelsCount = 0;
+        /// <summary>
+        /// Количество "активных" каналов (реально используемых структурой)
+        /// </summary>
         public int ChannelsCount
         {
             get
@@ -23,6 +29,7 @@
                 return _channelsCount;
             }
         }
+
 
         // Приватный конструктор - заполняет null-ами каналы для _channelsArray
         private ChannelsArray()
@@ -40,14 +47,19 @@
                 CreateChannelArray(channel);
         }
 
-        // Установка массива значений канала
+
+        /// <summary>
+        /// Установка массива значений канала
+        /// </summary>
         private void SetChannelData(ImgChannel channel, ImageOneChannelArray data)
         {
             _channelsArray[channel] = data;
             _channelsStructChanged = true;
         }
 
-        // Создание массива одного канала
+        /// <summary>
+        /// Создание массива одного канала
+        /// </summary>
         private void CreateChannelArray(ImgChannel channel)
         {
             if (_img is null)
@@ -57,7 +69,9 @@
             SetChannelData(channel, channelData);
         }
 
-        // Получение массива одного канала
+        /// <summary>
+        /// Получение массива одного канала
+        /// </summary>
         public ImageOneChannelArray? GetChannelArray(ImgChannel channel)
         {
             if (_channelsArray[channel] is null)
@@ -66,7 +80,9 @@
             return _channelsArray[channel];
         }
 
-        // Возвращает новый массив со значениями нужного индекса по всем каналам
+        /// <summary>
+        /// Возвращает новый массив со значениями нужного индекса по всем каналам
+        /// </summary>
         public ScPixel this[int y, int x]
         {
             get
@@ -78,7 +94,9 @@
             }
         }
 
-        // Валидация на RGB - наличие непустых трёх каналов RGB
+        /// <summary>
+        /// Валидация на RGB - наличие непустых трёх каналов RGB
+        /// </summary>
         private bool IsValidRgb()
         {
             if (_channelsArray is null)
@@ -92,7 +110,9 @@
             return true;
         }
 
-        // Проверка наличия канала прозрачности
+        /// <summary>
+        /// Проверка наличия канала прозрачности
+        /// </summary>
         private bool HasTransparencyChannel()
         {
             if (_channelsArray is null)
@@ -102,6 +122,9 @@
             return true;
         }
 
+        /// <summary>
+        /// Возвращает список "активных" каналов структуры
+        /// </summary>
         public List<ImgChannel> GetChannelsList()
         {
             var channelsList = new List<ImgChannel>();

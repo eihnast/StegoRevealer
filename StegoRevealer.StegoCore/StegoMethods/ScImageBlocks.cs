@@ -4,23 +4,39 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.StegoMethods
 {
+    // TODO: Нужно отрефакторить параметры Коха-Жао и его методы: разделить функционал метода и функционал частотного представления
+
+    /// <summary>
+    /// Массив блоков, на которые разбивается матрица пикселей изображения
+    /// </summary>
     public class ScImageBlocks
     {
-        private KochZhaoParameters _parameters;
-        private ImageHandler _img;
+        private KochZhaoParameters _parameters;  // Параметры для разбиения на блоки
+        private ImageHandler _img;  // Изображение
 
         // Хранятся индексы левого верхнего пикселя каждого блока
         private Sc2DPoint[,] _blocksMatrix;
 
 
         private int _blocksInRow = 0;
+
+        /// <summary>
+        /// Количество блоков в строке
+        /// </summary>
         public int BlocksInRow { get { return _blocksInRow; } }
 
 
         private int _blocksInColumn = 0;
+
+        /// <summary>
+        /// Количество блоков в столбце
+        /// </summary>
         public int BlocksInColumn { get { return _blocksInColumn; } }
 
 
+        /// <summary>
+        /// Общее количество блоков
+        /// </summary>
         public int BlocksNum { get { return _blocksInColumn * _blocksInRow; } }
 
 
@@ -32,6 +48,10 @@ namespace StegoRevealer.StegoCore.StegoMethods
             UpdateMatrix();
         }
 
+
+        /// <summary>
+        /// Обновление матрицы блоков с новыми параметрами
+        /// </summary>
         public void UpdateMatrix(bool updateImage = false)
         {
             if (updateImage)
@@ -47,6 +67,7 @@ namespace StegoRevealer.StegoCore.StegoMethods
                     _blocksMatrix[y / blockSize, x / blockSize] = new Sc2DPoint(y, x);
         }
 
+        // Доступ по индексатору
         public Sc2DPoint this[int y, int x]
         {
             get { return _blocksMatrix[y, x]; }

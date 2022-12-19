@@ -7,11 +7,18 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {
+    /// <summary>
+    /// Стегоанализатор метода Коха-Жао
+    /// </summary>
     public class KzhaAnalyser
     {
         private const string MethodName = "Koch-Zhao method analysis";
 
+        /// <summary>
+        /// Параметры метода
+        /// </summary>
         public KzhaParameters Params { get; set; }
+
 
         public KzhaAnalyser(ImageHandler image)
         {
@@ -24,7 +31,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         }
 
 
-        // Основной метод анализа
+        /// <summary>
+        /// Запуск стегоанализа
+        /// </summary>
+        /// <param name="verboseLog">Вести подробный лог</param>
         public KzhaResult Analyse(bool verboseLog = false)
         {
             var result = new KzhaResult();
@@ -57,6 +67,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return result;
         }
 
+        // TODO: Перевести метод на параллельное выполнение (по набору коэффициентов)
+        /// <summary>
+        /// Основная логика метода стегоанализа
+        /// </summary>
         private KzhaResult InnerAnalyse(KzhaResult result)
         {
             var cSequences = new Dictionary<ScIndexPair, List<double>>();
@@ -153,103 +167,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return result;
         }
 
-        //private KzhaResult InnerAnalyse(KzhaResult result)
-        //{
-        //    var cSequences = new Dictionary<ScIndexPair, List<double>>();
-        //    foreach (var coeff in Params.AnalysisCoeffs)
-        //        cSequences.Add(coeff, new List<double>());
-
-        //    var intervalStartIndexes = new Dictionary<ScIndexPair, int>();
-        //    foreach (var coeff in Params.AnalysisCoeffs)
-        //        intervalStartIndexes.Add(coeff, 0);
-
-        //    var kzhaParams = GetKochZhaoParamsForBlocksTraversal();
-
-        //    // Расчёт последовательности C
-        //    foreach (var block in KochZhaoCommon.GetForLinearAccessBlock(kzhaParams))
-        //    {
-        //        var dctBlock = KochZhaoCommon.DctBlock(block, Params.GetBlockSize());
-        //        foreach (var coeff in Params.AnalysisCoeffs)
-        //            cSequences[coeff].Add(GetAbsDiff(dctBlock, coeff));
-        //    }
-
-        //    // Логирование cSequences, если оно включено
-        //    if (Params.LoggingCSequences)
-        //    {
-        //        foreach (var coeff in Params.AnalysisCoeffs)
-        //        {
-        //            string temp = $"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[";
-        //            foreach (var val in cSequences[coeff])
-        //                temp += string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}, ", val);
-        //            temp = temp[..^2];
-        //            temp += "]\n";
-        //            result.Log(temp);
-        //        }
-        //    }
-
-        //    // Поиск ступенчатого интервала
-        //    foreach (var coeff in Params.AnalysisCoeffs)
-        //    {
-        //        // Получение непрерывного интервала аномально высоких значений cSequence
-        //        (int indexLeft, int indexRight) = FindSuspiciousInterval(cSequences[coeff]);
-        //        result.Log($"Для коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) получены следующие координаты интервала: [{indexLeft}:{indexRight}]");
-
-        //        // Обрезка cSequences и сохранение оригинального индекса
-        //        intervalStartIndexes[coeff] = indexLeft;  // Новый 0-й индекс в обрезанной cSequence на самом деле соответствует этому индексу последовательности
-        //        cSequences[coeff] = cSequences[coeff].GetRange(indexLeft, indexRight - indexLeft + 1);
-
-        //        var temp = $"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ";
-        //        foreach (var val in cSequences[coeff])
-        //            temp += string.Format("{0:f2} ", val);
-        //        result.Log(temp);
-        //    }
-
-        //    // Расчёт предполагаемого порога скрытия
-        //    var thresholds = new Dictionary<ScIndexPair, double>();  // Пороги подозрительных интервалов по наборам коэффициентов
-        //    var indexes = new Dictionary<ScIndexPair, (int, int)?>();  // Индексы подозрительных интервалов по наборам коэффициентов
-
-        //    foreach (var coeff in Params.AnalysisCoeffs)
-        //    {
-        //        bool detectedSecretData = cSequences[coeff].Count >= 8;  // Возможно ли извлечь хотя бы байт
-
-        //        result.Log($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) " +
-        //            $"{(detectedSecretData ? "найден подозрительный интервал" : "не найден подозрительный интервал")}");
-
-        //        // Запись подозрительного порога и интервала для текущего набора коэффициентов
-        //        if (detectedSecretData)
-        //        {
-        //            thresholds.Add(coeff, cSequences[coeff].Min());  // Порог - минимальное из значений cSequence
-        //            indexes.Add(coeff, (intervalStartIndexes[coeff], intervalStartIndexes[coeff] + cSequences[coeff].Count - 1));
-        //            result.Log($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) установлены значения: " +
-        //                $"Threshold (Порог) = {thresholds[coeff]}, Indexes (координаты ступенчатого всплеска) = ({indexes[coeff]?.Item1}, {indexes[coeff]?.Item2})");
-        //            result.SuspiciousIntervalIsFound = true;  // Считаем, что подозрительный интервал (хотя бы один) найден
-        //        }
-        //        else
-        //        {
-        //            thresholds.Add(coeff, 0.0);
-        //            indexes.Add(coeff, (null));
-        //        }
-        //    }
-
-        //    // Выбор наибольшего по порогу из подозрительных интервалов в качестве результирующего
-        //    var maxVariant = thresholds.FirstOrDefault(val => val.Value == thresholds.Values.Max()).Key;  // Ключ - набор коэффициентов
-        //    result.SuspiciousInterval = indexes[maxVariant];
-        //    result.Threshold = thresholds[maxVariant];
-        //    result.Coefficients = maxVariant;
-
-        //    result.MessageBitsVolume = thresholds[maxVariant] > Params.Threshold && result.SuspiciousInterval is not null 
-        //        ? result.SuspiciousInterval.Value.rightInd - result.SuspiciousInterval.Value.leftInd + 1
-        //        : 0;
-        //    if (result.Threshold < Params.Threshold || result.MessageBitsVolume == 0)
-        //        result.SuspiciousIntervalIsFound = false;  // Ранее факт обнаруженя мог быть установлен в true, но если результаты не удовлетворяют параметрам, то false
-
-        //    result.Log($"В качестве результирующих выбраны коэффициенты ({maxVariant.FirstIndex}, {maxVariant.SecondIndex})");
-        //    result.Log($"Факт наличия скрытой информации по итогу анализа {(result.SuspiciousIntervalIsFound ? "установлен" : "не установлен")}");
-
-        //    return result;
-        //}
-
-        // Установка параметров для поблочного обхода массива: эти параметры обусловлены непосредственно данным методом стегоанализа
+        /// <summary>
+        /// Установка параметров для поблочного обхода массива: эти параметры обусловлены непосредственно данным методом стегоанализа
+        /// </summary>
         private KochZhaoParameters GetKochZhaoParamsForBlocksTraversal()
         {
             var kzhaParams = new KochZhaoParameters(Params.Image);
@@ -267,7 +187,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return kzhaParams;
         }
 
-        // Установка параметров для попытки автоматического извлечения
+        /// <summary>
+        /// Установка параметров для попытки автоматического извлечения
+        /// </summary>
+        /// <param name="analysisResult">Результаты стегоанализа</param>
         private KochZhaoParameters GetKochZhaoParamsForAutoExtraction(KzhaResult analysisResult)
         {
             var kzhaParams = new KochZhaoParameters(Params.Image);
@@ -292,13 +215,21 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return kzhaParams;
         }
 
+        /// <summary>
+        /// Считает модуль разницы модулей коэффициентов в блоке
+        /// </summary>
+        /// <param name="block">Блок</param>
+        /// <param name="coeffs">Индексы коэффициентов блока</param>
         private double GetAbsDiff(double[,] block, ScIndexPair coeffs)
         {
             (double value1, double value2) = (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
             return Math.Abs(MathMethods.GetModulesDiff(value1, value2));
         }
 
-        // Возвращает индексы "краёв" "подозрительной" последовательности - последовательности аномально высоких значений cSequence
+        /// <summary>
+        /// Возвращает индексы "краёв" "подозрительной" последовательности - последовательности аномально высоких значений cSequence
+        /// </summary>
+        /// <param name="cSequence">Последовательность разниц модулей коэффициентов</param>
         private (int indexLeft, int indexRight) FindSuspiciousInterval(List<double> cSequence)
         {
             if (cSequence.Count < 2)
@@ -339,7 +270,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return (resultLeftIndex, resultRightIndex);  // Если интервалов не было найдено, вернётся (0,0)
         }
 
-        // Возвращает индексы двух последователных максимумов из последовательности (индекс левого из двух наибольших, индекс правого из двух наибольших)
+        /// <summary>
+        /// Возвращает индексы двух последователных максимумов из последовательности (индекс левого из двух наибольших, индекс правого из двух наибольших)
+        /// </summary>
+        /// <param name="sequence">Последовательность (массив)</param>
         private ScIndexPair GetTwoMaximumsIndexes(List<double> sequence)
         {
             if (sequence.Count < 2)

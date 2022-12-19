@@ -123,24 +123,24 @@ namespace StegoRevealer.WinUi.ViewModels
 
             ActiveMethods = activeMethods;
 
-            var results = CreateValuesByAnalyzerMethodDictionary<IAnalysisResult>();  // Словарь результатов
-            var methodTasks = CreateValuesByAnalyzerMethodDictionary<Task<IAnalysisResult>>();  // Словарь задач
+            var results = CreateValuesByAnalyzerMethodDictionary<ILoggedAnalysisResult>();  // Словарь результатов
+            var methodTasks = CreateValuesByAnalyzerMethodDictionary<Task<ILoggedAnalysisResult>>();  // Словарь задач
 
             // Создание задач
             if (ActiveMethods[AnalyzerMethod.ChiSquare] && _chiSquareParameters is not null)  // Хи-квадрат
             {
                 var chiSqrMethodAnalyzer = new ChiSquareAnalyser(_chiSquareParameters);
-                methodTasks[AnalyzerMethod.ChiSquare] = new Task<IAnalysisResult>(() => chiSqrMethodAnalyzer.Analyse());
+                methodTasks[AnalyzerMethod.ChiSquare] = new Task<ILoggedAnalysisResult>(() => chiSqrMethodAnalyzer.Analyse());
             }
             if (ActiveMethods[AnalyzerMethod.RegularSingular] && _rsParameters is not null)  // RS
             {
                 var rsMethodAnalyzer = new RsAnalyser(_rsParameters);
-                methodTasks[AnalyzerMethod.RegularSingular] = new Task<IAnalysisResult>(() => rsMethodAnalyzer.Analyse());
+                methodTasks[AnalyzerMethod.RegularSingular] = new Task<ILoggedAnalysisResult>(() => rsMethodAnalyzer.Analyse());
             }
             if (ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
             {
                 var kzhaMethodAnalyzer = new KzhaAnalyser(_kzhaParameters);
-                methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<IAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
+                methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<ILoggedAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
             }
 
             // Запуск

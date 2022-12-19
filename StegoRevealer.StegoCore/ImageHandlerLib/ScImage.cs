@@ -3,25 +3,51 @@
 namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
     // Класс-обёртка над объектом изображения текущей используемой библиотеки
+
+    /// <summary>
+    /// Класс изображения
+    /// </summary>
     public class ScImage
     {
-        // Объект изображения
+        /// <summary>
+        /// Объект изображения
+        /// </summary>
         private SKBitmap? _image = null;
+
         private FileStream? _file = null;
         private SKManagedStream? _imgStream = null;
 
-        // Хранилище объектов открытых изображений
-        private static Dictionary<string, ScImage> _images = new();  // Key - путь, Value - объект
+        /// <summary>
+        /// Хранилище объектов открытых изображений<br/>
+        /// Key - путь, Value - объект
+        /// </summary>
+        private static Dictionary<string, ScImage> _images = new();
 
-        // Путь к файлу
+        /// <summary>
+        /// Путь к файлу
+        /// </summary>
         private string? _path = null;
 
         // Параметры изображения
+
+        /// <summary>
+        /// Высота
+        /// </summary>
         public int Height { get; } = 0;
+
+        /// <summary>
+        /// Ширина
+        /// </summary>
         public int Width { get; } = 0;
+
+        /// <summary>
+        /// Глубина
+        /// </summary>
         public int Depth { get; } = 0;
 
-        // Является ли изображение типа TrueColor (RGB, 8 бит)
+        /// <summary>
+        /// Является ли изображением типа TrueColor (RGB, 8 бит)
+        /// </summary>
         public bool IsTrueColor { get; } = true;
 
 
@@ -46,7 +72,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Загрузка изображения
+        /// <summary>
+        /// Загрузка изображения
+        /// </summary>
         private void LoadImageFile(string path)
         {
             _file = File.OpenRead(path);
@@ -95,8 +123,10 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Метод загрузки изображения
-        // Одно и то же изображение не может быть открыто одновременно (загружено) дважды
+        /// <summary>
+        /// Метод загрузки изображения<br/>
+        /// Одно и то же изображение не может быть открыто одновременно (загружено) дважды
+        /// </summary>
         public static ScImage Load(string path)
         {
             if (!_images.ContainsKey(path))
@@ -108,7 +138,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             return _images[path];
         }
 
-        // Деструктор
+        /// <summary>
+        /// Деструктор
+        /// </summary>
         ~ScImage()
         {
             CloseCurrentStreams();  // Закрытие открытых потоков
@@ -116,7 +148,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 _images.Remove(_path);
         }
 
-        // Сохранение текущей версии изображения: текущим изображением становится сохранённое
+        /// <summary>
+        /// Сохранение текущей версии изображения: текущим изображением становится сохранённое
+        /// </summary>
         public void SaveAndLoad(string path, ImageFormat format)
         {
             if (_image is not null)
@@ -133,7 +167,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Сохранение текущей версии изображения без перехода на новое
+        /// <summary>
+        /// Сохранение текущей версии изображения без перехода на новое
+        /// </summary>
         public string? Save(string path, ImageFormat format)
         {
             if (_image is not null)
@@ -157,13 +193,17 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             return null;
         }
 
-        // Возвращает текущий путь к изображению
+        /// <summary>
+        /// Возвращает текущий путь к изображению
+        /// </summary>
         public string GetPath()
         {
             return _path ?? "";
         }
 
-        // Получение формата, требуемого текущей библиотекой
+        /// <summary>
+        /// Получение формата, требуемого текущей библиотекой
+        /// </summary>
         private SKEncodedImageFormat ImageFormatToSkFormat(ImageFormat format)
         {
             switch (format)
@@ -180,7 +220,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Возвращает формат изображения по его расширению
+        /// <summary>
+        /// Возвращает формат изображения по его расширению
+        /// </summary>
         public ImageFormat GetFormat()
         {
             var ext = Path.GetExtension(_path);

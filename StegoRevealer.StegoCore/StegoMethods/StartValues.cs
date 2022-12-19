@@ -2,14 +2,23 @@
 
 namespace StegoRevealer.StegoCore.StegoMethods
 {
+    /// <summary>
+    /// Словарь стартовых индексов по каналам
+    /// </summary>
     public class StartValues
     {
-        private Dictionary<ImgChannel, int> _values;
-        private Dictionary<int, ImgChannel> _keysOrder = new();
+        private Dictionary<ImgChannel, int> _values;  // Стартовые индексы для каналов
+        private Dictionary<int, ImgChannel> _keysOrder = new();  // Порядок каналов
+        
         private int _lastKey = -1;
 
+        /// <summary>
+        /// Длина словаря (количество каналов)
+        /// </summary>
         public int Length { get { return _values.Count; } }
 
+
+        // Конструкторы
 
         public StartValues()
         {
@@ -38,6 +47,9 @@ namespace StegoRevealer.StegoCore.StegoMethods
         }
 
 
+        /// <summary>
+        /// Возвращает нулевые стартовые индексы для указанных каналов
+        /// </summary>
         public static StartValues GetZeroStartValues(ICollection<ImgChannel> channels)
         {
             StartValues startValues = new();
@@ -46,6 +58,8 @@ namespace StegoRevealer.StegoCore.StegoMethods
             return startValues;
         }
 
+
+        // Доступ по индексаторам и логика обновления значений в словарях
 
         public int this[ImgChannel channel]
         {

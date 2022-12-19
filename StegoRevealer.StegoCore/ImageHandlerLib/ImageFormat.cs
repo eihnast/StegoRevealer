@@ -1,6 +1,8 @@
 ﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
-    // Поддерживаемые форматы (по разрешениям файлов)
+    /// <summary>
+    /// Формат изображения (по разрешению файла)
+    /// </summary>
     public enum ImageFormat
     {
         Png,

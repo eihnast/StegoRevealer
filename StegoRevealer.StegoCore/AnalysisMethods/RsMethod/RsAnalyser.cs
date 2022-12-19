@@ -2,13 +2,23 @@
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
 {
+    /// <summary>
+    /// Стегоанализатор по методу Regular-Singular
+    /// </summary>
     public class RsAnalyser
     {
         private const string MethodName = "RS (Regular-Singular) analysis";
 
+        /// <summary>
+        /// Параметры метода
+        /// </summary>
         public RsParameters Params { get; set; }
 
+        /// <summary>
+        /// Внутренний метод-прослойка для записи в лог
+        /// </summary>
         private Action<string>? _writeToLog = null;
+
 
         public RsAnalyser(ImageHandler image)
         {
@@ -21,7 +31,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
         }
 
 
-        // Основной метод анализа
+        /// <summary>
+        /// Запуск стегоанализа
+        /// </summary>
+        /// <param name="verboseLog">Вести подробный лог</param>
         public RsResult Analyse(bool verboseLog = false)
         {
             var result = new RsResult();
@@ -60,7 +73,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             return result;
         }
 
-        // Метод выполнения одной итерации анализа для выбранного цветового канала
+        /// <summary>
+        /// Метод выполнения одной итерации анализа для выбранного цветового канала
+        /// </summary>
+        /// <param name="channel">Цветовой канал</param>
+        /// <param name="invertedImage">Вести ли подсчёт в изображении с "инвертированными" НЗБ</param>
+        /// <returns>Количество каждой из групп</returns>
         private RsGroupsCalcResult AnalyseInOneChannel(ImgChannel channel, bool invertedImage = false)
         {
             var result = new RsGroupsCalcResult();
@@ -102,7 +120,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             return result;
         }
 
-        // Метод расчёта оценки заполненности контейнера на основе расчётов по RS-диаграмме
+        /// <summary>
+        /// Метод расчёта оценки заполненности контейнера на основе расчётов по RS-диаграмме
+        /// </summary>
+        /// <param name="unturnedValues">Значения в "обычном" изображении</param>
+        /// <param name="invertedValues">Значения в изображении с "инвертированными" НЗБ</param>
+        /// <returns></returns>
         private double CalculatePValue(RsGroupsCalcResult unturnedValues, RsGroupsCalcResult invertedValues)
         {
             // Mathematical code
@@ -135,7 +158,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
         }
 
 
-        // Метод формирования массива групп (разбиения изображения на группы)
+        /// <summary>
+        /// Метод формирования массива групп (разбиения изображения на группы)
+        /// </summary>
+        /// <param name="channelArray">Ссылка на массив пикселей изображения в одном канале</param>
         private List<int[]> SplitIntoGroupsInChannelArray(ImageOneChannelArray channelArray)
         {
             var groups = new List<int[]>();
@@ -157,7 +183,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             return groups;
         }
 
-        // Метод формирования списка функций флиппинга для применения их по маске к группе пикселей
+        /// <summary>
+        /// Метод формирования списка функций флиппинга для применения их по маске к группе пикселей
+        /// </summary>
+        /// <param name="mask">Маска</param>
+        /// <returns>Список функций, которые должны быть применены к значениям группы</returns>
         private Func<int, int>[] GetFlippingFuncsByMask(int[] mask)
         {
             var funcs = new List<Func<int, int>>();
@@ -182,7 +212,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
             return funcs.ToArray();
         }
 
-        // Расчёт значений регулярности для группы
+        /// <summary>
+        /// Расчёт значений регулярности для группы
+        /// </summary>
+        /// <param name="group">Группа</param>
+        /// <param name="flippingFuncs">Массив функций для применения к значениям группы по маске</param>
+        /// <returns>Значения регулярности до и после флиппинга</returns>
         private (int beforeFlippingResult, int afterFlippingResult) CalculateRegularityResults(int[] group, Func<int, int>[] flippingFuncs)
         {
             var flippedGroup = RsHelper.ApplyFlipping(group, flippingFuncs);  // Расчёт "перевёрнутой" группы

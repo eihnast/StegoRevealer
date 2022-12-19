@@ -4,34 +4,74 @@ using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods
 {
+    /// <summary>
+    /// Базовое представление параметров стеганографического метода
+    /// </summary>
     public abstract class StegoMethodParams
     {
-        public ImageHandler Image { get; }  // Изображение
+        /// <summary>
+        /// Изображение
+        /// </summary>
+        public ImageHandler Image { get; }
 
+        /// <summary>
+        /// Является ли текущая операция скрытием (да - скрытие, нет - извлечение)
+        /// </summary>
         public abstract bool HidingOperation { get; set; }
 
-        public abstract int? Seed { get; set; }  // Сид для ГПСЧ при псевдослучайном скрытии (определяет тип скрытия)
+        /// <summary>
+        /// Ключ для ГПСЧ при псевдослучайном скрытии (определяет тип скрытия)<br/>
+        /// Если отлично от null - скрытие будет производиться псевдослучайно
+        /// </summary>
+        public abstract int? Seed { get; set; }
 
-        public abstract string Data { get; set; }  // Скрываемая информация
 
+        /// <summary>
+        /// Скрываемая информация
+        /// </summary>
+        public abstract string Data { get; set; }
+
+        /// <summary>
+        /// Скрываемая информация в виде массива бит
+        /// </summary>
         public abstract BitArray DataBitArray { get; }
+
+        /// <summary>
+        /// Битовая длина скрываемого сообщения
+        /// </summary>
         public abstract int DataBitLength { get; }
 
 
-        // Количество извлекаемых бит информации и цветовых байт изображения
-        public abstract int ToExtractBitLength { get; set; }  // Количество извлекаемых бит
+        /// <summary>
+        /// Количество извлекаемых бит информации
+        /// </summary>
+        public abstract int ToExtractBitLength { get; set; }
+
+        /// <summary>
+        /// Количество извлекаемых цветовых байт изображения
+        /// </summary>
         public abstract int ToExtractColorBytesNum { get; }
 
 
-        public abstract UniqueList<ImgChannel> Channels { get; }  // Каналы, используемые для скрытия
+        /// <summary>
+        /// Каналы, используемые для скрытия
+        /// </summary>
+        public abstract UniqueList<ImgChannel> Channels { get; }
 
-        public abstract bool InterlaceChannels { get; set; }  // Чередовать ли каналы при скрытии (иначе - поканально)
+        /// <summary>
+        /// Чередовать ли каналы при скрытии (иначе - поканально)
+        /// </summary>
+        public abstract bool InterlaceChannels { get; set; }
 
-        public abstract bool VerticalHiding { get; set; }  // Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
+        /// <summary>
+        /// Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
+        /// </summary>
+        public abstract bool VerticalHiding { get; set; }
 
-        public abstract StartValues StartPoints { get; set; }  // Начальные индексы скрытия (пиксели/блоки) в разных каналах
-
-        // public abstract int LsbNum { get; set; }  // Количество НЗБ-пикселей для скрытия
+        /// <summary>
+        /// Начальные индексы скрытия (пиксели/блоки) в разных каналах
+        /// </summary>
+        public abstract StartValues StartPoints { get; set; }
 
 
         public StegoMethodParams(ImageHandler imgHandler)
@@ -39,10 +79,15 @@ namespace StegoRevealer.StegoCore.StegoMethods
             Image = imgHandler;
         }
 
-        // Сбрасывает параметры к стандартным
+
+        /// <summary>
+        /// Сбрасывает параметры к стандартным
+        /// </summary>
         public abstract void Reset();
 
-        // Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации
+        /// <summary>
+        /// Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации
+        /// </summary>
         public abstract int GetNeededToHideColorBytesNum(int? dataBitLength = null);
     }
 }

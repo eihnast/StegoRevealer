@@ -4,15 +4,21 @@ using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
+    // TODO: описать общие принципы работы итерации и формаирования частотного представления изображения
     /*
 
      */
 
+    /// <summary>
+    /// Общие инструменты формирования и обхода блоков частотного представления изображения
+    /// </summary>
     public static class KochZhaoCommon
     {
         // Общие методы
 
-        // Возвращает индексы блока из сетки блоков по его линейному индексу
+        /// <summary>
+        /// Возвращает индексы блока из сетки блоков по его линейному индексу
+        /// </summary>
         public static Sc2DPoint GetBlockByLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
             ScImageBlocks blocks = parameters.GetImgBlocksGrid();
@@ -31,7 +37,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
         }
 
-        // Возвращает блок по его координатам
+        /// <summary>
+        /// Возвращает блок по его координатам
+        /// </summary>
         private static IEnumerable<byte[,]> GetBlocksIterator(
             Func<KochZhaoParameters, int?, IEnumerable<ScPointCoords>> iterator,
             KochZhaoParameters parameters, int? blocksNum = null)
@@ -46,14 +54,18 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             yield break;
         }
 
-        // Изменяет заданное для скрытия/извлечения количество блоков до корректного
+        /// <summary>
+        /// Изменяет заданное для скрытия/извлечения количество блоков до корректного
+        /// </summary>
         private static void CorrectBlocksNum(ref int? blocksNum, KochZhaoParameters parameters)
         {
             if (!blocksNum.HasValue || blocksNum < 0 || blocksNum > parameters.GetAllBlocksNum())
                 blocksNum = parameters.GetAllBlocksNum();
         }
 
-        // Возвращает блок по его индексам
+        /// <summary>
+        /// Возвращает блок по его индексам
+        /// </summary>
         public static byte[,] GetBlockByIndex(int line, int column, int channel,
             KochZhaoParameters parameters, int? blockSize = null)
         {
@@ -67,7 +79,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return block;
         }
 
-        // Возвращает координаты левого верхнего угла блока (координаты блока в массиве пикселей)
+        /// <summary>
+        /// Возвращает координаты левого верхнего угла блока (координаты блока в массиве пикселей)
+        /// </summary>
         public static Sc2DPoint GetBlockCoords(Sc2DPoint gridCoords, KochZhaoParameters parameters)
         {
             return parameters.ImgBlocksGrid[gridCoords.Y, gridCoords.X];
@@ -76,7 +90,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
         // Последовательная итерация
 
-        // Возвращает следующий набор индексов блока определённого канала при последовательном доступе
+        /// <summary>
+        /// Возвращает следующий набор индексов блока определённого канала при последовательном доступе
+        /// </summary>
         public static IEnumerable<ScPointCoords> GetForLinearAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
@@ -123,7 +139,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
         }
 
-        // Возвращает следующий блок при последовательном доступе
+        /// <summary>
+        /// Возвращает следующий блок при последовательном доступе
+        /// </summary>
         public static IEnumerable<byte[,]> GetForLinearAccessBlock(KochZhaoParameters parameters, int? blocksNum = null)
         {
             return GetBlocksIterator(GetForLinearAccessIndex, parameters, blocksNum);
@@ -132,7 +150,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
         // Псевдослучайная итерация
 
-        // Возвращает индексы блока (левого верхнего угла) по общему линейному индексу блока
+        /// <summary>
+        /// Возвращает индексы блока (левого верхнего угла) по общему линейному индексу блока
+        /// </summary>
         public static ScPointCoords GetBlockIndexesFromLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
             // Вычисление происходит в зависимости от: обхода по матрице, чересканальности
@@ -159,7 +179,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return new ScPointCoords(line, column, channel);
         }
 
-        // Возвращает индексы следующего блока при псевдослучайном доступе
+        /// <summary>
+        /// Возвращает индексы следующего блока при псевдослучайном доступе
+        /// </summary>
         public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
@@ -183,7 +205,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             yield break;
         }
 
-        // Возвращает следующий блок при псевдослучайном доступе
+        /// <summary>
+        /// Возвращает следующий блок при псевдослучайном доступе
+        /// </summary>
         public static IEnumerable<byte[,]> GetForRandomAccessBlock(KochZhaoParameters parameters, int? blocksNum = null)
         {
             return GetBlocksIterator(GetForRandomAccessIndex, parameters, blocksNum);
@@ -192,7 +216,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
         // Преобразования, связанные с частотным представлением
 
-        // Получение ДКП-блока
+        /// <summary>
+        /// Получение ДКП-блока
+        /// </summary>
         public static double[,] DctBlock(byte[,] block, int? blockSize = null)
         {
             if (blockSize is null)
@@ -206,13 +232,16 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return MathMethods.Dct(doubleBlock);
         }
 
-        // Получение ОДКП-блока
+        /// <summary>
+        /// Получение ОДКП-блока
+        /// </summary>
         public static double[,] IDctBlock(double[,] block, int? blockSize = null)
         {
             return MathMethods.Idct(block);
         }
 
-        // Возвращает нормализованное значение в диапазоне [0, 255]
+        /// <summary>
+        /// Возвращает нормализованное значение в диапазоне [0, 255]
         public static byte NormalizeValue(double value)
         {
             if (value >= 255.0)
@@ -223,7 +252,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return Convert.ToByte(Math.Round(value));
         }
 
-        // Приведение ОДКП блока к массиву дискретных значений [0, 255]
+        /// <summary>
+        /// Приведение ОДКП блока к массиву дискретных значений [0, 255]
+        /// </summary>
         public static byte[,] NormalizeBlock(double[,] block)
         {
             var (height, width) = (block.GetLength(0), block.GetLength(1));
@@ -236,7 +267,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return normalizedBlock;
         }
 
-        // Получение нормализованного ОДКП-блока
+        /// <summary>
+        /// Получение нормализованного ОДКП-блока
+        /// </summary>
         public static byte[,] IDctBlockAndNormalize(double[,] block, int? blockSize = null)
         {
             var idctBlock = IDctBlock(block);
@@ -246,12 +279,17 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
         // Работа с блоком
 
-        // Возвращает значения коэффициентов блока из переданного блока
+        /// <summary>
+        /// Возвращает значения коэффициентов блока из переданного блока
+        /// </summary>
         public static (int val1, int val2) GetBlockCoeffs(int[,] block, ScIndexPair coeffs)
         {
             return (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
         }
 
+        /// <summary>
+        /// Возвращает значения коэффициентов блока из переданного блока
+        /// </summary>
         public static (double val1, double val2) GetBlockCoeffs(double[,] block, ScIndexPair coeffs)
         {
             return (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
@@ -260,7 +298,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public static ScIndexPair GetCoefIndexesInImgArray(ScPointCoords coords, ScIndexPair coeffs) =>
             new ScIndexPair(coords.Y + coeffs.FirstIndex, coords.X + coeffs.SecondIndex);
 
-        // Возвращает значения коэффициентов блока по переданным координатам и массиву пикселей
+        /// <summary>
+        /// Возвращает значения коэффициентов блока по переданным координатам и массиву пикселей
+        /// </summary>
         public static (int val1, int val2) GetBlockCoeffs(ScPointCoords coords, ScIndexPair coeffs,
             ImageArray imar)
         {
@@ -269,8 +309,10 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 imar[realCoeffs.SecondIndex, realCoeffs.FirstIndex, coords.ChannelId]);
         }
 
-        // Возвращает модифицированные коэффициенты, скрывая в них бит (согласно порогу)
-        // Метод перенесён из StegoAnalyzer Core (kz_common.py --> get_modified_coeffs)
+        /// <summary>
+        /// Возвращает модифицированные коэффициенты, скрывая в них бит (согласно порогу)<br/>
+        /// Метод перенесён из StegoAnalyzer Core (kz_common.py --> get_modified_coeffs)
+        /// </summary>
         public static (double val1, double val2) GetModifiedCoeffs(
             (double val1, double val2) coeffs, double threshold, bool incrementFirst)
         {

@@ -3,19 +3,37 @@ using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
-    // Класс, представляющий структуру хранения массива значений цветовых каналов пикселей
+    /// <summary>
+    /// Единый массив пикселей изображения
+    /// </summary>
     public class ImageArray
     {
-        private readonly ScImage? _img = null;
+        private readonly ScImage? _img = null;  // Изображение
 
+        /// <summary>
+        /// Высота массива пикселей изображения
+        /// </summary>
         public int Height { get; set; } = 0;
+
+        /// <summary>
+        /// Ширина массива пикселей изображения
+        /// </summary>
         public int Width { get; set; } = 0;
+
+        /// <summary>
+        /// Глубина массива пикселей изображения (число каналов)
+        /// </summary>
         public int Depth { get; set; } = 0;
 
+        /// <summary>
+        /// Следует ли возвращать значения цветов с инвертированными НЗБ
+        /// </summary>
         internal bool LsbInvertedGetter { get; set; } = false;
 
 
-        // Проверка, что структура пуста
+        /// <summary>
+        /// Является ли массив пикселей пустым
+        /// </summary>
         public bool IsEmpty
         {
             get 
@@ -24,7 +42,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Конструктор
+
         public ImageArray(ScImage img)
         {
             _img = img;
@@ -34,7 +52,10 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             Depth = img.Depth;
         }
 
-        // Методы вывода значений массива пикселей
+
+        /// <summary>
+        /// Вывод всех значений массива пикселей
+        /// </summary>
         public void Print(TextWriter output)
         {
             if (_img is null)
@@ -54,7 +75,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             }
         }
 
-        // Get-еры и Set-еры
+
+        // Доступ по индексаторам к значениям пикселей
+
         public ScPixel this[int y, int x]
         {
             get { return Get(y, x); }
@@ -67,6 +90,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             set { Set(y, x, z, value); }
         }
 
+        /// <summary>
+        /// Возвращает пиксель по координатам в массиве пикселей
+        /// </summary>
         public ScPixel Get(int y, int x)
         {
             if (_img is not null)
@@ -84,6 +110,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 return new ScPixel();
         }
 
+        /// <summary>
+        /// Устанавливает значение пикселя по координатам в массиве пикселей
+        /// </summary>
         public void Set(int y, int x, ScPixel value)
         {
             if (_img is null)
@@ -93,6 +122,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 Set(y, x, i, value[i]);
         }
 
+        /// <summary>
+        /// Получение значения интенсивности цвета определённого координатами пикселя
+        /// </summary>
         public byte Get(int y, int x, int z)
         {
             if (_img is null)
@@ -108,6 +140,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             return _img[y, x][z];
         }
 
+        /// <summary>
+        /// Установка значения интенсивности цвета определённого координатами пикселя
+        /// </summary>
         public void Set(int y, int x, int z, byte value)
         {
             if (_img is not null)

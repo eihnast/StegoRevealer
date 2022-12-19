@@ -3,21 +3,30 @@ using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 
 namespace StegoRevealer.StegoCore.CommonLib
 {
+    /// <summary>
+    /// Инструменты работы с пикселями
+    /// </summary>
     public static class PixelsTools
     {
-        // Инвертировать бит по значению (возвращает новое значение)
+        /// <summary>
+        /// Инвертировать бит по значению (возвращает новое значение)
+        /// </summary>
         public static bool InvertBit(bool value)
         {
             return value ^ true;
         }
 
-        // Инвертировать бит по ссылке (изменяет существующее значение)
+        /// <summary>
+        /// Инвертировать бит по ссылке (изменяет существующее значение)
+        /// </summary>
         public static void InvertBit(ref bool value)
         {
             value ^= true;
         }
 
-        // Инвертирование НЗБ (наименьших значащих бит)
+        /// <summary>
+        /// Инвертирование НЗБ (наименьших значащих бит)
+        /// </summary>
         public static byte InvertLsb(byte value, int lsbNum = 1)
         {
             var pixel = BitArrayExtensions.NewFromByte(value);
@@ -28,28 +37,36 @@ namespace StegoRevealer.StegoCore.CommonLib
             return pixel.AsByte();
         }
 
-        // Инвертирование НЗБ по ссылке (меняет переданный byte)
+        /// <summary>
+        /// Инвертирование НЗБ по ссылке (меняет переданный byte)
+        /// </summary>
         public static void InvertLsb(ref byte value, int lsbNum = 1)
         {
             value = InvertLsb(value, lsbNum);
         }
 
-        // Инвертирование НЗБ для integer (обрезает integer до диапазона [0..255])
+        /// <summary>
+        /// Инвертирование НЗБ для integer (обрезает integer до диапазона [0..255])
+        /// </summary>
         public static int InvertLsb(int value, int lsbNum = 1)
         {
             return InvertLsb(value.ToByte(), lsbNum);
         }
 
+        /// <summary>
+        /// Инвертирование НЗБ для integer по ссылке (обрезает integer до диапазона [0..255])
+        /// </summary>
         public static void InvertLsb(ref int value, int lsbNum = 1)
         {
             value = InvertLsb(value, lsbNum);
         }
 
 
-
-        // Установка определённых значений для НЗБ
-        // (если указаны 3 значения, они будут установлены последовательно в три последних бита
-        //  11010100, {0, 0, 1}  -->  11010001
+        /// <summary>
+        /// Установка определённых значений для НЗБ<br/>
+        /// (если указаны 3 значения, они будут установлены последовательно в три последних бита<br/>
+        /// 11010100, {0, 0, 1}  -->  11010001
+        /// </summary>
         public static byte SetLsbValues(byte byteValue, params bool[] lsbValues)
         {
             if (lsbValues.Length > 8)
@@ -62,19 +79,26 @@ namespace StegoRevealer.StegoCore.CommonLib
             return pixel.AsByte();
         }
 
-        // Позволяет передавать lsbValue в виде {0,0,1}, а не {false,false,true} нативно
+        /// <summary>
+        /// Позволяет передавать lsbValue в виде {0,0,1}, а не {false,false,true} нативно
+        /// </summary>
         public static byte SetLsbValues(byte byteValue, params int[] lsbValues)
         {
             bool[] lsbBoolValues = lsbValues.Select(v => v > 0).ToArray();
             return SetLsbValues(byteValue, lsbBoolValues);
         }
 
+        /// <summary>
+        /// Позволяет передавать lsbValue в виде {0,0,1}, а не {false,false,true} нативно
+        /// </summary>
         public static byte SetLsbValues(int byteValue, params int[] lsbValues)
         {
             return SetLsbValues(byteValue.ToByte(), lsbValues);
         }
 
-        // Установка при передаче BitArray
+        /// <summary>
+        /// Установка значений НЗБ при передаче BitArray
+        /// </summary>
         public static byte SetLsbValues(byte byteValue, BitArray lsbValues)
         {
             if (lsbValues.Length > 8)
@@ -87,6 +111,9 @@ namespace StegoRevealer.StegoCore.CommonLib
             return pixel.AsByte();
         }
 
+        /// <summary>
+        /// Установка значений НЗБ при передаче BitArray
+        /// </summary>
         public static byte SetLsbValues(int byteValue, BitArray lsbValues)
         {
             return SetLsbValues(byteValue.ToByte(), lsbValues);

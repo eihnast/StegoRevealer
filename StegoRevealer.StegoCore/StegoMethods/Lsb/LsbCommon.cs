@@ -17,11 +17,16 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
      * Линейный индекс: индекс пикселя в сведённой к линейному списку матрице пикселей одного канала (л.и. - у пикселя)
      */
 
+    /// <summary>
+    /// Вспомогательные методы работы НЗБ-стеганографии
+    /// </summary>
     public static class LsbCommon
     {
         // Общие методы
 
-        // Возвращает координаты (индексы) пикселя в матрице Width x Heigth по его линейному индексу
+        /// <summary>
+        /// Возвращает координаты (индексы) пикселя в матрице Width x Heigth по его линейному индексу
+        /// </summary>
         public static Sc2DPoint GetPixelCoordsByIndex(int index, LsbParameters parameters)
         {
             if (!parameters.VerticalHiding)
@@ -41,8 +46,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
         // Последовательная итерация
 
-        // Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала
-        //   при последовательном скрытии
+        /// <summary>
+        /// Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала при последовательном скрытии
+        /// </summary>
         public static IEnumerable<ScPointCoords> GetForLinearAccessIndex(int usingColorBytesNum, LsbParameters parameters)
         {
             int overallCount = 0;
@@ -84,7 +90,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
         // Псевдослучайная итерация
 
-        // Возвращает индексы доступа к конкретному цветовому байту пикселя по общему линейному индексу
+        /// <summary>
+        /// Возвращает индексы доступа к конкретному цветовому байту пикселя по общему линейному индексу
+        /// </summary>
         public static (int, int, int) GetImgByteIndexesFromLinearIndex(int index, LsbParameters parameters)
         {
             // Вычисление происходит в зависимости от: обхода по матрице, чересканальности
@@ -110,8 +118,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return (line, column, channel);
         }
 
-        // Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала
-        //   при псевдослучайном скрытии
+        /// <summary>
+        /// Возвращает следующий набор индексов для доступа к байту цвета пикселя определённого канала при псевдослучайном скрытии
+        /// </summary>
         public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(int usingColorBytesNum, LsbParameters parameters)
         {
             var rnd = parameters.Seed.HasValue ? new Random(parameters.Seed.Value) : new Random();

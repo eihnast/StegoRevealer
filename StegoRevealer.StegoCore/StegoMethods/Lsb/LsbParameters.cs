@@ -17,15 +17,23 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
      * Псевдослучайное скрытие не учитывает ограничения, заданные стартовыми пикселям.
      * Последовательное скрытие не учитывает заданное значение ключа ГПСЧ (Seed).
      */
+
+    /// <summary>
+    /// Параметры НЗБ-стеганографии
+    /// </summary>
     public class LsbParameters : StegoMethodParams, IParams
     {
+        /// <inheritdoc/>
         public override bool HidingOperation { get; set; } = true;
 
-        public override int? Seed { get; set; } = null;  // Сид для ГПСЧ при псевдослучайном скрытии (определяет тип скрытия)
+        /// <inheritdoc/>
+        public override int? Seed { get; set; } = null;
 
         private string _data = "";
         private BitArray _dataAsBitArray = new BitArray(0);
-        public override string Data  // Скрываемая информация
+
+        /// <inheritdoc/>
+        public override string Data
         { 
             get 
             {
@@ -42,13 +50,18 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             }
         }
 
+        /// <inheritdoc/>
         public override BitArray DataBitArray { get { return _dataAsBitArray; } }
+
+        /// <inheritdoc/>
         public override int DataBitLength { get { return _dataAsBitArray.Length; } }
 
 
         // Количество извлекаемых бит информации и цветовых байт изображения
         private int _toExtractBitLength = 0;
-        public override int ToExtractBitLength  // Количество извлекаемых бит
+
+        /// <inheritdoc/>
+        public override int ToExtractBitLength
         {
             get
             {
@@ -61,17 +74,27 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 _toExtractBitLength = value;
             }
         }
+
+        /// <inheritdoc/>
         public override int ToExtractColorBytesNum { get { return GetNeededToHideColorBytesNum(ToExtractBitLength); } }
 
 
-        public override UniqueList<ImgChannel> Channels { get; }  // Каналы, используемые для скрытия
+        /// <inheritdoc/>
+        public override UniqueList<ImgChannel> Channels { get; }
             = new UniqueList<ImgChannel> { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
-        
+
+        /// <inheritdoc/>
         public override bool InterlaceChannels { get; set; } = true;  // Чередовать ли каналы при скрытии (иначе - поканально)
 
+        /// <inheritdoc/>
         public override bool VerticalHiding { get; set; } = false;  // Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
 
+
+        // Стартовые индексы
+
         private StartValues _startPixels = GetDefaultStartPixels();
+
+        /// <inheritdoc/>
         public StartValues StartPixels
         {
             get
@@ -86,6 +109,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 RepairStartPixels();
             }
         }
+
+        /// <inheritdoc/>
         public override StartValues StartPoints
         { 
             get { return StartPixels; }
@@ -94,7 +119,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
 
         private int _lsbNum = 1;
-        public int LsbNum  // Количество НЗБ-пикселей, используемых для скрытия
+        
+        /// <summary>
+        /// Количество НЗБ (бит), используемых для скрытия
+        /// </summary>
+        public int LsbNum
         { 
             get
             {
@@ -108,7 +137,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         }
 
 
-        // Возвращает стандарный список стартовых пикселей
+        /// <summary>
+        /// Возвращает стандарный список стартовых пикселей
+        /// </summary>
         private static StartValues GetDefaultStartPixels()
         {
             return new StartValues(
@@ -118,8 +149,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             );
         }
 
+
         public LsbParameters(ImageHandler imgHandler) : base(imgHandler) { }
 
+
+        /// <inheritdoc/>
         public override void Reset()
         {
             Seed = null;
@@ -134,14 +168,18 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             Data = "";
         }
 
-        // Метод учитывает количество активных каналов в списке задействованных для скрытия
+        /// <summary>
+        /// Метод учитывает количество активных каналов в списке задействованных для скрытия
+        /// </summary>
         private int CalcRealContainerVolume()
         {
             var (w, h ,d) = Image.GetImgSizes();
             return w * h * Channels.Count;  // Возвращает количество пикселей
         }
 
-        // Возвращает число пикселей, задействованных в скрытии или извлечении с учётом стартовых пикселей
+        /// <summary>
+        /// Возвращает число пикселей, задействованных в скрытии или извлечении с учётом стартовых пикселей
+        /// </summary>
         private int GetUsedVolumeOverall()
         {
             var containerVolume = CalcRealContainerVolume();
@@ -149,7 +187,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return GetUsedVolumes(oneChannelVolume).Sum();  // Возвращает количество пикселей
         }
 
-        // Возвращает объём занятого места в каждом канале при текущем выборе стартовых пикселей
+        /// <summary>
+        /// Возвращает объём занятого места в каждом канале при текущем выборе стартовых пикселей
+        /// </summary>
         private int[] GetUsedVolumes(int oneChannelVolume)
         {
             var usedVolumes = new int[Channels.Count];
@@ -159,6 +199,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         }
 
         // Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации (с учётом числа НЗБ)
+        /// <inheritdoc/>
         public override int GetNeededToHideColorBytesNum(int? dataBitLength = null)
         {
             if (dataBitLength is null)
@@ -166,7 +207,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             return Convert.ToInt32(Math.Round((double)dataBitLength / LsbNum, MidpointRounding.ToPositiveInfinity));
         }
 
-        // Изменение начальных индексов для обеспечения возможности скрытия всей информации
+        /// <summary>
+        /// Изменение начальных индексов для обеспечения возможности скрытия всей информации
+        /// </summary>
         private void RepairStartPixels()
         {
             if (!HidingOperation || Data is null || Data.Length <= 0)  // Если это параметры извлечения, данных нет

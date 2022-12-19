@@ -3,23 +3,34 @@ using StegoRevealer.StegoCore.Logger;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
-    public class ChiSquareResult : LoggedResult, IAnalysisResult
+    /// <summary>
+    /// Результаты стегоанализа по методу Хи-квадрат
+    /// </summary>
+    public class ChiSquareResult : LoggedResult, ILoggedAnalysisResult
     {
+        /// <inheritdoc/>
         public LoggedResult AsLog()
         {
             return this;
         }
 
-        public int MessageLength { get; set;  }  // Размер скрытого сообщения
 
-        public double MessageRelativeVolume { get; set; }  // Относительный объём сообщения
+        /// <summary>
+        /// Размер скрытого сообщения
+        /// </summary>
+        public int MessageLength { get; set; }
+
+        /// <summary>
+        /// Относительный объём сообщения
+        /// </summary>
+        public double MessageRelativeVolume { get; set; }
+
+        /// <summary>
+        /// Изображение (если визуализация включена)
+        /// </summary>
+        public ImageHandler? Image { get; set; }
 
 
-        public ImageHandler? Image { get; set; }  // Изображение (если визуализация включена)
-
-
-        public ChiSquareResult()
-        {
-        }
+        public ChiSquareResult() { }
     }
 }
