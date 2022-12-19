@@ -9,7 +9,7 @@
     <Grid>
         <Label Content="Stego Revealer" HorizontalAlignment="Center" Margin="0,40,0,0" VerticalAlignment="Top" Height="60" Width="500" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF1A1A1A" Foreground="#FFECECEC"/>
         <Button x:Name="ToAnalyzerButton" Content="Стегоанализатор" HorizontalAlignment="Center" Margin="0,162,0,0" VerticalAlignment="Top" Height="158" Width="370" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF2B2B2B" Foreground="#FFECECEC" Click="ToAnalyzerButton_Click"/>
-        <Button x:Name="ToHiderButton" Content="Стеганокодер" Margin="200,408,0,0" VerticalAlignment="Top" Height="158" Width="370" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF2B2B2B" Foreground="#FFECECEC" HorizontalAlignment="Left" Click="ToHiderButton_Click"/>
-        <Button x:Name="ToExtractorButton" Content="Стеганодекодер" Margin="0,408,200,0" VerticalAlignment="Top" Height="158" Width="370" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF2B2B2B" Foreground="#FFECECEC" HorizontalAlignment="Right" Click="ToExtractorButton_Click"/>
+        <Button x:Name="ToHiderButton" Content="Стеганокодер" Margin="200,408,0,0" VerticalAlignment="Top" Height="158" Width="370" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF2B2B2B" Foreground="#FFECECEC" HorizontalAlignment="Left" Click="ToHiderButton_Click" IsEnabled="False"/>
+        <Button x:Name="ToExtractorButton" Content="Стеганодекодер" Margin="0,408,200,0" VerticalAlignment="Top" Height="158" Width="370" FontFamily="Arial" FontWeight="Bold" FontSize="24" Background="#FF2B2B2B" Foreground="#FFECECEC" HorizontalAlignment="Right" Click="ToExtractorButton_Click" IsEnabled="False"/>
     </Grid>
 </UserControl>
