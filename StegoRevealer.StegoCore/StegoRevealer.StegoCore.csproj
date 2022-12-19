@@ -5,7 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SignAssembly>False</SignAssembly>
+    <ApplicationIcon>ProjectIconWithTransparency.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="ProjectIconWithTransparency.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />

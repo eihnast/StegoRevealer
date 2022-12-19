@@ -49,6 +49,21 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// </summary>
         public ImageHandler Inverted { get { return GetLsbInvertedVersion(); } }
 
+        /// <summary>
+        /// Ширина изображения
+        /// </summary>
+        public int Width { get { return _image.Width; } }
+
+        /// <summary>
+        /// Высота изображения
+        /// </summary>
+        public int Height { get { return _image.Height; } }
+
+        /// <summary>
+        /// Возвращает объект изображения
+        /// </summary>
+        public ScImage GetScImage() => _image;
+
 
         public ImageHandler(string imgPath)
         {
@@ -65,6 +80,14 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             _image = originalHandler._image;
             _channelsArray = originalHandler._channelsArray;
             _imgArray = originalHandler._imgArray;
+        }
+
+        private ImageHandler(ScImage image)
+        {
+            _image = image;
+            _imgPath = image.GetPath();
+            _channelsArray = new ChannelsArray(_image);
+            _imgArray = new ImageArray(_image);
         }
 
 
@@ -104,6 +127,13 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             return (_image.Width, _image.Height, _image.Depth);
         }
         
+        /// <summary>
+        /// Закрывает обработчик и "отпускает" файл изображения
+        /// </summary>
+        public void CloseHandler()
+        {
+            _image.Dispose();
+        }
 
         /// <summary>
         /// Вывод массива пикселей
@@ -206,6 +236,12 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             invertedHandler._imgArray.LsbInvertedGetter = true;
 
             return invertedHandler;
+        }
+
+        public ImageHandler Clone()
+        {
+            var scImage = _image.Clone();
+            return new ImageHandler(scImage);
         }
     }
 }

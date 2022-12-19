@@ -8,10 +8,23 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
     /// </summary>
     public class ChiSquareParameters
     {
+        private ImageHandler _image;
+
         /// <summary>
         /// Изображение
         /// </summary>
-        public ImageHandler Image { get; set; }
+        public ImageHandler Image 
+        {
+            get => _image;
+            set
+            {
+                if (BlockWidth == _image.Width || BlockWidth > value.Width)
+                    BlockWidth = value.Width;
+                if (BlockHeight == _image.Height || BlockHeight > value.Height)
+                    BlockHeight = value.Height;
+                _image = value;
+            }
+        }
 
         /// <summary>
         /// Визуализировать подозрительную область
@@ -80,8 +93,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 
         public ChiSquareParameters(ImageHandler image)
         {
-            Image = image;
-            BlockWidth = Image.ImgArray.Width;  // По умолчанию анализ ведётся по строкам
+            _image = image;
+            BlockWidth = Image.Width;  // По умолчанию анализ ведётся по строкам
         }
 
     }

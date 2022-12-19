@@ -1,6 +1,8 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using Accord.IO;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ScMath;
+using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
@@ -44,6 +46,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             double fullness = 0.0;  // Относительная заполненность контейнера
             int blockNumber = 0;  // Счётчик блоков
 
+            var toColorizeChannels = new List<ImgChannel>();
+
             foreach (var pixelsBlockInfo in GetNextBlockPixels())
             {
                 var pixels = pixelsBlockInfo.pixelsList;  // Список пикселей блока
@@ -67,12 +71,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 if (blockContainsHiddenInfo)
                     fullness += 1;  // +1 блок со встроенной информацией
 
-                // Если необходима - визуализация скрытия в блоке
+                // Если необходима - визуализация скрытия в блоке: запись нужного канала для блока
                 if (Params.Visualize)
                 {
-                    var colorizingChannel = blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green;
-                    ColorizeBlock(pixelsBlockInfo.blockIndex, colorizingChannel);
-                    result.Image = Params.Image;
+                    toColorizeChannels.Add(blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green);
+                    // var colorizingChannel = blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green;
+                    // ColorizeBlock(pixelsBlockInfo.blockIndex, colorizingChannel);
                 }
 
                 blockNumber++;
@@ -91,6 +95,24 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 
             fullness /= blockNumber;  // Делим количество заполненных блоков на количество всех блоков
             result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
+
+            // Визуализация скрытия на изображении целиком
+            if (Params.Visualize)
+            {
+                var visualizedImage = Params.Image.Clone();
+                for (int y = 0; y < visualizedImage.Height; y++)
+                {
+                    var channelId = (int)toColorizeChannels[y];
+                    for (int x = 0; x < visualizedImage.Width; x++)
+                    {
+                        var colorByte = visualizedImage.ImgArray[y, x, channelId];
+                        var newValue = Convert.ToByte(Math.Min((int)colorByte + 100, 255));
+                        visualizedImage.ImgArray[y, x, channelId] = newValue;
+                    }
+                }
+
+                result.Image = visualizedImage;
+            }
 
             result.Log($"Стегоанализ методом {MethodName} завершён");
             return result;

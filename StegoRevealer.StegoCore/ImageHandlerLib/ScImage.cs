@@ -16,6 +16,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
 
         private FileStream? _file = null;
         private SKManagedStream? _imgStream = null;
+        private MemoryStream? _memoryStream = null;
 
         /// <summary>
         /// Хранилище объектов открытых изображений<br/>
@@ -84,6 +85,22 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             _image = SKBitmap.Decode(_imgStream);
         }
 
+        public ScImage Clone()
+        {
+            if (_file is null)
+                throw new Exception("Error while cloning image: image not loaded");
+            
+            var memory = new MemoryStream();
+            var position = _file.Position;
+            _file.Seek(0, SeekOrigin.Begin);
+            _file.CopyToAsync(memory).Wait();
+            _file.Seek(position, SeekOrigin.Begin);
+            memory.Seek(0, SeekOrigin.Begin);
+            var bitmap = SKBitmap.Decode(memory);
+
+            return new ScImage(bitmap, memory, this);
+        }
+
         // Приватный конструктор по пути к файлу
         private ScImage(string path)
         {
@@ -100,17 +117,16 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 Depth = 4;  // SkiaSharp предоставляет доступ всегда к RGB и Alpha
         }
 
-        // Приватный конструктор по уже готовому изображению библиотеки
-        //private ScImage(SKBitmap image)
-        //{
-        //    _image = image;
-        //    Height = _image.Height;
-        //    Width = _image.Width;
+        private ScImage(SKBitmap image, MemoryStream memoryStream, ScImage clonedImage)
+        {
+            _path = clonedImage._path;
+            Height = clonedImage.Height;
+            Width = clonedImage.Width;
+            Depth = clonedImage.Depth;
 
-        //    // Определение количества каналов через размер массива первого пикселя
-        //    if (Height > 0 && Width > 0)
-        //        Depth = 4;
-        //}
+            _image = image;
+            _memoryStream = memoryStream;
+        }
 
         // Закрытие потоков доступа к изображению
         private void CloseCurrentStreams()
@@ -121,6 +137,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 _imgStream.Dispose();
                 _file.Close();
             }
+
+            if (_memoryStream is not null)
+                _memoryStream.Dispose();
         }
 
         /// <summary>
@@ -142,6 +161,11 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// Деструктор
         /// </summary>
         ~ScImage()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
         {
             CloseCurrentStreams();  // Закрытие открытых потоков
             if (_path is not null)  // Удаление текущего изображения из списка загруженных
@@ -240,5 +264,10 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
 
             throw new Exception("Unknown image extension");
         }
+
+        /// <summary>
+        /// Возвращает SKBitmap изображения для отрисовки на WPF-форме
+        /// </summary>
+        public SKBitmap? GetSkiaSharpImageForPainting() => _image;
     }
 }

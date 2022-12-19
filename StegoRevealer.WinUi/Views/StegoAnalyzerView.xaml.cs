@@ -1,4 +1,5 @@
-﻿using StegoRevealer.WinUi.Lib;
+﻿using SkiaSharp;
+using StegoRevealer.WinUi.Lib;
 using StegoRevealer.WinUi.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Accord.Math.Random;
+using System.Windows.Media.Media3D;
 
 namespace StegoRevealer.WinUi.Views
 {
@@ -57,6 +60,8 @@ namespace StegoRevealer.WinUi.Views
             {
                 MethodsSelectGrid.IsEnabled = true;
                 ImagePathLabel.Text = _vm.CurrentImage?.ImgPath ?? FailedImagePathText;
+
+                UpdateImagePreview();  // Отрисовка превью
             }
             else
             {
@@ -74,8 +79,11 @@ namespace StegoRevealer.WinUi.Views
         private void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
             _vm?.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
 
-        private void StartAnalysis_Click(object sender, RoutedEventArgs e) =>
+        private void StartAnalysis_Click(object sender, RoutedEventArgs e)
+        {
             _vm?.StartAnalysis(ActiveMethods);
+            UpdateImagePreview();  // Отрисовка превью
+        }
 
         private void IsMethodChiSqrChecked_Checked(object sender, RoutedEventArgs e) =>
             ActiveMethods[AnalyzerMethod.ChiSquare] = true;
@@ -94,5 +102,12 @@ namespace StegoRevealer.WinUi.Views
 
         private void IsMethodKzaChecked_Unchecked(object sender, RoutedEventArgs e) =>
             ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] = false;
+
+
+        private void UpdateImagePreview()
+        {
+            _vm?.UpdateDrawedImage();
+            ImagePreview.Source = _vm?.DrawedImage;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HandyControl.Controls;
 using Microsoft.Win32;
+using SkiaSharp;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
@@ -12,10 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace StegoRevealer.WinUi.ViewModels
 {
-    // TODO: загрузка изображения на форму (при выборе и после анализа по Хи-квадрат), форма результатов
+    // TODO: загрузка изображения на форму (при выборе - есть и после анализа по Хи-квадрат), форма результатов
     /// <summary>
     /// ViewModel представления StegoAnalyzer - окно стегоанализатора
     /// </summary>
@@ -26,10 +29,20 @@ namespace StegoRevealer.WinUi.ViewModels
         private RsParameters? _rsParameters = null;
         private KzhaParameters? _kzhaParameters = null;
 
+
         /// <summary>
         /// Текущее выбранное изображение
         /// </summary>
         public ImageHandler? CurrentImage { get; set; } = null;
+
+
+        // Отображаемое изображение
+        private ImageSource? _drawedImage;
+        public ImageSource? DrawedImage
+        {
+            get => _drawedImage;
+            set => SetField(ref _drawedImage, value);
+        }
 
         /// <summary>
         /// Словарь активных методов (отмеченных к выполнению)
@@ -70,17 +83,25 @@ namespace StegoRevealer.WinUi.ViewModels
         /// <summary>
         /// Создание объектов параметров
         /// </summary>
-        private void CreateParameters()
+        private void ActualizeParameters()
         {
             if (CurrentImage is null)
                 return;
 
             if (_chiSquareParameters is null)
                 _chiSquareParameters = new ChiSquareParameters(CurrentImage);
+            else
+                _chiSquareParameters.Image = CurrentImage;
+
             if (_rsParameters is null)
                 _rsParameters = new RsParameters(CurrentImage);
+            else
+                _rsParameters.Image = CurrentImage;
+
             if (_kzhaParameters is null)
                 _kzhaParameters = new KzhaParameters(CurrentImage);
+            else
+                _kzhaParameters.Image = CurrentImage;
         }
 
         /// <summary>
@@ -92,15 +113,33 @@ namespace StegoRevealer.WinUi.ViewModels
             string path = SelectNewImageFile();
 
             // Загрузка
+            return CreateImageHandler(path);
+        }
+
+        /// <summary>
+        /// Создаёт обработчик изображения
+        /// </summary>
+        private bool CreateImageHandler(string path)
+        {
             try
             {
                 CurrentImage = new ImageHandler(path);
-                CreateParameters();
+                ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов
                 return true;
             }
             catch { }
 
             return false;
+        }
+
+        /// <summary>
+        /// Перезагружает изображение
+        /// </summary>
+        private void ReloadImage()
+        {
+            string path = CurrentImage?.ImgPath ?? string.Empty;
+            CurrentImage?.CloseHandler();
+            CreateImageHandler(path);
         }
 
         /// <summary>
@@ -156,6 +195,8 @@ namespace StegoRevealer.WinUi.ViewModels
         /// </summary>
         public void StartAnalysis(Dictionary<AnalyzerMethod, bool> activeMethods)
         {
+            // ReloadImage();  // Если над этим изображением уже производился анализ, в него могут быть внесены изменения
+
             var timer = Stopwatch.StartNew();  // Запуск таймера
 
             ActiveMethods = activeMethods;
@@ -179,7 +220,7 @@ namespace StegoRevealer.WinUi.ViewModels
                 var kzhaMethodAnalyzer = new KzhaAnalyser(_kzhaParameters);
                 methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<ILoggedAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
             }
-
+            
             // Запуск
             foreach (var methodTask in methodTasks)
                 methodTask.Value?.Start();
@@ -194,13 +235,17 @@ namespace StegoRevealer.WinUi.ViewModels
                 if (ActiveMethods[method])
                     results[method] = methodTasks[method]?.Result;
             }
-
+            
             timer.Stop();  // Остановка таймера
 
             // Временный вывод результатов в Alert-окне
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
             var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
+
+            if (_chiSquareParameters?.Visualize ?? false)
+                CurrentImage = chiRes?.Image;
+
             MessageBox.Show($"Results\n" +
                 (chiRes is not null ? $"Chisqr: {chiRes?.MessageRelativeVolume}\n" : "ChiSqr not analyzed\n") +
                 (rsRes is not null ? $"Rs: {rsRes?.MessageRelativeVolume}\n" : "Rs not analyzed\n") +
@@ -217,6 +262,39 @@ namespace StegoRevealer.WinUi.ViewModels
             foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
                 dict.Add(method, default(T));
             return dict;
+        }
+
+        /// <summary>
+        /// Возвращает текущее изображение в формате, нужном для отображения на форме
+        /// </summary>
+        public ImageSource? GetCurrentImageSource()
+        {
+            if (CurrentImage is not null)
+            {
+                var imgInfo = new SKImageInfo(CurrentImage.Width, CurrentImage.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+
+                var writeableBitmap = new WriteableBitmap(imgInfo.Width, imgInfo.Height, 96.0, 96.0, PixelFormats.Pbgra32, null);
+                writeableBitmap.Lock();
+
+                var surface = SKSurface.Create(imgInfo, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride);
+                surface.Canvas.DrawBitmap(CurrentImage.GetScImage().GetSkiaSharpImageForPainting(), default(SKPoint));
+
+                writeableBitmap.Unlock();
+                writeableBitmap.Freeze();
+
+                return writeableBitmap;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Заново формирует отображаемое на View изображение из текущего сохранённого
+        /// </summary>
+        public void UpdateDrawedImage()
+        {
+            if (CurrentImage is not null)
+                DrawedImage = GetCurrentImageSource();
         }
     }
 }
