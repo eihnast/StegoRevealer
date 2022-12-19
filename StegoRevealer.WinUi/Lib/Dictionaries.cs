@@ -8,8 +8,14 @@ using System.Collections.Generic;
 
 namespace StegoRevealer.WinUi.Lib
 {
+    /// <summary>
+    /// Вспомогательные словари соответствий
+    /// </summary>
     public static class Dictionaries
     {
+        /// <summary>
+        /// Класс представления параметров (View) по методу стегоанализа
+        /// </summary>
         public static Dictionary<AnalyzerMethod, Type> ParamsViewForAnalyzerMethod = new()
         {
             { AnalyzerMethod.ChiSquare, typeof(ChiSqrMethodParamsView) },
@@ -17,6 +23,9 @@ namespace StegoRevealer.WinUi.Lib
             { AnalyzerMethod.KochZhaoAnalysis, typeof(KzhaMethodParamsView) }
         };
 
+        /// <summary>
+        /// Класс параметров по методу стегоанализа
+        /// </summary>
         public static Dictionary<AnalyzerMethod, Type> ParamsTypeForAnalyzerMethod = new()
         {
             { AnalyzerMethod.ChiSquare, typeof(ChiSquareParameters) },
@@ -24,6 +33,9 @@ namespace StegoRevealer.WinUi.Lib
             { AnalyzerMethod.KochZhaoAnalysis, typeof(KzhaParameters) }
         };
 
+        /// <summary>
+        /// Класс DTO параметров по методу стегоанализа
+        /// </summary>
         public static Dictionary<Type, Type> MethodParametersToDtoMap = new()
         {
             { typeof(ChiSquareParameters), typeof(ChiSqrParamsDto) },

@@ -1,11 +1,14 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
-using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib.ParamsHelpers;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
+    /// <summary>
+    /// DTO для параметров стегоаналитического метода Хи-квадрат: 
+    /// <see cref="ChiSquareParameters"/>
+    /// </summary>
     public class ChiSqrParamsDto : BaseParamsDto<ChiSquareParameters>
     {
         public bool Visualize { get; set; } = true;
@@ -49,6 +52,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
             BlockHeight = parameters.BlockHeight;
         }
 
+        /// <inheritdoc/>
         public override void FillParameters(ref ChiSquareParameters parameters)
         {
             if (parameters is null)

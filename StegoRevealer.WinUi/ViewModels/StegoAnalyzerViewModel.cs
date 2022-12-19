@@ -15,15 +15,27 @@ using System.Threading.Tasks;
 
 namespace StegoRevealer.WinUi.ViewModels
 {
+    // TODO: загрузка изображения на форму (при выборе и после анализа по Хи-квадрат), форма результатов
+    /// <summary>
+    /// ViewModel представления StegoAnalyzer - окно стегоанализатора
+    /// </summary>
     public class StegoAnalyzerViewModel : BaseChildViewModel
     {
+        // Параметры методов стегоанализа
         private ChiSquareParameters? _chiSquareParameters = null;
         private RsParameters? _rsParameters = null;
         private KzhaParameters? _kzhaParameters = null;
 
+        /// <summary>
+        /// Текущее выбранное изображение
+        /// </summary>
         public ImageHandler? CurrentImage { get; set; } = null;
 
+        /// <summary>
+        /// Словарь активных методов (отмеченных к выполнению)
+        /// </summary>
         public Dictionary<AnalyzerMethod, bool> ActiveMethods { get; private set; } = new();
+
 
         public StegoAnalyzerViewModel(RootViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
         {
@@ -31,9 +43,21 @@ namespace StegoRevealer.WinUi.ViewModels
                 ActiveMethods.Add(method, false);
         }
 
+
+        /// <summary>
+        /// Активировать метод стегоанализа
+        /// </summary>
         public void TurnOnMethod(AnalyzerMethod method) => ActiveMethods[method] = true;
+
+        /// <summary>
+        /// Деактивировать метод стегоанализа
+        /// </summary>
         public void TurnOffMethod(AnalyzerMethod method) => ActiveMethods[method] = false;
 
+
+        /// <summary>
+        /// Вызывает диалог выбора изображения и возвращает путь к выбранному изображению
+        /// </summary>
         private string SelectNewImageFile()
         {
             string path = string.Empty;
@@ -43,6 +67,9 @@ namespace StegoRevealer.WinUi.ViewModels
             return path;
         }
 
+        /// <summary>
+        /// Создание объектов параметров
+        /// </summary>
         private void CreateParameters()
         {
             if (CurrentImage is null)
@@ -56,6 +83,9 @@ namespace StegoRevealer.WinUi.ViewModels
                 _kzhaParameters = new KzhaParameters(CurrentImage);
         }
 
+        /// <summary>
+        /// Осуществляет загрузку выбираемого пользователем изображения
+        /// </summary>
         public bool TryLoadImage()
         {
             // Выбор файла
@@ -73,6 +103,10 @@ namespace StegoRevealer.WinUi.ViewModels
             return false;
         }
 
+        /// <summary>
+        /// Открытие модального окна установки параметров метода стегоанализа
+        /// </summary>
+        /// <param name="analyzerMethod">Метод стегоанализа</param>
         public void OpenParametersWindow(AnalyzerMethod analyzerMethod)
         {
             if (CurrentImage is not null)
@@ -117,6 +151,9 @@ namespace StegoRevealer.WinUi.ViewModels
             }
         }
 
+        /// <summary>
+        /// Запуск процесса стегоанализа для указанных выбранных методов
+        /// </summary>
         public void StartAnalysis(Dictionary<AnalyzerMethod, bool> activeMethods)
         {
             var timer = Stopwatch.StartNew();  // Запуск таймера
@@ -160,7 +197,7 @@ namespace StegoRevealer.WinUi.ViewModels
 
             timer.Stop();  // Остановка таймера
 
-            // Временный вывод результатов
+            // Временный вывод результатов в Alert-окне
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
             var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
@@ -171,6 +208,9 @@ namespace StegoRevealer.WinUi.ViewModels
                 $"Time (ms): {timer.ElapsedMilliseconds}");
         }
 
+        /// <summary>
+        /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
+        /// </summary>
         private Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
         {
             var dict = new Dictionary<AnalyzerMethod, T?>();

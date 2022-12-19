@@ -7,6 +7,10 @@ using StegoRevealer.WinUi.Lib.ParamsHelpers;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
+    /// <summary>
+    /// DTO для параметров стегоаналитического метода Regular-Singular: 
+    /// <see cref="RsParameters"/>
+    /// </summary>
     public class RsParamsDto : BaseParamsDto<RsParameters>
     {
         public UniqueList<ImgChannel> Channels { get; set; }
@@ -29,6 +33,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
             FlippingMask = (int[])parameters.FlippingMask.Clone();
         }
 
+        /// <inheritdoc/>
         public override void FillParameters(ref RsParameters parameters)
         {
             if (parameters is null)

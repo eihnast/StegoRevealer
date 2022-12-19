@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace StegoRevealer.WinUi.Lib.MethodsHelper
 {
+    /// <summary>
+    /// DTO для параметров алгоритма стегоанализа метода Коха-Жао: 
+    /// <see cref="KochZhaoParameters"/>
+    /// </summary>
     public class KzhaParamsDto : BaseParamsDto<KzhaParameters>
     {
         public UniqueList<ImgChannel> Channels { get; set; } = new UniqueList<ImgChannel> { ImgChannel.Blue };
@@ -46,6 +50,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
             IsVerticalTraverse = parameters.IsVerticalTraverse;
         }
 
+        /// <inheritdoc/>
         public override void FillParameters(ref KzhaParameters parameters)
         {
             if (parameters is null)
