@@ -18,7 +18,10 @@ using System.Windows.Media.Imaging;
 
 namespace StegoRevealer.WinUi.ViewModels
 {
-    // TODO: загрузка изображения на форму (при выборе - есть и после анализа по Хи-квадрат), форма результатов
+    // TODO: реализовать форму или оконо для нормального вывода результатов
+    // TODO: иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
+    // TODO: убедиться, что работает клонирование изображения, и CurrentImage не аффектится в ходе СА (например, после визуализации в Хи)
+
     /// <summary>
     /// ViewModel представления StegoAnalyzer - окно стегоанализатора
     /// </summary>
@@ -37,12 +40,32 @@ namespace StegoRevealer.WinUi.ViewModels
 
 
         // Отображаемое изображение
-        private ImageSource? _drawedImage;
-        public ImageSource? DrawedImage
+        private ImageSource? _drawedImageSource;  // Источник для отображения
+        private ImageHandler? _drawedImage;  // Изображение
+
+        /// <summary>
+        /// Обработчик текущего отображаемого изображения
+        /// </summary>
+        public ImageHandler? DrawedImage
         {
             get => _drawedImage;
-            set => SetField(ref _drawedImage, value);
+            set
+            {
+                _drawedImage = value;
+                if (_drawedImage is not null)
+                    DrawedImageSource = CreateImageSource(_drawedImage);
+            }
         }
+
+        /// <summary>
+        /// Источник текущего отображаемого изображения
+        /// </summary>
+        public ImageSource? DrawedImageSource
+        {
+            get => _drawedImageSource;
+            private set => SetField(ref _drawedImageSource, value);
+        }
+
 
         /// <summary>
         /// Словарь активных методов (отмеченных к выполнению)
@@ -113,18 +136,19 @@ namespace StegoRevealer.WinUi.ViewModels
             string path = SelectNewImageFile();
 
             // Загрузка
-            return CreateImageHandler(path);
+            return CreateCurrentImageHandler(path);
         }
 
         /// <summary>
         /// Создаёт обработчик изображения
         /// </summary>
-        private bool CreateImageHandler(string path)
+        private bool CreateCurrentImageHandler(string path)
         {
             try
             {
                 CurrentImage = new ImageHandler(path);
                 ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов
+                DrawCurrentImage();  // Обновит изображение, отображаемое на форме
                 return true;
             }
             catch { }
@@ -133,61 +157,51 @@ namespace StegoRevealer.WinUi.ViewModels
         }
 
         /// <summary>
-        /// Перезагружает изображение
-        /// </summary>
-        private void ReloadImage()
-        {
-            string path = CurrentImage?.ImgPath ?? string.Empty;
-            CurrentImage?.CloseHandler();
-            CreateImageHandler(path);
-        }
-
-        /// <summary>
         /// Открытие модального окна установки параметров метода стегоанализа
         /// </summary>
         /// <param name="analyzerMethod">Метод стегоанализа</param>
         public void OpenParametersWindow(AnalyzerMethod analyzerMethod)
         {
-            if (CurrentImage is not null)
+            if (CurrentImage is null)
+                return;
+
+            object? parameters = analyzerMethod switch
             {
-                object? parameters = analyzerMethod switch
-                {
-                    AnalyzerMethod.ChiSquare => _chiSquareParameters,
-                    AnalyzerMethod.RegularSingular => _rsParameters,
-                    AnalyzerMethod.KochZhaoAnalysis => _kzhaParameters,
-                    _ => throw new System.NotImplementedException()
-                };
+                AnalyzerMethod.ChiSquare => _chiSquareParameters,
+                AnalyzerMethod.RegularSingular => _rsParameters,
+                AnalyzerMethod.KochZhaoAnalysis => _kzhaParameters,
+                _ => throw new System.NotImplementedException()
+            };
 
-                if (parameters is null)
-                    return;
+            if (parameters is null)
+                return;
 
-                var paramsWindow = new ParametersWindow(analyzerMethod, parameters);
-                paramsWindow.Owner = _rootViewModel.MainWindow;
-                var paramsGetter = paramsWindow.ParamsReciever;
-                paramsWindow.ShowDialog();
+            var paramsWindow = new ParametersWindow(analyzerMethod, parameters);
+            paramsWindow.Owner = _rootViewModel.MainWindow;
+            var paramsGetter = paramsWindow.ParamsReciever;
+            paramsWindow.ShowDialog();
 
-                var recievedParameters = paramsGetter();
-                if (recievedParameters is null)
-                    return;
+            var recievedParameters = paramsGetter();
+            if (recievedParameters is null)
+                return;
 
-                #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-                switch (analyzerMethod)
-                {
-                    case AnalyzerMethod.ChiSquare:
-                        var chiParamsDto = recievedParameters as BaseParamsDto<ChiSquareParameters>;
-                        chiParamsDto?.FillParameters(ref _chiSquareParameters);
-                        break;
-                    case AnalyzerMethod.RegularSingular:
-                        var rsParamsDto = recievedParameters as BaseParamsDto<RsParameters>;
-                        rsParamsDto?.FillParameters(ref _rsParameters);
-                        break;
-                    case AnalyzerMethod.KochZhaoAnalysis:
-                        var kzhaParamsDto = recievedParameters as BaseParamsDto<KzhaParameters>;
-                        kzhaParamsDto?.FillParameters(ref _kzhaParameters);
-                        break;
-                }
-                #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+            #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+            switch (analyzerMethod)
+            {
+                case AnalyzerMethod.ChiSquare:
+                    var chiParamsDto = recievedParameters as BaseParamsDto<ChiSquareParameters>;
+                    chiParamsDto?.FillParameters(ref _chiSquareParameters);
+                    break;
+                case AnalyzerMethod.RegularSingular:
+                    var rsParamsDto = recievedParameters as BaseParamsDto<RsParameters>;
+                    rsParamsDto?.FillParameters(ref _rsParameters);
+                    break;
+                case AnalyzerMethod.KochZhaoAnalysis:
+                    var kzhaParamsDto = recievedParameters as BaseParamsDto<KzhaParameters>;
+                    kzhaParamsDto?.FillParameters(ref _kzhaParameters);
+                    break;
             }
+            #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
         }
 
         /// <summary>
@@ -195,10 +209,6 @@ namespace StegoRevealer.WinUi.ViewModels
         /// </summary>
         public void StartAnalysis(Dictionary<AnalyzerMethod, bool> activeMethods)
         {
-            // ReloadImage();  // Если над этим изображением уже производился анализ, в него могут быть внесены изменения
-
-            var timer = Stopwatch.StartNew();  // Запуск таймера
-
             ActiveMethods = activeMethods;
 
             var results = CreateValuesByAnalyzerMethodDictionary<ILoggedAnalysisResult>();  // Словарь результатов
@@ -220,7 +230,9 @@ namespace StegoRevealer.WinUi.ViewModels
                 var kzhaMethodAnalyzer = new KzhaAnalyser(_kzhaParameters);
                 methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<ILoggedAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
             }
-            
+
+            var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стегоанализа
+
             // Запуск
             foreach (var methodTask in methodTasks)
                 methodTask.Value?.Start();
@@ -237,19 +249,30 @@ namespace StegoRevealer.WinUi.ViewModels
             }
             
             timer.Stop();  // Остановка таймера
+            ProcessAnalysisResults(results, timer);
+        }
+
+        /// <summary>
+        /// Обработка и вывод результатов стегоанализа
+        /// </summary>
+        private void ProcessAnalysisResults(Dictionary<AnalyzerMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
+        {
+            if (results is null) 
+                return;
 
             // Временный вывод результатов в Alert-окне
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
             var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
 
+            // Вывод визуализированного изображения
             if (_chiSquareParameters?.Visualize ?? false)
-                CurrentImage = chiRes?.Image;
+                DrawedImage = chiRes?.Image;
 
             MessageBox.Show($"Results\n" +
                 (chiRes is not null ? $"Chisqr: {chiRes?.MessageRelativeVolume}\n" : "ChiSqr not analyzed\n") +
                 (rsRes is not null ? $"Rs: {rsRes?.MessageRelativeVolume}\n" : "Rs not analyzed\n") +
-                (kzhaRes  is not null ? $"Kzha: {kzhaRes?.Threshold}, {kzhaRes?.MessageBitsVolume}\n" : "Kzha is not analyzed\n") +
+                (kzhaRes is not null ? $"Kzha: {kzhaRes?.Threshold}, {kzhaRes?.MessageBitsVolume}\n" : "Kzha is not analyzed\n") +
                 $"Time (ms): {timer.ElapsedMilliseconds}");
         }
 
@@ -265,36 +288,31 @@ namespace StegoRevealer.WinUi.ViewModels
         }
 
         /// <summary>
-        /// Возвращает текущее изображение в формате, нужном для отображения на форме
+        /// Создаёт источник для отображения изображения
         /// </summary>
-        public ImageSource? GetCurrentImageSource()
+        public ImageSource CreateImageSource(ImageHandler image)
         {
-            if (CurrentImage is not null)
-            {
-                var imgInfo = new SKImageInfo(CurrentImage.Width, CurrentImage.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+            var imgInfo = new SKImageInfo(image.Width, image.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 
-                var writeableBitmap = new WriteableBitmap(imgInfo.Width, imgInfo.Height, 96.0, 96.0, PixelFormats.Pbgra32, null);
-                writeableBitmap.Lock();
+            var writeableBitmap = new WriteableBitmap(imgInfo.Width, imgInfo.Height, 96.0, 96.0, PixelFormats.Pbgra32, null);
+            writeableBitmap.Lock();
 
-                var surface = SKSurface.Create(imgInfo, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride);
-                surface.Canvas.DrawBitmap(CurrentImage.GetScImage().GetSkiaSharpImageForPainting(), default(SKPoint));
+            var surface = SKSurface.Create(imgInfo, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride);
+            surface.Canvas.DrawBitmap(image.GetScImage().GetSkiaSharpImageForPainting(), default(SKPoint));
 
-                writeableBitmap.Unlock();
-                writeableBitmap.Freeze();
+            writeableBitmap.Unlock();
+            writeableBitmap.Freeze();
 
-                return writeableBitmap;
-            }
-
-            return null;
+            return writeableBitmap;
         }
 
         /// <summary>
         /// Заново формирует отображаемое на View изображение из текущего сохранённого
         /// </summary>
-        public void UpdateDrawedImage()
+        public void DrawCurrentImage()
         {
             if (CurrentImage is not null)
-                DrawedImage = GetCurrentImageSource();
+                DrawedImage = CurrentImage;
         }
     }
 }

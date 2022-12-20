@@ -104,10 +104,6 @@ namespace StegoRevealer.WinUi.Views
             ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] = false;
 
 
-        private void UpdateImagePreview()
-        {
-            _vm?.UpdateDrawedImage();
-            ImagePreview.Source = _vm?.DrawedImage;
-        }
+        private void UpdateImagePreview() => ImagePreview.Source = _vm?.DrawedImageSource;
     }
 }
