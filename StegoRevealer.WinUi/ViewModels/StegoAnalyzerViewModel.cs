@@ -20,6 +20,7 @@ namespace StegoRevealer.WinUi.ViewModels
 {
     // TODO: реализовать форму или окно для нормального вывода результатов
     // TODO: иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
+    // TODO: продумать поведение при сценарии: (СА с визуализацией - Не менять изображение - СА без визуализации) - подгружать ли не раскрашенное?
 
     /// <summary>
     /// ViewModel представления StegoAnalyzer - окно стегоанализатора
@@ -297,7 +298,7 @@ namespace StegoRevealer.WinUi.ViewModels
             writeableBitmap.Lock();
 
             var surface = SKSurface.Create(imgInfo, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride);
-            surface.Canvas.DrawBitmap(image.GetScImage().GetSkiaSharpImageForPainting(), default(SKPoint));
+            surface.Canvas.DrawBitmap(image.GetScImage().GetBitmap(), default(SKPoint));
 
             writeableBitmap.Unlock();
             writeableBitmap.Freeze();

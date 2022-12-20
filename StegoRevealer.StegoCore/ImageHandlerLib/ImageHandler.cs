@@ -85,7 +85,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         private ImageHandler(ScImage image)
         {
             _image = image;
-            _imgPath = image.GetPath();
+            _imgPath = image.Path ?? string.Empty;
             _channelsArray = new ChannelsArray(_image);
             _imgArray = new ImageArray(_image);
         }

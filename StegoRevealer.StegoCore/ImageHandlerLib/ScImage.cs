@@ -1,8 +1,15 @@
 ﻿using SkiaSharp;
+using System.Reflection.Metadata.Ecma335;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib
 {
-    // Класс-обёртка над объектом изображения текущей используемой библиотеки
+    /*
+     * Класс-обёртка над объектом изображения текущей используемой библиотеки (Skia-Sharp)
+     * Есть два режима загрузки изображения:
+     *   - как ридер: открывается поток чтения файла на диске, и он удерживает файл открытым для манипуляций с изображением;
+     *   - в память: загружает всё изображение в память при помощи MemoryStream.
+     * Первый вариант, теоретически, быстрее, а второй предоставляет возможности разделения экземпляров одного изображения - например, клонирование
+     */
 
     /// <summary>
     /// Класс изображения
@@ -14,42 +21,67 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// </summary>
         private SKBitmap? _image = null;
 
+        // Потоки для открытого изображения
         private FileStream? _file = null;
         private SKManagedStream? _imgStream = null;
+
+        // Если изображение загружено в память - будет только этот поток
         private MemoryStream? _memoryStream = null;
+
 
         /// <summary>
         /// Хранилище объектов открытых изображений<br/>
         /// Key - путь, Value - объект
         /// </summary>
-        private static Dictionary<string, ScImage> _images = new();
+        private static Dictionary<string, ScImage> _loadedImages = new();
+
+        /// <summary>
+        /// Хранилище открытых файловых потоков изображений<br/>
+        /// Key - путь, Value - объект
+        /// </summary>
+        private static Dictionary<string, FileStream> _fileStreams = new();
+
+
+        private string? _path = null;
 
         /// <summary>
         /// Путь к файлу
         /// </summary>
-        private string? _path = null;
+        public string? Path { get => _path; }
+
 
         // Параметры изображения
 
         /// <summary>
         /// Высота
         /// </summary>
-        public int Height { get; } = 0;
+        public int Height { get; private set; } = 0;
 
         /// <summary>
         /// Ширина
         /// </summary>
-        public int Width { get; } = 0;
+        public int Width { get; private set; } = 0;
 
         /// <summary>
         /// Глубина
         /// </summary>
-        public int Depth { get; } = 0;
+        public int Depth { get; private set; } = 0;
 
         /// <summary>
         /// Является ли изображением типа TrueColor (RGB, 8 бит)
         /// </summary>
         public bool IsTrueColor { get; } = true;
+
+        /// <summary>
+        /// Является ли изображение загруженным в память
+        /// </summary>
+        public bool IsInMemory { get => _memoryStream is not null; }
+
+
+        /// <summary>
+        /// Возвращает SKBitmap текущего изображения
+        /// </summary>
+        public SKBitmap? GetBitmap() => _image;
 
 
         // Доступ по индексаторам
@@ -67,48 +99,226 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             set
             {
                 if (_image is not null)
-                {
                     _image.SetPixel(x, y, value.ToSkColor());
-                }
             }
+        }
+
+
+        /// <summary>
+        /// Создаёт новый FileStream для чтения файла изображения
+        /// </summary>
+        private static FileStream CreateFileStream(string path) => File.OpenRead(path);
+
+        /// <summary>
+        /// Создаёт SKBitmap по переданному потоку памяти
+        /// </summary>
+        private static SKBitmap CreateBitmapByMemoryStream(MemoryStream memoryStream) => SKBitmap.Decode(memoryStream);
+
+
+        /// <summary>
+        /// Создаёт объект изображения в режиме чтения с диска<br/>
+        /// Т.е. файл "захватывается" потоком чтения и не загружается целиком в оперативную память
+        /// </summary>
+        private void CreateAsReader(string path)
+        {
+            _file = CreateFileStream(path);
+            _imgStream = new SKManagedStream(_file);
+            _image = SKBitmap.Decode(_imgStream);
+        }
+
+        /// <summary>
+        /// Создаёт объект изображения, загружая его данные в оперативную память
+        /// </summary>
+        /// <param name="path">Путь к изображению</param>
+        private void CreateInMemory(string path)
+        {
+            var file = CreateFileStream(path);
+            CreateInMemory(file);
+            file?.Close();
+        }
+
+        /// <summary>
+        /// Создаёт объект изображения, загружая его данные в оперативную память<br/>
+        /// Не закрывает переданный файловый поток!<br/>
+        /// Поток file может быть закрыт после создания объекта вызывающей стороной
+        /// </summary>
+        /// <param name="file">Поток чтения файла изображения</param>
+        private void CreateInMemory(FileStream file)
+        {
+            _memoryStream = CreateMemoryStream(file);
+            _image = CreateBitmapByMemoryStream(_memoryStream);
+        }
+
+        /// <summary>
+        /// Обеспечивает копирование файла изображения в оперативную память в MemoryStream<br/>
+        /// Поток file может быть закрыт после создания объекта вызывающей стороной
+        /// </summary>
+        /// <param name="file">Поток чтения файла изображения</param>
+        private static MemoryStream CreateMemoryStream(FileStream file)
+        {
+            var memoryStream = new MemoryStream();
+
+            var position = file.Position;
+            file.Seek(0, SeekOrigin.Begin);
+            file.CopyToAsync(memoryStream).Wait();
+            file.Seek(position, SeekOrigin.Begin);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            return memoryStream;
+        }
+
+
+        // Конструторы
+
+        /// <summary>
+        /// Приватный конструктор с выбором создания объекта изображения в качестве ридера или в памяти
+        /// </summary>
+        /// <param name="path">Путь к файлу изображения</param>
+        /// <param name="loadToMemory">Загружать ли изображение в память</param>
+        private ScImage(string path, bool loadToMemory = false)
+        {
+            _path = path;
+
+            if (loadToMemory)
+                CreateInMemory(path);
+            else
+                CreateAsReader(path);
+
+            DefineSizes();
+        }
+
+        /// <summary>
+        /// Приватный конструктор для создания объекта изображения в памяти<br/>
+        /// Поток file может быть закрыт после создания объекта вызывающей стороной
+        /// </summary>
+        /// <param name="file">Поток чтения файла изображения</param>
+        /// <param name="path">Путь к файлу изображения</param>
+        private ScImage(FileStream file, string path)
+        {
+            _path = path;
+            CreateInMemory(file);
+            DefineSizes();
+        }
+
+        /// <summary>
+        /// Приватный конструктор для создания объекта изображения для переданного потока памяти
+        /// </summary>
+        /// <param name="memoryStream">Текущий поток изображения</param>
+        /// <param name="path">Путь к файлу изображения</param>
+        private ScImage(MemoryStream memoryStream, string? path)
+        {
+            _path = path;
+            _memoryStream = memoryStream;
+            _image = CreateBitmapByMemoryStream(_memoryStream);
+            DefineSizes();
+        }
+
+        /// <summary>
+        /// Загрузка изображения в качестве ридера<br/>
+        /// "Захватывает" и читает файл на диске, не загружая в оперативную память
+        /// </summary>
+        /// <param name="path">Путь к файлу изображения</param>
+        public static ScImage LoadToReader(string path)
+        {
+            // При открытии как ридера учитывается, что нельзя дважды открыть на чтение файл изображения
+            // при повторном открытии вернётся уже сохранённый существующий экземпляр
+            if (_loadedImages.ContainsKey(path))
+                return _loadedImages[path];
+
+            var image = new ScImage(path, false);
+            _loadedImages.Add(path, image);
+            return image;
+        }
+
+        /// <summary>
+        /// Загрузка изображения целиком в оперативную память
+        /// </summary>
+        /// <param name="path">Путь к файлу изображения</param>
+        public static ScImage LoadToMemory(string path)
+        {
+            var image = new ScImage(path, true);
+            return image;
         }
 
         /// <summary>
         /// Загрузка изображения
         /// </summary>
-        private void LoadImageFile(string path)
+        /// <param name="path">Путь к файлу изображения</param>
+        /// <param name="loadToMemory">Загружать ли изображение в память (либо читать его с диска)</param>
+        /// <returns></returns>
+        public static ScImage Load(string path, bool loadToMemory = false)
         {
-            _file = File.OpenRead(path);
-            _imgStream = new SKManagedStream(_file);
-            // var imgCodec = SKCodec.Create(_imgStream);
-            // var imgInfo = new SKImageInfo(imgCodec.Info.Width, imgCodec.Info.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
-            _image = SKBitmap.Decode(_imgStream);
+            if (loadToMemory)
+                return LoadToMemory(path);
+            return LoadToReader(path);
         }
 
-        public ScImage Clone()
-        {
-            if (_file is null)
-                throw new Exception("Error while cloning image: image not loaded");
-            
-            var memory = new MemoryStream();
-            var position = _file.Position;
-            _file.Seek(0, SeekOrigin.Begin);
-            _file.CopyToAsync(memory).Wait();
-            _file.Seek(position, SeekOrigin.Begin);
-            memory.Seek(0, SeekOrigin.Begin);
-            var bitmap = SKBitmap.Decode(memory);
 
-            return new ScImage(bitmap, memory, this);
+        /// <summary>
+        /// Клонирование изображения<br/>
+        /// Всегда создаёт копию текущего изображения в оперативной памяти, вне зависимости от режима загрузки текущего изображения
+        /// </summary>
+        public ScImage Clone(bool cloneInMemoryImagesDirectly = true)
+        {
+            FileStream? fileStream;
+            bool shouldCloseFileStream = false;
+            ScImage clonedImage;
+
+            // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
+            if (IsInMemory && cloneInMemoryImagesDirectly)
+            {
+                if (_memoryStream is null)
+                    throw new Exception("Error while cloning image: memory stream is null");
+                var clonedMemoryStream = CloneMemoryStream(_memoryStream);
+                return new ScImage(clonedMemoryStream, _path);
+            }
+
+            // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
+            // либо создан новый поток чтения файла по текущему пути на время клонирования
+            if (IsInMemory && !string.IsNullOrEmpty(_path))
+            {
+                if (_loadedImages.ContainsKey(_path))
+                    fileStream = _loadedImages[_path]._file;
+                else
+                {
+                    fileStream = CreateFileStream(_path);
+                    shouldCloseFileStream = true;
+                }
+            }
+            else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
+                fileStream = _file;
+
+            if (fileStream is null)
+                throw new Exception("Error while cloning ScImage: fileStream is null");
+
+            clonedImage = new ScImage(fileStream, _path ?? string.Empty);
+            // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
+
+            if (shouldCloseFileStream)
+                fileStream.Close();
+
+            return clonedImage;
         }
 
-        // Приватный конструктор по пути к файлу
-        private ScImage(string path)
+        // Клонирует MemoryStream
+        private static MemoryStream CloneMemoryStream(MemoryStream memoryStream)
         {
-            _path = path;
+            var clonedMemoryStream = new MemoryStream();
 
-            LoadImageFile(_path);
+            var position = memoryStream.Position;
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            memoryStream.CopyToAsync(clonedMemoryStream).Wait();
+            memoryStream.Seek(position, SeekOrigin.Begin);
+            clonedMemoryStream.Seek(0, SeekOrigin.Begin);
 
-            // _image = Image.NewFromFile(path);
+            return clonedMemoryStream;
+        }
+
+
+        // Устанавливает линейные размеры и "глубину" (количество каналов)
+        private void DefineSizes()
+        {
+
             Height = _image?.Height ?? 0;
             Width = _image?.Width ?? 0;
 
@@ -117,45 +327,20 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 Depth = 4;  // SkiaSharp предоставляет доступ всегда к RGB и Alpha
         }
 
-        private ScImage(SKBitmap image, MemoryStream memoryStream, ScImage clonedImage)
-        {
-            _path = clonedImage._path;
-            Height = clonedImage.Height;
-            Width = clonedImage.Width;
-            Depth = clonedImage.Depth;
-
-            _image = image;
-            _memoryStream = memoryStream;
-        }
-
+        
         // Закрытие потоков доступа к изображению
         private void CloseCurrentStreams()
         {
-            if (_image is not null && _imgStream is not null && _file is not null)
+            if (IsInMemory)  // Если загружено в память - должен быть только поток памяти
+                _memoryStream?.Dispose();
+            else  // Если загружено как ридер - актуальны все три потока
             {
-                _image.Dispose();
-                _imgStream.Dispose();
-                _file.Close();
+                _image?.Dispose();
+                _imgStream?.Dispose();
+                _file?.Close();
             }
-
-            if (_memoryStream is not null)
-                _memoryStream.Dispose();
         }
 
-        /// <summary>
-        /// Метод загрузки изображения<br/>
-        /// Одно и то же изображение не может быть открыто одновременно (загружено) дважды
-        /// </summary>
-        public static ScImage Load(string path)
-        {
-            if (!_images.ContainsKey(path))
-            {
-                var img = new ScImage(path);
-                _images.Add(path, img);
-                return img;
-            }
-            return _images[path];
-        }
 
         /// <summary>
         /// Деструктор
@@ -165,12 +350,16 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             Dispose();
         }
 
+        // Метод выгрузки текущего объекта
         public void Dispose()
         {
             CloseCurrentStreams();  // Закрытие открытых потоков
-            if (_path is not null)  // Удаление текущего изображения из списка загруженных
-                _images.Remove(_path);
+            if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
+                _loadedImages.Remove(_path);  // (оно должно было быть сюда добавлено, если загружено не в память)
         }
+
+
+        // Методы сохранения
 
         /// <summary>
         /// Сохранение текущей версии изображения: текущим изображением становится сохранённое
@@ -187,7 +376,10 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 _path = path;
 
                 CloseCurrentStreams();
-                LoadImageFile(_path);
+                if (IsInMemory)
+                    CreateInMemory(_path);
+                else
+                    CreateAsReader(_path);
             }
         }
 
@@ -204,26 +396,14 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 imgEncoded.SaveTo(outFile);
                 outFile.Close();
 
-                // Сброс изменений в открытом изображении
-                CloseCurrentStreams();
-                if (_path is not null)
-                    LoadImageFile(_path);
-                else
-                    throw new Exception("Cant't re-open (reset) existing image linked to this handler");
-
                 return path;
             }
 
             return null;
         }
 
-        /// <summary>
-        /// Возвращает текущий путь к изображению
-        /// </summary>
-        public string GetPath()
-        {
-            return _path ?? "";
-        }
+
+        // Вспомогательные методы
 
         /// <summary>
         /// Получение формата, требуемого текущей библиотекой
@@ -249,7 +429,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// </summary>
         public ImageFormat GetFormat()
         {
-            var ext = Path.GetExtension(_path);
+            var ext = System.IO.Path.GetExtension(_path);
             switch (ext)
             {
                 case ".png":
@@ -264,10 +444,5 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
 
             throw new Exception("Unknown image extension");
         }
-
-        /// <summary>
-        /// Возвращает SKBitmap изображения для отрисовки на WPF-форме
-        /// </summary>
-        public SKBitmap? GetSkiaSharpImageForPainting() => _image;
     }
 }
