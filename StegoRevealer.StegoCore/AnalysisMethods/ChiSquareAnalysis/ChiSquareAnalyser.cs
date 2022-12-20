@@ -18,6 +18,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// </summary>
         public ChiSquareParameters Params { get; set; }
 
+        // Список координат блоков (кортежи: левые верхние и правые нижние координаты), заполняется при первом проходе по массиву пикселей
+        private List<(Sc2DPoint lt, Sc2DPoint rd)>? _lazyBlocksCoordsList = null;
+
 
         public ChiSquareAnalyser(ImageHandler image)
         {
@@ -73,11 +76,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 
                 // Если необходима - визуализация скрытия в блоке: запись нужного канала для блока
                 if (Params.Visualize)
-                {
                     toColorizeChannels.Add(blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green);
-                    // var colorizingChannel = blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green;
-                    // ColorizeBlock(pixelsBlockInfo.blockIndex, colorizingChannel);
-                }
 
                 blockNumber++;
 
@@ -98,21 +97,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 
             // Визуализация скрытия на изображении целиком
             if (Params.Visualize)
-            {
-                var visualizedImage = Params.Image.Clone();
-                for (int y = 0; y < visualizedImage.Height; y++)
-                {
-                    var channelId = (int)toColorizeChannels[y];
-                    for (int x = 0; x < visualizedImage.Width; x++)
-                    {
-                        var colorByte = visualizedImage.ImgArray[y, x, channelId];
-                        var newValue = Convert.ToByte(Math.Min((int)colorByte + 100, 255));
-                        visualizedImage.ImgArray[y, x, channelId] = newValue;
-                    }
-                }
-
-                result.Image = visualizedImage;
-            }
+                result.Image = ColorizeAllImage(toColorizeChannels, 100);
 
             result.Log($"Стегоанализ методом {MethodName} завершён");
             return result;
@@ -137,6 +122,37 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                     imar[y, x, (int)channel] = newValue;
                 }
             }
+        }
+
+        /// <summary>
+        /// Визуализирует скрытие во всём изображении поблочно
+        /// </summary>
+        /// <param name="channelsToColorizeInBlock">Массив каналов, в которые надо сместить цвет для каждого блока</param>
+        /// <param name="colorOffset">Смещение цвета</param>
+        private ImageHandler ColorizeAllImage(List<ImgChannel> channelsToColorizeInBlock, int colorOffset = 100)
+        {
+            var colorizedImage = Params.Image.Clone();
+
+            if (_lazyBlocksCoordsList is null || _lazyBlocksCoordsList.Count != channelsToColorizeInBlock.Count)
+                return colorizedImage;  // Вернёт копию изображения без визуализации скрытия
+
+            for (int i = 0; i < _lazyBlocksCoordsList.Count; i++)
+            {
+                var coords = _lazyBlocksCoordsList[i];
+                var channelId = (int)channelsToColorizeInBlock[i];
+
+                for (int y = coords.lt.Y; y <= coords.rd.Y; y++)
+                {
+                    for (int x = coords.lt.X; x <= coords.rd.X; x++)
+                    {
+                        var colorByte = colorizedImage.ImgArray[y, x, channelId];
+                        var newValue = Convert.ToByte(Math.Min((int)colorByte + colorOffset, 255));
+                        colorizedImage.ImgArray[y, x, channelId] = newValue;
+                    }
+                }
+            }
+
+            return colorizedImage;
         }
 
         // Увеличивает значения в массиве cnum на 1
@@ -309,6 +325,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// </summary>
         private IEnumerable<(List<ScPixel> pixelsList, Sc2DPoint blockIndex)> GetNextBlockPixels()
         {
+            _lazyBlocksCoordsList = new();
+
             foreach (var blockCoords in GetNextBlockIndexInGrid())
             {
                 (int y, int x) = blockCoords.AsTuple();
@@ -325,6 +343,14 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 for (int innerY = 0; innerY < blockRealHeight; innerY++)
                     for (int innerX = 0; innerX < blockRealWidth; innerX++)
                         pixels.Add(imar[Params.BlockHeight * y + innerY, Params.BlockWidth * x + innerX]);
+
+                // Заполнение списка координат блоков
+                var coords = (
+                    new Sc2DPoint(Params.BlockHeight * y, Params.BlockWidth * x), 
+                    new Sc2DPoint(Params.BlockHeight * y + blockRealHeight - 1, Params.BlockWidth * x + blockRealWidth - 1)
+                    );
+                _lazyBlocksCoordsList.Add(coords);
+
                 yield return (pixels, new Sc2DPoint(y, x));
             }
 
