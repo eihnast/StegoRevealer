@@ -21,7 +21,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// </summary>
         public static Sc2DPoint GetBlockByLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
-            ScImageBlocks blocks = parameters.GetImgBlocksGrid();
+            ScImageBlocks blocks = parameters.ImgBlocks;
 
             if (!parameters.VerticalHiding)
             {
@@ -84,7 +84,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// </summary>
         public static Sc2DPoint GetBlockCoords(Sc2DPoint gridCoords, KochZhaoParameters parameters)
         {
-            return parameters.ImgBlocksGrid[gridCoords.Y, gridCoords.X];
+            return parameters.ImgBlocks[gridCoords.Y, gridCoords.X];
         }
 
 
@@ -115,7 +115,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                     overallCount++;
                     indexes[channelIndex]++;
 
-                    if (line == parameters.ImgBlocksGrid.BlocksInColumn - 1 && column == parameters.ImgBlocksGrid.BlocksInRow - 1)
+                    if (line == parameters.ImgBlocks.BlocksInColumn - 1 && column == parameters.ImgBlocks.BlocksInRow - 1)
                         channelIndex++;
                 }
 
@@ -168,7 +168,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
             else  // Поканально (R: Block1, Block2, Block3 --> 0,1,2)
             {
-                var blocksGrid = parameters.GetImgBlocksGrid();
+                var blocksGrid = parameters.ImgBlocks;
                 var (w, h) = (blocksGrid.BlocksInRow, blocksGrid.BlocksInColumn);
                 int channelInnerIndex = linearIndex / (w * h);
                 channel = (int)parameters.Channels[channelInnerIndex];
@@ -185,7 +185,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
-            ScImageBlocks blocksGrid = parameters.GetImgBlocksGrid();
+            ScImageBlocks blocksGrid = parameters.ImgBlocks;
             var rnd = parameters.Seed.HasValue ? new Random(parameters.Seed.Value) : new Random();
 
             int blocksLinearLength = parameters.GetAllBlocksNum();

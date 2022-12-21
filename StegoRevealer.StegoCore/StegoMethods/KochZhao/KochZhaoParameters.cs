@@ -88,15 +88,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         private ScImageBlocks _imgBlocks;
 
         /// <summary>
-        /// Возвращает матрицу блоков
-        /// </summary>
-
-        public ScImageBlocks GetImgBlocksGrid() => _imgBlocks;
-
-        /// <summary>
         /// Матрица блоков изображения
         /// </summary>
-        public ScImageBlocks ImgBlocksGrid { get { return _imgBlocks; } }
+        public ScImageBlocks ImgBlocks { get { return _imgBlocks; } }
 
         /// <summary>
         /// Порог для разницы коэффициентов скрытия
