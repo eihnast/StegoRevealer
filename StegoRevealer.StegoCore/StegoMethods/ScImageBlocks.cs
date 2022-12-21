@@ -4,11 +4,10 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.StegoMethods
 {
-    // TODO: Нужно отрефакторить параметры Коха-Жао и его методы: разделить функционал метода и функционал частотного представления
-
     /// <summary>
     /// Массив блоков, на которые разбивается матрица пикселей изображения
     /// </summary>
+    [Obsolete($"Use {nameof(ImageHandlerLib.Blocks.ImageBlocks)} instead", true)]
     public class ScImageBlocks
     {
         private KochZhaoParameters _parameters;  // Параметры для разбиения на блоки

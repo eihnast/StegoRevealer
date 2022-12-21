@@ -4,7 +4,7 @@ using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
-    // TODO: описать общие принципы работы итерации и формаирования частотного представления изображения
+    // TODO: описать общие принципы работы итерации и формирования частотного представления изображения
     /*
 
      */

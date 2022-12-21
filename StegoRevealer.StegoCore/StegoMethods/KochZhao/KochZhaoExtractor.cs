@@ -43,7 +43,6 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             return Extract(Params);
         }
 
-        // TODO: невозможно использование кастомного IParams parameters: в лог инфа пишется из Params, создать объект без Params невозможно
         /// <inheritdoc/>
         public IExtractResult Extract(IParams parameters)
         {
