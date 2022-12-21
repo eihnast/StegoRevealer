@@ -24,7 +24,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public int GetBlockSize() => BlockSize;
 
         /// <inheritdoc/>
-        public override bool HidingOperation { get; set; } = true;
+        public override StegoOperationType StegoOperation { get; set; } = StegoOperationType.Hiding;
 
         /// <inheritdoc/>
         public override int? Seed { get; set; } = null;
@@ -42,7 +42,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
             set
             {
-                if (HidingOperation)
+                if (StegoOperation is StegoOperationType.Hiding)
                 {
                     _data = value;
                     _dataAsBitArray = StringBitsTools.StringToBitArray(value);

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -17,7 +18,7 @@ namespace StegoRevealer.StegoCore.StegoMethods
         /// <summary>
         /// Является ли текущая операция скрытием (да - скрытие, нет - извлечение)
         /// </summary>
-        public abstract bool HidingOperation { get; set; }
+        public abstract StegoOperationType StegoOperation { get; set; }
 
         /// <summary>
         /// Ключ для ГПСЧ при псевдослучайном скрытии (определяет тип скрытия)<br/>

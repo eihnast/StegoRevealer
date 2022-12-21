@@ -24,7 +24,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
     public class LsbParameters : StegoMethodParams, IParams
     {
         /// <inheritdoc/>
-        public override bool HidingOperation { get; set; } = true;
+        public override StegoOperationType StegoOperation { get; set; } = StegoOperationType.Hiding;
 
         /// <inheritdoc/>
         public override int? Seed { get; set; } = null;
@@ -41,7 +41,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             } 
             set
             {
-                if (HidingOperation)
+                if (StegoOperation is StegoOperationType.Hiding)
                 {
                     _data = value;
                     _dataAsBitArray = StringBitsTools.StringToBitArray(value);
@@ -212,7 +212,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         /// </summary>
         private void RepairStartPixels()
         {
-            if (!HidingOperation || Data is null || Data.Length <= 0)  // Если это параметры извлечения, данных нет
+            if (StegoOperation is StegoOperationType.Extracting || Data is null || Data.Length <= 0)  // Если это параметры извлечения, данных нет
                 return;
 
             // Длина данных, делённая на число используемых НЗБ

@@ -19,13 +19,13 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public KochZhaoExtractor(ImageHandler img)
         {
             Params = new KochZhaoParameters(img);
-            Params.HidingOperation = false;
+            Params.StegoOperation = StegoOperationType.Extracting;
         }
 
         public KochZhaoExtractor(KochZhaoParameters kzParams)
         {
             Params = kzParams;
-            Params.HidingOperation = false;
+            Params.StegoOperation = StegoOperationType.Extracting;
         }
 
         public KochZhaoExtractor(ImageHandler img, int? seed = null, bool verticalHiding = false, int threshold = 120)

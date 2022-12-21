@@ -19,7 +19,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         public LsbExtractor(ImageHandler img)
         {
             Params = new LsbParameters(img);
-            Params.HidingOperation = false;
+            Params.StegoOperation = false;
         }
 
         public LsbExtractor(ImageHandler img, 

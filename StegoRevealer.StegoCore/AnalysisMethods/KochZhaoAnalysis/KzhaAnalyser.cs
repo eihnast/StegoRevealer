@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ScMath;
@@ -206,7 +207,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             kzhaParams.VerticalHiding = Params.IsVerticalTraverse;
             kzhaParams.HidingCoeffs = analysisResult.Coefficients;
             kzhaParams.ToExtractBitLength = analysisResult.MessageBitsVolume;
-            kzhaParams.HidingOperation = false;
+            kzhaParams.StegoOperation = StegoOperationType.Extracting;
 
             // Порог уменьшаем на 1 на всякий случай с учётом возможных погрешностей вычислений, иначе есть шанс "пропустить" блок из-за ошибок точности,
             // т.к. при анализе порог вычислен просто как наименьшее из значений cSequence
