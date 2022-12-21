@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib.ParamsHelpers;
@@ -13,7 +14,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
     {
         public bool Visualize { get; set; } = true;
 
-        public bool IsVerticalTraverse { get; set; } = false;
+        public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
         public bool ExcludeZeroPairs { get; set; } = true;
 
@@ -38,7 +39,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
         public ChiSqrParamsDto(ChiSquareParameters parameters)
         {
             Visualize = parameters.Visualize;
-            IsVerticalTraverse = parameters.IsVerticalTraverse;
+            TraverseType = parameters.TraverseType;
             ExcludeZeroPairs = parameters.ExcludeZeroPairs;
             UseUnifiedCathegories = parameters.UseUnifiedCathegories;
             UnifyingCathegoriesThreshold = parameters.UnifyingCathegoriesThreshold;
@@ -59,7 +60,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
                 return;
 
             parameters.Visualize = Visualize;
-            parameters.IsVerticalTraverse = IsVerticalTraverse;
+            parameters.TraverseType = TraverseType;
             parameters.ExcludeZeroPairs = ExcludeZeroPairs;
             parameters.UseUnifiedCathegories = UseUnifiedCathegories;
             parameters.UnifyingCathegoriesThreshold = UnifyingCathegoriesThreshold;

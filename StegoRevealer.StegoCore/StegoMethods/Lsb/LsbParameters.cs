@@ -87,7 +87,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         public override bool InterlaceChannels { get; set; } = true;  // Чередовать ли каналы при скрытии (иначе - поканально)
 
         /// <inheritdoc/>
-        public override bool VerticalHiding { get; set; } = false;  // Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
+        public override TraverseType TraverseType { get; set; } = TraverseType.Horizontal;  // Тип обхода массива пикселей (блоков)
 
 
         // Стартовые индексы

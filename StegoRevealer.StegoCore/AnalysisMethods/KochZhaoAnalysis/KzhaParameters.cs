@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
@@ -58,9 +59,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         public bool LoggingCSequences { get; set; } = false;
 
         /// <summary>
-        /// Вертикальный обход матрицы блоков
+        /// Тип обхода матрицы блоков
         /// </summary>
-        public bool IsVerticalTraverse { get; set; } = false;
+        public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
 
         public KzhaParameters(ImageHandler image)

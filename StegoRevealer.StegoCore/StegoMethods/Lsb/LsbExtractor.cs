@@ -19,16 +19,16 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         public LsbExtractor(ImageHandler img)
         {
             Params = new LsbParameters(img);
-            Params.StegoOperation = false;
+            Params.StegoOperation = StegoOperationType.Extracting;
         }
 
         public LsbExtractor(ImageHandler img, 
-            int? seed = null, bool interlaceChannels = true, bool verticalHiding = false, int lsbNum = 1)
+            int? seed = null, bool interlaceChannels = true, TraverseType traverseType = TraverseType.Horizontal, int lsbNum = 1)
             : this(img)
         {
             Params.Seed = seed;
             Params.InterlaceChannels = interlaceChannels;
-            Params.VerticalHiding = verticalHiding;
+            Params.TraverseType = traverseType;
             Params.LsbNum = lsbNum;
         }
 

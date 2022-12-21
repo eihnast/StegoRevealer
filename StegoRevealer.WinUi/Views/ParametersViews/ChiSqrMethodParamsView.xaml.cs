@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib.MethodsHelper;
 using StegoRevealer.WinUi.Lib.ParamsHelpers;
@@ -47,8 +48,8 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
             IsChannelChecked_Red.IsChecked = parameters.Channels.Contains(ImgChannel.Red);
             IsChannelChecked_Green.IsChecked = parameters.Channels.Contains(ImgChannel.Green);
             IsChannelChecked_Blue.IsChecked = parameters.Channels.Contains(ImgChannel.Blue);
-            TraverseChoice_Horizontal.IsChecked = !parameters.IsVerticalTraverse;
-            TraverseChoice_Vertical.IsChecked = parameters.IsVerticalTraverse;
+            TraverseChoice_Horizontal.IsChecked = parameters.TraverseType is TraverseType.Horizontal;
+            TraverseChoice_Vertical.IsChecked = parameters.TraverseType is TraverseType.Vertical;
             PValueThreshold.Value = parameters.Threshold;
             BlockWidth.Value = parameters.BlockWidth;
             BlockHeight.Value = parameters.BlockHeight;
@@ -71,9 +72,11 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
                 result.Channels.Add(ImgChannel.Blue);
 
             if (TraverseChoice_Vertical.IsChecked.HasValue && TraverseChoice_Horizontal.IsChecked.HasValue)
-                result.IsVerticalTraverse = TraverseChoice_Vertical.IsChecked.Value && !TraverseChoice_Horizontal.IsChecked.Value;
+                result.TraverseType = (TraverseChoice_Vertical.IsChecked.Value && !TraverseChoice_Horizontal.IsChecked.Value 
+                    ? TraverseType.Vertical 
+                    : TraverseType.Horizontal);
             else
-                result.IsVerticalTraverse = false;
+                result.TraverseType = TraverseType.Horizontal;
 
             result.Threshold = PValueThreshold.Value;
             result.BlockWidth = (int)BlockWidth.Value;

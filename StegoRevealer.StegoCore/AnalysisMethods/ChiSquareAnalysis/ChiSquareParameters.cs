@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
@@ -36,7 +37,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// Горизонтальный обход: сначала слева направо, потом сверху вниз<br/>
         /// Вертикальный обход: сначала сверху вниз, потом слева направо
         /// </summary>
-        public bool IsVerticalTraverse { get; set; } = false;
+        public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
         /// <summary>
         /// Описывает варинт формирования массива Carr - ColorsArray<br/>

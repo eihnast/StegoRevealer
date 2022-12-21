@@ -28,11 +28,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             Params.StegoOperation = StegoOperationType.Extracting;
         }
 
-        public KochZhaoExtractor(ImageHandler img, int? seed = null, bool verticalHiding = false, int threshold = 120)
+        public KochZhaoExtractor(ImageHandler img, int? seed = null, TraverseType traverseType = TraverseType.Horizontal, int threshold = 120)
             : this(img)
         {
             Params.Seed = seed;
-            Params.VerticalHiding = verticalHiding;
+            Params.TraverseType = traverseType;
             Params.Threshold = threshold;
         }
 

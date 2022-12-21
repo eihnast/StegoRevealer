@@ -67,7 +67,7 @@ namespace StegoRevealer.StegoCore.StegoMethods
         /// <summary>
         /// Вести скрытие по вертикалям (столбцам пикселей, а не линиям)
         /// </summary>
-        public abstract bool VerticalHiding { get; set; }
+        public abstract TraverseType TraverseType { get; set; }
 
         /// <summary>
         /// Начальные индексы скрытия (пиксели/блоки) в разных каналах

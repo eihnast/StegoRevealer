@@ -1,4 +1,5 @@
 ﻿using Accord.IO;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ScMath;
@@ -369,7 +370,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             if (Params.Image.ImgArray.Height % Params.BlockHeight != 0)
                 blocksInColumnNum++;
 
-            if (!Params.IsVerticalTraverse)  // Горизонтальный обход
+            if (Params.TraverseType is TraverseType.Horizontal)  // Горизонтальный обход
             {
                 for (int y = 0; y < blocksInColumnNum; y++)
                     for (int x = 0; x < blocksInLineNum; x++)

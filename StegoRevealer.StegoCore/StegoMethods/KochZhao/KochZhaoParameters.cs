@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
@@ -85,12 +86,12 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             = new UniqueList<ImgChannel> { ImgChannel.Blue };
 
 
-        private ScImageBlocks _imgBlocks;
+        private ImageBlocks _imgBlocks;
 
         /// <summary>
         /// Матрица блоков изображения
         /// </summary>
-        public ScImageBlocks ImgBlocks { get { return _imgBlocks; } }
+        public ImageBlocks ImgBlocks { get { return _imgBlocks; } }
 
         /// <summary>
         /// Порог для разницы коэффициентов скрытия
@@ -102,7 +103,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public override bool InterlaceChannels { get; set; } = true;
 
         /// <inheritdoc/>
-        public override bool VerticalHiding { get; set; } = false;
+        public override TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
 
         // Стартовые индексы
@@ -152,7 +153,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
         public KochZhaoParameters(ImageHandler imgHandler) : base(imgHandler)
         {
-            _imgBlocks = new ScImageBlocks(this);
+            var blockParameters = new ImageBlocksParameters(Image, BlockSize);
+            _imgBlocks = new ImageBlocks(blockParameters);
         }
 
 
@@ -168,7 +170,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             _toExtractBitLength = 0;
             Data = "";
 
-            _imgBlocks = new ScImageBlocks(this);
+            var blockParameters = new ImageBlocksParameters(Image, BlockSize);
+            _imgBlocks = new ImageBlocks(blockParameters);
             _startBlocks = GetDefaultStartBlocks();
         }
 

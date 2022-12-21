@@ -183,7 +183,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             }
             kzhaParams.StartBlocks = startBlocks;
             kzhaParams.InterlaceChannels = false;
-            kzhaParams.VerticalHiding = Params.IsVerticalTraverse;
+            kzhaParams.TraverseType = Params.TraverseType;
 
             return kzhaParams;
         }
@@ -204,7 +204,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             }
             kzhaParams.StartBlocks = startBlocks;
             kzhaParams.InterlaceChannels = false;
-            kzhaParams.VerticalHiding = Params.IsVerticalTraverse;
+            kzhaParams.TraverseType = Params.TraverseType;
             kzhaParams.HidingCoeffs = analysisResult.Coefficients;
             kzhaParams.ToExtractBitLength = analysisResult.MessageBitsVolume;
             kzhaParams.StegoOperation = StegoOperationType.Extracting;

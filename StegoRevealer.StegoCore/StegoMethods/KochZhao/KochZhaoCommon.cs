@@ -1,5 +1,7 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
@@ -21,9 +23,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// </summary>
         public static Sc2DPoint GetBlockByLinearIndex(int linearIndex, KochZhaoParameters parameters)
         {
-            ScImageBlocks blocks = parameters.ImgBlocks;
+            ImageBlocks blocks = parameters.ImgBlocks;
 
-            if (!parameters.VerticalHiding)
+            if (parameters.TraverseType is TraverseType.Horizontal)
             {
                 int line = linearIndex / blocks.BlocksInRow;
                 int column = linearIndex % blocks.BlocksInRow;
@@ -84,7 +86,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// </summary>
         public static Sc2DPoint GetBlockCoords(Sc2DPoint gridCoords, KochZhaoParameters parameters)
         {
-            return parameters.ImgBlocks[gridCoords.Y, gridCoords.X];
+            return parameters.ImgBlocks[gridCoords.Y, gridCoords.X].lt;
         }
 
 
@@ -185,7 +187,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         public static IEnumerable<ScPointCoords> GetForRandomAccessIndex(
             KochZhaoParameters parameters, int? blocksNum = null)
         {
-            ScImageBlocks blocksGrid = parameters.ImgBlocks;
+            ImageBlocks blocksGrid = parameters.ImgBlocks;
             var rnd = parameters.Seed.HasValue ? new Random(parameters.Seed.Value) : new Random();
 
             int blocksLinearLength = parameters.GetAllBlocksNum();

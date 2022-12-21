@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
@@ -29,7 +30,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         /// </summary>
         public static Sc2DPoint GetPixelCoordsByIndex(int index, LsbParameters parameters)
         {
-            if (!parameters.VerticalHiding)
+            if (parameters.TraverseType is TraverseType.Horizontal)
             {
                 int line = index / parameters.Image.ImgArray.Width;
                 int column = index % parameters.Image.ImgArray.Width;

@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
@@ -28,7 +29,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
 
         public bool TryToExtract { get; set; } = true;
 
-        public bool IsVerticalTraverse { get; set; } = false;
+        public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
 
         public KzhaParamsDto() { }
@@ -47,7 +48,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
                 AnalysisCoeffs.Add(coeff);
 
             TryToExtract = parameters.TryToExtract;
-            IsVerticalTraverse = parameters.IsVerticalTraverse;
+            TraverseType = parameters.TraverseType;
         }
 
         /// <inheritdoc/>
@@ -68,7 +69,7 @@ namespace StegoRevealer.WinUi.Lib.MethodsHelper
                 parameters.AnalysisCoeffs.Add(coeff);
 
             parameters.TryToExtract = TryToExtract;
-            parameters.IsVerticalTraverse = IsVerticalTraverse;
+            parameters.TraverseType = TraverseType;
         }
     }
 }

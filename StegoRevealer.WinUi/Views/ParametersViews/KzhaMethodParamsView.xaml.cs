@@ -1,6 +1,7 @@
 ﻿using HandyControl.Tools.Extension;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
@@ -60,8 +61,8 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
             TryToExtract.IsChecked = parameters.TryToExtract;
             CutCoefficient.Value = parameters.CutCoefficient;
             Threshold.Value = parameters.Threshold;
-            TraverseChoice_Horizontal.IsChecked = !parameters.IsVerticalTraverse;
-            TraverseChoice_Vertical.IsChecked = parameters.IsVerticalTraverse;
+            TraverseChoice_Horizontal.IsChecked = parameters.TraverseType is TraverseType.Horizontal;
+            TraverseChoice_Vertical.IsChecked = parameters.TraverseType is TraverseType.Vertical;
             IsChannelChecked_Red.IsChecked = parameters.Channels.Contains(ImgChannel.Red);
             IsChannelChecked_Green.IsChecked = parameters.Channels.Contains(ImgChannel.Green);
             IsChannelChecked_Blue.IsChecked = parameters.Channels.Contains(ImgChannel.Blue);
@@ -77,9 +78,11 @@ namespace StegoRevealer.WinUi.Views.ParametersViews
             result.Threshold = Threshold.Value;
 
             if (TraverseChoice_Vertical.IsChecked.HasValue && TraverseChoice_Horizontal.IsChecked.HasValue)
-                result.IsVerticalTraverse = TraverseChoice_Vertical.IsChecked.Value && !TraverseChoice_Horizontal.IsChecked.Value;
+                result.TraverseType = (TraverseChoice_Vertical.IsChecked.Value && !TraverseChoice_Horizontal.IsChecked.Value 
+                    ? TraverseType.Vertical
+                    : TraverseType.Horizontal);
             else
-                result.IsVerticalTraverse = false;
+                result.TraverseType = TraverseType.Horizontal;
 
             result.Channels = new();
             if (IsChannelChecked_Red.IsChecked.HasValue && IsChannelChecked_Red.IsChecked.Value)
