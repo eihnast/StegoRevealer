@@ -73,15 +73,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
-            var traversalOptions = new BlocksTraverseOptions()
-            {
-                Channels = kzParams.Channels,
-                StartBlocks = kzParams.StartBlocks,
-                TraverseType = kzParams.TraverseType,
-                InterlaceChannels = kzParams.InterlaceChannels,
-                Seed = kzParams.Seed
-            };
-
+            var traversalOptions = new BlocksTraverseOptions(kzParams);
             foreach (var block in iterator(kzParams.ImgBlocks, traversalOptions, usedBlocksNum))
             {
                 var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());

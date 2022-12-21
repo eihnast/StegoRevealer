@@ -48,12 +48,34 @@ namespace StegoRevealer.StegoCore.StegoMethods
 
 
         /// <summary>
+        /// Проверяет, существует ли заданное значение для указанного канала
+        /// </summary>
+        public bool HasValueForChannel(ImgChannel channel) => _values.ContainsKey(channel);
+
+        /// <summary>
+        /// Возвращает список каналов, для которых указаны стартовые значения в текущем хранилище
+        /// </summary>
+        public List<ImgChannel> GetAddedImgChannels() => _values.Keys.ToList();
+
+
+        /// <summary>
         /// Возвращает нулевые стартовые индексы для указанных каналов
         /// </summary>
         public static StartValues GetZeroStartValues(ICollection<ImgChannel> channels)
         {
             StartValues startValues = new();
             foreach (var channel in channels)
+                startValues[channel] = 0;
+            return startValues;
+        }
+
+        /// <summary>
+        /// Возвращает нулевые стартовые индексы для всех возможных каналов
+        /// </summary>
+        public static StartValues GetZeroStartValues()
+        {
+            StartValues startValues = new();
+            foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
                 startValues[channel] = 0;
             return startValues;
         }

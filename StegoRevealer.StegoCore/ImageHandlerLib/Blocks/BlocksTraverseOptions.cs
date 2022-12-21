@@ -1,20 +1,102 @@
-﻿using StegoRevealer.StegoCore.CommonLib;
+﻿using Accord;
+using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.StegoMethods;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
 {
+    /// <summary>
+    /// DTO-класс параметров поблочного обхода изображения
+    /// </summary>
     public class BlocksTraverseOptions
     {
-        public UniqueList<ImgChannel> Channels { get; set; }
-        public StartValues StartBlocks { get; set; }
+        /// <summary>
+        /// Список каналов
+        /// </summary>
+        public UniqueList<ImgChannel> Channels { get; set; } = new UniqueList<ImgChannel>();
+
+        /// <summary>
+        /// Список начальных значений
+        /// </summary>
+        public StartValues StartBlocks { get; set; } = StartValues.GetZeroStartValues();
+
+        /// <summary>
+        /// Тип обхода
+        /// </summary>
         public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
+
+        /// <summary>
+        /// Флаг включения чересканального обхода
+        /// </summary>
         public bool InterlaceChannels { get; set; } = false;
+
+        /// <summary>
+        /// Ключ генератора ГПСЧ<br/>
+        /// Если не null, метод обхода будет считаться псевдослучайным
+        /// </summary>
         public int? Seed { get; set; } = null;
+
+
+        // Конструкторы
+
+        /// <summary>
+        /// Создаёт параметры обхода по умолчанию
+        /// </summary>
+        public BlocksTraverseOptions() { }
+
+        /// <summary>
+        /// Создаёт параметры обхода с указанными значениями<br/>
+        /// Передача null (или отсутствие передачи) любого параметра, кроме <paramref name="seed"/> будет означать
+        /// установку значения для этого параметра по умолчанию
+        /// </summary>
+        public BlocksTraverseOptions(
+            UniqueList<ImgChannel>? channels = null, StartValues? startBlocks = null, TraverseType? traverseType = null, 
+            bool? interlaceChannels = null, int? seed = null)
+        {
+            if (channels is not null)
+                Channels = CloneChannelsList(channels);
+            if (startBlocks is not null)
+                StartBlocks = CloneStartValues(startBlocks);
+            if (traverseType.HasValue)
+                TraverseType = traverseType.Value;
+            if (interlaceChannels.HasValue)
+                InterlaceChannels = interlaceChannels.Value;
+            Seed = seed;
+        }
+
+        /// <summary>
+        /// Создаёт параметры обхода из параметров метода Коха-Жао
+        /// </summary>
+        public BlocksTraverseOptions(KochZhaoParameters parameters)
+        {
+            Channels = CloneChannelsList(parameters.Channels);
+            StartBlocks = CloneStartValues(parameters.StartBlocks);
+            TraverseType = parameters.TraverseType;
+            InterlaceChannels = parameters.InterlaceChannels;
+            Seed = parameters.Seed;
+        }
+
+
+        // Вспомогательные методы
+
+        // Клонирует список каналов
+        private static UniqueList<ImgChannel> CloneChannelsList(UniqueList<ImgChannel> channels)
+        {
+            var clonedChannels = new UniqueList<ImgChannel>();
+            foreach (var channel in channels)
+                clonedChannels.Add(channel);
+            return clonedChannels;
+        }
+
+        // Клонирует список стартовых значений
+        private StartValues CloneStartValues(StartValues startValues)
+        {
+            var clonedStartValues = new StartValues();
+            foreach (var channel in startValues.GetAddedImgChannels())
+                clonedStartValues[channel] = startValues[channel];
+            return clonedStartValues;
+        }
     }
 }

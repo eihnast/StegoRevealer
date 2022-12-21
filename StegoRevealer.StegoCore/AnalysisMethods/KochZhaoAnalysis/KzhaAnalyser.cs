@@ -83,18 +83,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             foreach (var coeff in Params.AnalysisCoeffs)
                 intervalStartIndexes.Add(coeff, 0);
 
-            var kzTraverseParams = GetKochZhaoParamsForBlocksTraversal();
+            var kzForTraverseParams = GetKochZhaoParamsForBlocksTraversal();
 
             // Расчёт последовательности C
-            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(kzTraverseParams.ImgBlocks, new BlocksTraverseOptions()
-            {
-                Channels = kzTraverseParams.Channels,
-                StartBlocks = kzTraverseParams.StartBlocks,
-                TraverseType = kzTraverseParams.TraverseType,
-                InterlaceChannels = kzTraverseParams.InterlaceChannels,
-                Seed = kzTraverseParams.Seed
-            });
-
+            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(kzForTraverseParams.ImgBlocks, new BlocksTraverseOptions(kzForTraverseParams));
             foreach (var block in iterator)
             {
                 var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());

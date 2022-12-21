@@ -80,15 +80,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             ScPointCoords? firstblockIndex = null;
             ScPointCoords? lastblockIndex = null;
 
-            var traversalOptions = new BlocksTraverseOptions()
-            {
-                Channels = Params.Channels,
-                StartBlocks = Params.StartBlocks,
-                TraverseType = Params.TraverseType,
-                InterlaceChannels = Params.InterlaceChannels,
-                Seed = Params.Seed
-            };
-
+            var traversalOptions = new BlocksTraverseOptions(Params);
             foreach (var blockIndex in iterator(Params.ImgBlocks, traversalOptions, usingBlocksNum))
             {
                 if (firstblockIndex is null)
