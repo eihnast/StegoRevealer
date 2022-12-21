@@ -1,5 +1,4 @@
 ﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
-using StegoRevealer.StegoCore.StegoMethods;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
 {
@@ -12,26 +11,26 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         private BlockCoords[,] _blocksMatrix;
 
 
-        private int _blocksInRow = 0;
-
         /// <summary>
         /// Количество блоков в строке - ширина матрицы блоков
         /// </summary>
-        public int BlocksInRow { get { return _blocksInRow; } }
+        public int BlocksInRow { get; private set; } = 0;
 
-
-        private int _blocksInColumn = 0;
 
         /// <summary>
         /// Количество блоков в столбце - высота матрицы блоков
         /// </summary>
-        public int BlocksInColumn { get { return _blocksInColumn; } }
+        public int BlocksInColumn { get; private set; } = 0;
+
+        public int BlockWidth { get => _parameters.BlockWidth; }
+        public int BlockHeight { get => _parameters.BlockHeight; }
+        public ImageHandler Image { get => _img; }
 
 
         /// <summary>
         /// Общее количество блоков
         /// </summary>
-        public int BlocksNum { get { return _blocksInColumn * _blocksInRow; } }
+        public int BlocksNum { get { return BlocksInColumn * BlocksInRow; } }
 
 
         #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
@@ -53,23 +52,23 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
                 _img = _parameters.Image;
 
             // Размеры матрицы блоков
-            _blocksInRow = _img.Width / _parameters.BlockWidth;
-            _blocksInColumn = _img.Height / _parameters.BlockHeight;
+            BlocksInRow = _img.Width / _parameters.BlockWidth;
+            BlocksInColumn = _img.Height / _parameters.BlockHeight;
 
             // Учёт возможных неполных блоков, если не установлен флаг учёта только целых блоков
             if (!_parameters.OnlyWholeBlocks)
             {
                 if (_img.Width % _parameters.BlockWidth != 0)
-                    _blocksInRow++;
+                    BlocksInRow++;
                 if (_img.Height % _parameters.BlockHeight != 0)
-                    _blocksInColumn++;
+                    BlocksInColumn++;
             }
 
             // Формирование матрицы блоков
-            _blocksMatrix = new BlockCoords[_blocksInColumn, _blocksInRow];
-            for (int y = 0; y < _blocksInColumn; y++)
+            _blocksMatrix = new BlockCoords[BlocksInColumn, BlocksInRow];
+            for (int y = 0; y < BlocksInColumn; y++)
             {
-                for (int x = 0; x < _blocksInRow; x++)
+                for (int x = 0; x < BlocksInRow; x++)
                 {
                     // Левая верхняя координата всегда существует при обходе
                     // Но если блок последний, его реальная ширина и длина могут быть меньше BlockHeight и BlockWidth -
@@ -94,19 +93,6 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         public BlockCoords this[int y, int x]
         {
             get { return _blocksMatrix[y, x]; }
-        }
-
-        /// <summary>
-        /// Доступ по индексатору списка блоков - т.е. по линейному индексу блока
-        /// </summary>
-        public BlockCoords this[int ind]
-        {
-            get 
-            {
-                int y = ind / _blocksInRow;
-                int x = ind % _blocksInRow;
-                return _blocksMatrix[y, x];
-            }
         }
     }
 }

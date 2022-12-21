@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
@@ -65,17 +66,25 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 $"isRandomHiding = {isRandomHiding}\n\tusedBlocksNum = {usedBlocksNum}");
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
-            Func<KochZhaoParameters, int?, IEnumerable<byte[,]>> iterator
-                = isRandomHiding ? KochZhaoCommon.GetForRandomAccessBlock : KochZhaoCommon.GetForLinearAccessBlock;
+            Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<byte[,]>> iterator
+                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessBlock : BlocksTraverseHelper.GetForLinearAccessBlock;
 
             int brokenBitsNum = 0;
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
-            // foreach (var block in iterator(kzParams, usedBlocksNum))
-            foreach (var block in iterator(kzParams, usedBlocksNum))
+            var traversalOptions = new BlocksTraverseOptions()
             {
-                var dctBlock = KochZhaoCommon.DctBlock(block, Params.GetBlockSize());
+                Channels = kzParams.Channels,
+                StartBlocks = kzParams.StartBlocks,
+                TraverseType = kzParams.TraverseType,
+                InterlaceChannels = kzParams.InterlaceChannels,
+                Seed = kzParams.Seed
+            };
+
+            foreach (var block in iterator(kzParams.ImgBlocks, traversalOptions, usedBlocksNum))
+            {
+                var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());
                 bool? extractedBit = ExtractBitFromDctBlock(dctBlock);
                 if (extractedBit.HasValue)
                     dataBitArray.Add(extractedBit.Value);
@@ -104,7 +113,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// <param name="dctBlock">Блок ДКП</param>
         private bool? ExtractBitFromDctBlock(double[,] dctBlock)
         {
-            var coefValues = KochZhaoCommon.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
+            var coefValues = FrequencyViewTools.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
             var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
 
             // Извлечение бита

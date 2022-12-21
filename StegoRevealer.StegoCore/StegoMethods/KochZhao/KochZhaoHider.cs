@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
@@ -70,15 +71,25 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             result.Log($"Для скрытия используется порог = {Params.Threshold}");
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
-            Func<KochZhaoParameters, int?, IEnumerable<ScPointCoords>> iterator
-                = isRandomHiding ? KochZhaoCommon.GetForRandomAccessIndex : KochZhaoCommon.GetForLinearAccessIndex;
+            Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<ScPointCoords>> iterator
+                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessIndexes : BlocksTraverseHelper.GetForLinearAccessIndexes;
 
             // Осуществление скрытия
             result.Log("Запущен цикл скрытия");
             int k = 0;  // Индекс бита данных
             ScPointCoords? firstblockIndex = null;
             ScPointCoords? lastblockIndex = null;
-            foreach (var blockIndex in iterator(Params, usingBlocksNum))
+
+            var traversalOptions = new BlocksTraverseOptions()
+            {
+                Channels = Params.Channels,
+                StartBlocks = Params.StartBlocks,
+                TraverseType = Params.TraverseType,
+                InterlaceChannels = Params.InterlaceChannels,
+                Seed = Params.Seed
+            };
+
+            foreach (var blockIndex in iterator(Params.ImgBlocks, traversalOptions, usingBlocksNum))
             {
                 if (firstblockIndex is null)
                     firstblockIndex = blockIndex;
@@ -86,10 +97,10 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                     break;
 
                 bool bitToHide = Params.DataBitArray[k];  // Бит, который скрываем в блоке
-                var block = KochZhaoCommon.GetBlockByIndex(blockIndex.Y, blockIndex.X, blockIndex.ChannelId, Params);
-                var dctBlock = KochZhaoCommon.DctBlock(block, blockSize);  // Получение матрицы ДКП
+                var block = BlocksTraverseHelper.GetBlockByIndexes(blockIndex, Params.ImgBlocks);
+                var dctBlock = FrequencyViewTools.DctBlock(block, blockSize);  // Получение матрицы ДКП
                 var newBlock = HideDataBitToDctBlock(dctBlock, bitToHide);  // Скрытие бита в блоке
-                var idctBlock = KochZhaoCommon.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока
+                var idctBlock = FrequencyViewTools.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока
                 ChangeBlockInImageArray(idctBlock, blockIndex);
 
                 k++;
@@ -119,15 +130,15 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// </summary>
         private double[,] HideDataBitToDctBlock(double[,] dctBlock, bool bit)
         {
-            var coefValues = KochZhaoCommon.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
+            var coefValues = FrequencyViewTools.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
             var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
             var newCoeffValues = coefValues;
 
             // Получение модифицированных значений коэффициентов
             if (bit == false && difference <= Params.Threshold)
-                newCoeffValues = KochZhaoCommon.GetModifiedCoeffs(newCoeffValues, Params.Threshold, true);
+                newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, Params.Threshold, true);
             else if (bit == true && difference >= -Params.Threshold)
-                newCoeffValues = KochZhaoCommon.GetModifiedCoeffs(newCoeffValues, -Params.Threshold, false);
+                newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, -Params.Threshold, false);
 
             // Изменение значений на новые в блоке
             (int coefInd1, int coefInd2) = Params.HidingCoeffs.AsTuple();

@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
 using StegoRevealer.StegoCore.StegoMethods;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
@@ -82,12 +83,21 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             foreach (var coeff in Params.AnalysisCoeffs)
                 intervalStartIndexes.Add(coeff, 0);
 
-            var kzhaParams = GetKochZhaoParamsForBlocksTraversal();
+            var kzTraverseParams = GetKochZhaoParamsForBlocksTraversal();
 
             // Расчёт последовательности C
-            foreach (var block in KochZhaoCommon.GetForLinearAccessBlock(kzhaParams))
+            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(kzTraverseParams.ImgBlocks, new BlocksTraverseOptions()
             {
-                var dctBlock = KochZhaoCommon.DctBlock(block, Params.GetBlockSize());
+                Channels = kzTraverseParams.Channels,
+                StartBlocks = kzTraverseParams.StartBlocks,
+                TraverseType = kzTraverseParams.TraverseType,
+                InterlaceChannels = kzTraverseParams.InterlaceChannels,
+                Seed = kzTraverseParams.Seed
+            });
+
+            foreach (var block in iterator)
+            {
+                var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());
                 foreach (var coeff in Params.AnalysisCoeffs)
                     cSequences[coeff].Add(GetAbsDiff(dctBlock, coeff));
             }
