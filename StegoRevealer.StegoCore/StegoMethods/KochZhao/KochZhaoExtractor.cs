@@ -73,6 +73,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
+            // TODO: Проанализировать параметры, отделить параметры обхода от параметров метода или включить первые во вторые (?)
             var traversalOptions = new BlocksTraverseOptions(kzParams);
             foreach (var block in iterator(kzParams.ImgBlocks, traversalOptions, usedBlocksNum))
             {

@@ -83,10 +83,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             foreach (var coeff in Params.AnalysisCoeffs)
                 intervalStartIndexes.Add(coeff, 0);
 
-            var kzForTraverseParams = GetKochZhaoParamsForBlocksTraversal();
+            // Разбиение на блоки и установка параметров обхода
+            var traversalOptions = GetTraversalOptions();
+            var blocks = new ImageBlocks(new ImageBlocksParameters(Params.Image, Params.GetBlockSize()));
 
             // Расчёт последовательности C
-            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(kzForTraverseParams.ImgBlocks, new BlocksTraverseOptions(kzForTraverseParams));
+            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(blocks, traversalOptions);
             foreach (var block in iterator)
             {
                 var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());
@@ -173,21 +175,21 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         /// <summary>
         /// Установка параметров для поблочного обхода массива: эти параметры обусловлены непосредственно данным методом стегоанализа
         /// </summary>
-        private KochZhaoParameters GetKochZhaoParamsForBlocksTraversal()
+        private BlocksTraverseOptions GetTraversalOptions()
         {
-            var kzhaParams = new KochZhaoParameters(Params.Image);
+            var traverseOptions = new BlocksTraverseOptions();
             var startBlocks = new StartValues();
-            kzhaParams.Channels.Clear();
+            traverseOptions.Channels.Clear();
             foreach (var channel in Params.Channels)
             {
-                kzhaParams.Channels.Add(channel);
+                traverseOptions.Channels.Add(channel);
                 startBlocks[channel] = 0;
             }
-            kzhaParams.StartBlocks = startBlocks;
-            kzhaParams.InterlaceChannels = false;
-            kzhaParams.TraverseType = Params.TraverseType;
+            traverseOptions.StartBlocks = startBlocks;
+            traverseOptions.InterlaceChannels = false;
+            traverseOptions.TraverseType = Params.TraverseType;
 
-            return kzhaParams;
+            return traverseOptions;
         }
 
         /// <summary>
@@ -196,26 +198,26 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         /// <param name="analysisResult">Результаты стегоанализа</param>
         private KochZhaoParameters GetKochZhaoParamsForAutoExtraction(KzhaResult analysisResult)
         {
-            var kzhaParams = new KochZhaoParameters(Params.Image);
+            var kzParams = new KochZhaoParameters(Params.Image);
             var startBlocks = new StartValues();
-            kzhaParams.Channels.Clear();
+            kzParams.Channels.Clear();
             foreach (var channel in Params.Channels)
             {
-                kzhaParams.Channels.Add(channel);
+                kzParams.Channels.Add(channel);
                 startBlocks[channel] = analysisResult.SuspiciousInterval?.leftInd ?? 0;
             }
-            kzhaParams.StartBlocks = startBlocks;
-            kzhaParams.InterlaceChannels = false;
-            kzhaParams.TraverseType = Params.TraverseType;
-            kzhaParams.HidingCoeffs = analysisResult.Coefficients;
-            kzhaParams.ToExtractBitLength = analysisResult.MessageBitsVolume;
-            kzhaParams.StegoOperation = StegoOperationType.Extracting;
+            kzParams.StartBlocks = startBlocks;
+            kzParams.InterlaceChannels = false;
+            kzParams.TraverseType = Params.TraverseType;
+            kzParams.HidingCoeffs = analysisResult.Coefficients;
+            kzParams.ToExtractBitLength = analysisResult.MessageBitsVolume;
+            kzParams.StegoOperation = StegoOperationType.Extracting;
 
             // Порог уменьшаем на 1 на всякий случай с учётом возможных погрешностей вычислений, иначе есть шанс "пропустить" блок из-за ошибок точности,
             // т.к. при анализе порог вычислен просто как наименьшее из значений cSequence
-            kzhaParams.Threshold = analysisResult.Threshold > 1.0 ? analysisResult.Threshold - 1.0 : analysisResult.Threshold;
+            kzParams.Threshold = analysisResult.Threshold > 1.0 ? analysisResult.Threshold - 1.0 : analysisResult.Threshold;
 
-            return kzhaParams;
+            return kzParams;
         }
 
         /// <summary>
