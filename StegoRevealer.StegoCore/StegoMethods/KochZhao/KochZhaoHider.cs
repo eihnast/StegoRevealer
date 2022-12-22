@@ -62,8 +62,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа НЗБ
             int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
             double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
-            int usingBlocksNum = Params.GetNeededToHideBlocksNum();  // Количество блоков, нужных для скрытия
-            int blockSize = Params.GetBlockSize();  // Используемый размер блока
+            int usingBlocksNum = Params.GetNeededBlocksNum();  // Количество блоков, нужных для скрытия
+            int blockSize = Params.BlockSize;  // Используемый размер блока
 
             // Логирование
             result.Log($"Установлены параметры: isRandomHiding = {isRandomHiding}, containerVolume = {containerVolume}, hidingVolume = {hidingVolume}, " +
@@ -81,6 +81,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             ScPointCoords? lastblockIndex = null;
 
             var traversalOptions = new BlocksTraverseOptions(Params);
+            // Параметры обхода применяются для получения конкретного итератора и не хранятся как часть общих параметров метода
             foreach (var blockIndex in iterator(Params.ImgBlocks, traversalOptions, usingBlocksNum))
             {
                 if (firstblockIndex is null)
@@ -147,7 +148,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         private void ChangeBlockInImageArray(byte[,] block, ScPointCoords blockIndex)
         {
             // Определение границ блока
-            var blockSize = Params.GetBlockSize();
+            var blockSize = Params.BlockSize;
             int maxY = blockIndex.Y + blockSize;
             int maxX = blockIndex.X + blockSize;
 

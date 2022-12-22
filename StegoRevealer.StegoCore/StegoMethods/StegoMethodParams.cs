@@ -87,8 +87,8 @@ namespace StegoRevealer.StegoCore.StegoMethods
         public abstract void Reset();
 
         /// <summary>
-        /// Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации
+        /// Количество цветовых байт, которое необходимо для сокрытия/извлечения всей информации
         /// </summary>
-        public abstract int GetNeededToHideColorBytesNum(int? dataBitLength = null);
+        public abstract int GetNeededColorBytesNum(int? dataBitLength = null);
     }
 }

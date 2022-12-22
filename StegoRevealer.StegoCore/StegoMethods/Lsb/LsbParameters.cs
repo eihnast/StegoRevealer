@@ -76,7 +76,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         }
 
         /// <inheritdoc/>
-        public override int ToExtractColorBytesNum { get { return GetNeededToHideColorBytesNum(ToExtractBitLength); } }
+        public override int ToExtractColorBytesNum { get { return GetNeededColorBytesNum(ToExtractBitLength); } }
 
 
         /// <inheritdoc/>
@@ -200,7 +200,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
         // Количество цветовых байт, которое необходимо для сокрытия (извлечения) всей информации (с учётом числа НЗБ)
         /// <inheritdoc/>
-        public override int GetNeededToHideColorBytesNum(int? dataBitLength = null)
+        public override int GetNeededColorBytesNum(int? dataBitLength = null)
         {
             if (dataBitLength is null)
                 dataBitLength = DataBitLength;
@@ -217,7 +217,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
             // Длина данных, делённая на число используемых НЗБ
             // Т.о. дальше работаем с числом необходимых для скрытия пикселей с учётом количества скрываемых бит на пиксель
-            int tempDataNum = GetNeededToHideColorBytesNum();
+            int tempDataNum = GetNeededColorBytesNum();
 
             var allVolume = CalcRealContainerVolume();  // Объём в пикселях (без учёта числа НЗБ)
             if (tempDataNum > allVolume)  // Сдвигаем в 0, если объём данных не меньше всего контейнера
