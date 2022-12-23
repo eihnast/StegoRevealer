@@ -21,7 +21,6 @@ namespace StegoRevealer.WinUi.ViewModels
 {
     // TODO: Реализовать форму или окно для нормального вывода результатов
     // TODO: Иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
-    // TODO: Поведение при сценарии: (СА с визуализацией - Не менять изображение - СА без визуализации) - подгружать раскрашенное
 
     /// <summary>
     /// ViewModel представления StegoAnalyzer - окно стегоанализатора
@@ -248,6 +247,11 @@ namespace StegoRevealer.WinUi.ViewModels
                 if (ActiveMethods[method])
                     results[method] = methodTasks[method]?.Result;
             }
+
+            // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
+            var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
+            if (chiRes is not null)
+                DrawCurrentImage();
             
             timer.Stop();  // Остановка таймера
             ProcessAnalysisResults(results, timer);
