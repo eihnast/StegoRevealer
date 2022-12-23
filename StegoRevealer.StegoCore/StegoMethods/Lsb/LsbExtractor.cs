@@ -2,6 +2,8 @@
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.StegoMethods.KochZhao;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {
@@ -34,29 +36,40 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
 
         /// <inheritdoc/>
-        public IExtractResult Extract()
-        {
-            return Extract(Params);
-        }
+        public IExtractResult Extract() => ExtractAlgorithm();
 
         /// <inheritdoc/>
         public IExtractResult Extract(IParams parameters)
         {
             LsbExtractResult result = new();
-            result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
 
             LsbParameters? lsbParams = parameters as LsbParameters;
-            if (lsbParams is null)  // Не удалось привести к LsbParameters
+            if (lsbParams is null)  // Не удалось привести к KochZhaoParameters
             {
-                result.Error("lsbParams является null");
+                result.Error("kzParams является null");
                 return result;
             }
+
+            // Замена параметров на переданные
+            var oldLsbParams = Params;
+            Params = lsbParams;
+
+            result = ExtractAlgorithm();
+            Params = oldLsbParams;  // Возврат параметров
+            return result;
+        }
+
+        // Логика метода с текущими параметрами
+        private LsbExtractResult ExtractAlgorithm()
+        { 
+            LsbExtractResult result = new();
+            result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
 
             List<bool> dataBitArray = new();  // Массив извлечённых данных
 
             // Доопределение параметров извлечения
-            bool isRandomHiding = lsbParams.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
-            int usedColorBytesNum = lsbParams.ToExtractColorBytesNum;  // Количество извлекаемых байт цвета
+            bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
+            int usedColorBytesNum = Params.ToExtractColorBytesNum;  // Количество извлекаемых байт цвета
             result.Log($"Установлены параметры:\n\t" +
                 $"isRandomHiding = {isRandomHiding}\n\tusedColorBytesNum = {usedColorBytesNum}");
 
@@ -66,11 +79,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
-            foreach (var blockCoords in iterator(usedColorBytesNum, lsbParams))
+            foreach (var blockCoords in iterator(usedColorBytesNum, Params))
             {
                 (int line, int column, int channel) = blockCoords.AsTuple();
-                byte colorByte = lsbParams.Image.ImgArray[line, column, channel];
-                BitArray extractedBits = ExtractBitsFromColorByte(colorByte, lsbParams.LsbNum);
+                byte colorByte = Params.Image.ImgArray[line, column, channel];
+                BitArray extractedBits = ExtractBitsFromColorByte(colorByte, Params.LsbNum);
                 for (int i = 0; i < extractedBits.Length; i++)
                     dataBitArray.Add(extractedBits[i]);
             }

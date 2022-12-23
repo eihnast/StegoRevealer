@@ -6,14 +6,14 @@
     public interface IExtractor
     {
         /// <summary>
-        /// Запуск извлечения информации с указанными параметрами
+        /// Запуск извлечения информации
+        /// </summary>
+        public IExtractResult Extract();
+
+        /// <summary>
+        /// Запуск извлечения информации со специфическими переданными параметрами
         /// </summary>
         /// <param name="parameters">Параметры</param>
         public IExtractResult Extract(IParams parameters);
-
-        /// <summary>
-        /// Запуск извлечения информации со стандартными параметрами
-        /// </summary>
-        public IExtractResult Extract();
     }
 }

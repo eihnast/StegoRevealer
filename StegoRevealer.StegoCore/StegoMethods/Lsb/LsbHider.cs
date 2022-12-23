@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Threading.Channels;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 {
@@ -45,8 +46,32 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         }
 
         /// <inheritdoc/>
-        public IHideResult Hide(string? data)
+        public IHideResult Hide(string? data) => HideAlgorithm(data);
+
+        /// <inheritdoc/>
+        public IHideResult Hide(IParams parameters, string? data)
         {
+            LsbHideResult result = new();
+
+            LsbParameters? lsbParams = parameters as LsbParameters;
+            if (lsbParams is null)  // Не удалось привести к KochZhaoParameters
+            {
+                result.Error("lsbParams является null");
+                return result;
+            }
+
+            // Замена параметров на переданные
+            var oldLsbParams = Params;
+            Params = lsbParams;
+
+            result = HideAlgorithm(data);
+            Params = oldLsbParams;  // Возврат параметров
+            return result;
+        }
+
+        // Логика метода с текущими параметрами
+        private LsbHideResult HideAlgorithm(string? data)
+        { 
             LsbHideResult result = new();  // Результаты скрытия
             result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
 

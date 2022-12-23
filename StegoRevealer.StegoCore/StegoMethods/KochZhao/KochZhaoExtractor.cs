@@ -3,6 +3,7 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
@@ -39,16 +40,12 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
 
         /// <inheritdoc/>
-        public IExtractResult Extract()
-        {
-            return Extract(Params);
-        }
+        public IExtractResult Extract() => ExtractAlgorithm();
 
         /// <inheritdoc/>
         public IExtractResult Extract(IParams parameters)
         {
             KochZhaoExtractResult result = new();
-            result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
 
             KochZhaoParameters? kzParams = parameters as KochZhaoParameters;
             if (kzParams is null)  // Не удалось привести к KochZhaoParameters
@@ -57,11 +54,26 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 return result;
             }
 
+            // Замена параметров на переданные
+            var oldKzParams = Params;
+            Params = kzParams;
+
+            result = ExtractAlgorithm();
+            Params = oldKzParams;  // Возврат параметров
+            return result;
+        }
+
+        // Логика метода с текущими параметрами
+        private KochZhaoExtractResult ExtractAlgorithm()
+        {
+            KochZhaoExtractResult result = new();
+            result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
+
             List<bool> dataBitArray = new();  // Массив извлечённых данных
 
             // Доопределение параметров извлечения
-            bool isRandomHiding = kzParams.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
-            int usedBlocksNum = kzParams.ToExtractBitLength;  // Количество извлекаемых бит => блоков
+            bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
+            int usedBlocksNum = Params.ToExtractBitLength;  // Количество извлекаемых бит => блоков
             result.Log($"Установлены параметры:\n\t" +
                 $"isRandomHiding = {isRandomHiding}\n\tusedBlocksNum = {usedBlocksNum}");
 
@@ -73,8 +85,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Осуществление извлечения
             result.Log("Запущен цикл извлечения");
-            var traversalOptions = new BlocksTraverseOptions(kzParams);
-            foreach (var block in iterator(kzParams.ImgBlocks, traversalOptions, usedBlocksNum))
+            var traversalOptions = new BlocksTraverseOptions(Params);
+            foreach (var block in iterator(Params.ImgBlocks, traversalOptions, usedBlocksNum))
             {
                 var dctBlock = FrequencyViewTools.DctBlock(block, Params.BlockSize);
                 bool? extractedBit = ExtractBitFromDctBlock(dctBlock);

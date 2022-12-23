@@ -11,6 +11,11 @@
         /// <param name="data">Скрываемая информация</param>
         public IHideResult Hide(string? data);
 
-        // TODO: Добавить метод Hide с указанием IParams (и data) - аналогично как в IExtractor
+        /// <summary>
+        /// Запуск скрытия информации со специфическими указанными параметрами
+        /// </summary>
+        /// <param name="parameters">Параметры</param>
+        /// <param name="data">Скрываемая информация</param>
+        public IHideResult Hide(IParams parameters, string? data);
     }
 }

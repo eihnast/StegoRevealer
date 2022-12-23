@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using Accord.Math.Optimization;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
 
@@ -41,8 +42,32 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         }
 
         /// <inheritdoc/>
-        public IHideResult Hide(string? data)
+        public IHideResult Hide(string? data) => HideAlgorithm(data);
+
+        /// <inheritdoc/>
+        public IHideResult Hide(IParams parameters, string? data)
         {
+            KochZhaoHideResult result = new();
+            
+            KochZhaoParameters? kzParams = parameters as KochZhaoParameters;
+            if (kzParams is null)  // Не удалось привести к KochZhaoParameters
+            {
+                result.Error("kzParams является null");
+                return result;
+            }
+
+            // Замена параметров на переданные
+            var oldKzParams = Params;
+            Params = kzParams;
+
+            result = HideAlgorithm(data);
+            Params = oldKzParams;  // Возврат параметров
+            return result;
+        }
+
+        // Логика метода с текущими параметрами
+        private KochZhaoHideResult HideAlgorithm(string? data)
+        { 
             KochZhaoHideResult result = new();
             result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
 
