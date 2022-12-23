@@ -6,9 +6,10 @@ using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 {
-    // TODO: общее описание параметров и принципов их формирования и влияния на метод Коха-Жао
     /*
-     
+     * Текущая реализация класса параметров Коха-Жао не отслеживает корреляцию между битовой длиной данных для скрытия и
+     * доступным количеством блоков с учётом выбора стартовых пикселей. Таким образом, битовая длина информации, записанной
+     * в параметры, может быть больше, чем доступное для скрытия число блоков. При процедуре скрытия следует это отслеживать.
      */
 
     /// <summary>
@@ -47,7 +48,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
 
         // Данные для скрытия
-        private string _data = "";
+        private string _data = string.Empty;
 
         /// <inheritdoc/>
         public override string Data
