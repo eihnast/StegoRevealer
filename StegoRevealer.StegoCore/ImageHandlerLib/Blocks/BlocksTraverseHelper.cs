@@ -108,9 +108,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
             var blockPixelsIndexes = blocks[line, column];
             var block = new byte[blocks.BlockHeight, blocks.BlockWidth];
 
-            for (int i = blockPixelsIndexes.Lt.Y; i < blockPixelsIndexes.Rd.Y; i++)
-                for (int j = blockPixelsIndexes.Lt.X; j < blockPixelsIndexes.Rd.X; j++)
-                    block[i - line, j - column] = blocks.Image.ImgArray[i, j, channelId];
+            for (int i = blockPixelsIndexes.Lt.Y; i <= blockPixelsIndexes.Rd.Y; i++)
+                for (int j = blockPixelsIndexes.Lt.X; j <= blockPixelsIndexes.Rd.X; j++)
+                    block[i - blockPixelsIndexes.Lt.Y, j - blockPixelsIndexes.Lt.X] = blocks.Image.ImgArray[i, j, channelId];
 
             return block;
         }

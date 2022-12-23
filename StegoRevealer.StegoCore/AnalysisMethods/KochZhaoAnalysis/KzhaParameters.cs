@@ -5,6 +5,7 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {
+    // TODO: Отрефакторить параметры СА Коха-Жао
     /// <summary>
     /// Параметры стегоанализа метода Коха-Жао
     /// </summary>

@@ -7,6 +7,7 @@ using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
+    // TODO: Перевод всех трёх методов СА на новую систему ImageBlocks и поблочный обход
     /// <summary>
     /// Стегоанализатор по методу Хи-квадрат
     /// </summary>

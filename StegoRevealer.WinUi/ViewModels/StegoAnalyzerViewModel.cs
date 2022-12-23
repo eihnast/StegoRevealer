@@ -12,15 +12,16 @@ using StegoRevealer.WinUi.Views.ParametersViews;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace StegoRevealer.WinUi.ViewModels
 {
-    // TODO: реализовать форму или окно для нормального вывода результатов
-    // TODO: иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
-    // TODO: продумать поведение при сценарии: (СА с визуализацией - Не менять изображение - СА без визуализации) - подгружать ли не раскрашенное?
+    // TODO: Реализовать форму или окно для нормального вывода результатов
+    // TODO: Иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
+    // TODO: Поведение при сценарии: (СА с визуализацией - Не менять изображение - СА без визуализации) - подгружать раскрашенное
 
     /// <summary>
     /// ViewModel представления StegoAnalyzer - окно стегоанализатора

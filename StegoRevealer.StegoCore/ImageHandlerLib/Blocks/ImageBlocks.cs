@@ -76,8 +76,8 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
 
                     var lt = new Sc2DPoint(y * _parameters.BlockHeight, x * _parameters.BlockWidth);
                     var rd = new Sc2DPoint(
-                        Math.Min(lt.Y + _parameters.BlockHeight, _img.Height - 1),
-                        Math.Min(lt.X + _parameters.BlockWidth, _img.Width - 1)
+                        Math.Min(lt.Y + _parameters.BlockHeight - 1, _img.Height - 1),
+                        Math.Min(lt.X + _parameters.BlockWidth - 1, _img.Width - 1)
                         );
                     _blocksMatrix[y, x] = new BlockCoords(lt, rd);
                 }

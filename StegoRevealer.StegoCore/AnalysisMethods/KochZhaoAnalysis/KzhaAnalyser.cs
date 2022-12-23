@@ -70,6 +70,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         }
 
         // TODO: Перевести метод на параллельное выполнение (по набору коэффициентов)
+        // TODO: После перевода на ImageBlocks и TraversalOptions сломался СА Коха-Жао
         /// <summary>
         /// Основная логика метода стегоанализа
         /// </summary>
