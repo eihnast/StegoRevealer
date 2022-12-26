@@ -145,6 +145,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             }
         }
 
+        /// <summary>
+        /// Возвращает параметры обхода для текущих параметров метода стегоанализа
+        /// </summary>
         public BlocksTraverseOptions GetTraversalOptions() =>
             new BlocksTraverseOptions(channels: Channels, traverseType: TraverseType);
     }
