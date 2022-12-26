@@ -94,5 +94,24 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         {
             get { return _blocksMatrix[y, x]; }
         }
+
+
+        // Вспомогательные статичные методы
+        public static List<ScPixel> MapBlockToPixelsList(byte[,,] block, UniqueList<ImgChannel> channels)
+        {
+            var list = new List<ScPixel>();
+            for (int i = 0; i < block.GetLength(0); i++)
+            {
+                for (int j = 0; j < block.GetLength(1); j++)
+                {
+                    var pixel = new ScPixel();
+                    foreach (var channel in channels)
+                        pixel[(int)channel] = block[i, j, (int)channel];
+                    list.Add(pixel);
+                }
+            }
+
+            return list;
+        }
     }
 }

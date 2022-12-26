@@ -88,7 +88,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             var blocks = new ImageBlocks(new ImageBlocksParameters(Params.Image, Params.GetBlockSize()));
 
             // Расчёт последовательности C
-            var iterator = BlocksTraverseHelper.GetForLinearAccessBlock(blocks, traversalOptions);
+            var iterator = BlocksTraverseHelper.GetForLinearAccessOneChannelBlocks(blocks, traversalOptions);
             foreach (var block in iterator)
             {
                 var dctBlock = FrequencyViewTools.DctBlock(block, Params.GetBlockSize());

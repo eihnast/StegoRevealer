@@ -5,7 +5,6 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
 {
-    // TODO: Отрефакторить параметры СА Коха-Жао
     /// <summary>
     /// Параметры стегоанализа метода Коха-Жао
     /// </summary>
@@ -43,11 +42,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             HidingCoefficients.Coeff45
         };
 
-        private const int BlockSize = 8;  // Линейный размер блока матрицы ДКП
         /// <summary>
         /// Возвращает линейный размер блока матрицы ДКП
         /// </summary>
-        public int GetBlockSize() => BlockSize;
+        public int BlockSize { get; } = 8;
 
         /// <summary>
         /// Пробовать извлечь информацию автоматически

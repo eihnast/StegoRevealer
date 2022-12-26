@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
@@ -14,7 +15,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// <summary>
         /// Изображение
         /// </summary>
-        public ImageHandler Image 
+        public ImageHandler Image
         {
             get => _image;
             set
@@ -26,6 +27,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 _image = value;
             }
         }
+
+        /// <summary>
+        /// Матрица блоков изображения
+        /// </summary>
+        public ImageBlocks ImgBlocks { get; private set; }
 
         /// <summary>
         /// Визуализировать подозрительную область
@@ -78,15 +84,37 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         public UniqueList<ImgChannel> Channels { get; }
             = new UniqueList<ImgChannel> { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
 
+
+        // Параметры блоков - влияют на формирование матрицы блоков
+
+        private int _blockWidth;
+        private int _blockHeight;
+
         /// <summary>
         /// Ширина анализируемого блока
         /// </summary>
-        public int BlockWidth { get; set; }
+        public int BlockWidth
+        {
+            get => _blockWidth;
+            set
+            {
+                _blockWidth = value;
+                UpdateBlocks();
+            }
+        }
 
         /// <summary>
         /// Высота анализируемого блока
         /// </summary>
-        public int BlockHeight { get; set; } = 1;
+        public int BlockHeight
+        {
+            get => _blockHeight;
+            set
+            {
+                _blockHeight = value;
+                UpdateBlocks();
+            }
+        }
 
 
         public bool UseIncreasedCnum { get; set; } = true;
@@ -96,7 +124,28 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         {
             _image = image;
             BlockWidth = Image.Width;  // По умолчанию анализ ведётся по строкам
+            BlockHeight = 1;
+
+            var blockParameters = new ImageBlocksParameters(Image, BlockWidth, BlockHeight);
+            ImgBlocks = new ImageBlocks(blockParameters);
         }
 
+
+        // Вспомогательные методы
+
+        /// <summary>
+        /// Пересоздаёт матрицу блоков, если ширина или высота блока изменились
+        /// </summary>
+        private void UpdateBlocks()
+        {
+            if (BlockWidth != ImgBlocks.BlockWidth || BlockHeight != ImgBlocks.BlockHeight)
+            {
+                var blockParameters = new ImageBlocksParameters(Image, BlockWidth, BlockHeight);
+                ImgBlocks = new ImageBlocks(blockParameters);
+            }
+        }
+
+        public BlocksTraverseOptions GetTraversalOptions() =>
+            new BlocksTraverseOptions(channels: Channels, traverseType: TraverseType);
     }
 }

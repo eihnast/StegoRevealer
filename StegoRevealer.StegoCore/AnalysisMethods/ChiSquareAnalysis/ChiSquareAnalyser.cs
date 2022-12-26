@@ -1,9 +1,10 @@
-﻿using Accord.IO;
+﻿using System.Threading.Channels;
+using Accord.IO;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
-using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
@@ -21,7 +22,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         public ChiSquareParameters Params { get; set; }
 
         // Список координат блоков (кортежи: левые верхние и правые нижние координаты), заполняется при первом проходе по массиву пикселей
-        private List<(Sc2DPoint lt, Sc2DPoint rd)>? _lazyBlocksCoordsList = null;
+        // private List<(Sc2DPoint lt, Sc2DPoint rd)>? _lazyBlocksCoordsList = null;
 
 
         public ChiSquareAnalyser(ImageHandler image)
@@ -52,10 +53,12 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
             int blockNumber = 0;  // Счётчик блоков
 
             var toColorizeChannels = new List<ImgChannel>();
+            var traversalOptions = Params.GetTraversalOptions();
+            var iterator = BlocksTraverseHelper.GetForLinearAccessBlocks(Params.ImgBlocks, traversalOptions);
 
-            foreach (var pixelsBlockInfo in GetNextBlockPixels())
+            foreach (var block in iterator)
             {
-                var pixels = pixelsBlockInfo.pixelsList;  // Список пикселей блока
+                var pixels = ImageBlocks.MapBlockToPixelsList(block, traversalOptions.Channels);
 
                 // Формирование массива количеств цветов
                 if (Params.UsePreviousCnums)
@@ -86,9 +89,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 if (verboseLog)
                 {
                     result.Log($"Блок № {blockNumber}");
-                    result.Log($"\tКоординаты блока в сетке блоков: " +
-                        $"({pixelsBlockInfo.blockIndex.X}, {pixelsBlockInfo.blockIndex.Y})");
-                    result.Log($"\tБлок содержит {pixelsBlockInfo.pixelsList.Count} пикселей");
+                    result.Log($"\tБлок содержит {pixels.Count} пикселей");
                     result.Log(string.Format("\tChi-Square: {0:f2}\tP-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
                     result.Log("");
                 }
@@ -135,23 +136,27 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         {
             var colorizedImage = Params.Image.Clone();
 
-            if (_lazyBlocksCoordsList is null || _lazyBlocksCoordsList.Count != channelsToColorizeInBlock.Count)
-                return colorizedImage;  // Вернёт копию изображения без визуализации скрытия
+            // Используется обход координат - можно запускать обход старого изображения
+            var traversalOptions = Params.GetTraversalOptions();
+            var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
-            for (int i = 0; i < _lazyBlocksCoordsList.Count; i++)
+            int i = 0;
+            foreach (var blockIndexes in iterator)
             {
-                var coords = _lazyBlocksCoordsList[i];
+                var coords = Params.ImgBlocks[blockIndexes.Y, blockIndexes.X];
                 var channelId = (int)channelsToColorizeInBlock[i];
 
-                for (int y = coords.lt.Y; y <= coords.rd.Y; y++)
+                for (int y = coords.Lt.Y; y <= coords.Rd.Y; y++)
                 {
-                    for (int x = coords.lt.X; x <= coords.rd.X; x++)
+                    for (int x = coords.Lt.X; x <= coords.Rd.X; x++)
                     {
                         var colorByte = colorizedImage.ImgArray[y, x, channelId];
                         var newValue = Convert.ToByte(Math.Min((int)colorByte + colorOffset, 255));
                         colorizedImage.ImgArray[y, x, channelId] = newValue;
                     }
                 }
+
+                i++;
             }
 
             return colorizedImage;
@@ -325,66 +330,66 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// <summary>
         /// Возвращает одномерный список пикселей следующего блока
         /// </summary>
-        private IEnumerable<(List<ScPixel> pixelsList, Sc2DPoint blockIndex)> GetNextBlockPixels()
-        {
-            _lazyBlocksCoordsList = new();
+        //private IEnumerable<(List<ScPixel> pixelsList, Sc2DPoint blockIndex)> GetNextBlockPixels()
+        //{
+        //    _lazyBlocksCoordsList = new();
 
-            foreach (var blockCoords in GetNextBlockIndexInGrid())
-            {
-                (int y, int x) = blockCoords.AsTuple();
-                var imar = Params.Image.ImgArray;
-                List<ScPixel> pixels = new();
+        //    foreach (var blockCoords in GetNextBlockIndexInGrid())
+        //    {
+        //        (int y, int x) = blockCoords.AsTuple();
+        //        var imar = Params.Image.ImgArray;
+        //        List<ScPixel> pixels = new();
 
-                int blockRealWidth = Params.BlockWidth;  // Учёт пикселей неполноценного блока в ширину
-                if (Params.BlockWidth * (x + 1) > Params.Image.ImgArray.Width)
-                    blockRealWidth = Params.Image.ImgArray.Width - Params.BlockWidth * (x + 1);
-                int blockRealHeight = Params.BlockHeight;  // Учёт пикселей неполноценного блока в высоту
-                if (Params.BlockHeight * (y + 1) > Params.Image.ImgArray.Height)
-                    blockRealHeight = Params.Image.ImgArray.Height - Params.BlockHeight * (y + 1);
+        //        int blockRealWidth = Params.BlockWidth;  // Учёт пикселей неполноценного блока в ширину
+        //        if (Params.BlockWidth * (x + 1) > Params.Image.ImgArray.Width)
+        //            blockRealWidth = Params.Image.ImgArray.Width - Params.BlockWidth * (x + 1);
+        //        int blockRealHeight = Params.BlockHeight;  // Учёт пикселей неполноценного блока в высоту
+        //        if (Params.BlockHeight * (y + 1) > Params.Image.ImgArray.Height)
+        //            blockRealHeight = Params.Image.ImgArray.Height - Params.BlockHeight * (y + 1);
 
-                for (int innerY = 0; innerY < blockRealHeight; innerY++)
-                    for (int innerX = 0; innerX < blockRealWidth; innerX++)
-                        pixels.Add(imar[Params.BlockHeight * y + innerY, Params.BlockWidth * x + innerX]);
+        //        for (int innerY = 0; innerY < blockRealHeight; innerY++)
+        //            for (int innerX = 0; innerX < blockRealWidth; innerX++)
+        //                pixels.Add(imar[Params.BlockHeight * y + innerY, Params.BlockWidth * x + innerX]);
 
-                // Заполнение списка координат блоков
-                var coords = (
-                    new Sc2DPoint(Params.BlockHeight * y, Params.BlockWidth * x), 
-                    new Sc2DPoint(Params.BlockHeight * y + blockRealHeight - 1, Params.BlockWidth * x + blockRealWidth - 1)
-                    );
-                _lazyBlocksCoordsList.Add(coords);
+        //        // Заполнение списка координат блоков
+        //        var coords = (
+        //            new Sc2DPoint(Params.BlockHeight * y, Params.BlockWidth * x), 
+        //            new Sc2DPoint(Params.BlockHeight * y + blockRealHeight - 1, Params.BlockWidth * x + blockRealWidth - 1)
+        //            );
+        //        _lazyBlocksCoordsList.Add(coords);
 
-                yield return (pixels, new Sc2DPoint(y, x));
-            }
+        //        yield return (pixels, new Sc2DPoint(y, x));
+        //    }
 
-            yield break;
-        }
+        //    yield break;
+        //}
 
         /// <summary>
         /// Возвращает индексы следующего блока с учётом варианта обхода
         /// </summary>
-        private IEnumerable<Sc2DPoint> GetNextBlockIndexInGrid()
-        {
-            var blocksInLineNum = Params.Image.ImgArray.Width / Params.BlockWidth;  // Количество блоков в строку
-            if (Params.Image.ImgArray.Width % Params.BlockWidth != 0)
-                blocksInLineNum++;
-            var blocksInColumnNum = Params.Image.ImgArray.Height / Params.BlockHeight;  // Количество блоков в столбец
-            if (Params.Image.ImgArray.Height % Params.BlockHeight != 0)
-                blocksInColumnNum++;
+        //private IEnumerable<Sc2DPoint> GetNextBlockIndexInGrid()
+        //{
+        //    var blocksInLineNum = Params.Image.ImgArray.Width / Params.BlockWidth;  // Количество блоков в строку
+        //    if (Params.Image.ImgArray.Width % Params.BlockWidth != 0)
+        //        blocksInLineNum++;
+        //    var blocksInColumnNum = Params.Image.ImgArray.Height / Params.BlockHeight;  // Количество блоков в столбец
+        //    if (Params.Image.ImgArray.Height % Params.BlockHeight != 0)
+        //        blocksInColumnNum++;
 
-            if (Params.TraverseType is TraverseType.Horizontal)  // Горизонтальный обход
-            {
-                for (int y = 0; y < blocksInColumnNum; y++)
-                    for (int x = 0; x < blocksInLineNum; x++)
-                        yield return new Sc2DPoint(y, x);
-            }
-            else  // Вертикальный обход
-            {
-                for (int x = 0; x < blocksInLineNum; x++)
-                    for (int y = 0; y < blocksInColumnNum; y++)
-                        yield return new Sc2DPoint(y, x);
-            }
+        //    if (Params.TraverseType is TraverseType.Horizontal)  // Горизонтальный обход
+        //    {
+        //        for (int y = 0; y < blocksInColumnNum; y++)
+        //            for (int x = 0; x < blocksInLineNum; x++)
+        //                yield return new Sc2DPoint(y, x);
+        //    }
+        //    else  // Вертикальный обход
+        //    {
+        //        for (int x = 0; x < blocksInLineNum; x++)
+        //            for (int y = 0; y < blocksInColumnNum; y++)
+        //                yield return new Sc2DPoint(y, x);
+        //    }
 
-            yield break;
-        }
+        //    yield break;
+        //}
     }
 }

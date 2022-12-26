@@ -97,7 +97,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
             Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<ScPointCoords>> iterator
-                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessIndexes : BlocksTraverseHelper.GetForLinearAccessIndexes;
+                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessOneChannelBlocksIndexes : BlocksTraverseHelper.GetForLinearAccessOneChannelBlocksIndexes;
 
             // Осуществление скрытия
             result.Log("Запущен цикл скрытия");
@@ -115,7 +115,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                     break;
 
                 bool bitToHide = Params.DataBitArray[k];  // Бит, который скрываем в блоке
-                var block = BlocksTraverseHelper.GetBlockByIndexes(blockIndex, Params.ImgBlocks);
+                var block = BlocksTraverseHelper.GetOneChannelBlockByIndexes(blockIndex, Params.ImgBlocks);
                 var dctBlock = FrequencyViewTools.DctBlock(block, blockSize);  // Получение матрицы ДКП
                 var newBlock = HideDataBitToDctBlock(dctBlock, bitToHide);  // Скрытие бита в блоке
                 var idctBlock = FrequencyViewTools.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока

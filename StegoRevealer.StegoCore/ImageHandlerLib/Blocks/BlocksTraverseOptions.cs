@@ -7,20 +7,45 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
 {
+    /*
+     * Целевое решение: создавать параметры обхода блоков на основе параметров метода непосредственно для получения
+     *   итератора по матрице блоков, когда это необходимо.
+     * Создавать объект параметров обхода как внутренний параметр хранения опций в параметрах методов не рекомендуется.
+     */
+
     /// <summary>
     /// DTO-класс параметров поблочного обхода изображения
     /// </summary>
     public class BlocksTraverseOptions
     {
+        private UniqueList<ImgChannel> _channels = new();
+        private StartValues _startValues = StartValues.GetZeroStartValues();
+
         /// <summary>
         /// Список каналов
         /// </summary>
-        public UniqueList<ImgChannel> Channels { get; set; } = new UniqueList<ImgChannel>();
+        public UniqueList<ImgChannel> Channels 
+        {
+            get => _channels;
+            set
+            {
+                if (value is not null)
+                    _channels = CloneChannelsList(value);
+            }
+        }
 
         /// <summary>
         /// Список начальных значений
         /// </summary>
-        public StartValues StartBlocks { get; set; } = StartValues.GetZeroStartValues();
+        public StartValues StartBlocks 
+        {
+            get => _startValues;
+            set
+            {
+                if (value is not null)
+                    _startValues = CloneStartValues(value);
+            }
+        }
 
         /// <summary>
         /// Тип обхода
@@ -56,9 +81,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
             bool? interlaceChannels = null, int? seed = null)
         {
             if (channels is not null)
-                Channels = CloneChannelsList(channels);
+                Channels = channels;
             if (startBlocks is not null)
-                StartBlocks = CloneStartValues(startBlocks);
+                StartBlocks = startBlocks;
             if (traverseType.HasValue)
                 TraverseType = traverseType.Value;
             if (interlaceChannels.HasValue)
@@ -82,7 +107,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         // Вспомогательные методы
 
         // Клонирует список каналов
-        private static UniqueList<ImgChannel> CloneChannelsList(UniqueList<ImgChannel> channels)
+        public static UniqueList<ImgChannel> CloneChannelsList(UniqueList<ImgChannel> channels)
         {
             var clonedChannels = new UniqueList<ImgChannel>();
             foreach (var channel in channels)
@@ -91,7 +116,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         }
 
         // Клонирует список стартовых значений
-        private StartValues CloneStartValues(StartValues startValues)
+        public static StartValues CloneStartValues(StartValues startValues)
         {
             var clonedStartValues = new StartValues();
             foreach (var channel in startValues.GetAddedImgChannels())

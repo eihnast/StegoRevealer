@@ -78,14 +78,26 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         }
 
         /// <summary>
-        /// Возвращает итератор блоков (байтовых значений блоков) по их индексам в матрице блоков и индексу канала
+        /// Возвращает итератор одноканальных блоков (байтовых значений блоков) по их индексам в матрице блоков и индексу канала
         /// </summary>
-        private static IEnumerable<byte[,]> GetBlocksIterator(
+        private static IEnumerable<byte[,]> GetOneChannelBlocksIterator(
             Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<ScPointCoords>> iterator,
             ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
             foreach (var blockCoords in iterator(blocks, options, blocksNum))
-                yield return GetBlockByIndexes(blockCoords, blocks);
+                yield return GetOneChannelBlockByIndexes(blockCoords, blocks);
+            yield break;
+        }
+
+        /// <summary>
+        /// Возвращает итератор блоков (байтовых значений блоков) по их индексам в матрице блоков и индексу канала
+        /// </summary>
+        private static IEnumerable<byte[,,]> GetBlocksIterator(
+            Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<Sc2DPoint>> iterator,
+            ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        {
+            foreach (var blockCoords in iterator(blocks, options, blocksNum))
+                yield return GetBlockByIndexes(blockCoords, blocks, options.Channels);
             yield break;
         }
 
@@ -99,9 +111,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         }
 
         /// <summary>
-        /// Возвращает блок по его индексам в матрице блоков и индексу канала
+        /// Возвращает одноканальный блок по его индексам в матрице блоков и индексу канала
         /// </summary>
-        public static byte[,] GetBlockByIndexes(ScPointCoords blockIndexes, ImageBlocks blocks)
+        public static byte[,] GetOneChannelBlockByIndexes(ScPointCoords blockIndexes, ImageBlocks blocks)
         {
             (int line, int column, int channelId) = blockIndexes.AsTuple();
 
@@ -115,13 +127,31 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
             return block;
         }
 
+        /// <summary>
+        /// Возвращает полноценный блок по его индексам в матрице блоков и индексу канала
+        /// </summary>
+        public static byte[,,] GetBlockByIndexes(Sc2DPoint blockIndexes, ImageBlocks blocks, UniqueList<ImgChannel> channels)
+        {
+            (int line, int column) = blockIndexes.AsTuple();
+
+            var blockPixelsIndexes = blocks[line, column];
+            var block = new byte[blocks.BlockHeight, blocks.BlockWidth, channels.Count];
+
+            for (int i = blockPixelsIndexes.Lt.Y; i <= blockPixelsIndexes.Rd.Y; i++)
+                for (int j = blockPixelsIndexes.Lt.X; j <= blockPixelsIndexes.Rd.X; j++)
+                    for (int channelId = 0; i < channels.Count; channelId++)
+                        block[i - blockPixelsIndexes.Lt.Y, j - blockPixelsIndexes.Lt.X, channelId] = blocks.Image.ImgArray[i, j, channelId];
+
+            return block;
+        }
+
 
         // Последовательная итерация
 
         /// <summary>
-        /// Возвращает следующий набор индексов блока в матрице блоков при последовательном доступе
+        /// Возвращает следующий набор индексов одноканального блока в матрице блоков при последовательном доступе
         /// </summary>
-        public static IEnumerable<ScPointCoords> GetForLinearAccessIndexes(
+        public static IEnumerable<ScPointCoords> GetForLinearAccessOneChannelBlocksIndexes(
             ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
             int overallCount = 0;
@@ -137,7 +167,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
                 int channelIndex = 0;
                 while (channelIndex < options.Channels.Count && overallCount <= blocksNum)
                 {
-                    var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[channelIndex], blocks).AsTuple();  // Индексы блока в матрице
+                    var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[channelIndex], blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
                     yield return new ScPointCoords(line, column, (int)options.Channels[channelIndex]);
                     overallCount++;
                     indexes[channelIndex]++;
@@ -154,7 +184,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
                 {
                     for (int k = 0; k < options.Channels.Count && overallCount <= blocksNum; k++)
                     {
-                        var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[k], blocks).AsTuple();  // Индексы блока в матрице
+                        var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[k], blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
                         yield return new ScPointCoords(line, column, (int)options.Channels[k]);
                         overallCount++;
                         indexes[k]++;
@@ -166,25 +196,54 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         }
 
         /// <summary>
+        /// Возвращает следующий одноканальный блок при последовательном доступе
+        /// </summary>
+        public static IEnumerable<byte[,]> GetForLinearAccessOneChannelBlocks(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        {
+            return GetOneChannelBlocksIterator(GetForLinearAccessOneChannelBlocksIndexes, blocks, options, blocksNum);
+        }
+
+        /// <summary>
+        /// Возвращает следующий набор индексов блока в матрице блоков при последовательном доступе
+        /// </summary>
+        public static IEnumerable<Sc2DPoint> GetForLinearAccessBlocksIndexes(
+            ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        {
+            int overallCount = 0;
+            CorrectBlocksNum(ref blocksNum, blocks);
+
+            // Опции поканальности и чересканальности не оказывают влияния (т.к. обход блоков целиком, со значениями всех требуемых каналов)
+            // Опции выбора стартовых блоков не имеют влияния (т.к. могут быть заданы разными для разных каналов)
+            while (overallCount <= blocksNum)
+            {
+                var (line, column) = GetBlockIndexesBy2DLinearIndex(overallCount, blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
+                yield return new Sc2DPoint(line, column);
+                overallCount++;
+            }
+
+            yield break;
+        }
+
+        /// <summary>
         /// Возвращает следующий блок при последовательном доступе
         /// </summary>
-        public static IEnumerable<byte[,]> GetForLinearAccessBlock(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        public static IEnumerable<byte[,,]> GetForLinearAccessBlocks(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
-            return GetBlocksIterator(GetForLinearAccessIndexes, blocks, options, blocksNum);
+            return GetBlocksIterator(GetForLinearAccessBlocksIndexes, blocks, options, blocksNum);
         }
 
 
         // Псевдослучайная итерация
 
         /// <summary>
-        /// Возвращает следующий набор индексов блока в матрице блоков при псевдослучайном доступе
+        /// Возвращает следующий набор индексов одноканального блока в матрице блоков при псевдослучайном доступе
         /// </summary>
-        public static IEnumerable<ScPointCoords> GetForRandomAccessIndexes(
+        public static IEnumerable<ScPointCoords> GetForRandomAccessOneChannelBlocksIndexes(
             ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
             var rnd = options.Seed.HasValue ? new Random(options.Seed.Value) : new Random();
 
-            int blocksLinearLength = blocks.BlocksNum;
+            int blocksLinearLength = blocks.BlocksNum * options.Channels.Count;
             CorrectBlocksNum(ref blocksNum, blocks);
 
             // Массив общих линейных индексов блоков
@@ -201,11 +260,43 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         }
 
         /// <summary>
+        /// Возвращает следующий одноканальный блок при псевдослучайном доступе
+        /// </summary>
+        public static IEnumerable<byte[,]> GetForRandomAccessOneChannelBlocks(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        {
+            return GetOneChannelBlocksIterator(GetForRandomAccessOneChannelBlocksIndexes, blocks, options, blocksNum);
+        }
+
+        /// <summary>
+        /// Возвращает следующий набор индексов блока в матрице блоков при псевдослучайном доступе
+        /// </summary>
+        public static IEnumerable<Sc2DPoint> GetForRandomAccessBlocksIndexes(
+            ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        {
+            var rnd = options.Seed.HasValue ? new Random(options.Seed.Value) : new Random();
+
+            int blocksLinearLength = blocks.BlocksNum;  // Псевдослучайный обход в данном контексте - только по матрице полноценных блоков
+            CorrectBlocksNum(ref blocksNum, blocks);
+
+            // Массив общих линейных индексов блоков
+            var allLinearIndexes = Enumerable.Range(0, blocksLinearLength).ToArray();  // Формирование
+            allLinearIndexes = allLinearIndexes.OrderBy(e => rnd.Next()).ToArray();  // Перемешивание
+
+            for (int i = 0; i < blocksNum; i++)
+            {
+                var (y, x) = GetBlockIndexesBy2DLinearIndex(allLinearIndexes[i], blocks, options.TraverseType).AsTuple();
+                yield return new Sc2DPoint(y, x);
+            }
+
+            yield break;
+        }
+
+        /// <summary>
         /// Возвращает следующий блок при псевдослучайном доступе
         /// </summary>
-        public static IEnumerable<byte[,]> GetForRandomAccessBlock(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
+        public static IEnumerable<byte[,,]> GetForRandomAccessBlocks(ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
-            return GetBlocksIterator(GetForRandomAccessIndexes, blocks, options, blocksNum);
+            return GetBlocksIterator(GetForRandomAccessBlocksIndexes, blocks, options, blocksNum);
         }
     }
 }

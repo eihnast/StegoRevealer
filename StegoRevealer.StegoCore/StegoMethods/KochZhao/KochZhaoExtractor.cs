@@ -79,7 +79,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
             Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<byte[,]>> iterator
-                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessBlock : BlocksTraverseHelper.GetForLinearAccessBlock;
+                = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessOneChannelBlocks : BlocksTraverseHelper.GetForLinearAccessOneChannelBlocks;
 
             int brokenBitsNum = 0;
 
