@@ -123,8 +123,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         public ChiSquareParameters(ImageHandler image)
         {
             _image = image;
-            BlockWidth = Image.Width;  // По умолчанию анализ ведётся по строкам
-            BlockHeight = 1;
+            _blockWidth = Image.Width;  // По умолчанию анализ ведётся по строкам
+            _blockHeight = 1;
 
             var blockParameters = new ImageBlocksParameters(Image, BlockWidth, BlockHeight);
             ImgBlocks = new ImageBlocks(blockParameters);

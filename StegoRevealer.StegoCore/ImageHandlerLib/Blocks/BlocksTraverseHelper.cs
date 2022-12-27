@@ -146,8 +146,8 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
 
             for (int i = blockPixelsIndexes.Lt.Y; i <= blockPixelsIndexes.Rd.Y; i++)
                 for (int j = blockPixelsIndexes.Lt.X; j <= blockPixelsIndexes.Rd.X; j++)
-                    for (int channelId = 0; i < channels.Count; channelId++)
-                        block[i - blockPixelsIndexes.Lt.Y, j - blockPixelsIndexes.Lt.X, channelId] = blocks.Image.ImgArray[i, j, channelId];
+                    for (int channelId = 0; channelId < channels.Count; channelId++)
+                        block[i - blockPixelsIndexes.Lt.Y, j - blockPixelsIndexes.Lt.X, channelId] = blocks.Image.ImgArray[i, j, (int)channels[channelId]];
 
             return block;
         }
@@ -216,16 +216,16 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
         public static IEnumerable<Sc2DPoint> GetForLinearAccessBlocksIndexes(
             ImageBlocks blocks, BlocksTraverseOptions options, int? blocksNum = null)
         {
-            int overallCount = 0;
+            int currentIndex = 0;
             CorrectBlocksNum(ref blocksNum, blocks);
 
             // Опции поканальности и чересканальности не оказывают влияния (т.к. обход блоков целиком, со значениями всех требуемых каналов)
             // Опции выбора стартовых блоков не имеют влияния (т.к. могут быть заданы разными для разных каналов)
-            while (overallCount <= blocksNum)
+            while (currentIndex < blocksNum)
             {
-                var (line, column) = GetBlockIndexesBy2DLinearIndex(overallCount, blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
+                var (line, column) = GetBlockIndexesBy2DLinearIndex(currentIndex, blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
                 yield return new Sc2DPoint(line, column);
-                overallCount++;
+                currentIndex++;
             }
 
             yield break;

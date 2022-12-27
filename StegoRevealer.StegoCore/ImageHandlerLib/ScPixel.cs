@@ -52,7 +52,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         }
 
 
-        public ScPixel(byte red, byte green, byte blue, byte alpha = 255)
+        public ScPixel() => _pixelArray = new byte[] { 0, 0, 0, 0 };
+
+        public ScPixel(byte red, byte green, byte blue, byte alpha = 255) : this()
         {
             Red = red;
             Green = green;
@@ -60,7 +62,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
             Alpha = alpha;
         }
 
-        public ScPixel(SKColor color)
+        public ScPixel(SKColor color) : this()
         {
             Red = color.Red;
             Green = color.Green;

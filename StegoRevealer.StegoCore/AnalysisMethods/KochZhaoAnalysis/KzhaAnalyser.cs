@@ -102,7 +102,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             // Создание массива задач
             var tasks = new Dictionary<ScIndexPair, Task<OneCoeffsPairAnalysisResult>>();
             foreach (var coeff in Params.AnalysisCoeffs)
-                tasks[coeff] = new Task<OneCoeffsPairAnalysisResult>(() => AnalyseForOneCoeffPair(cSequences[coeff]));
+                tasks[coeff] = new Task<OneCoeffsPairAnalysisResult>(() => AnalyseForOneCoeffPair(coeff, cSequences[coeff]));
 
             // Запуск задач стегоанализа
             foreach (var coeff in Params.AnalysisCoeffs)
@@ -143,66 +143,60 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             return result;
         }
 
-        private OneCoeffsPairAnalysisResult AnalyseForOneCoeffPair(List<double> cSequence)
+        private OneCoeffsPairAnalysisResult AnalyseForOneCoeffPair(ScIndexPair coeff, List<double> cSequence)
         {
+            string temp = string.Empty;
+
             // Логирование cSequences, если оно включено
             if (Params.LoggingCSequences)
             {
-                foreach (var coeff in Params.AnalysisCoeffs)
-                {
-                    string temp = $"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[";
-                    foreach (var val in cSequence)
-                        temp += string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}, ", val);
-                    temp = temp[..^2];
-                    temp += "]\n";
-                    _writeToLog(temp);
-                }
+                temp = $"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[";
+                foreach (var val in cSequence)
+                    temp += string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}, ", val);
+                temp = temp[..^2];
+                temp += "]\n";
+                _writeToLog(temp);
             }
 
             // Поиск ступенчатого интервала
             int intervalStartIndex = 0;
-            foreach (var coeff in Params.AnalysisCoeffs)
-            {
-                // Получение непрерывного интервала аномально высоких значений cSequence
-                (int indexLeft, int indexRight) = FindSuspiciousInterval(cSequence);
-                _writeToLog($"Для коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) получены следующие координаты интервала: [{indexLeft}:{indexRight}]");
 
-                // Обрезка cSequences и сохранение оригинального индекса
-                intervalStartIndex = indexLeft;  // Новый 0-й индекс в обрезанной cSequence на самом деле соответствует этому индексу последовательности
-                cSequence = cSequence.GetRange(indexLeft, indexRight - indexLeft + 1);
+            // Получение непрерывного интервала аномально высоких значений cSequence
+            (int indexLeft, int indexRight) = FindSuspiciousInterval(cSequence);
+            _writeToLog($"Для коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) получены следующие координаты интервала: [{indexLeft}:{indexRight}]");
 
-                var temp = $"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ";
-                foreach (var val in cSequence)
-                    temp += string.Format("{0:f2} ", val);
-                _writeToLog(temp);
-            }
+            // Обрезка cSequences и сохранение оригинального индекса
+            intervalStartIndex = indexLeft;  // Новый 0-й индекс в обрезанной cSequence на самом деле соответствует этому индексу последовательности
+            cSequence = cSequence.GetRange(indexLeft, indexRight - indexLeft + 1);
+
+            temp = $"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ";
+            foreach (var val in cSequence)
+                temp += string.Format("{0:f2} ", val);
+            _writeToLog(temp);
 
             // Расчёт предполагаемого порога скрытия
             double threshold = 0.0;  // Порог подозрительного интервала по наборам коэффициентов
             ScIndexPair? indexes = null;  // Индекы подозрительного интервала по наборам коэффициентов
             bool hasSuspiciousInterval = false;
 
-            foreach (var coeff in Params.AnalysisCoeffs)
+            bool detectedSecretData = cSequence.Count >= 8;  // Возможно ли извлечь хотя бы байт
+
+            _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) " +
+                $"{(detectedSecretData ? "найден подозрительный интервал" : "не найден подозрительный интервал")}");
+
+            // Запись подозрительного порога и интервала для текущего набора коэффициентов
+            if (detectedSecretData)
             {
-                bool detectedSecretData = cSequence.Count >= 8;  // Возможно ли извлечь хотя бы байт
-
-                _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) " +
-                    $"{(detectedSecretData ? "найден подозрительный интервал" : "не найден подозрительный интервал")}");
-
-                // Запись подозрительного порога и интервала для текущего набора коэффициентов
-                if (detectedSecretData)
-                {
-                    threshold = cSequence.Min();  // Порог - минимальное из значений cSequence
-                    indexes = new ScIndexPair(intervalStartIndex, intervalStartIndex + cSequence.Count - 1);
-                    _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) установлены значения: " +
-                        $"Threshold (Порог) = {threshold}, Indexes (координаты ступенчатого всплеска) = ({indexes?.FirstIndex}, {indexes?.SecondIndex})");
-                    hasSuspiciousInterval = true;  // Считаем, что подозрительный интервал (хотя бы один) найден
-                }
-                else
-                {
-                    threshold = 0.0;
-                    indexes = null;
-                }
+                threshold = cSequence.Min();  // Порог - минимальное из значений cSequence
+                indexes = new ScIndexPair(intervalStartIndex, intervalStartIndex + cSequence.Count - 1);
+                _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) установлены значения: " +
+                    $"Threshold (Порог) = {threshold}, Indexes (координаты ступенчатого всплеска) = ({indexes?.FirstIndex}, {indexes?.SecondIndex})");
+                hasSuspiciousInterval = true;  // Считаем, что подозрительный интервал (хотя бы один) найден
+            }
+            else
+            {
+                threshold = 0.0;
+                indexes = null;
             }
 
             return new OneCoeffsPairAnalysisResult(threshold, indexes, hasSuspiciousInterval);
