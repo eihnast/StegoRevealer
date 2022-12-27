@@ -83,6 +83,11 @@ namespace StegoRevealer.WinUi.Views
         {
             _vm?.StartAnalysis(ActiveMethods);
             UpdateImagePreview();  // Отрисовка превью
+            if (_vm?.HasResults ?? false)
+            {
+                ResultsExpander.IsEnabled = true;
+                ResultsExpander.IsExpanded = true;
+            }
         }
 
         private void IsMethodChiSqrChecked_Checked(object sender, RoutedEventArgs e) =>
@@ -105,5 +110,17 @@ namespace StegoRevealer.WinUi.Views
 
 
         private void UpdateImagePreview() => ImagePreview.Source = _vm?.DrawedImageSource;
+
+        private void MethodsExpander_Expanded(object sender, RoutedEventArgs e)
+        {
+            if (ResultsExpander is not null && MethodsExpander is not null)
+                ResultsExpander.IsExpanded = !MethodsExpander.IsExpanded;
+        }
+
+        private void ResultsExpander_Expanded(object sender, RoutedEventArgs e)
+        {
+            if (MethodsExpander is not null && ResultsExpander is not null && (_vm?.HasResults ?? false))
+                MethodsExpander.IsExpanded = !ResultsExpander.IsExpanded;
+        }
     }
 }

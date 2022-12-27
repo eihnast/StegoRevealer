@@ -32,6 +32,10 @@ namespace StegoRevealer.WinUi.ViewModels
         private RsParameters? _rsParameters = null;
         private KzhaParameters? _kzhaParameters = null;
 
+        /// <summary>
+        /// Существуют ли результаты проведённого стегоанализа
+        /// </summary>
+        public bool HasResults { get; private set; } = false;  // Становится true, если есть результаты СА (фактически, после успешного вызова СА)
 
         /// <summary>
         /// Текущее выбранное изображение
@@ -255,6 +259,8 @@ namespace StegoRevealer.WinUi.ViewModels
             
             timer.Stop();  // Остановка таймера
             ProcessAnalysisResults(results, timer);
+
+            HasResults = true;
         }
 
         /// <summary>
