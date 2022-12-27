@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -27,6 +28,9 @@ namespace StegoRevealer.WinUi.Views
         public MainView()
         {
             InitializeComponent();
+
+            // TODO: Временно - авто-переход к стегоанализатору
+            Loaded += (object sender, RoutedEventArgs e) => ToAnalyzerButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
         #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 
