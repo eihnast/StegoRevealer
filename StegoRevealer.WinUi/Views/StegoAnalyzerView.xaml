@@ -86,7 +86,82 @@
                 </Expander>
                 <Expander x:Name="ResultsExpander" Header="Результаты стегоанализа" IsExpanded="False" Expanded="ResultsExpander_Expanded"
                           IsEnabled="False">
-
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <StackPanel x:Name="ChiFullnessBlock" Orientation="Horizontal" IsEnabled="False">
+                            <TextBox Text="Оценка заполненности по методу Хи-квадрат: "
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="ChiFullnessValue" Text="Анализ не проводился"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="RsFullnessBlock" Orientation="Horizontal" IsEnabled="False">
+                            <TextBox Text="Оценка заполненности по методу RS: "
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="RsFullnessValue" Text="Анализ не проводился"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaIntervalFoundedBlock"  Orientation="Horizontal" IsEnabled="False">
+                            <TextBox Text="Обнаружен подозрительный интервал при стегоанализе Коха-Жао: "
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaIntervalFoundedValue" Text="Анализ не проводился"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaBitsNumBlock" Orientation="Horizontal" Visibility="Hidden" IsEnabled="False">
+                            <TextBox Text="Количество бит скрытой информации: " Padding="30 0 0 0"
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaBitsNumValue" Text="Нет данных"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaSuspiciousIntervalBlock" Orientation="Horizontal" Visibility="Hidden" IsEnabled="False">
+                            <TextBox Text="Индексы блоков подозрительного интервала: " Padding="30 0 0 0"
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaSuspiciousIntervalValue" Text="Нет данных"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaThresholdBlock" Orientation="Horizontal" Visibility="Hidden" IsEnabled="False">
+                            <TextBox Text="Предполагаемый порог встраивания: " Padding="30 0 0 0"
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaThresholdValue" Text="Нет данных"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaCoeffsBlock" Orientation="Horizontal" Visibility="Hidden" IsEnabled="False">
+                            <TextBox Text="Коэффициенты предполагаемого встраивания: " Padding="30 0 0 0"
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaCoeffsValue" Text="Нет данных"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <StackPanel x:Name="KzhaExtractedDataBlock" Orientation="Horizontal" Visibility="Hidden" IsEnabled="False">
+                            <TextBox x:Name="KzhaExtractedDataLabel" Text="Извлечённая информация: " Padding="30 0 0 0"
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="KzhaExtractedDataLabelValue" Text="Отсутствует"
+                                     TextAlignment="Left" Height="25"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                        <TextBox x:Name="KzhaExtractedDataValue" Text="" Visibility="Hidden" TextAlignment="Left" VerticalContentAlignment="Top"
+                                 TextWrapping="Wrap" Height="150"/>
+                        <StackPanel x:Name="ElapsedTimeBlock" Orientation="Horizontal">
+                            <TextBox x:Name="ElapsedTimeLabel" Text="Затрачено времени: "
+                               HorizontalAlignment="Stretch" TextAlignment="Left" Height="25" FontStyle="Italic"
+                                 BorderThickness="0" IsReadOnly="True"/>
+                            <TextBox x:Name="ElapsedTimeValue" Text="0 мс"
+                                     TextAlignment="Left" Height="25" FontStyle="Italic"
+                                     BorderThickness="0" IsReadOnly="True"/>
+                        </StackPanel>
+                    </StackPanel>
                 </Expander>
             </StackPanel>
 

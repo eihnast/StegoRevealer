@@ -7,6 +7,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.WinUi.Lib;
+using StegoRevealer.WinUi.Lib.Entities;
 using StegoRevealer.WinUi.Lib.ParamsHelpers;
 using StegoRevealer.WinUi.Views.ParametersViews;
 using System;
@@ -19,7 +20,6 @@ using System.Windows.Media.Imaging;
 
 namespace StegoRevealer.WinUi.ViewModels
 {
-    // TODO: Реализовать форму или окно для нормального вывода результатов
     // TODO: Иногда баг при открытии окна опций - не нажимается. Отследить точный сценарий воспроизведения бага не удалось.
 
     /// <summary>
@@ -77,6 +77,9 @@ namespace StegoRevealer.WinUi.ViewModels
         public Dictionary<AnalyzerMethod, bool> ActiveMethods { get; private set; } = new();
 
 
+        private SteganalysisResultsDto? _currentResults = null;
+
+
         public StegoAnalyzerViewModel(RootViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
         {
             foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
@@ -119,7 +122,7 @@ namespace StegoRevealer.WinUi.ViewModels
                 _chiSquareParameters = new ChiSquareParameters(CurrentImage);
             else
                 _chiSquareParameters.Image = CurrentImage;
-
+            
             if (_rsParameters is null)
                 _rsParameters = new RsParameters(CurrentImage);
             else
@@ -150,6 +153,7 @@ namespace StegoRevealer.WinUi.ViewModels
         {
             try
             {
+                CurrentImage?.CloseHandler();
                 CurrentImage = new ImageHandler(path);
                 ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов
                 DrawCurrentImage();  // Обновит изображение, отображаемое на форме
@@ -252,56 +256,54 @@ namespace StegoRevealer.WinUi.ViewModels
                     results[method] = methodTasks[method]?.Result;
             }
 
+            timer.Stop();  // Остановка таймера
+
             // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             if (chiRes is not null)
                 DrawCurrentImage();
             
-            timer.Stop();  // Остановка таймера
             ProcessAnalysisResults(results, timer);
-
-            HasResults = true;
         }
 
         /// <summary>
-        /// Обработка и вывод результатов стегоанализа
+        /// Обработка результатов стегоанализа
         /// </summary>
         private void ProcessAnalysisResults(Dictionary<AnalyzerMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
         {
             if (results is null) 
                 return;
+            HasResults = true;
 
-            // Временный вывод результатов в Alert-окне
+            // Приведение к известным типам результатов
             var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
             var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
             var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
-
+            
             // Вывод визуализированного изображения
             if (_chiSquareParameters?.Visualize ?? false)
                 DrawedImage = chiRes?.Image;
 
-            MessageBox.Show($"Results\n" +
-                (chiRes is not null ? $"Chisqr: {chiRes?.MessageRelativeVolume}\n" : "ChiSqr not analyzed\n") +
-                (rsRes is not null ? $"Rs: {rsRes?.MessageRelativeVolume}\n" : "Rs not analyzed\n") +
-                (kzhaRes is not null ? $"Kzha: {kzhaRes?.Threshold}, {kzhaRes?.MessageBitsVolume}\n" : "Kzha is not analyzed\n") +
-                $"Time (ms): {timer.ElapsedMilliseconds}");
+            // Обновление текущих сохранённых результатов
+            _currentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, timer.ElapsedMilliseconds);
         }
 
         /// <summary>
         /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
         /// </summary>
-        private Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
+        private static Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
         {
             var dict = new Dictionary<AnalyzerMethod, T?>();
             foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
-                dict.Add(method, default(T));
+                dict.Add(method, default);
             return dict;
         }
 
+        // TODO: Перенести методу в какую-нибудь общую библиотеку
         /// <summary>
         /// Создаёт источник для отображения изображения
         /// </summary>
-        public ImageSource CreateImageSource(ImageHandler image)
+        public static ImageSource CreateImageSource(ImageHandler image)
         {
             var imgInfo = new SKImageInfo(image.Width, image.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 
@@ -325,5 +327,10 @@ namespace StegoRevealer.WinUi.ViewModels
             if (CurrentImage is not null)
                 DrawedImage = CurrentImage;
         }
+
+        /// <summary>
+        /// Возвращает текущие сохранённые результаты стегоанализа
+        /// </summary>
+        public SteganalysisResultsDto? GetCurrentResults() => _currentResults;
     }
 }

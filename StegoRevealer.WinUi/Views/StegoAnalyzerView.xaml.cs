@@ -55,6 +55,8 @@ namespace StegoRevealer.WinUi.Views
 
         private void LoadImageButton_Click(object sender, RoutedEventArgs e)
         {
+            ResetResultsExpander();  // В любом случае, сбрасываем форму результатов
+
             var successLoad = _vm.TryLoadImage();
             if (successLoad)
             {
@@ -83,8 +85,92 @@ namespace StegoRevealer.WinUi.Views
         {
             _vm?.StartAnalysis(ActiveMethods);
             UpdateImagePreview();  // Отрисовка превью
+
+            ResetResultsExpander();
+            UpdateResults();
+        }
+
+        private void UpdateResults()
+        {
             if (_vm?.HasResults ?? false)
             {
+                // Загрузка результатов
+                var results = _vm?.GetCurrentResults();
+                if (results is null)
+                    return;
+
+                // Вывод результатов на форму
+                
+                // ChiSqr
+                if (results.IsMethodChiSqrExecuted)
+                {
+                    ChiFullnessBlock.IsEnabled = true;
+                    ChiFullnessValue.Text = string.Format("{0:P2}", results.ChiSqrMessageRelativeVolume);
+                }
+
+                // RS
+                if (results.IsMethodRsExecuted)
+                {
+                    RsFullnessBlock.IsEnabled = true;
+                    RsFullnessValue.Text = string.Format("{0:P2}", results.RsMessageRelativeVolume);
+                }
+
+                // Kzha
+                if (results.IsMethodKzhaExecuted)
+                {
+                    KzhaIntervalFoundedBlock.IsEnabled = true;
+                    KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? "Да" : "Нет";
+
+                    if (results.KzhaSuspiciousIntervalIsFound)
+                    {
+                        KzhaBitsNumBlock.Visibility = Visibility.Visible;
+                        KzhaSuspiciousIntervalBlock.Visibility = Visibility.Visible;
+                        KzhaThresholdBlock.Visibility = Visibility.Visible;
+                        KzhaCoeffsBlock.Visibility = Visibility.Visible;
+                        KzhaExtractedDataBlock.Visibility = Visibility.Visible;
+
+                        if (results.KzhaMessageBitsVolume > 0.0)
+                        {
+                            KzhaBitsNumBlock.IsEnabled = true;
+                            KzhaBitsNumValue.Text = results.KzhaMessageBitsVolume.ToString();
+                        }
+
+                        if (results.KzhaThreshold > 0.0)
+                        {
+                            KzhaThresholdBlock.IsEnabled = true;
+                            KzhaThresholdValue.Text = string.Format("{0:f2}", results.KzhaThreshold);
+                        }
+
+                        // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
+                        bool kzhaHasRealData = results.KzhaMessageBitsVolume > 0.0 && results.KzhaThreshold > 0.0;
+
+                        if (kzhaHasRealData && results.KzhaCoefficients is not null)
+                        {
+                            KzhaCoeffsBlock.IsEnabled = true;
+                            KzhaCoeffsValue.Text = results.KzhaCoefficients.Value.ToString();
+                        }
+
+                        if (kzhaHasRealData && results.KzhaSuspiciousInterval is not null)
+                        {
+                            KzhaSuspiciousIntervalBlock.IsEnabled = true;
+                            KzhaSuspiciousIntervalValue.Text =
+                                $"[{results.KzhaSuspiciousInterval.Value.leftInd}, {results.KzhaSuspiciousInterval.Value.rightInd}]";
+                        }
+
+                        if (results.KzhaExtractedData is not null)
+                        {
+                            KzhaExtractedDataBlock.IsEnabled = true;
+                            KzhaExtractedDataLabelValue.Visibility = Visibility.Hidden;
+                            KzhaExtractedDataValue.Visibility = Visibility.Visible;
+                            KzhaExtractedDataValue.Text = results.KzhaExtractedData;
+                        }
+                    }
+                }
+
+                // Затрачено времени
+                ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
+
+                // Переключение экспандера
                 ResultsExpander.IsEnabled = true;
                 ResultsExpander.IsExpanded = true;
             }
@@ -121,6 +207,38 @@ namespace StegoRevealer.WinUi.Views
         {
             if (MethodsExpander is not null && ResultsExpander is not null && (_vm?.HasResults ?? false))
                 MethodsExpander.IsExpanded = !ResultsExpander.IsExpanded;
+        }
+
+        private void ResetResultsExpander()
+        {
+            ChiFullnessBlock.IsEnabled = false;
+            ChiFullnessValue.Text = "Анализ не проводился";
+            RsFullnessBlock.IsEnabled = false;
+            RsFullnessValue.Text = "Анализ не проводился";
+            KzhaIntervalFoundedBlock.IsEnabled = false;
+            KzhaIntervalFoundedValue.Text = "Анализ не проводился";
+            KzhaBitsNumBlock.Visibility = Visibility.Hidden;
+            KzhaBitsNumBlock.IsEnabled = false;
+            KzhaBitsNumValue.Text = "Нет данных";
+            KzhaSuspiciousIntervalBlock.Visibility = Visibility.Hidden;
+            KzhaSuspiciousIntervalBlock.IsEnabled = false;
+            KzhaSuspiciousIntervalValue.Text = "Нет данных";
+            KzhaThresholdBlock.Visibility = Visibility.Hidden;
+            KzhaThresholdBlock.IsEnabled = false;
+            KzhaThresholdValue.Text = "Нет данных";
+            KzhaCoeffsBlock.Visibility = Visibility.Hidden;
+            KzhaCoeffsBlock.IsEnabled = false;
+            KzhaCoeffsValue.Text = "Нет данных";
+            KzhaExtractedDataBlock.Visibility = Visibility.Hidden;
+            KzhaExtractedDataBlock.IsEnabled = false;
+            KzhaExtractedDataLabelValue.Text = "Отсутствует";
+            KzhaExtractedDataValue.Visibility = Visibility.Hidden;
+            KzhaExtractedDataValue.Text = string.Empty;
+            ElapsedTimeValue.Text = "0 мс";
+
+            ResultsExpander.IsEnabled = false;
+            ResultsExpander.IsExpanded = false;
+            MethodsExpander.IsExpanded = true;
         }
     }
 }

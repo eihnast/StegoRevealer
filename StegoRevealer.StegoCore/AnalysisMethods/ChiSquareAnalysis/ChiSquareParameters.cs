@@ -25,6 +25,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
                 if (BlockHeight == _image.Height || BlockHeight > value.Height)
                     BlockHeight = value.Height;
                 _image = value;
+                UpdateBlocks(false);
             }
         }
 
@@ -136,9 +137,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// <summary>
         /// Пересоздаёт матрицу блоков, если ширина или высота блока изменились
         /// </summary>
-        private void UpdateBlocks()
+        private void UpdateBlocks(bool onlyForAnotherSizes = true)
         {
-            if (BlockWidth != ImgBlocks.BlockWidth || BlockHeight != ImgBlocks.BlockHeight)
+            if (!onlyForAnotherSizes || (BlockWidth != ImgBlocks.BlockWidth || BlockHeight != ImgBlocks.BlockHeight))
             {
                 var blockParameters = new ImageBlocksParameters(Image, BlockWidth, BlockHeight);
                 ImgBlocks = new ImageBlocks(blockParameters);

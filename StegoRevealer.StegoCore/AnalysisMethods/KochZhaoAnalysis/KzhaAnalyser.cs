@@ -134,8 +134,10 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
             result.MessageBitsVolume = thresholds[maxVariant] > Params.Threshold && result.SuspiciousInterval is not null
                 ? result.SuspiciousInterval.Value.rightInd - result.SuspiciousInterval.Value.leftInd + 1
                 : 0;
-            if (result.Threshold < Params.Threshold || result.MessageBitsVolume == 0)
-                result.SuspiciousIntervalIsFound = false;  // Ранее факт обнаруженя мог быть установлен в true, но если результаты не удовлетворяют параметрам, то false
+
+            // Считаем обнаружение состоявшимся, если преодолён минимальный порог (из параметров) и размер интервала больше 0
+            if (result.Threshold >= Params.Threshold && result.MessageBitsVolume > 0)
+                result.SuspiciousIntervalIsFound = true;
 
             result.Log($"В качестве результирующих выбраны коэффициенты ({maxVariant.FirstIndex}, {maxVariant.SecondIndex})");
             result.Log($"Факт наличия скрытой информации по итогу анализа {(result.SuspiciousIntervalIsFound ? "установлен" : "не установлен")}");
