@@ -5,15 +5,28 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>ProjectIconWithTransparency.ico</ApplicationIcon>
+    <ApplicationIcon>AppIcon.ico</ApplicationIcon>
+	  
+	<PublishSingleFile>true</PublishSingleFile>
+	<DebugType>embedded</DebugType>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	  
+	<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
+	<Title>Stego Revealer</Title>
+	<Version>0.0.3</Version>
+	<Authors>Iaroslav Grachev</Authors>
+	<Description>Stego Revealer - программа для осуществления стегоанализа</Description>
+	<PackageIcon>AppIconBig.png</PackageIcon>
+	<PackageTags>steganography; steganalysis; stego</PackageTags>
+	<NeutralLanguage>ru-RU</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ProjectIcon.png" />
+    <None Remove="AppIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ProjectIconWithTransparency.ico" />
+    <Content Include="AppIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ProjectIcon.png" />
+    <None Include="..\..\Resources\AppIconBig.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +57,10 @@
       <SubType>Designer</SubType>
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="AppIcon.png" />
   </ItemGroup>
 
 </Project>

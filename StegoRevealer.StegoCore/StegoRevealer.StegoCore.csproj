@@ -5,16 +5,40 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SignAssembly>False</SignAssembly>
-    <ApplicationIcon>ProjectIconWithTransparency.ico</ApplicationIcon>
+    <ApplicationIcon>AppIconCore.ico</ApplicationIcon>
+	  
+	<PublishSingleFile>true</PublishSingleFile>
+	<DebugType>embedded</DebugType>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	  
+	<Version>1.1.0</Version>
+	<Title>Stego Revealer Core</Title>
+	<Authors>Iaroslav Grachev</Authors>
+	<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
+	<PackageIcon>AppIconBigCore.png</PackageIcon>
+	<PackageTags>steganography; steganalysis; stego</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="ProjectIconWithTransparency.ico" />
+    <Content Include="AppIconCore.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Resources\AppIconBigCore.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\yaros\.nuget\packages\accord\3.8.0\build\Accord.dll.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
