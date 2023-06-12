@@ -162,5 +162,32 @@ namespace StegoRevealer.StegoCore.ScMath
         {
             return GetModulesOfModuleDiffs(values.val1, values.val2);
         }
+
+        /// <summary>
+        /// Возвращает среднее арифметическое последовательности
+        /// </summary>
+        public static double Average(double[] values)
+        {
+            double average = 0.0;
+            for (int i = 0; i < values.Length; i++)
+                average += values[i];
+            average /= values.Length;
+            return average;
+        }
+
+        /// <summary>
+        /// Возвращает дисперсию последовательности
+        /// </summary>
+        public static double Dispersion(double[] values)
+        {
+            double result = 0.0;
+            double average = Average(values);
+
+            for (int i = 0; i < values.Length; i++)
+                result += Math.Pow(values[i] - average, 2);
+            result /= values.Length;
+
+            return result;
+        }
     }
 }
