@@ -1,5 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Helpers;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics
@@ -59,7 +61,45 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics
 
         private void CalcNoiseLevel()
         {
+            var blocks = new ImageBlocks(new ImageBlocksParameters(Params.Image, Params.Image.Width, 1));
+            var traverseOptions = new BlocksTraverseOptions()
+            {
+                TraverseType = CommonLib.TraverseType.Vertical,
+                InterlaceChannels = false,
+                Channels = new CommonLib.ScTypes.UniqueList<ImgChannel>() { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue },
+                StartBlocks = new StegoMethods.StartValues((ImgChannel.Red, 0), (ImgChannel.Green, 0), (ImgChannel.Blue, 0))
+            };
+            var blocksIterator = BlocksTraverseHelper.GetForLinearAccessBlocks(blocks, traverseOptions);
 
+            int k = 0;
+            foreach (var block in blocksIterator)
+            {
+                if (k == Params.NoiseCalcMethodSteps)
+                {
+
+
+                    k = 0;
+                }
+                k++;
+            }
+        }
+
+        private List<NoiseCalcMethodMinimumRowInfo> GetMinimumsRows(byte[,,] block)
+        {
+            if (block.GetLength(0) > 1)
+                throw new Exception("Оценка шума прозводится только по строкам");
+
+            var analysingChannels = new ImgChannel[3] { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
+            var intervals = new List<NoiseCalcMethodMinimumRowInfo>();
+            int width = block.GetLength(1);
+            int intervalLength = width / Params.NoiseCalcMethodInterval;
+
+            foreach (var channel in analysingChannels)
+            {
+                
+            }
+
+            return intervals;
         }
 
         private double ApplyLinearOpertorA(int[] values, double[] mask)
