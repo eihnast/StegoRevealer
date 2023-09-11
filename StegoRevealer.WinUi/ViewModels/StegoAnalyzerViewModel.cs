@@ -332,5 +332,16 @@ namespace StegoRevealer.WinUi.ViewModels
         /// Возвращает текущие сохранённые результаты стегоанализа
         /// </summary>
         public SteganalysisResultsDto? GetCurrentResults() => _currentResults;
+
+
+        /// <summary>
+        /// Перейти к главному окну
+        /// </summary>
+        public void SwitchToMainView()
+        {
+            var mainViewModel = _rootViewModel.GetOrCreateViewModel(typeof(MainViewModel)) as MainViewModel;
+            if (mainViewModel is not null)
+                _rootViewModel.CurrentViewModel = mainViewModel;
+        }
     }
 }

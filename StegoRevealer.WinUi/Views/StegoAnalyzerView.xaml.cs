@@ -240,5 +240,7 @@ namespace StegoRevealer.WinUi.Views
             ResultsExpander.IsExpanded = false;
             MethodsExpander.IsExpanded = true;
         }
+
+        private void GoToMainViewBtn_Click(object sender, RoutedEventArgs e) => _vm.SwitchToMainView();
     }
 }

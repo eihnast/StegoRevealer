@@ -29,8 +29,8 @@ namespace StegoRevealer.WinUi.Views
         {
             InitializeComponent();
 
-            // TODO: Временно - авто-переход к стегоанализатору
-            Loaded += (object sender, RoutedEventArgs e) => ToAnalyzerButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            // TODO: Временно - авто-переход к стегоанализатору. Авто-переход отключён.
+            // Loaded += (object sender, RoutedEventArgs e) => ToAnalyzerButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
         #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 

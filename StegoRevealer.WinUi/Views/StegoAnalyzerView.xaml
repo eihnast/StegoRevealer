@@ -20,9 +20,15 @@
                 <RowDefinition Height="80px"/>
             </Grid.RowDefinitions>
 
+            <Canvas Height="60">
+                <Button x:Name="GoToMainViewBtn" Height="58" Width="58" Content="⌂" 
+                        FontFamily="Arial" FontWeight="Bold" FontSize="38" Foreground="#FFECECEC"
+                        Click="GoToMainViewBtn_Click"/>
+            </Canvas>
+            
             <Label Content="Стегоанализатор" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
-               Height="60" Width="500" Margin="0" VerticalAlignment="Center" Background="#FF1A1A1A"
-               FontFamily="Arial" FontWeight="Bold" FontSize="24" Foreground="#FFECECEC"/>
+                   Height="60" Width="500" Margin="0" VerticalAlignment="Center" Background="#FF1A1A1A"
+                   FontFamily="Arial" FontWeight="Bold" FontSize="24" Foreground="#FFECECEC"/>
             
             <Grid Grid.Column="0" Grid.Row="1">
                 <Grid.ColumnDefinitions>
