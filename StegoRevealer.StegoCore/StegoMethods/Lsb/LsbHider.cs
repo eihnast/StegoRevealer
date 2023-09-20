@@ -54,7 +54,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             LsbHideResult result = new();
 
             LsbParameters? lsbParams = parameters as LsbParameters;
-            if (lsbParams is null)  // Не удалось привести к KochZhaoParameters
+            if (lsbParams is null)  // Не удалось привести к LsbParameters
             {
                 result.Error("lsbParams является null");
                 return result;
