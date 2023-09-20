@@ -7,7 +7,6 @@
     <SignAssembly>False</SignAssembly>
     <ApplicationIcon>AppIconCore.ico</ApplicationIcon>
 	  
-	<PublishSingleFile>true</PublishSingleFile>
 	<DebugType>embedded</DebugType>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	  
