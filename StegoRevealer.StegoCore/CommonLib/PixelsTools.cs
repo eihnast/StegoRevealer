@@ -30,7 +30,7 @@ namespace StegoRevealer.StegoCore.CommonLib
         public static byte InvertLsb(byte value, int lsbNum = 1)
         {
             var pixel = BitArrayExtensions.NewFromByte(value);
-            for (int i = 7; i >= 7 - (Math.Min(lsbNum, 8) - 1); i--)
+            for (int i = 0; i < lsbNum ; i++)  // Т.к. в BitArray 0-й элемент соответствует НЗБ
             {
                 pixel[i] ^= true;  // Инвертирование без обращения к специальному методу инвертирования
             }
@@ -74,7 +74,7 @@ namespace StegoRevealer.StegoCore.CommonLib
 
             var pixel = BitArrayExtensions.NewFromByte(byteValue);
             for (int i = 0; i < lsbValues.Length; i++)
-                pixel[8 - i] = lsbValues[i];
+                pixel[Math.Min(lsbValues.Length, 8) - i - 1] = lsbValues[i];  // Т.к. в BitArray 0-й элемент соответствует НЗБ
 
             return pixel.AsByte();
         }
@@ -89,7 +89,8 @@ namespace StegoRevealer.StegoCore.CommonLib
         }
 
         /// <summary>
-        /// Позволяет передавать lsbValue в виде {0,0,1}, а не {false,false,true} нативно
+        /// Позволяет передавать lsbValue в виде {0,0,1}, а не {false,false,true} нативно<br/>
+        /// byteValue будет обрезан до диапазона [0..255]
         /// </summary>
         public static byte SetLsbValues(int byteValue, params int[] lsbValues)
         {
@@ -97,7 +98,8 @@ namespace StegoRevealer.StegoCore.CommonLib
         }
 
         /// <summary>
-        /// Установка значений НЗБ при передаче BitArray
+        /// Установка значений НЗБ при передаче BitArray<br/>
+        /// Здесь предполагается, что lsbValues заполнен как есть, значения из lsbValues берутся последовательно с 0 индекса
         /// </summary>
         public static byte SetLsbValues(byte byteValue, BitArray lsbValues)
         {
@@ -106,18 +108,18 @@ namespace StegoRevealer.StegoCore.CommonLib
 
             var pixel = BitArrayExtensions.NewFromByte(byteValue);
             for (int i = 0; i < lsbValues.Length; i++)
-                pixel[7 - i] = lsbValues[i];
+                pixel[Math.Min(lsbValues.Length, 8) - i - 1] = lsbValues[i];  // Т.к. в BitArray 0-й элемент соответствует НЗБ
 
             return pixel.AsByte();
         }
 
         /// <summary>
-        /// Установка значений НЗБ при передаче BitArray
+        /// Установка значений НЗБ при передаче BitArray<br/>
+        /// Здесь предполагается, что lsbValues заполнен как есть, значения из lsbValues берутся последовательно с 0 индекса
         /// </summary>
         public static byte SetLsbValues(int byteValue, BitArray lsbValues)
         {
             return SetLsbValues(byteValue.ToByte(), lsbValues);
         }
-
     }
 }
