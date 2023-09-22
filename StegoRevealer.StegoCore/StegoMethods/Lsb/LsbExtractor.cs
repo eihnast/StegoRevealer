@@ -90,7 +90,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             result.Log("Завершён цикл извлечения");
 
             // Преобразование извлечённых бит в текст
-            result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()));
+            result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()), linearBitArrays: true);
             result.Log($"Объём извлечённой информации: {result.ResultData.Length} символов");
 
             result.Log("Процесс извлечения завершён");
@@ -103,7 +103,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         private BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum)
         {
             var bits = new BitArray(lsbNum);
-            var colorByteAsBits = BitArrayExtensions.NewFromByte(colorByte);
+            var colorByteAsBits = BitArrayExtensions.NewFromByte(colorByte, linearOrder: true);
             for (int i = 0; i < lsbNum; i++)
                 bits[i] = colorByteAsBits[8 - lsbNum + i];
             return bits;

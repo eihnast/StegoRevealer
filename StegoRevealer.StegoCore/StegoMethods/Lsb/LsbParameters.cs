@@ -44,7 +44,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 if (StegoOperation is StegoOperationType.Hiding)
                 {
                     _data = value;
-                    _dataAsBitArray = StringBitsTools.StringToBitArray(value);
+                    _dataAsBitArray = StringBitsTools.StringToBitArray(value, linearBitArrays: true);
                     RepairStartPixels();
                 }
             }

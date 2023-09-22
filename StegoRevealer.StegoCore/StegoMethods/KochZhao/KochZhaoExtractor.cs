@@ -104,7 +104,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             }
 
             // Преобразование извлечённых бит в текст
-            result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()));
+            result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()), linearBitArrays: true);
             result.Log($"Объём извлечённой информации: {result.ResultData.Length} символов");
 
             result.Log("Процесс извлечения завершён");

@@ -62,7 +62,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
                 if (StegoOperation is StegoOperationType.Hiding)
                 {
                     _data = value;
-                    _dataAsBitArray = StringBitsTools.StringToBitArray(value);
+                    _dataAsBitArray = StringBitsTools.StringToBitArray(value, linearBitArrays: true);
                 }
             }
         }
