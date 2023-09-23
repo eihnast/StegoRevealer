@@ -110,8 +110,9 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
                 if (k >= Params.DataBitLength)
                     break;
 
-                BitArray bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит
-                for (int i = 0; i < Params.LsbNum; i++)
+                // Если у нас больше 1 LSB используется, но осталось для сокрытия меньше бит (конец записи) - в конце будут дописаны нули
+                var bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит, длина фиксирована как LsbNum 
+                for (int i = 0; i < Params.LsbNum && (k + i) < Params.DataBitArray.Length; i++)
                     bitsToHide[i] = Params.DataBitArray[k + i];
                 HideDataBitToColorByte(new ScPointCoords(line, column, channel), bitsToHide);  // Скрытие в байте цвета
                 k += Params.LsbNum;

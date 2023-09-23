@@ -83,7 +83,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             {
                 (int line, int column, int channel) = blockCoords.AsTuple();
                 byte colorByte = Params.Image.ImgArray[line, column, channel];
-                BitArray extractedBits = ExtractBitsFromColorByte(colorByte, Params.LsbNum);
+                int remaining = Params.ToExtractBitLength - dataBitArray.Count;
+                BitArray extractedBits = ExtractBitsFromColorByte(colorByte, Params.LsbNum, remaining);
                 for (int i = 0; i < extractedBits.Length; i++)
                     dataBitArray.Add(extractedBits[i]);
             }
@@ -100,11 +101,11 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         /// <summary>
         /// Метод извлечения бита из цветового байта
         /// </summary>
-        private BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum)
+        private BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum, int remainingBits)
         {
-            var bits = new BitArray(lsbNum);
+            var bits = new BitArray(Math.Min(lsbNum, remainingBits));
             var colorByteAsBits = BitArrayExtensions.NewFromByte(colorByte, linearOrder: true);
-            for (int i = 0; i < lsbNum; i++)
+            for (int i = 0; i < lsbNum && i < remainingBits; i++)  // Проверяем также, что не превысили число оставшихся бит
                 bits[i] = colorByteAsBits[8 - lsbNum + i];
             return bits;
         }
