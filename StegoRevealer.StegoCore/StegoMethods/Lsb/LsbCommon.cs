@@ -108,15 +108,15 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             if (parameters.InterlaceChannels)  // Чередование каналов (Pixel1 {R;G;B} --> 0,1,2)
             {
                 channel = (int)parameters.Channels[index % parameters.Channels.Count];
-                pixelLinearIndex = Convert
-                    .ToInt32(Math.Round((decimal)index / parameters.Channels.Count, MidpointRounding.ToPositiveInfinity));
+                pixelLinearIndex = index / parameters.Channels.Count;
             }
             else  // Поканально (R: Pixel1, Pixel2, Pixel3 --> 0,1,2)
             {
                 var (w, h, d) = parameters.Image.GetImgSizes();
-                int channelInnerIndex = index / (w * h);  // Индекс канала в списке используемых каналов
+                int pixelsNum = w * h;
+                int channelInnerIndex = index / pixelsNum;  // Индекс канала в списке используемых каналов
                 channel = (int)parameters.Channels[channelInnerIndex];  // Реальный индекс канала (Red - 0 и т.д.)
-                pixelLinearIndex = index - channelInnerIndex * (w * h);  // Получаем линейный индекс пикселя
+                pixelLinearIndex = index - channelInnerIndex * pixelsNum;  // Получаем линейный индекс пикселя
             }
 
             var (line, column) = GetPixelCoordsByIndex(pixelLinearIndex, parameters).AsTuple();

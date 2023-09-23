@@ -195,5 +195,83 @@ namespace StegoRevealer.StegoCore.ModuleTests
                 Assert.AreEqual(allColorBytes[expectedValue.Key], expectedValue.Value,
                     $"Для цветового байта под индексом {expectedValue.Key} не получен ожидаемый результат");
         }
+
+        [TestMethod]
+        public void CheckRandomTraverse_Horizontal_Interlacing()
+        {
+            var parameters = new LsbParameters(TestImage);
+            parameters.InterlaceChannels = true;
+            parameters.TraverseType = CommonLib.TraverseType.Horizontal;
+            parameters.Seed = 13378;  // О.л.и. после перемешивания: 133, 233, 336, 6, 267, 523, 536, 499, 212, 453, 307, 485, 442, 184, 582
+
+            // Храним значения всех цветовых байт в порядке их получения итератором
+            var allColorBytes = new byte[TestImageColorBytes];
+            int k = 0;
+
+            Func<int, LsbParameters, IEnumerable<ScPointCoords>> iterator = LsbCommon.GetForRandomAccessIndex;
+            foreach (var colorByteIndexes in iterator(TestImageColorBytes, parameters))
+            {
+                var pixel = TestImage.GetPixelValue(colorByteIndexes.X, colorByteIndexes.Y);
+                allColorBytes[k] = pixel[colorByteIndexes.ChannelId];
+                k++;
+            }
+
+            // Сверяем избранные значения для проверки последовательности итератора (горизонтальный, чересканально)
+            // Индекс красного (первого по порядку) цветового байта пикселя = (строка - 1) * 60 + (столбец - 1) * 3
+            // Определение координат по ОЛИ:
+            // канал = ОЛИ % 3
+            // строка = ОЛИ / 60 + 1 (индекс строки без +1);
+            // столбец = (ОЛИ - (строка - 1) * 60) / 3 + 1 (индекс столбца без +1).
+            // Пример: 133 - это Green(index: 1), 3 строка, 5 столбец
+            var expectedValues = new int[] { 0, 255, 0, 255, 0, 255, 0, 0, 255, 0, 0, 0, 255, 255, 255 };
+
+            // Преобразование: общий линейный индекс (ОЛИ) --> линейный индекс (ЛИ):
+            // *Чересканально: ОЛИ / 3
+            // Поканально: ОЛИ - (ОЛИ / (кол-во пикселей)) * (кол-во пикселей)
+
+            for (int i = 0; i < expectedValues.Length; i++)
+                Assert.AreEqual(allColorBytes[i], expectedValues[i],
+                    $"Для цветового байта под индексом {i} не получен ожидаемый результат");
+        }
+
+        [TestMethod]
+        public void CheckRandomTraverse_Horizontal_NotInterlacing()
+        {
+            var parameters = new LsbParameters(TestImage);
+            parameters.InterlaceChannels = false;
+            parameters.TraverseType = CommonLib.TraverseType.Horizontal;
+            parameters.Seed = 13378;  // О.л.и. после перемешивания: 133, 233, 336, 6, 267, 523, 536, 499, 212, 453, 307, 485, 442, 184, 582
+
+            // Храним значения всех цветовых байт в порядке их получения итератором
+            var allColorBytes = new byte[TestImageColorBytes];
+            int k = 0;
+
+            Func<int, LsbParameters, IEnumerable<ScPointCoords>> iterator = LsbCommon.GetForRandomAccessIndex;
+            foreach (var colorByteIndexes in iterator(TestImageColorBytes, parameters))
+            {
+                var pixel = TestImage.GetPixelValue(colorByteIndexes.X, colorByteIndexes.Y);
+                allColorBytes[k] = pixel[colorByteIndexes.ChannelId];
+                k++;
+            }
+
+            // Сверяем избранные значения для проверки последовательности итератора (горизонтальный, поканально)
+            // Индекс для красного цветового байта: (строка - 1) * 20 + (столбец - 1)
+            // Индекс для зелёного цветового байта: индекс для красного + 200
+            // Индекс для синего цветового байта: индекс для красного + 400
+            // Определение координат по ОЛИ:
+            // канал = ОЛИ / 200
+            // строка = (ОЛИ - канал * 200) / 20 + 1 (индекс строки без +1);
+            // столбец = (ОЛИ - канал * 200) - (строка - 1) * 20 + 1 (индекс столбца без +1).
+            // Пример: 133 - это Green(index: 1), 3 строка, 5 столбец
+            var expectedValues = new int[] { 0, 255, 0, 255, 255, 255, 0, 0, 0, 0, 0, 255, 255, 0, 255 };
+
+            // Преобразование: общий линейный индекс (ОЛИ) --> линейный индекс (ЛИ):
+            // Чересканально: ОЛИ / 3
+            // *Поканально: ОЛИ - (ОЛИ / (кол-во пикселей)) * (кол-во пикселей)
+
+            for (int i = 0; i < expectedValues.Length; i++)
+                Assert.AreEqual(allColorBytes[i], expectedValues[i],
+                    $"Для цветового байта под индексом {i} не получен ожидаемый результат");
+        }
     }
 }
