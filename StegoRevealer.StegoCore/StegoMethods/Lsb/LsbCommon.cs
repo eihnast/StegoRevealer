@@ -38,8 +38,8 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
             }
             else
             {
-                int line = index / parameters.Image.ImgArray.Height;
-                int column = index % parameters.Image.ImgArray.Height;
+                int column = index / parameters.Image.ImgArray.Height;
+                int line = index % parameters.Image.ImgArray.Height;
                 return new Sc2DPoint(line, column);
             }
         }
@@ -53,6 +53,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
         public static IEnumerable<ScPointCoords> GetForLinearAccessIndex(int usingColorBytesNum, LsbParameters parameters)
         {
             int overallCount = 0;
+            int imagePixelsNum = parameters.Image.Width * parameters.Image.Height;
 
             // Стартовые линейные индексы пикселей
             int[] indexes = new int[parameters.Channels.Count];
@@ -61,21 +62,24 @@ namespace StegoRevealer.StegoCore.StegoMethods.Lsb
 
             if (!parameters.InterlaceChannels)  // Поканально
             {
-                for (int k = 0; k < parameters.Channels.Count && overallCount <= usingColorBytesNum; k++)
+                for (int k = 0; k < parameters.Channels.Count && overallCount < usingColorBytesNum; k++)
                 {
-                    var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters).AsTuple();
-                    overallCount++;
-                    yield return new ScPointCoords(line, column, (int)parameters.Channels[k]);
-                    indexes[k]++;
+                    while (indexes[k] < imagePixelsNum && overallCount < usingColorBytesNum)
+                    {
+                        var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters).AsTuple();
+                        overallCount++;
+                        yield return new ScPointCoords(line, column, (int)parameters.Channels[k]);
+                        indexes[k]++;
+                    }
                 }
 
                 yield break;
             }
             else  // Чересканально
             {
-                while (overallCount <= usingColorBytesNum)
+                while (overallCount < usingColorBytesNum)
                 {
-                    for (int k = 0; k < parameters.Channels.Count && overallCount <= usingColorBytesNum; k++)
+                    for (int k = 0; k < parameters.Channels.Count && overallCount < usingColorBytesNum; k++)
                     {
                         var (line, column) = GetPixelCoordsByIndex(indexes[k], parameters).AsTuple();
                         overallCount++;
