@@ -142,13 +142,21 @@ namespace StegoRevealer.WinUi.Views
             parameters.LinearHided = HidewayChoice_Linear.IsChecked ?? false;
             // parameters.RandomHided = HidewayChoice_Random.IsChecked ?? false;
 
-            parameters.LsbSeed = (int)LsbParamsGrid_RandomSeed.Value;
-            parameters.LsbStartIndex = (int)LsbParamsGrid_StartIndex.Value;
-            parameters.LsbByteLength = (int)LsbParamsGrid_ByteLength.Value;
-            parameters.KzSeed = (int)KzhParamsGrid_RandomSeed.Value;
-            parameters.KzIndexFirst = (int)KzhParamsGrid_IndexFirst.Value;
-            parameters.KzIndexSecond = (int)KzhParamsGrid_IndexSecond.Value;
-            parameters.KzThreshold = (int)KzhParamsGrid_Threshold.Value;
+            if (LsbParamsGrid_RandomSeedCheckBox.IsChecked ?? false)
+                parameters.LsbSeed = (int)LsbParamsGrid_RandomSeed.Value;
+            if (LsbParamsGrid_StartIndexCheckBox.IsChecked ?? false)
+                parameters.LsbStartIndex = (int)LsbParamsGrid_StartIndex.Value;
+            if (LsbParamsGrid_ByteLengthCheckBox.IsChecked ?? false)
+                parameters.LsbByteLength = (int)LsbParamsGrid_ByteLength.Value;
+            if (KzhParamsGrid_RandomSeedCheckBox.IsChecked ?? false)
+                parameters.KzSeed = (int)KzhParamsGrid_RandomSeed.Value;
+            if (KzhParamsGrid_IndexesCheckBox.IsChecked ?? false)
+            {
+                parameters.KzIndexFirst = (int)KzhParamsGrid_IndexFirst.Value;
+                parameters.KzIndexSecond = (int)KzhParamsGrid_IndexSecond.Value;
+            }
+            if (KzhParamsGrid_ThresholdCheckBox.IsChecked ?? false)
+                parameters.KzThreshold = (int)KzhParamsGrid_Threshold.Value;
 
             return parameters;
         }
