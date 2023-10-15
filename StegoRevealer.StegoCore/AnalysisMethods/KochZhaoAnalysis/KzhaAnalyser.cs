@@ -98,7 +98,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
                 foreach (var coeff in Params.AnalysisCoeffs)
                     cSequences[coeff].Add(GetAbsDiff(dctBlock, coeff));
             }
-
+            
             // Создание массива задач
             var tasks = new Dictionary<ScIndexPair, Task<OneCoeffsPairAnalysisResult>>();
             foreach (var coeff in Params.AnalysisCoeffs)

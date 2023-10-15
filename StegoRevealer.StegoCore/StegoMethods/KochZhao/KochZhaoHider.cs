@@ -174,13 +174,15 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         {
             // Определение границ блока
             var blockSize = Params.BlockSize;
-            int maxY = blockIndex.Y + blockSize;
-            int maxX = blockIndex.X + blockSize;
+            int blockStartY = blockIndex.Y * blockSize;
+            int blockStartX = blockIndex.X * blockSize;
+            int blockEndY = blockStartY + blockSize - 1;
+            int blockEndX = blockStartX + blockSize - 1;
 
             // Запись в блок новых значений
-            for (int y = blockIndex.Y; y < maxY; y++)
-                for (int x = blockIndex.X; x < maxX; x++)
-                    Params.Image.ImgArray[y, x, blockIndex.ChannelId] = block[y - blockIndex.Y, x - blockIndex.X];
+            for (int y = blockStartY; y < blockEndY; y++)
+                for (int x = blockStartX; x < blockEndX; x++)
+                    Params.Image.ImgArray[y, x, blockIndex.ChannelId] = block[y - blockStartY, x - blockStartX];
         }
     }
 }

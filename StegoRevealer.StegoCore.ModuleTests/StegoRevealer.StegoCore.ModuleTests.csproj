@@ -52,6 +52,9 @@
     <None Update="TestData\image7.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\imgForKz1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TraverseTestImage.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

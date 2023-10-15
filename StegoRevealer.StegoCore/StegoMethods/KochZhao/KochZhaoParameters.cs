@@ -199,7 +199,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
             foreach (var channel in Channels)
             {
                 int startBlock = StartBlocks[channel];
-                blocksNum += (allBlocksInChannelNum - (startBlock + 1));
+                blocksNum += (allBlocksInChannelNum - startBlock);
             }
 
             return blocksNum;
@@ -209,7 +209,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
         /// <summary>
         /// Количество всех блоков (с учётом всех каналов)
         /// </summary>
-        public int GetAllBlocksNum() => Channels.Count * (_imgBlocks.BlocksInRow * _imgBlocks.BlocksInColumn);
+        public int GetAllBlocksNum() => _imgBlocks.BlocksNum * Channels.Count;
 
         /// <summary>
         /// Возвращает стандарный список стартовых пикселей

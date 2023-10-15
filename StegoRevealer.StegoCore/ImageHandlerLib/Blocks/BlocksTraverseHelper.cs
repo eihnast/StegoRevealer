@@ -172,7 +172,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
             if (!options.InterlaceChannels)  // Поканально
             {
                 int channelIndex = 0;
-                while (channelIndex < options.Channels.Count && overallCount <= blocksNum)
+                while (channelIndex < options.Channels.Count && overallCount < blocksNum)
                 {
                     var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[channelIndex], blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
                     yield return new ScPointCoords(line, column, (int)options.Channels[channelIndex]);
@@ -187,9 +187,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks
             }
             else  // Чересканально
             {
-                while (overallCount <= blocksNum)
+                while (overallCount < blocksNum)
                 {
-                    for (int k = 0; k < options.Channels.Count && overallCount <= blocksNum; k++)
+                    for (int k = 0; k < options.Channels.Count && overallCount < blocksNum; k++)
                     {
                         var (line, column) = GetBlockIndexesBy2DLinearIndex(indexes[k], blocks, options.TraverseType).AsTuple();  // Индексы блока в матрице
                         yield return new ScPointCoords(line, column, (int)options.Channels[k]);

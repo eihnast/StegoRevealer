@@ -30,7 +30,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis
         /// Порог отсечки для массива значений разности между dct-коэффициентами<br/>
         /// (домножается на максимальное значение из последовательности C, что служит порогом определения подозрительной последовательности)
         /// </summary>
-        public double CutCoefficient { get; set; } = 0.8;  // 0.2?
+        public double CutCoefficient { get; set; } = 0.5;  // 0.2?
 
         /// <summary>
         /// Анализируемые коэффициенты матрицы ДКП
