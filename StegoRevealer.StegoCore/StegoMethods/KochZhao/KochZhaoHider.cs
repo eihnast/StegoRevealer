@@ -84,7 +84,7 @@ namespace StegoRevealer.StegoCore.StegoMethods.KochZhao
 
             // Доопределение параметров скрытия
             bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
-            int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа НЗБ
+            int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа блоков
             int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
             double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
             int usingBlocksNum = Params.GetNeededBlocksNum();  // Количество блоков, нужных для скрытия

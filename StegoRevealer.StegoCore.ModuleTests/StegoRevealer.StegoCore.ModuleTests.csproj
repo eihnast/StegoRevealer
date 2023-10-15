@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\FreqBlocksTraversingTest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\image0.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
