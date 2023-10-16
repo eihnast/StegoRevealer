@@ -71,13 +71,15 @@ namespace StegoRevealer.WinUi.Views
                 ImagePathLabel.Text = _vm.CurrentImage?.ImgPath ?? FailedImagePathText;
 
                 UpdateImagePreview();  // Отрисовка превью
-                ExtractedMessage.MaxHeight = ExtractedMessage.MaxHeight - 100;  // Обновление размера поля вывода текстового результата
+                ExtractedMessage.MaxHeight = Math.Max(ExtractedMessage.MaxHeight - 100, 60);  // Обновление размера поля вывода текстового результата
             }
             else
             {
                 ParamsGrid.IsEnabled = false;
                 ImagePathLabel.Text = ImageNotSelectedText;
             }
+
+            UpdateImagePreview();  // Отрисовка превью
         }
 
         private void ResetResultsExpander()

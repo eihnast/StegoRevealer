@@ -1,5 +1,6 @@
 ﻿using Accord.Math;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ScMath;
@@ -248,109 +249,121 @@ namespace StegoRevealer.StegoCore.ModuleTests
             Assert.IsTrue(saResult.ExtractedData?.StartsWith(data), str + $"data = {saResult.ExtractedData}");
         }
 
+        //[TestMethod]
+        //public void KochZhaoHidingExtractionCommonTest2()
+        //{
+        //    var str = "\n";
+
+        //    byte[,] block = new byte[8, 8]
+        //    {
+        //        { 157, 154, 153, 154, 157, 157, 155, 153 },
+        //        { 159, 157, 154, 152, 153, 155, 157, 158 },
+        //        { 159, 159, 158, 157, 155, 155, 158, 159 },
+        //        { 159, 160, 162, 162, 160, 158, 157, 157 },
+        //        { 159, 161, 164, 164, 160, 158, 157, 157 },
+        //        { 161, 161, 159, 159, 157, 157, 158, 159 },
+        //        { 161, 159, 158, 157, 158, 159, 161, 162 },
+        //        { 159, 159, 159, 160, 164, 165, 165, 164 },
+        //    };
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        for (int j = 0; j < 8; j++)
+        //        {
+        //            str += string.Format("{0,4:000} ", block[i, j]);
+        //            //str += $"{block[i, j]:000} ";
+        //        }
+        //        str += "\n";
+        //    }
+        //    str += "\n";
+
+
+        //    //var dctBlock = MathMethods.Dct(block);
+        //    var dctBlock = FrequencyViewTools.DctBlock(block, 8);
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        for (int j = 0; j < 8; j++)
+        //        {
+        //            str += string.Format("{0,4:000} ", dctBlock[i, j]);
+        //            //str += $"{dctBlock[i, j]:000} ";
+        //        }
+        //        str += "\n";
+        //    }
+        //    str += "\n";
+
+
+        //    var coefValues = FrequencyViewTools.GetBlockCoeffs(dctBlock, HidingCoefficients.Coeff45);  // Значения коэффициентов
+        //    var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
+        //    var newCoeffValues = coefValues;
+
+        //    str += $"old: {coefValues:000}, {difference:000}\n";
+
+        //    // Получение модифицированных значений коэффициентов
+        //    newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, -120, false);
+        //    str += $"new: {newCoeffValues:000}\n\n";
+
+        //    // Изменение значений на новые в блоке
+        //    (int coefInd1, int coefInd2) = HidingCoefficients.Coeff45.AsTuple();
+        //    str += $"old: {dctBlock[coefInd1, coefInd2]}, {dctBlock[coefInd2, coefInd1]}\n";
+        //    dctBlock[coefInd1, coefInd2] = newCoeffValues.val1;
+        //    dctBlock[coefInd2, coefInd1] = newCoeffValues.val2;
+        //    str += $"new: {dctBlock[coefInd1, coefInd2]}, {dctBlock[coefInd2, coefInd1]}\n\n";
+
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        for (int j = 0; j < 8; j++)
+        //        {
+        //            str += string.Format("{0,4:000} ", dctBlock[i, j]);
+        //            //str += $"{dctBlock[i, j]:000} ";
+        //        }
+        //        str += "\n";
+        //    }
+        //    str += "\n";
+
+        //    //var idctBlock = MathMethods.Idct(dctBlock);
+        //    var idctBlock = FrequencyViewTools.NormalizeBlock(FrequencyViewTools.IDctBlock(dctBlock));
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        for (int j = 0; j < 8; j++)
+        //        {
+        //            str += string.Format("{0,4:000} ", idctBlock[i, j]);
+        //            //str += $"{idctBlock[i, j]:000} ";
+        //        }
+        //        str += "\n";
+        //    }
+        //    str += "\n";
+
+        //    //var newDct = MathMethods.Dct(idctBlock);
+        //    var newDct = FrequencyViewTools.DctBlock(idctBlock);
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        for (int j = 0; j < 8; j++)
+        //        {
+        //            str += string.Format("{0,4:000} ", newDct[i, j]);
+        //            //str += $"{idctBlock[i, j]:000} ";
+        //        }
+        //        str += "\n";
+        //    }
+        //    str += "\n";
+
+
+
+        //    //Assert.Fail(str);
+        //}
+
         [TestMethod]
-        public void KochZhaoHidingExtractionCommonTest2()
+        public void CheckRsMethod()
         {
-            var str = "\n";
+            var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "DangerousRsImage.png");
+            var image = new ImageHandler(imagePath);
 
-            byte[,] block = new byte[8, 8]
-            {
-                { 157, 154, 153, 154, 157, 157, 155, 153 },
-                { 159, 157, 154, 152, 153, 155, 157, 158 },
-                { 159, 159, 158, 157, 155, 155, 158, 159 },
-                { 159, 160, 162, 162, 160, 158, 157, 157 },
-                { 159, 161, 164, 164, 160, 158, 157, 157 },
-                { 161, 161, 159, 159, 157, 157, 158, 159 },
-                { 161, 159, 158, 157, 158, 159, 161, 162 },
-                { 159, 159, 159, 160, 164, 165, 165, 164 },
-            };
+            var rsAnalyse = new RsAnalyser(image);
+            var saResult = rsAnalyse.Analyse();
 
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    str += string.Format("{0,4:000} ", block[i, j]);
-                    //str += $"{block[i, j]:000} ";
-                }
-                str += "\n";
-            }
-            str += "\n";
-
-            
-            //var dctBlock = MathMethods.Dct(block);
-            var dctBlock = FrequencyViewTools.DctBlock(block, 8);
-
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    str += string.Format("{0,4:000} ", dctBlock[i, j]);
-                    //str += $"{dctBlock[i, j]:000} ";
-                }
-                str += "\n";
-            }
-            str += "\n";
-
-
-            var coefValues = FrequencyViewTools.GetBlockCoeffs(dctBlock, HidingCoefficients.Coeff45);  // Значения коэффициентов
-            var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
-            var newCoeffValues = coefValues;
-
-            str += $"old: {coefValues:000}, {difference:000}\n";
-
-            // Получение модифицированных значений коэффициентов
-            newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, -120, false);
-            str += $"new: {newCoeffValues:000}\n\n";
-
-            // Изменение значений на новые в блоке
-            (int coefInd1, int coefInd2) = HidingCoefficients.Coeff45.AsTuple();
-            str += $"old: {dctBlock[coefInd1, coefInd2]}, {dctBlock[coefInd2, coefInd1]}\n";
-            dctBlock[coefInd1, coefInd2] = newCoeffValues.val1;
-            dctBlock[coefInd2, coefInd1] = newCoeffValues.val2;
-            str += $"new: {dctBlock[coefInd1, coefInd2]}, {dctBlock[coefInd2, coefInd1]}\n\n";
-
-
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    str += string.Format("{0,4:000} ", dctBlock[i, j]);
-                    //str += $"{dctBlock[i, j]:000} ";
-                }
-                str += "\n";
-            }
-            str += "\n";
-
-            //var idctBlock = MathMethods.Idct(dctBlock);
-            var idctBlock = FrequencyViewTools.NormalizeBlock(FrequencyViewTools.IDctBlock(dctBlock));
-
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    str += string.Format("{0,4:000} ", idctBlock[i, j]);
-                    //str += $"{idctBlock[i, j]:000} ";
-                }
-                str += "\n";
-            }
-            str += "\n";
-
-            //var newDct = MathMethods.Dct(idctBlock);
-            var newDct = FrequencyViewTools.DctBlock(idctBlock);
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    str += string.Format("{0,4:000} ", newDct[i, j]);
-                    //str += $"{idctBlock[i, j]:000} ";
-                }
-                str += "\n";
-            }
-            str += "\n";
-
-
-
-            //Assert.Fail(str);
+            Assert.Fail($"{saResult.MessageRelativeVolume}");
         }
 
         #endregion

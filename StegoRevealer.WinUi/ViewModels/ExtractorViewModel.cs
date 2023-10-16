@@ -88,6 +88,11 @@ namespace StegoRevealer.WinUi.ViewModels
         /// </summary>
         public bool TryLoadImage()
         {
+            // Сразу "отпускаем" текущее изображение
+            CurrentImage?.CloseHandler();
+            DrawedImage = null;
+            DrawedImageSource = null;
+
             // Выбор файла
             string path = SelectNewImageFile();
 

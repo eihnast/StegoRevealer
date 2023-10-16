@@ -39,7 +39,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
         {
             var result = new RsResult();
             result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
-            _writeToLog = (string record) => result.Log(record);
+            _writeToLog = result.Log;
 
             double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
             foreach (var channel in Params.Channels)
