@@ -87,6 +87,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
                 throw new Exception($"Error while getting OneChannelArray for channel '{channel}'");
 
             var groups = SplitIntoGroupsInChannelArray(channelArray);
+            result.GroupsNumber = groups.Count;
+
             var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
             var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
@@ -128,17 +130,37 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
         /// <returns></returns>
         private double CalculatePValue(RsGroupsCalcResult unturnedValues, RsGroupsCalcResult invertedValues)
         {
+            if (unturnedValues.GroupsNumber != invertedValues.GroupsNumber)
+                throw new Exception("Error while RS groups calculating");
+
+            double Rm = (double)unturnedValues.Regulars / unturnedValues.GroupsNumber;
+            double Sm = (double)unturnedValues.Singulars / unturnedValues.GroupsNumber;
+            double Rmi = (double)unturnedValues.RegularsWithInvertedMask / unturnedValues.GroupsNumber;
+            double Smi = (double)unturnedValues.SingularsWithInvertedMask / unturnedValues.GroupsNumber;
+            double invRm = (double)invertedValues.Regulars / invertedValues.GroupsNumber;
+            double invSm = (double)invertedValues.Singulars / invertedValues.GroupsNumber;
+            double invRmi = (double)invertedValues.RegularsWithInvertedMask / invertedValues.GroupsNumber;
+            double invSmi = (double)invertedValues.SingularsWithInvertedMask / invertedValues.GroupsNumber;
+
+            _writeToLog?.Invoke($"Значения точек RS-диаграммы: Rm = {Rm:0.###}; Sm = {Sm:0.###}; Rmi = {Rmi:0.###}; Smi = {Smi:0.###}; " +
+                $"invRm = {invRm:0.###}; invSm = {invSm:0.###}; invRmi = {invRmi:0.###}; invSmi = {invSmi:0.###}.");
+
             // Mathematical code
-            double d0 = unturnedValues.Regulars - unturnedValues.Singulars;
-            double d0i = unturnedValues.RegularsWithInvertedMask - unturnedValues.SingularsWithInvertedMask;
-            double d1 = invertedValues.Regulars - invertedValues.Singulars;
-            double d1i = invertedValues.RegularsWithInvertedMask - invertedValues.SingularsWithInvertedMask;
+            double d0 = Rm - Sm;
+            double d0i = Rmi - Smi;
+            double d1 = invRm - invSm;
+            double d1i = invRmi - invSmi;
 
             double a = (d1 + d0) * 2;
             double b = d0i - d1i - d1 - 3 * d0;
             double c = d0 - d0i;
 
+            _writeToLog?.Invoke($"Промежуточные значения решения: d0 = {d0:0.###}; d0i = {d0i:0.###}; d1 = {d1:0.###}; d1i = {d1i:0.###}; " +
+                $"a = {a:0.###}; b = {b:0.###}; c = {c:0.###}.");
+
             double D = Math.Pow(b, 2) - 4 * a * c;
+
+            _writeToLog?.Invoke($"Вычислен дискриминант: D = {D:0.####}.");
 
             double x1 = 0, x2 = 0, minX = 0;
             if (D == 0.0)
@@ -153,8 +175,11 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
                     minX = x2;
             }
 
+            _writeToLog?.Invoke($"Корни решения: x1 = {x1:0.###}; x2 = {x2:0.###}.");
+
             double p = minX / (minX - 0.5);
             return Math.Max(p, 0.0);
+            // return Math.Min(1.0, Math.Max(p, 0.0));
         }
 
 
@@ -177,7 +202,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod
 
                 // "Лишние" пиксели, которые не попадают в последовательную выборку групп, в оригинале учитывались
                 // и собирались в дополнительные "остаточные" группы здесь (в единый массив excess, откуда по 
-                // достижению длины PixelsGroupLength сразу же выгружались в основной.
+                // достижению длины PixelsGroupLength сразу же выгружались в основной).
             }
 
             return groups;

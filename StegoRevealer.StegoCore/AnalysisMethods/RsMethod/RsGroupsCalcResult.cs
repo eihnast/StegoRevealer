@@ -24,5 +24,10 @@
         /// Количество Singular групп с инвертированной маской
         /// </summary>
         public int SingularsWithInvertedMask { get; set; } = 0;
+
+        /// <summary>
+        /// Общее количество групп
+        /// </summary>
+        public int GroupsNumber { get; set; } = 0;
     }
 }
