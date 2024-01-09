@@ -189,5 +189,16 @@ namespace StegoRevealer.StegoCore.ScMath
 
             return result;
         }
+
+        /// <summary>
+        /// Возвращает дисперсию последовательности
+        /// </summary>
+        public static double Dispersion(byte[] values)
+        {
+            var doubleValues = new double[values.Length];
+            for (int i = 0; i < values.Length; i++)
+                doubleValues[i] = (double)values[i];
+            return Dispersion(doubleValues);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.Collections.Concurrent;
 using System.Reflection.Metadata.Ecma335;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib
@@ -33,13 +34,13 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// Хранилище объектов открытых изображений<br/>
         /// Key - путь, Value - объект
         /// </summary>
-        private static Dictionary<string, ScImage> _loadedImages = new();
+        private static ConcurrentDictionary<string, ScImage> _loadedImages = new();
 
         /// <summary>
         /// Хранилище открытых файловых потоков изображений<br/>
         /// Key - путь, Value - объект
         /// </summary>
-        private static Dictionary<string, FileStream> _fileStreams = new();
+        private static ConcurrentDictionary<string, FileStream> _fileStreams = new();
 
 
         private string? _path = null;
@@ -226,7 +227,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
                 return _loadedImages[path];
 
             var image = new ScImage(path, false);
-            _loadedImages.Add(path, image);
+            _loadedImages.TryAdd(path, image);
             return image;
         }
 
@@ -355,7 +356,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         {
             CloseCurrentStreams();  // Закрытие открытых потоков
             if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
-                _loadedImages.Remove(_path);  // (оно должно было быть сюда добавлено, если загружено не в память)
+                _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
         }
 
 

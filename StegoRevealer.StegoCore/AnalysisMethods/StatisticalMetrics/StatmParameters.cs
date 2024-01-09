@@ -12,9 +12,24 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics
         /// </summary>
         public ImageHandler Image { get; set; }
 
+
         // Остальные параметры
-        public int NoiseCalcMethodSteps { get; set; } = 50;
-        public int NoiseCalcMethodInterval { get; set; } = 4;
+
+        /// <summary>
+        /// Шаг выбора строк для подсчёта минимальных дисперсий
+        /// </summary>
+        public int NoiseCalcMethodSteps { get; set; } = 50;  // h
+
+        /// <summary>
+        /// Делитель высоты изображения, если с заданным шагом такого количества строк не выбрать
+        /// </summary>
+        public int NoiseCalcMethodStepsDivider { get; set; } = 8;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int NoiseCalcMethodIntervalNumber { get; set; } = 4;
+
 
         public StatmParameters(ImageHandler image)
         {
