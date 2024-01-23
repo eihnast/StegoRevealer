@@ -1,0 +1,76 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:StegoRevealer.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:StegoRevealer.UI.Views.MainWindowViews"
+        xmlns:viewmodels="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
+        xmlns:rootviewmodels="clr-namespace:StegoRevealer.UI.ViewModels"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+		d:DesignWidth="1200" d:DesignHeight="670" MinWidth="1200" MinHeight="670"
+        x:Class="StegoRevealer.UI.Windows.MainWindow"
+        Icon="/Assets/AppIcon.ico"
+        Title="Stego Revealer">
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type viewmodels:MainViewModel}">
+			<views:MainView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:HiderViewModel}">
+			<views:HiderView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:ExtractorViewModel}">
+			<views:ExtractorView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:AnalyzerViewModel}">
+			<views:AnalyzerView/>
+		</DataTemplate>
+	</Window.DataTemplates>
+
+	<Design.DataContext>
+		<rootviewmodels:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid x:Name="RootGrid" Classes="MainGrid" RowDefinitions="Auto,*">
+		<StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+					Grid.Row="0" IsVisible="True">
+			<StackPanel>
+				<DockPanel VerticalAlignment="Top" LastChildFill="False" Margin="20 0">
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
+						<Button Name="AnalyzerBtn" Content="Стегоанализатор" Classes="HeaderBtn"
+								ClickMode="Press" Click="AnalyzerBtn_Click"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
+					</StackPanel>
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
+						<Button Name="HiderBtn" Content="Стеганокодер" Classes="HeaderBtn"
+								ClickMode="Press" Click="HiderBtn_Click" IsEnabled="False"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="Gray"/>
+					</StackPanel>
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
+						<Button Name="ExtractorBtn" Content="Стеганодекодер" Classes="HeaderBtn"
+								ClickMode="Press" Click="ExtractorBtn_Click" IsEnabled="False"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="Gray"/>
+					</StackPanel>
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
+						<Button Name="AboutBtn" Content="" Classes="HeaderBtnWithIcon"
+								ClickMode="Press" Click="AboutBtn_Click" IsEnabled="False">
+							<PathIcon Data="{StaticResource IconInfo}"/>
+						</Button>
+					</StackPanel>
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
+						<Button Name="SettingsBtn" Content="" Classes="HeaderBtnWithIcon"
+								ClickMode="Press" Click="SettingsBtn_Click" IsEnabled="False">
+							<PathIcon Data="{StaticResource IconSettings}"/>
+						</Button>
+					</StackPanel>
+				</DockPanel>
+				<Rectangle Margin="15 0 15 0" Height="1" Fill="{StaticResource SrDarkMiddle}"/>
+			</StackPanel>
+		</StackPanel>
+		<ContentControl x:Name="MainWindowContentControl" Content="{Binding CurrentViewModel}"
+						Margin="0,0,0,0" Grid.Row="1"
+						HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+	</Grid>
+	
+</Window>

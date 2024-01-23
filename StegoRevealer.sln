@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.WinUi", "Steg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore", "StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj", "{2425709C-1913-4325-A4DB-634A1AAE1F91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.StegoCore.ModuleTests", "StegoRevealer.StegoCore.ModuleTests\StegoRevealer.StegoCore.ModuleTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore.ModuleTests", "StegoRevealer.StegoCore.ModuleTests\StegoRevealer.StegoCore.ModuleTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI", "StegoRevealer.UI\StegoRevealer.UI.csproj", "{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI.Desktop", "StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj", "{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

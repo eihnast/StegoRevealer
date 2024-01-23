@@ -84,7 +84,6 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib
         /// </summary>
         public SKBitmap? GetBitmap() => _image;
 
-
         // Доступ по индексаторам
         public ScPixel this[int y, int x]
         {

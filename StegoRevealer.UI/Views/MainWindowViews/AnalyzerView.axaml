@@ -1,0 +1,225 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="1200" d:DesignHeight="610" MinWidth="1200" MinHeight="610"
+             x:Class="StegoRevealer.UI.Views.MainWindowViews.AnalyzerView">
+
+	<Design.DataContext>
+		<vm:AnalyzerViewModel/>
+	</Design.DataContext>
+
+	<!-- Внешняя сетка -->
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<!-- Внутренняя сетка -->
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
+			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
+
+			<!-- Левая панель выбора изображения -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+						Grid.Column="0" Grid.Row="0">
+				<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+					<Button Name="LoadImageButton" Content="Выбор изображения"
+							DockPanel.Dock="Left"
+							Height="40" Padding="15 0" Margin="0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="LoadImageButton_Click"/>
+					<TextBox Name="ImagePathLabel" Text="{Binding Path=ImagePath}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+				</DockPanel>
+				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+					   Margin="10"
+					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
+					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
+			</StackPanel>
+			<!-- / Левая панель выбора изображения -->
+
+			<!-- Правая панель выбора методов и результатов -->
+			<RelativePanel Name="RightPanel"
+						   Grid.Column="2" Grid.Row="0"
+						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				
+				<!-- Экспандер выбора методов -->
+				<Expander Name="MethodsExpander" Header="Методы стегоанализа"
+						  Classes="RightPanelMethodsExpander"
+						  IsExpanded="True" Expanded="MethodsExpander_Expanded"
+						  Collapsed="MethodsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignTopWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="True">
+					<Grid ColumnDefinitions="*" RowDefinitions="50,*">
+
+						<Label Content="Используемые методы"
+							   FontFamily="Arial" FontWeight="Bold" FontSize="18"
+							   Foreground="#FFECECEC"
+							   Grid.Column="0" Grid.Row="0"
+							   Padding="0" Margin="5"
+							   VerticalAlignment="Center" HorizontalAlignment="Center"
+							   Background="{x:Null}" BorderBrush="{x:Null}"/>
+
+						<!-- Сетка методов для выбора -->
+						<Grid Name="MethodsSelectGrid" IsEnabled="{Binding Path=HasLoadedImage}"
+							  Grid.Column="0" Grid.Row="1"
+							  Margin="20 10 20 10"
+							  ColumnDefinitions="*,100" RowDefinitions="30,30,30">
+
+							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат"
+									  Classes="MethodTurnCheckbox"
+									  Grid.Column="0" Grid.Row="0"
+									  IsChecked="{Binding Path=MethodChiSqrSelected}"/>
+							<Button Name="MethodChiSqrParamsBtn" Content="Параметры"
+									Classes="MethodParametersBtn"
+									Grid.Column="1" Grid.Row="0"
+									Click="MethodChiSqrParamsBtn_Click"/>
+							<CheckBox Name="IsMethodRsChecked" Content="Метод Regular-Singular"
+									  Classes="MethodTurnCheckbox"
+									  Grid.Column="0" Grid.Row="1"
+									  IsChecked="{Binding Path=MethodRsSelected}"/>
+							<Button Name="MethodRsParamsBtn" Content="Параметры"
+									Classes="MethodParametersBtn"
+									Grid.Column="1" Grid.Row="1"
+									Click="MethodRsParamsBtn_Click"/>
+							<CheckBox Name="IsMethodKzaChecked" Content="Стегоанализ метода Коха-Жао"
+									  Classes="MethodTurnCheckbox"
+									  Grid.Column="0" Grid.Row="2"
+									  IsChecked="{Binding Path=MethodKzhaSelected}"/>
+							<Button Name="MethodKzaParamsBtn" Content="Параметры"
+									Classes="MethodParametersBtn"
+									Grid.Column="1" Grid.Row="2"
+									Click="MethodKzaParamsBtn_Click"/>
+						</Grid>
+						<!-- / Сетка методов для выбора -->
+					</Grid>
+				</Expander>
+				<!-- / Экспандер выбора методов -->
+
+				<Rectangle Name="RightPanelSeparator"
+						   HorizontalAlignment="Stretch" Height="1"
+						   RelativePanel.AlignRightWithPanel="True"
+						   RelativePanel.AlignLeftWithPanel="True"/>
+
+				<!-- Экспандер результатов -->
+				<Expander Name="ResultsExpander" Header="Результаты стегоанализа"
+						  IsExpanded="False" Expanded="ResultsExpander_Expanded"
+						  Collapsed="ResultsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignBottomWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="{Binding Path=HasResults}">
+					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							   LastChildFill="False">
+						
+						<StackPanel Name="ChiFullnessBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top">
+							<TextBlock Text="Оценка заполненности по методу Хи-квадрат: "
+									 TextAlignment="Left" Height="25"
+									 HorizontalAlignment="Stretch"/>
+							<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
+                                       TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="RsFullnessBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top">
+							<TextBlock Text="Оценка заполненности по методу RS: "
+									   TextAlignment="Left" Height="25"
+									   HorizontalAlignment="Stretch"/>
+							<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaIntervalFoundedBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top">
+							<TextBlock Text="Обнаружен подозрительный интервал при стегоанализе Коха-Жао: "
+									   TextAlignment="Left" Height="25"
+									   HorizontalAlignment="Stretch"/>
+							<TextBlock Name="KzhaIntervalFoundedValue" Text="Анализ не проводился"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaBitsNumBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+							<TextBlock Text="Количество бит скрытой информации: "
+									   Padding="30 0 0 0"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="KzhaBitsNumValue" Text="Нет данных"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaSuspiciousIntervalBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+							<TextBlock Text="Индексы блоков подозрительного интервала: "
+									   Padding="30 0 0 0"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="KzhaSuspiciousIntervalValue" Text="Нет данных"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaThresholdBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+							<TextBlock Text="Предполагаемый порог встраивания: "
+									   Padding="30 0 0 0"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="KzhaThresholdValue" Text="Нет данных"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaCoeffsBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+							<TextBlock Text="Коэффициенты предполагаемого встраивания: "
+									   Padding="30 0 0 0"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="KzhaCoeffsValue" Text="Нет данных"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel Name="KzhaExtractedDataBlock"
+									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+							<TextBlock Name="KzhaExtractedDataLabel" Text="Извлечённая информация: "
+									   Padding="30 0 0 0"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="KzhaExtractedDataLabelValue" Text="Отсутствует"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<TextBox Name="KzhaExtractedDataValue" Text="" DockPanel.Dock="Top"
+								 TextAlignment="Left" TextWrapping="Wrap"
+								 Height="150"
+								 VerticalContentAlignment="Top"
+								 IsVisible="False"/>
+						<StackPanel Name="ElapsedTimeBlock"
+									Orientation="Horizontal" DockPanel.Dock="Bottom">
+							<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
+									   FontStyle="Italic"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="ElapsedTimeValue" Text="0 мс"
+									   FontStyle="Italic"
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						
+					</DockPanel>
+				</Expander>
+				<!-- / Экспандер результатов -->
+			</RelativePanel>
+			<!-- / Правая панель выбора методов и результатов -->
+
+			<Button Name="StartAnalysis" Content="Запуск"
+					FontSize="24" FontWeight="Bold"
+					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					Click="StartAnalysis_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
+		</Grid>
+		<!-- / Внутренняя сетка -->
+	</Grid>
+	<!-- / Внешняя сетка -->
+	
+</UserControl>

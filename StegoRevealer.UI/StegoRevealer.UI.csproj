@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <None Remove="Assets\AppIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\MainWindowViews\AnalyzerView.axaml.cs">
+      <DependentUpon>AnalyzerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindowViews\HiderView.axaml.cs">
+      <DependentUpon>HiderView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindowViews\ExtractorView.axaml.cs">
+      <DependentUpon>ExtractorView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ParametersWindowViews\ChiSqrMethodParametersView.axaml.cs">
+      <DependentUpon>ChiSqrMethodParametersView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ParametersWindowViews\KzhaMethodParametersView.axaml.cs">
+      <DependentUpon>KzhaMethodParametersView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ParametersWindowViews\RsMethodParametersView.axaml.cs">
+      <DependentUpon>RsMethodParametersView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ParametersWindowViews\EmptyParametersView.axaml.cs">
+      <DependentUpon>EmptyParametersView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\ParametersWindow.axaml.cs">
+      <DependentUpon>ParametersWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

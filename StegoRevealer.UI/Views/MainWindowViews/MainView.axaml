@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="1200" d:DesignHeight="610" MinWidth="1200" MinHeight="610"
+             x:Class="StegoRevealer.UI.Views.MainWindowViews.MainView">
+
+	<Design.DataContext>
+		<vm:MainViewModel/>
+	</Design.DataContext>
+	
+</UserControl>

@@ -1,0 +1,103 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Styles.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="/Resources/StegoRevealerTheme.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Styles.Resources>
+
+	<!--Classes-->
+	<Style Selector="Grid.MainGrid">
+		<Setter Property="Background" Value="{StaticResource SrDark}" />
+	</Style>
+
+	<Style Selector="Button.HeaderBtn">
+		<Setter Property="MinHeight" Value="50"/>
+		<Setter Property="MinWidth" Value="150"/>
+		<Setter Property="Padding" Value="10 5 10 5"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="FontSize" Value="21"/>
+		<Setter Property="Background" Value="{StaticResource SrDark}"/>
+	</Style>
+	<Style Selector="Button.HeaderBtn:disabled">
+		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{x:Null}"/>
+			<Setter Property="BorderBrush" Value="{x:Null}"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+	</Style>
+	
+	<Style Selector="Button.HeaderBtnWithIcon">
+		<Setter Property="MinHeight" Value="40"/>
+		<Setter Property="MinWidth" Value="40"/>
+		<Setter Property="Padding" Value="10 5 10 5"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="Background" Value="{StaticResource SrDark}"/>
+	</Style>
+	<Style Selector="Button.HeaderBtnWithIcon:disabled">
+		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{x:Null}"/>
+			<Setter Property="BorderBrush" Value="{x:Null}"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+	</Style>
+
+	<Style Selector="StackPanel.HeaderBtnStackPanel">
+		<Setter Property="Margin" Value="10 5 10 0"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+	</Style>
+
+	<Style Selector="Button.MethodParametersBtn">
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="Margin" Value="0 0 0 5"/>
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+	</Style>
+
+	<Style Selector="CheckBox.MethodTurnCheckbox">
+		<Setter Property="Foreground" Value="#fff"/>
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="Margin" Value="0 0 0 5"/>
+		<Setter Property="IsChecked" Value="True"/>
+	</Style>
+
+	<Style Selector="TextBox.ImagePathTb">
+		<Setter Property="FontFamily" Value="Arial"/>
+		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="FontStyle" Value="Italic"/>
+		<Setter Property="Foreground" Value="#FFECECEC"/>
+		<Setter Property="TextWrapping" Value="Wrap"/>
+		<Setter Property="Height" Value="40"/>
+		<Setter Property="Padding" Value="0 1 0 0"/>
+		<Setter Property="Margin" Value="10 0 0 0"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="HorizontalAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Left"/>
+		<Setter Property="Background" Value="{x:Null}"/>
+		<Setter Property="BorderBrush" Value="{x:Null}"/>
+	</Style>
+	<Style Selector="TextBox.ImagePathTb:disabled">
+		<Style Selector="^ /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="{x:Null}"/>
+			<Setter Property="BorderBrush" Value="{x:Null}"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+	</Style>
+
+	<Style Selector="Expander.RightPanelMethodsExpander">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Expander.RightPanelMethodsExpander:disabled">
+		<Style Selector="^ /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+	
+</Styles>

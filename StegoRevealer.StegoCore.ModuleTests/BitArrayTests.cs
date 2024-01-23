@@ -69,7 +69,7 @@ namespace StegoRevealer.StegoCore.ModuleTests
                 var result = bitArray.AsByte();
                 Assert.Fail(errorExpectedText);
             }
-            catch (ArgumentException ex) { }
+            catch (ArgumentException) { }
             catch (Exception)
             {
                 Assert.Fail(errorExpectedText);
