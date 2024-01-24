@@ -3,63 +3,57 @@ using Avalonia.Interactivity;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
-using System;
-using System.Collections.Generic;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
 public partial class AnalyzerView : UserControl
 {
+    // Стандартные сообщения и заглушки
+    private const string MessageNotAnalyzed = "Анализ не проводился";
+    private const string MessageUnknown = "Нет данных";
+    private const string MessageNotFoundData = "Отсутствует";
+    private const string MessageNullElapsedTime = "0 мс";
+
     private AnalyzerViewModel _vm = null!;
 
+
+    // Конструкторы и стартовые настройки
     public AnalyzerView()
     {
         InitializeComponent();
-
         base.Loaded += AnalyzerView_Loaded;
     }
 
     private void AnalyzerView_Loaded(object? sender, RoutedEventArgs e)
     {
         _vm = CommonTools.GetViewModel<AnalyzerViewModel>(this.DataContext);
-        _vm.WindowResizeAction += UpdateImagePreview;
-        _vm.WindowResizeAction();
+        _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
     {
-        ResetResultsExpander();  // В любом случае, сбрасываем форму результатов
-
-        var successLoad = await _vm.TryLoadImage();
-        if (successLoad)
-            UpdateImagePreview();  // Отрисовка превью
+        _vm.ResetResults();
+        ResetResultsExpander();  // При попытке загрузке изображения в любом случае сбрасываем форму результатов
+        await _vm.TryLoadImage();
     }
 
-    private void MethodChiSqrParamsBtn_Click(object sender, RoutedEventArgs e) =>
-            _vm.OpenParametersWindow(AnalyzerMethod.ChiSquare);
 
-    private void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
-        _vm.OpenParametersWindow(AnalyzerMethod.RegularSingular);
-
-    private void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
-        _vm.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
-
+    // Запуск стегоанализа
     private void StartAnalysis_Click(object sender, RoutedEventArgs e)
     {
-        ResetResultsExpander();
-
-        _vm.StartAnalysis();
-        UpdateImagePreview();  // Отрисовка превью
-
-        UpdateResults();
+        _vm.ResetResults();  // Сбрасываем результаты
+        ResetResultsExpander();  // Сбрасываем форму результатов
+        _vm.StartAnalysis();  // Запускаем стегоанализ
+        UpdateResults();  // Обновляем форму результатов
     }
 
+    // Обновление результатов
     private void UpdateResults()
     {
         if (_vm.HasResults)
         {
             // Загрузка результатов
-            var results = _vm.GetCurrentResults();
+            var results = _vm.CurrentResults;
             if (results is null)
                 return;
 
@@ -133,9 +127,16 @@ public partial class AnalyzerView : UserControl
     }
 
 
-    private void UpdateImagePreview() => ImagePreview.Source = _vm.DrawedImageSource;  // ?
+    // Кнопки открытия параметров
+    private async void MethodChiSqrParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalyzerMethod.ChiSquare);
+    private async void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalyzerMethod.RegularSingular);
+    private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
 
 
+    // Настройки экспандеров (выбор методов и результатов)
     private void MethodsExpander_Expanded(object sender, RoutedEventArgs e)
     {
         ResultsExpander.ClearValue(RelativePanel.AlignTopWithProperty);
@@ -143,9 +144,6 @@ public partial class AnalyzerView : UserControl
         RightPanelSeparator.ClearValue(RelativePanel.BelowProperty);
         RightPanelSeparator.SetValue(RelativePanel.AboveProperty, ResultsExpander);
         MethodsExpander.SetValue(RelativePanel.AlignBottomWithProperty, RightPanelSeparator);
-
-        //if (ResultsExpander is not null && MethodsExpander is not null)
-        //    ResultsExpander.IsExpanded = !MethodsExpander.IsExpanded;
     }
     private void ResultsExpander_Expanded(object sender, RoutedEventArgs e)
     {
@@ -154,9 +152,6 @@ public partial class AnalyzerView : UserControl
         RightPanelSeparator.ClearValue(RelativePanel.AboveProperty);
         RightPanelSeparator.SetValue(RelativePanel.BelowProperty, MethodsExpander);
         ResultsExpander.SetValue(RelativePanel.AlignTopWithProperty, RightPanelSeparator);
-
-        //if (MethodsExpander is not null && ResultsExpander is not null && (_vm.HasResults ?? false))
-        //    MethodsExpander.IsExpanded = !ResultsExpander.IsExpanded;
     }
     private void MethodsExpander_Collapsed(object sender, RoutedEventArgs e)
     {
@@ -168,37 +163,31 @@ public partial class AnalyzerView : UserControl
     private void ResultsExpander_Collapsed(object sender, RoutedEventArgs e) => MethodsExpander.IsExpanded = true;
 
 
+    // Сброс результатов
     private void ResetResultsExpander()
     {
-        _vm.HasResults = false;
-
-        ChiFullnessBlock.IsEnabled = false;
-        ChiFullnessValue.Text = "Анализ не проводился";
-        RsFullnessBlock.IsEnabled = false;
-        RsFullnessValue.Text = "Анализ не проводился";
-        KzhaIntervalFoundedBlock.IsEnabled = false;
-        KzhaIntervalFoundedValue.Text = "Анализ не проводился";
-        KzhaBitsNumBlock.IsVisible = false;
-        KzhaBitsNumBlock.IsEnabled = false;
-        KzhaBitsNumValue.Text = "Нет данных";
-        KzhaSuspiciousIntervalBlock.IsVisible = false;
-        KzhaSuspiciousIntervalBlock.IsEnabled = false;
-        KzhaSuspiciousIntervalValue.Text = "Нет данных";
-        KzhaThresholdBlock.IsVisible = false;
-        KzhaThresholdBlock.IsEnabled = false;
-        KzhaThresholdValue.Text = "Нет данных";
-        KzhaCoeffsBlock.IsVisible = false;
-        KzhaCoeffsBlock.IsEnabled = false;
-        KzhaCoeffsValue.Text = "Нет данных";
-        KzhaExtractedDataBlock.IsVisible = false;
-        KzhaExtractedDataBlock.IsEnabled = false;
-        KzhaExtractedDataLabelValue.Text = "Отсутствует";
-        KzhaExtractedDataValue.IsVisible = false;
-        KzhaExtractedDataValue.Text = string.Empty;
-        ElapsedTimeValue.Text = "0 мс";
-
-        ResultsExpander.IsEnabled = false;
+        // Переключение экспандера результатов
         ResultsExpander.IsExpanded = false;
         MethodsExpander.IsExpanded = true;
+
+        // Сброс формы результатов
+        CommonTools.SetFields("IsEnabled", false, 
+            ChiFullnessBlock, RsFullnessBlock, KzhaIntervalFoundedBlock,
+            KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock);
+
+        CommonTools.SetFields("IsVisible", false, 
+            KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock, KzhaExtractedDataValue);
+
+        KzhaExtractedDataValue.Text = string.Empty;
+
+        ChiFullnessValue.Text = MessageNotAnalyzed;
+        RsFullnessValue.Text = MessageNotAnalyzed;
+        KzhaIntervalFoundedValue.Text = MessageNotAnalyzed;
+        KzhaBitsNumValue.Text = MessageUnknown;
+        KzhaSuspiciousIntervalValue.Text = MessageUnknown;
+        KzhaThresholdValue.Text = MessageUnknown;
+        KzhaCoeffsValue.Text = MessageUnknown;
+        KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
+        ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
 }

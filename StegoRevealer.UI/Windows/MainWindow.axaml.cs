@@ -1,9 +1,8 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Media;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels;
-using System;
-using System.Collections.Generic;
 
 namespace StegoRevealer.UI.Windows;
 
@@ -21,8 +20,8 @@ public partial class MainWindow : Window
         _unselectedBtnBackgroundBrush = CommonTools.GetBrush("SrDark");
 
         InitializeComponent();
-        this.Closing += MainWindow_Closing;
         this.Loaded += MainWindow_Loaded;
+        this.Closing += MainWindow_Closing;
     }
 
     private void MainWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -34,9 +33,7 @@ public partial class MainWindow : Window
         _vm.TurnToAnalyzer();
     }
 
-    private void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
-    {
-    }
+    private void MainWindow_Closing(object? sender, WindowClosingEventArgs e) { }
 
     private void UpdateHeaderBtnSelection(Button selectedBtn)
     {

@@ -1,10 +1,14 @@
-﻿using StegoRevealer.UI.Tools.MvvmTools;
+﻿using System;
+using System.Linq;
+using ReactiveUI;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.UI.Tools;
+using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
 using StegoRevealer.UI.ViewModels.ParametersWindowViewModels;
 using StegoRevealer.UI.Windows;
-using ReactiveUI;
-using System;
-using System.Linq;
 
 namespace StegoRevealer.UI.ViewModels;
 
@@ -37,13 +41,25 @@ public class ParametersWindowViewModel : ViewModelBase
     private InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
 
 
-    public ParametersWindowViewModel()
+    public object? ParametersDto { get; set; } = null;
+    public Action FillParametersDtoAction { get; set; } = delegate { };
+
+
+    public ParametersWindowViewModel() { }
+
+    public ParametersWindowViewModel(object? currentParameters, ParametersStorage parametersToReceive) 
     {
-        // Установка стандартного ParametersViewModel
-        var newVm = GetNewViewModel(typeof(EmptyParametersViewModel)) as EmptyParametersViewModel;
-        if (newVm is null)
-            throw new Exception("Не удалось создать стартовое представление окна");
-        CurrentViewModel = newVm;
+        if (currentParameters is not null)
+        {
+            if (currentParameters is ChiSquareParameters)
+                SelectChiSqrParameters(currentParameters);
+            else if (currentParameters is RsParameters)
+                SelectRsParameters(currentParameters);
+            else if (currentParameters is KzhaParameters)
+                SelectKzhaParameters(currentParameters);
+        }
+
+        FillParametersDtoAction += () => parametersToReceive.Parameters = ParametersDto;
     }
 
 
@@ -76,5 +92,37 @@ public class ParametersWindowViewModel : ViewModelBase
             return GetNewViewModel(viewModelType);
         else
             return viewModels.First();
+    }
+
+
+    private void SelectChiSqrParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(ChiSqrMethodParametersViewModel)) as ChiSqrMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
+    }
+    private void SelectRsParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(RsMethodParametersViewModel)) as RsMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
+    }
+    private void SelectKzhaParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(KzhaMethodParametersViewModel)) as KzhaMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
     }
 }

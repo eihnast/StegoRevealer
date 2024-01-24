@@ -1,9 +1,13 @@
-﻿using Avalonia.Controls;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Avalonia.Platform.Storage;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reactive;
+using System.Threading.Tasks;
 using ReactiveUI;
-using SkiaSharp;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
@@ -14,26 +18,26 @@ using StegoRevealer.UI.Lib.Entities;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reactive;
-using System.Threading.Tasks;
+using StegoRevealer.UI.Windows;
+using Avalonia;
+using StegoRevealer.UI.Lib.ParamsHelpers;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
 public class AnalyzerViewModel : MainWindowViewModelBaseChild
 {
+    // Стандартные значения текстовых полей
+    private const string ImageNotSelectedText = "Изображение не выбрано";
+
     // Параметры методов стегоанализа
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
     private KzhaParameters? _kzhaParameters = null;
 
 
-    private const string ImageNotSelectedText = "Изображение не выбрано";
-
-    private string _imagePath = ImageNotSelectedText;
+    /// <summary>
+    /// Путь к файлу изображения
+    /// </summary>
     public string ImagePath
     {
         get => _imagePath;
@@ -43,15 +47,21 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !value.Equals(ImageNotSelectedText);
         }
     }
+    private string _imagePath = ImageNotSelectedText;
 
-    private bool _hasLoadedImage = false;
+    /// <summary>
+    /// Загружено ли изображение для анализа
+    /// </summary>
     public bool HasLoadedImage
     {
         get => _hasLoadedImage;
         set => this.RaiseAndSetIfChanged(ref _hasLoadedImage, value);
     }
+    private bool _hasLoadedImage = false;
 
-    private bool _methodChiSqrSelected = true;
+    /// <summary>
+    /// Выбран ли метод Хи-квадрат
+    /// </summary>
     public bool MethodChiSqrSelected
     {
         get => _methodChiSqrSelected;
@@ -61,7 +71,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ActiveMethods[AnalyzerMethod.ChiSquare] = value;
         }
     }
-    private bool _methodRsSelected = true;
+    private bool _methodChiSqrSelected = true;
+
+    /// <summary>
+    /// Выбран ли метод RS
+    /// </summary>
     public bool MethodRsSelected
     {
         get => _methodRsSelected;
@@ -71,7 +85,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ActiveMethods[AnalyzerMethod.RegularSingular] = value;
         }
     }
-    private bool _methodKzhaSelected = true;
+    private bool _methodRsSelected = true;
+
+    /// <summary>
+    /// Выбран ли метод КЖА
+    /// </summary>
     public bool MethodKzhaSelected
     {
         get => _methodKzhaSelected;
@@ -81,30 +99,71 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] = value;
         }
     }
+    private bool _methodKzhaSelected = true;
 
-    // Становится true, если есть результаты СА (фактически, после успешного вызова СА)
-    private bool _hasResults = false;
+    /// <summary>
+    /// Максимальная ширина изображения на форме
+    /// </summary>
+    public double ImagePreviewMaxWidth
+    {
+        get => _imagePreviewMaxWidth;
+        private set => this.RaiseAndSetIfChanged(ref _imagePreviewMaxWidth, value);
+    }
+    private double _imagePreviewMaxWidth;
+
+    /// <summary>
+    /// Максимальная высота изображения на форме
+    /// </summary>
+    public double ImagePreviewMaxHeight
+    {
+        get => _imagePreviewMaxHeight;
+        private set => this.RaiseAndSetIfChanged(ref _imagePreviewMaxHeight, value);
+    }
+    private double _imagePreviewMaxHeight;
+
     /// <summary>
     /// Существуют ли результаты проведённого стегоанализа
     /// </summary>
     public bool HasResults
     { 
         get => _hasResults;
-        set => this.RaiseAndSetIfChanged(ref _hasResults, value); 
+        set => this.RaiseAndSetIfChanged(ref _hasResults, value);
     }
+    private bool _hasResults = false;
+
+    /// <summary>
+    /// Словарь активных методов (отмеченных к выполнению)
+    /// </summary>
+    public Dictionary<AnalyzerMethod, bool> ActiveMethods { get; private set; } = new();
+
+    /// <summary>
+    /// Актуальные результаты стегоанализа
+    /// </summary>
+    public SteganalysisResultsDto? CurrentResults
+    {
+        get => _currentResults;
+        private set
+        {
+            _currentResults = value;
+            HasResults = value is not null;
+        }
+    }
+    private SteganalysisResultsDto? _currentResults = null;
+
+    /// <summary>
+    /// Действия, которые будут выполняться при изменении размеров окна
+    /// </summary>
+    public Action WindowResizeAction { get; set; } = null!;
 
     /// <summary>
     /// Текущее выбранное изображение
     /// </summary>
     public ImageHandler? CurrentImage { get; set; } = null;
 
-
-    // Отображаемое изображение
-    private Bitmap? _drawedImageSource;  // Источник для отображения
-    private ImageHandler? _drawedImage;  // Изображение
+    // Отображаемое на форме изображение
 
     /// <summary>
-    /// Обработчик текущего отображаемого изображения
+    /// Обработчик текущего отображаемого изображения (может не соответствовать изначально выбранному)
     /// </summary>
     public ImageHandler? DrawedImage
     {
@@ -113,11 +172,12 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         {
             _drawedImage = value;
             if (_drawedImage is not null)
-                DrawedImageSource = CreateImageSource(_drawedImage);
+                DrawedImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
             else
                 DrawedImageSource = null;
         }
     }
+    private ImageHandler? _drawedImage;
 
     /// <summary>
     /// Источник текущего отображаемого изображения
@@ -127,18 +187,13 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         get => _drawedImageSource;
         private set => this.RaiseAndSetIfChanged(ref _drawedImageSource, value);
     }
+    private Bitmap? _drawedImageSource;  // Источник для отображения
 
 
-    /// <summary>
-    /// Словарь активных методов (отмеченных к выполнению)
-    /// </summary>
-    public Dictionary<AnalyzerMethod, bool> ActiveMethods { get; private set; } = new();
+    // Конструкторы и установка начальных значений
 
-
-    private SteganalysisResultsDto? _currentResults = null;
-
-
-    public AnalyzerViewModel(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
+    // Установка стандартных значений
+    private void CreateDefaults()
     {
         foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
             ActiveMethods.Add(method, true);
@@ -148,19 +203,132 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             _mainWindowViewModel.MainWindow.SizeChanged += (object? sender, SizeChangedEventArgs e) => WindowResizeAction();
     }
 
-    [Experimental]
-    public AnalyzerViewModel() : base() { }
-
-
-    public void SetImagePreviewSizes()
+    public AnalyzerViewModel(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
     {
-        var actualSize = GetWindowSize();
-        ImagePreviewMaxHeight = Math.Max(0, actualSize.Height - 60 - 80 - 40 - 30);
-        ImagePreviewMaxWidth = Math.Max(0, (actualSize.Width - 20 - 30) / 2);
+        CreateDefaults();
     }
 
-    public Action WindowResizeAction { get; set; } = null!;
+    [Experimental]
+    public AnalyzerViewModel() : base() 
+    {
+        CreateDefaults();
+    }
 
+
+    /// <summary>
+    /// Создание объектов параметров
+    /// </summary>
+    private void ActualizeParameters()
+    {
+        if (CurrentImage is null)
+            return;
+
+        if (_chiSquareParameters is null)
+            _chiSquareParameters = new ChiSquareParameters(CurrentImage);
+        else
+            _chiSquareParameters.Image = CurrentImage;
+
+        if (_rsParameters is null)
+            _rsParameters = new RsParameters(CurrentImage);
+        else
+            _rsParameters.Image = CurrentImage;
+
+        if (_kzhaParameters is null)
+            _kzhaParameters = new KzhaParameters(CurrentImage);
+        else
+            _kzhaParameters.Image = CurrentImage;
+    }
+
+    /// <summary>
+    /// Открытие модального окна установки параметров метода стегоанализа
+    /// </summary>
+    /// <param name="analyzerMethod">Метод стегоанализа</param>
+    public async Task OpenParametersWindow(AnalyzerMethod analyzerMethod)
+    {
+        if (!HasLoadedImage)
+            return;
+
+        object? parameters = analyzerMethod switch
+        {
+            AnalyzerMethod.ChiSquare => _chiSquareParameters,
+            AnalyzerMethod.RegularSingular => _rsParameters,
+            AnalyzerMethod.KochZhaoAnalysis => _kzhaParameters,
+            _ => throw new System.NotImplementedException()
+        };
+
+        if (parameters is null)
+            return;
+
+        var receivedParameters = new ParametersStorage();
+        var parametersVm = new ParametersWindowViewModel(parameters, receivedParameters);
+        var parametersWindow = new ParametersWindow() { DataContext = parametersVm };
+
+        if (_mainWindowViewModel.MainWindow is not null)
+            await parametersWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+
+        if (receivedParameters.Parameters is null)
+            return;
+
+        switch (analyzerMethod)
+        {
+            case AnalyzerMethod.ChiSquare:
+                if (_chiSquareParameters is not null)
+                {
+                    var chiParamsDto = receivedParameters.Parameters as BaseParamsDto<ChiSquareParameters>;
+                    chiParamsDto?.FillParameters(ref _chiSquareParameters);
+                }
+                break;
+            case AnalyzerMethod.RegularSingular:
+                if (_rsParameters is not null)
+                {
+                    var rsParamsDto = receivedParameters.Parameters as BaseParamsDto<RsParameters>;
+                    rsParamsDto?.FillParameters(ref _rsParameters);
+                }
+                break;
+            case AnalyzerMethod.KochZhaoAnalysis:
+                if (_kzhaParameters is not null)
+                {
+                    var kzhaParamsDto = receivedParameters.Parameters as BaseParamsDto<KzhaParameters>;
+                    kzhaParamsDto?.FillParameters(ref _kzhaParameters);
+                }
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Создаёт обработчик изображения
+    /// </summary>
+    private bool CreateCurrentImageHandler(string path)
+    {
+        try
+        {
+            CurrentImage?.CloseHandler();
+            CurrentImage = new ImageHandler(path);
+            ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов или создат объекты параметров, если их нет
+            DrawCurrentImage();  // Обновит изображение, отображаемое на форме
+            return true;
+        }
+        catch { }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Осуществляет загрузку выбираемого пользователем изображения
+    /// </summary>
+    public async Task<bool> TryLoadImage()
+    {
+        // Выбор файла
+        string path = await SelectNewImageFile();
+        if (!string.IsNullOrEmpty(path))
+            ImagePath = path;
+        else
+            ResetImageAndResults();
+
+        // Загрузка
+        return CreateCurrentImageHandler(path);
+    }
 
     /// <summary>
     /// Вызывает диалог выбора изображения и возвращает путь к выбранному изображению
@@ -187,118 +355,6 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         return path;
     }
 
-    /// <summary>
-    /// Создание объектов параметров
-    /// </summary>
-    private void ActualizeParameters()
-    {
-        if (CurrentImage is null)
-            return;
-
-        if (_chiSquareParameters is null)
-            _chiSquareParameters = new ChiSquareParameters(CurrentImage) { Visualize = true };
-        else
-            _chiSquareParameters.Image = CurrentImage;
-
-        if (_rsParameters is null)
-            _rsParameters = new RsParameters(CurrentImage);
-        else
-            _rsParameters.Image = CurrentImage;
-
-        if (_kzhaParameters is null)
-            _kzhaParameters = new KzhaParameters(CurrentImage);
-        else
-            _kzhaParameters.Image = CurrentImage;
-    }
-
-    /// <summary>
-    /// Осуществляет загрузку выбираемого пользователем изображения
-    /// </summary>
-    public async Task<bool> TryLoadImage()
-    {
-        // Выбор файла
-        string path = await SelectNewImageFile();
-        if (!string.IsNullOrEmpty(path))
-            ImagePath = path;
-        else
-            ResetVmData();
-
-        // Загрузка
-        return CreateCurrentImageHandler(path);
-    }
-
-    private void ResetVmData()
-    {
-        ImagePath = ImageNotSelectedText;
-        DrawedImage = null;
-        HasResults = false;
-    }
-
-    /// <summary>
-    /// Создаёт обработчик изображения
-    /// </summary>
-    private bool CreateCurrentImageHandler(string path)
-    {
-        try
-        {
-            CurrentImage?.CloseHandler();
-            CurrentImage = new ImageHandler(path);
-            ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов
-            DrawCurrentImage();  // Обновит изображение, отображаемое на форме
-            return true;
-        }
-        catch { }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Открытие модального окна установки параметров метода стегоанализа
-    /// </summary>
-    /// <param name="analyzerMethod">Метод стегоанализа</param>
-    public void OpenParametersWindow(AnalyzerMethod analyzerMethod)
-    {
-//        if (CurrentImage is null)
-//            return;
-
-//        object? parameters = analyzerMethod switch
-//        {
-//            AnalyzerMethod.ChiSquare => _chiSquareParameters,
-//            AnalyzerMethod.RegularSingular => _rsParameters,
-//            AnalyzerMethod.KochZhaoAnalysis => _kzhaParameters,
-//            _ => throw new System.NotImplementedException()
-//        };
-
-//        if (parameters is null)
-//            return;
-
-//        var paramsWindow = new ParametersWindow(analyzerMethod, parameters);
-//        paramsWindow.Owner = _rootViewModel.MainWindow;
-//        var paramsGetter = paramsWindow.ParamsReciever;
-//        paramsWindow.ShowDialog();
-
-//        var recievedParameters = paramsGetter();
-//        if (recievedParameters is null)
-//            return;
-
-//#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-//        switch (analyzerMethod)
-//        {
-//            case AnalyzerMethod.ChiSquare:
-//                var chiParamsDto = recievedParameters as BaseParamsDto<ChiSquareParameters>;
-//                chiParamsDto?.FillParameters(ref _chiSquareParameters);
-//                break;
-//            case AnalyzerMethod.RegularSingular:
-//                var rsParamsDto = recievedParameters as BaseParamsDto<RsParameters>;
-//                rsParamsDto?.FillParameters(ref _rsParameters);
-//                break;
-//            case AnalyzerMethod.KochZhaoAnalysis:
-//                var kzhaParamsDto = recievedParameters as BaseParamsDto<KzhaParameters>;
-//                kzhaParamsDto?.FillParameters(ref _kzhaParameters);
-//                break;
-//        }
-//#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-    }
 
     /// <summary>
     /// Запуск процесса стегоанализа для указанных выбранных методов
@@ -311,8 +367,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
         }
 
-        var results = CreateValuesByAnalyzerMethodDictionary<ILoggedAnalysisResult>();  // Словарь результатов
-        var methodTasks = CreateValuesByAnalyzerMethodDictionary<Task<ILoggedAnalysisResult>>();  // Словарь задач
+        var results = CommonTools.CreateValuesByAnalyzerMethodDictionary<ILoggedAnalysisResult>();  // Словарь результатов
+        var methodTasks = CommonTools.CreateValuesByAnalyzerMethodDictionary<Task<ILoggedAnalysisResult>>();  // Словарь задач
 
         // Создание задач
         if (ActiveMethods[AnalyzerMethod.ChiSquare] && _chiSquareParameters is not null)  // Хи-квадрат
@@ -364,8 +420,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private void ProcessAnalysisResults(Dictionary<AnalyzerMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
     {
         if (results is null)
+        {
+            ResetResults();
             return;
-        HasResults = true;
+        }
 
         // Приведение к известным типам результатов
         var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
@@ -377,27 +435,12 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        _currentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, timer.ElapsedMilliseconds);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, timer.ElapsedMilliseconds);
     }
 
-    /// <summary>
-    /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
-    /// </summary>
-    private static Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
-    {
-        var dict = new Dictionary<AnalyzerMethod, T?>();
-        foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
-            dict.Add(method, default);
-        return dict;
-    }
 
     /// <summary>
-    /// Создаёт источник для отображения изображения
-    /// </summary>
-    public static Bitmap CreateImageSource(ImageHandler image) => CommonTools.GetAvaloniaBitmapFromImageHandler(image);
-
-    /// <summary>
-    /// Заново формирует отображаемое на View изображение из текущего сохранённого
+    /// Заново формирует изображение для отображения из текущего сохранённого
     /// </summary>
     public void DrawCurrentImage()
     {
@@ -406,24 +449,27 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
 
     /// <summary>
-    /// Возвращает текущие сохранённые результаты стегоанализа
+    /// Сброс результатов стегоанализа
     /// </summary>
-    public SteganalysisResultsDto? GetCurrentResults() => _currentResults;
-
-    private Avalonia.Size GetWindowSize() => _mainWindowViewModel.MainWindow?.ClientSize ?? new Avalonia.Size(0.0, 0.0);
+    public void ResetResults() => CurrentResults = null;
 
 
-    private double _imagePreviewMaxWidth;
-    public double ImagePreviewMaxWidth
+    // Сбрасывает данные об изображении и результатах
+    private void ResetImageAndResults()
     {
-        get => _imagePreviewMaxWidth;
-        private set => this.RaiseAndSetIfChanged(ref _imagePreviewMaxWidth, value);
+        ImagePath = ImageNotSelectedText;
+        DrawedImage = null;
+        ResetResults();
     }
 
-    private double _imagePreviewMaxHeight;
-    public double ImagePreviewMaxHeight
+    // Возвращает актуальные размеры окна
+    private Avalonia.Size GetWindowSize() => _mainWindowViewModel.MainWindow?.ClientSize ?? new Avalonia.Size(0.0, 0.0);
+
+    // Метод определения максимальных размеров для картинки
+    private void SetImagePreviewSizes()
     {
-        get => _imagePreviewMaxHeight;
-        private set => this.RaiseAndSetIfChanged(ref _imagePreviewMaxHeight, value);
+        var actualSize = GetWindowSize();
+        ImagePreviewMaxHeight = Math.Max(0, actualSize.Height - 60 - 80 - 40 - 30);
+        ImagePreviewMaxWidth = Math.Max(0, (actualSize.Width - 20 - 30) / 2);
     }
 }

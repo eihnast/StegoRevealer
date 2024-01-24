@@ -21,7 +21,7 @@
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="FontSize" Value="21"/>
-		<Setter Property="Background" Value="{StaticResource SrDark}"/>
+		<!--<Setter Property="Background" Value="{StaticResource SrDark}"/>-->
 	</Style>
 	<Style Selector="Button.HeaderBtn:disabled">
 		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -37,7 +37,7 @@
 		<Setter Property="Padding" Value="10 5 10 5"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
-		<Setter Property="Background" Value="{StaticResource SrDark}"/>
+		<!--<Setter Property="Background" Value="{StaticResource SrDark}"/>-->
 	</Style>
 	<Style Selector="Button.HeaderBtnWithIcon:disabled">
 		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -58,6 +58,7 @@
 		<Setter Property="HorizontalAlignment" Value="Stretch"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
 	</Style>
 
 	<Style Selector="CheckBox.MethodTurnCheckbox">
@@ -97,6 +98,14 @@
 	<Style Selector="Expander.RightPanelMethodsExpander:disabled">
 		<Style Selector="^ /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+
+	<Style Selector="ListBox.CoeffsList > ListBoxItem">
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Padding" Value="0 5 0 5"/>
 		</Style>
 	</Style>
 	

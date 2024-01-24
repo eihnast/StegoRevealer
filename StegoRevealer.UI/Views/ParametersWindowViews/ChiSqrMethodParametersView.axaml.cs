@@ -2,7 +2,6 @@
 using Avalonia.Interactivity;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.ParametersWindowViewModels;
-using System;
 
 namespace StegoRevealer.UI.Views.ParametersWindowViews;
 

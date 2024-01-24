@@ -119,90 +119,99 @@
 					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 							   LastChildFill="False">
 						
-						<StackPanel Name="ChiFullnessBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top">
+						<DockPanel Name="ChiFullnessBlock" DockPanel.Dock="Top"
+								   LastChildFill="True">
 							<TextBlock Text="Оценка заполненности по методу Хи-квадрат: "
-									 TextAlignment="Left" Height="25"
+									 TextAlignment="Left" Height="25" DockPanel.Dock="Left"
 									 HorizontalAlignment="Stretch"/>
 							<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
-                                       TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="RsFullnessBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top">
+                                       TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="RsFullnessBlock" DockPanel.Dock="Top"
+								   LastChildFill="True">
 							<TextBlock Text="Оценка заполненности по методу RS: "
-									   TextAlignment="Left" Height="25"
+									   TextAlignment="Left" Height="25" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"/>
 							<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaIntervalFoundedBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaIntervalFoundedBlock" DockPanel.Dock="Top"
+								   LastChildFill="True">
 							<TextBlock Text="Обнаружен подозрительный интервал при стегоанализе Коха-Жао: "
-									   TextAlignment="Left" Height="25"
+									   TextAlignment="Left" Height="25" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"/>
 							<TextBlock Name="KzhaIntervalFoundedValue" Text="Анализ не проводился"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaBitsNumBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaBitsNumBlock" DockPanel.Dock="Top" IsVisible="False"
+								   LastChildFill="True">
 							<TextBlock Text="Количество бит скрытой информации: "
-									   Padding="30 0 0 0"
+									   Padding="30 0 0 0" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="KzhaBitsNumValue" Text="Нет данных"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaSuspiciousIntervalBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaSuspiciousIntervalBlock" DockPanel.Dock="Top" IsVisible="False"
+								   LastChildFill="True">
 							<TextBlock Text="Индексы блоков подозрительного интервала: "
-									   Padding="30 0 0 0"
+									   Padding="30 0 0 0" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="KzhaSuspiciousIntervalValue" Text="Нет данных"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaThresholdBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaThresholdBlock" DockPanel.Dock="Top" IsVisible="False"
+								   LastChildFill="True">
 							<TextBlock Text="Предполагаемый порог встраивания: "
-									   Padding="30 0 0 0"
+									   Padding="30 0 0 0" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="KzhaThresholdValue" Text="Нет данных"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaCoeffsBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaCoeffsBlock" DockPanel.Dock="Top" IsVisible="False"
+								   LastChildFill="True">
 							<TextBlock Text="Коэффициенты предполагаемого встраивания: "
-									   Padding="30 0 0 0"
+									   Padding="30 0 0 0" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="KzhaCoeffsValue" Text="Нет данных"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
-						<StackPanel Name="KzhaExtractedDataBlock"
-									Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="False">
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+						<DockPanel Name="KzhaExtractedDataBlock" DockPanel.Dock="Top" IsVisible="False"
+								   LastChildFill="True">
 							<TextBlock Name="KzhaExtractedDataLabel" Text="Извлечённая информация: "
-									   Padding="30 0 0 0"
+									   Padding="30 0 0 0" DockPanel.Dock="Left"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="KzhaExtractedDataLabelValue" Text="Отсутствует"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
 						<TextBox Name="KzhaExtractedDataValue" Text="" DockPanel.Dock="Top"
 								 TextAlignment="Left" TextWrapping="Wrap"
 								 Height="150"
 								 VerticalContentAlignment="Top"
 								 IsVisible="False"/>
-						<StackPanel Name="ElapsedTimeBlock"
-									Orientation="Horizontal" DockPanel.Dock="Bottom">
+						<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
+								   LastChildFill="True">
 							<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
 									   FontStyle="Italic"
-									   HorizontalAlignment="Stretch"
+									   HorizontalAlignment="Stretch" DockPanel.Dock="Left"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="ElapsedTimeValue" Text="0 мс"
 									   FontStyle="Italic"
-									   TextAlignment="Left" Height="25" Margin="20 0 0 0"/>
-						</StackPanel>
+									   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
 						
 					</DockPanel>
 				</Expander>

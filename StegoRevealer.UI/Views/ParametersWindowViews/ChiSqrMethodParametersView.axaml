@@ -3,11 +3,143 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="900"
+             mc:Ignorable="d"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
              x:Class="StegoRevealer.UI.Views.ParametersWindowViews.ChiSqrMethodParametersView">
 
 	<Design.DataContext>
 		<vm:ChiSqrMethodParametersViewModel/>
 	</Design.DataContext>
-	
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*,*" RowDefinitions="40,*"
+			  Margin="20 10 20 10">
+
+			<Label Name="TitleLabel" Content="Параметры стегоанализа по критерию Хи-квадрат"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
+				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                   Background="{x:Null}" BorderBrush="{x:Null}"
+                   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
+						HorizontalAlignment="Center">
+				<CheckBox Name="IsVisualizeChecked" Content="Визуализировать область скрытой&#10;информации" 
+						  IsChecked="{Binding Path=Visualize}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0" 
+						  Foreground="#FFE6E6E6" FontSize="12" 
+						  Margin="0 5 0 0"/>
+				<CheckBox Name="IsExcludeZeroPairsChecked" Content="Не учитывать пары с нулевой&#10;ожидаемой частотой" 
+						  IsChecked="{Binding Path=ExcludeZeroPairs}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0" 
+						  Foreground="#FFE6E6E6" FontSize="12" 
+						  Margin="0 5 0 0"/>
+				<CheckBox Name="IsUseUnifiedCathegoriesChecked" Content="Объединять низкочастотные категории"
+						  IsChecked="{Binding Path=UseUnifiedCathegories}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0"
+						  Foreground="#FFE6E6E6" FontSize="12"
+						  Margin="0 5 0 0"/>
+				
+				<DockPanel Name="UnifyingCathegoriesThresholdGroup" 
+						   LastChildFill="True" 
+						   Margin="0 15 0 0" HorizontalAlignment="Left">
+					<Label Content="Порог объединения категорий:" 
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<NumericUpDown Name="UnifyingCathegoriesThreshold"
+								   Value="{Binding Path=UnifyingCathegoriesThresholdValue}"
+								   Minimum="0" Maximum="2048"
+								   FontSize="12" ShowButtonSpinner="False"
+								   MinWidth="80" MinHeight="25" MaxHeight="25"
+								   Padding="8 1 8 1" Margin="5 0 0 0"
+								   VerticalContentAlignment="Center"/>
+				</DockPanel>
+
+				<!-- Выбор каналов -->
+				<Label Content="Выбор анализируемых каналов" 
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 20 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}" />
+				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+							  IsChecked="{Binding Path=ChannelRedChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+							  IsChecked="{Binding Path=ChannelGreenChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+							  IsChecked="{Binding Path=ChannelBlueChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0"
+						HorizontalAlignment="Center">
+				<Label Content="Выбор обхода массива"
+					   FontSize="13" Foreground="#FFE0E0E0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"/>
+				<RadioButton Name="TraverseChoice_Horizontal" Content="Горизонтальный"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=TraverseHorizontal}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="TraverseChoice_Vertical" Content="Вертикальный"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=TraverseVertical}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+
+				<DockPanel LastChildFill="True" Margin="0 25 0 0" HorizontalAlignment="Left">
+					<Label Content="Порог pValue:"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Width="110" Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<NumericUpDown Name="PValueThreshold"
+								   Value="{Binding Path=PValueThresholdValue}"
+								   Minimum="0" Maximum="1" FormatString="0.00"
+								   FontSize="12" ShowButtonSpinner="False"
+								   MinWidth="80" MinHeight="25" MaxHeight="25"
+								   Padding="8,1,8,1"
+								   VerticalContentAlignment="Center"/>
+				</DockPanel>
+				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
+					<Label Content="Ширина блока:"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Width="110" Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<NumericUpDown Name="BlockWidth"
+								   Value="{Binding Path=BlockWidthValue}"
+								   Minimum="0" Maximum="10000"
+								   FontSize="12" ShowButtonSpinner="False"
+								   MinWidth="80" MinHeight="25" MaxHeight="25"
+								   Padding="8,1,8,1"
+								   VerticalContentAlignment="Center"/>
+				</DockPanel>
+				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
+					<Label Content="Высота блока:"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Width="110" Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<NumericUpDown Name="BlockHeight"
+								   Value="{Binding Path=BlockHeightValue}"
+								   Minimum="0" Maximum="10000"
+								   FontSize="12" ShowButtonSpinner="False"
+								   MinWidth="80" MinHeight="25" MaxHeight="25"
+								   Padding="8,1,8,1"
+								   VerticalContentAlignment="Center"/>
+				</DockPanel>
+			</StackPanel>
+		</Grid>
+	</Grid>
+
 </UserControl>

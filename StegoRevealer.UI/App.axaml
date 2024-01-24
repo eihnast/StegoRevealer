@@ -5,9 +5,15 @@
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
-        <FluentTheme DensityStyle="Compact" />
-		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
-		<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+        <FluentTheme DensityStyle="Compact">
+			<FluentTheme.Palettes>
+				<ColorPaletteResources x:Key="Light" Accent="#ff0073cf" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffcccccc" BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d" BaseMediumLow="#ff737373" ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black" ChromeBlackLow="#ffcccccc" ChromeBlackMedium="#ff5d5d5d" ChromeBlackMediumLow="#ff898989" ChromeDisabledHigh="#ffcccccc" ChromeDisabledLow="#ff898989" ChromeGray="#ff737373" ChromeHigh="#ffcccccc" ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6" ChromeMediumLow="#ffececec" ChromeWhite="White" ListLow="#ffe6e6e6" ListMedium="#ffcccccc" RegionColor="White" />
+				<ColorPaletteResources x:Key="Dark" Accent="#ff02737e" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff3e3e3e" BaseMedium="#ffa0a0a0" BaseMediumHigh="#ffb8b8b8" BaseMediumLow="#ff6f6f6f" ChromeAltLow="#ffb8b8b8" ChromeBlackHigh="Black" ChromeBlackLow="#ffb8b8b8" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff3e3e3e" ChromeDisabledLow="#ffa0a0a0" ChromeGray="#ff878787" ChromeHigh="#ff878787" ChromeLow="#ff1a1a1a" ChromeMedium="#ff232323" ChromeMediumLow="#ff353535" ChromeWhite="White" ListLow="#ff232323" ListMedium="#ff3e3e3e" RegionColor="#ff111111" />
+			</FluentTheme.Palettes>
+		</FluentTheme>
+		
+		<!--<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />-->
 
 		<StyleInclude Source="/Resources/StegoRevealerStyles.axaml"/>
     </Application.Styles>

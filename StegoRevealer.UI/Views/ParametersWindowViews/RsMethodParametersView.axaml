@@ -3,11 +3,76 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="900"
+             mc:Ignorable="d"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
              x:Class="StegoRevealer.UI.Views.ParametersWindowViews.RsMethodParametersView">
 
 	<Design.DataContext>
 		<vm:RsMethodParametersViewModel/>
 	</Design.DataContext>
-	
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*,*" RowDefinitions="40,*"
+			  Margin="20 10 20 10">
+
+			<Label Name="TitleLabel" Content="Параметры стегоанализа методом Regular-Singular"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
+				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                   Background="{x:Null}" BorderBrush="{x:Null}"
+                   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
+						HorizontalAlignment="Center">
+				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
+					<Label Content="Длина групп пикселей:" 
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<NumericUpDown Name="PixelsGroupLength"
+								   Value="{Binding Path=PixelsGroupLengthValue}"
+								   Minimum="2" Maximum="2048"
+								   FontSize="12" ShowButtonSpinner="False"
+                                   MinHeight="25" MaxHeight="25" MinWidth="80"
+							   Padding="8 1 8 1" Margin="5 0 0 0"
+							   VerticalContentAlignment="Center"/>
+				</DockPanel>
+				
+				<Label Content="Маска флиппинга"
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 20 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"
+					   VerticalAlignment="Center"/>
+				<TextBox Name="FlippingMask" Text="{Binding Path=FlippingMaskValue}"
+                         Foreground="#FFE0E0E0"
+						 MinWidth="150" Margin="5 5 20 0" HorizontalContentAlignment="Center"/>
+
+				<!-- Выбор каналов -->
+				<Label Content="Выбор анализируемых каналов"
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 20 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}" />
+				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+							  IsChecked="{Binding Path=ChannelRedChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+							  IsChecked="{Binding Path=ChannelGreenChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+							  IsChecked="{Binding Path=ChannelBlueChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0">
+
+			</StackPanel>
+		</Grid>
+	</Grid>
+
 </UserControl>

@@ -6,7 +6,9 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.UI.Lib;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -96,6 +98,23 @@ namespace StegoRevealer.UI.Tools
                 throw new Exception($"Failed getting ViewModel '{typeof(T).Name}' for window/view '{frame.GetMethod()?.DeclaringType?.Name}'");
             }
             return viewModel;
+        }
+
+        public static void SetFields(string fieldName, bool value, params object[] objects)
+        {
+            foreach (var obj in objects)
+                obj.GetType().GetProperty(fieldName)?.SetValue(obj, value);
+        }
+
+        /// <summary>
+        /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
+        /// </summary>
+        public static Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
+        {
+            var dict = new Dictionary<AnalyzerMethod, T?>();
+            foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
+                dict.Add(method, default);
+            return dict;
         }
     }
 }

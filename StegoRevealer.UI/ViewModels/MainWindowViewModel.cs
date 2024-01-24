@@ -38,14 +38,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
 
-    public MainWindowViewModel()
-    {
-        // Установка стандартного представления
-        //var newVm = GetNewViewModel(typeof(AnalyzerViewModel)) as AnalyzerViewModel;
-        //if (newVm is null)
-        //    throw new Exception("Не удалось создать стартовое представление окна");
-        //CurrentViewModel = newVm;
-    }
+    public MainWindowViewModel() { }
 
 
     /// <summary>

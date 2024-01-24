@@ -1,18 +1,22 @@
 ﻿using Avalonia.Controls;
+using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels;
 
 namespace StegoRevealer.UI.Windows;
 
 public partial class ParametersWindow : Window
 {
+    private ParametersWindowViewModel _vm = null!;
+
     public ParametersWindow()
     {
         InitializeComponent();
-        this.Closing += ParametersWindow_Closing;
+        this.Loaded += ParametersWindow_Loaded;
     }
 
-    private void ParametersWindow_Closing(object? sender, WindowClosingEventArgs e)
+    private void ParametersWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var vm = this.DataContext as ParametersWindowViewModel;
+        _vm = CommonTools.GetViewModel<ParametersWindowViewModel>(this.DataContext);
+        this.Closing += (object? sender, WindowClosingEventArgs e) => _vm.FillParametersDtoAction();
     }
 }
