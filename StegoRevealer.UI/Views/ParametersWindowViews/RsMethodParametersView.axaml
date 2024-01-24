@@ -32,13 +32,13 @@
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="PixelsGroupLength"
-								   Value="{Binding Path=PixelsGroupLengthValue}"
-								   Minimum="2" Maximum="2048"
-								   FontSize="12" ShowButtonSpinner="False"
-                                   MinHeight="25" MaxHeight="25" MinWidth="80"
-							   Padding="8 1 8 1" Margin="5 0 0 0"
-							   VerticalContentAlignment="Center"/>
+					<TextBox Name="PixelsGroupLength"
+							 Text="{Binding Path=PixelsGroupLengthValue}"
+							 FontSize="12"
+							 MinHeight="25" MaxHeight="25" MinWidth="80"
+							 Padding="8 1 8 1" Margin="5 0 0 0"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 				
 				<Label Content="Маска флиппинга"
@@ -48,7 +48,8 @@
 					   VerticalAlignment="Center"/>
 				<TextBox Name="FlippingMask" Text="{Binding Path=FlippingMaskValue}"
                          Foreground="#FFE0E0E0"
-						 MinWidth="150" Margin="5 5 20 0" HorizontalContentAlignment="Center"/>
+						 MinWidth="150" Margin="5 5 20 0" HorizontalContentAlignment="Center"
+						 KeyDown="FilterForPositiveInteger_KeyDown"/>
 
 				<!-- Выбор каналов -->
 				<Label Content="Выбор анализируемых каналов"

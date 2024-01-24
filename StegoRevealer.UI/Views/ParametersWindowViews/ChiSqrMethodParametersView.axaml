@@ -50,13 +50,13 @@
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="UnifyingCathegoriesThreshold"
-								   Value="{Binding Path=UnifyingCathegoriesThresholdValue}"
-								   Minimum="0" Maximum="2048"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8 1 8 1" Margin="5 0 0 0"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="UnifyingCathegoriesThreshold"
+							Text="{Binding Path=UnifyingCathegoriesThresholdValue}"
+							FontSize="12"
+							MinWidth="80" MinHeight="25" MaxHeight="25"
+							Padding="8 1 8 1" Margin="5 0 0 0"
+							VerticalContentAlignment="Center"
+							KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 
 				<!-- Выбор каналов -->
@@ -102,13 +102,13 @@
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="PValueThreshold"
-								   Value="{Binding Path=PValueThresholdValue}"
-								   Minimum="0" Maximum="1" FormatString="0.00"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8,1,8,1"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="PValueThreshold"
+							 Text="{Binding Path=PValueThresholdValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8,1,8,1"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveDouble_KeyDown"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
 					<Label Content="Ширина блока:"
@@ -116,13 +116,13 @@
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="BlockWidth"
-								   Value="{Binding Path=BlockWidthValue}"
-								   Minimum="0" Maximum="10000"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8,1,8,1"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="BlockWidth"
+							 Text="{Binding Path=BlockWidthValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8,1,8,1"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
 					<Label Content="Высота блока:"
@@ -130,13 +130,13 @@
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="BlockHeight"
-								   Value="{Binding Path=BlockHeightValue}"
-								   Minimum="0" Maximum="10000"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8,1,8,1"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="BlockHeight"
+							 Text="{Binding Path=BlockHeightValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8,1,8,1"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 			</StackPanel>
 		</Grid>

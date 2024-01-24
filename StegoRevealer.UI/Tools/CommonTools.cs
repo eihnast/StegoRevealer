@@ -116,5 +116,44 @@ namespace StegoRevealer.UI.Tools
                 dict.Add(method, default);
             return dict;
         }
+
+        private static List<Key> AllowedDigitKeys = new List<Key>() { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
+        private const Key DoubleSeparatorKey = Key.OemComma;
+        private const Key MinusKey = Key.OemMinus;
+        public static void FilterInput(TextBox textBox, KeyEventArgs e, FilterInputStrategy strategy)
+        {
+            if (strategy is FilterInputStrategy.AllowAll)
+                return;
+
+            if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble 
+                or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
+            {
+                if (!AllowedDigitKeys.Contains(e.Key))
+                {
+                    if (e.Key == MinusKey)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble)
+                            && textBox.CaretIndex == 0 && (!textBox.Text?.Contains('-') ?? true))
+                            return;
+                    }
+
+                    if (e.Key == DoubleSeparatorKey)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowDouble or FilterInputStrategy.AllowPositiveDouble)
+                            && (textBox.CaretIndex > 0 && (!textBox.Text?.Contains(',') ?? true)))
+                            return;
+                    }
+
+                    e.Handled = true;
+                }
+            }
+        }
+        public static void FilterInput(object? sender, KeyEventArgs e, FilterInputStrategy strategy)
+        {
+            var tb = sender as TextBox;
+            if (tb is null)
+                return;
+            FilterInput(tb, e, strategy);
+        }
     }
 }

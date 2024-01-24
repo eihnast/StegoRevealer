@@ -39,13 +39,13 @@
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="CutCoefficient"
-								   Value="{Binding Path=CutCoefficientValue}"
-								   Minimum="0" Maximum="1" FormatString="0.00"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8 1 8 1" Margin="10 0 0 0"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="CutCoefficient"
+							 Text="{Binding Path=CutCoefficientValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8 1 8 1" Margin="10 0 0 0"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveDouble_KeyDown"/>
 				</DockPanel>
 
 				<DockPanel LastChildFill="True"
@@ -55,13 +55,13 @@
 						   Padding="0" HorizontalContentAlignment="Center"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<NumericUpDown Name="Threshold"
-								   Value="{Binding Path=ThresholdValue}"
-								   Minimum="0" Maximum="10000" FormatString="0.00"
-								   FontSize="12" ShowButtonSpinner="False"
-								   MinWidth="80" MinHeight="25" MaxHeight="25"
-								   Padding="8 1 8 1" Margin="10 0 0 0"
-								   VerticalContentAlignment="Center"/>
+					<TextBox Name="Threshold"
+							 Text="{Binding Path=ThresholdValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8 1 8 1" Margin="10 0 0 0"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForDouble_KeyDown"/>
 				</DockPanel>
 			</StackPanel>
 
