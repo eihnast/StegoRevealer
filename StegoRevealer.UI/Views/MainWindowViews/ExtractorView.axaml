@@ -228,6 +228,29 @@
 						  IsEnabled="{Binding Path=HasResults}">
 					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 							   LastChildFill="True">
+						<DockPanel DockPanel.Dock="Bottom" Margin="0 15 0 0" VerticalAlignment="Stretch">
+							<StackPanel DockPanel.Dock="Right" Orientation="Vertical"
+										HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+								<TextBlock Text="Необработанные извлечённые данные:"
+										   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+										   TextWrapping="Wrap" TextAlignment="Center"/>
+								<StackPanel Orientation="Horizontal" Margin="10 5 0 0"
+											HorizontalAlignment="Center">
+									<Button Name="OpenExtractedText" Content="Открыть в редакторе"
+											Padding="10 10 10 10" Margin="0 0 3 0"
+											Background="{StaticResource SrDarkLight}"
+											Click="OpenExtractedText_Click"/>
+									<Button Name="SaveExtractedText" Content="Сохранить в файл"
+											Padding="10 10 10 10" Margin="3 0 0 0"
+											Background="{StaticResource SrDarkLight}"
+											Click="SaveExtractedText_Click"/>
+								</StackPanel>
+							</StackPanel>
+							<TextBlock Text="Демонстрируемый выше текст отфильтрован: исключены управляющие и заменяющие символы"
+									   DockPanel.Dock="Left" TextWrapping="Wrap"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"
+									   FontSize="12" TextAlignment="Center"/>
+						</DockPanel>
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
 							<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "

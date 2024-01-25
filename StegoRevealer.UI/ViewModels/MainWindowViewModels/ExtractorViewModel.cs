@@ -14,6 +14,7 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using System.Diagnostics;
 using StegoRevealer.StegoCore.StegoMethods;
+using System.IO;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -409,6 +410,35 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         if (files is not null && files.Count > 0)
             path = files[0].Path.LocalPath;
         return path;
+    }
+
+
+    /// <summary>
+    /// Осуществляет сохранение извлечённого текста
+    /// </summary>
+    public async Task TrySaveExtractedText()
+    {
+        var topLevel = TopLevel.GetTopLevel(_mainWindowViewModel.MainWindow);
+        if (topLevel is null)
+            return;
+
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Сохранить извлечённые данные",
+            FileTypeChoices = new FilePickerFileType[]
+            {
+                new("Text file") { Patterns = new[] { "*.txt" }, MimeTypes = new[] { "*/*" } }
+            },
+            DefaultExtension = ".txt",
+            SuggestedFileName = (CurrentImage?.ImgName ?? string.Empty) + "_extracted"
+        });
+
+        if (file is not null && !string.IsNullOrEmpty(CurrentResults?.ExtractedMessage))
+        {
+            await using var stream = await file.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+            await streamWriter.WriteLineAsync(CurrentResults.ExtractedMessage);
+        }
     }
 
 

@@ -3,6 +3,8 @@ using Avalonia.Interactivity;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
@@ -145,4 +147,28 @@ public partial class ExtractorView : UserControl
         _vm.KzIndexesSelected = false;
         KzhParamsGrid_IndexesCheckBox.IsEnabled = false;
     }
+
+    private void OpenExtractedText_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!_vm.HasResults || string.IsNullOrEmpty(_vm.CurrentResults?.ExtractedMessage))
+            return;
+
+        var rnd = new Random();
+        string tempDir = Path.GetTempPath();
+        string fileName = $"SR_ExtractedTemp_{DateTime.Now:yy-MM-dd-HH-mm-ss}_{rnd.Next(0, 100)}.txt";
+        string filePath = Path.Combine(tempDir, fileName);
+
+        File.WriteAllText(filePath, _vm.CurrentResults.ExtractedMessage);
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo(filePath)
+            {
+                UseShellExecute = true
+            }
+        };
+        process.Start();
+    }
+
+    private async void SaveExtractedText_Click(object? sender, RoutedEventArgs e) => await _vm.TrySaveExtractedText();
 }
