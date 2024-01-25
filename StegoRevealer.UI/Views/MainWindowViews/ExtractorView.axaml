@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
              mc:Ignorable="d"
 			 d:DesignWidth="1200" d:DesignHeight="610" MinWidth="1200" MinHeight="610"
@@ -10,6 +11,272 @@
 	<Design.DataContext>
 		<vm:ExtractorViewModel/>
 	</Design.DataContext>
-	Extractor
+
+	<!-- Внешняя сетка -->
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<!-- Внутренняя сетка -->
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
+			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
+
+			<!-- Левая панель выбора изображения -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+						Grid.Column="0" Grid.Row="0">
+				<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+					<Button Name="LoadImageButton" Content="Выбор изображения"
+							DockPanel.Dock="Left"
+							Height="40" Padding="15 0" Margin="0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="LoadImageButton_Click"/>
+					<TextBox Name="ImagePathLabel" Text="{Binding Path=ImagePath}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+				</DockPanel>
+				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+					   Margin="10"
+					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
+					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
+			</StackPanel>
+			<!-- / Левая панель выбора изображения -->
+
+			<!-- Правая панель выбора параметров извлечения и результатов -->
+			<RelativePanel Name="RightPanel"
+						   Grid.Column="2" Grid.Row="0"
+						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+				<!-- Экспандер выбора параметров извлечения -->
+				<Expander Name="ParamsExpander" Header="Параметры извлечения"
+						  Classes="RightPanelParamsExpander"
+						  IsExpanded="{Binding Path=IsParamsOpened}"
+						  Expanded="ParamsExpander_Expanded"
+						  Collapsed="ParamsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignTopWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="True">
+					<Grid ColumnDefinitions="*" RowDefinitions="50,*">
+
+						<Label Content="Способ и параметры извлечения"
+							   FontFamily="Arial" FontWeight="Bold" FontSize="18"
+							   Foreground="#FFECECEC"
+							   Grid.Column="0" Grid.Row="0"
+							   Padding="0" Margin="5"
+							   VerticalAlignment="Center" HorizontalAlignment="Center"
+							   Background="{x:Null}" BorderBrush="{x:Null}"/>
+
+						<!-- Сетка параметров для выбора -->
+						<Grid Name="ParamsGrid" IsEnabled="{Binding Path=HasLoadedImage}"
+							  Grid.Column="0" Grid.Row="1"
+							  Margin="0 10 0 10"
+							  ColumnDefinitions="*" RowDefinitions="Auto,Auto,*">
+
+							<!-- Выбор метода -->
+							<StackPanel Name="MethodChoice" Orientation="Horizontal"
+										Grid.Column="0" Grid.Row="0"
+										Margin="0 0 0 0" Height="40" 
+										HorizontalAlignment="Center">
+								<ToggleButton Name="MethodChoice_Lsb" Content="Скрытое в НЗБ"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=MethodLsbSelected}"
+											  Checked="SetLsbMethod" Unchecked="SetKzMethod"/>
+								<ToggleButton Name="MethodChoice_Kzh" Content="Скрытое по Коха-Жао"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=MethodKzSelected}"
+											  Checked="SetKzMethod" Unchecked="SetLsbMethod"/>
+							</StackPanel>
+							<!-- / Выбор метода -->
+
+							<!-- Выбор последовательный/псевдослучайный -->
+							<StackPanel Name="HidewayChoice" Orientation="Horizontal"
+										Grid.Column="0" Grid.Row="1"
+										Margin="0 15 0 0" Height="40"
+										HorizontalAlignment="Center">
+								<ToggleButton Name="HidewayChoice_Linear" Content="Последовательно"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=LinearModeSelected}"
+											  Checked="SetLinearMode" Unchecked="SetRandomMode"/>
+								<ToggleButton Name="HidewayChoice_Random" Content="Псевдослучайно"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=RandomModeSelected}"
+											  Checked="SetRandomMode" Unchecked="SetLinearMode"/>
+							</StackPanel>
+							<!-- / Выбор последовательный/псевдослучайный -->
+
+							<!-- Параметры для метода НЗБ -->
+							<Grid Name="LsbParamsGrid" IsVisible="{Binding Path=MethodLsbSelected}"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40,40"
+								  Grid.Column="0" Grid.Row="2" Margin="0 15 0 0">
+
+								<Label Content="Ключ ГПСЧ"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="0" Grid.Column="1"/>
+								<Label Content="Стартовый индекс"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="1" Grid.Column="1"/>
+								<Label Content="Длина (байт)"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="2" Grid.Column="1"/>
+
+								<TextBox Name="LsbParamsGrid_RandomSeed"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="0" Grid.Column="2"
+                                         Text="{Binding Path=LsbRandomSeedValue}"
+										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"/>
+								<TextBox Name="LsbParamsGrid_StartIndex"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="1" Grid.Column="2"
+                                         Text="{Binding Path=LsbStartIndexValue}"
+										 IsEnabled="{Binding Path=LsbStartIndexSelected}"/>
+								<TextBox Name="LsbParamsGrid_ByteLength"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="2" Grid.Column="2"
+                                         Text="{Binding Path=LsbByteLengthValue}"
+										 IsEnabled="{Binding Path=LsbByteLengthSelected}"/>
+
+								<CheckBox Name="LsbParamsGrid_RandomSeedCheckBox"
+										  Grid.Row="0" Grid.Column="3"
+										  IsChecked="{Binding Path=LsbRandomSeedSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="LsbParamsGrid_StartIndexCheckBox"
+										  Grid.Row="1" Grid.Column="3"
+										  IsChecked="{Binding Path=LsbStartIndexSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="LsbParamsGrid_ByteLengthCheckBox"
+										  Grid.Row="2" Grid.Column="3"
+										  IsChecked="{Binding Path=LsbByteLengthSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Grid>
+							<!-- / Параметры для метода НЗБ -->
+
+							<!-- Параметры для метода Коха-Жао -->
+							<Grid Name="KzhParamsGrid" IsVisible="{Binding Path=MethodKzSelected}"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40,40"
+								  Grid.Column="0" Grid.Row="2" Margin="0 15 0 0">
+
+								<Label Content="Ключ ГПСЧ"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="0" Grid.Column="1"/>
+								<Label Content="Индексы блоков"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="1" Grid.Column="1"/>
+								<Label Content="Порог"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="2" Grid.Column="1"/>
+
+								<TextBox Name="KzhParamsGrid_RandomSeed"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="0" Grid.Column="2"
+                                         Text="{Binding Path=KzRandomSeedValue}"
+										 IsEnabled="{Binding Path=KzRandomSeedSelected}"/>
+								<StackPanel Orientation="Horizontal"
+											Grid.Row="1" Grid.Column="2"
+											HorizontalAlignment="Stretch">
+									<TextBox Name="KzhParamsGrid_IndexFirst"
+											 Classes="ExtractorParamsTextBox"
+											 Text="{Binding Path=KzIndexFirstValue}"
+											 IsEnabled="{Binding Path=KzIndexesSelected}"/>
+									<TextBox Name="KzhParamsGrid_IndexSecond"
+											 Classes="ExtractorParamsTextBox"
+											 Text="{Binding Path=KzIndexSecondValue}"
+											 IsEnabled="{Binding Path=KzIndexesSelected}"/>
+								</StackPanel>
+								<TextBox Name="KzhParamsGrid_Threshold"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="2" Grid.Column="2"
+                                         Text="{Binding Path=KzThresholdValue}"
+										 IsEnabled="{Binding Path=KzThresholdSelected}"/>
+								
+								<CheckBox Name="KzhParamsGrid_RandomSeedCheckBox"
+										  Grid.Row="0" Grid.Column="3"
+										  IsChecked="{Binding Path=KzRandomSeedSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="KzhParamsGrid_IndexesCheckBox"
+										  Grid.Row="1" Grid.Column="3"
+										  IsChecked="{Binding Path=KzIndexesSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
+										  Grid.Row="2" Grid.Column="3"
+										  IsChecked="{Binding Path=KzThresholdSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Grid>
+							<!-- / Параметры для метода Коха-Жао -->
+
+						</Grid>
+						<!-- / Сетка параметров для выбора -->
+					</Grid>
+				</Expander>
+				<!-- / Экспандер выбора параметров извлечения -->
+
+				<Rectangle Name="RightPanelSeparator"
+						   HorizontalAlignment="Stretch" Height="1"
+						   RelativePanel.AlignRightWithPanel="True"
+						   RelativePanel.AlignLeftWithPanel="True"/>
+
+				<!-- Экспандер результатов -->
+				<Expander Name="ResultsExpander" Header="Результаты извлечения"
+						  IsExpanded="{Binding Path=!IsParamsOpened}"
+						  Expanded="ResultsExpander_Expanded"
+						  Collapsed="ResultsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignBottomWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="{Binding Path=HasResults}">
+					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							   LastChildFill="True">
+						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
+									DockPanel.Dock="Bottom" Margin="0 15 0 0">
+							<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
+									   FontStyle="Italic" TextDecorations=""
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="ElapsedTimeValue" Text="0 мс"
+									   FontStyle="Italic" TextAlignment="Left"
+									   Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<TextBox Name="ExtractedMessage" Text=""
+								 Classes="ExtractedText"
+								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
+								 TextWrapping="Wrap" FontSize="12"
+								 AcceptsReturn="True" AcceptsTab="True"
+								 IsEnabled="{Binding Path=HasResults}"
+								 MinHeight="300" IsReadOnly="True"/>
+						<!--<ae:TextEditor Name="ExtractedMessage" Text=""
+									   DockPanel.Dock="Top" VerticalAlignment="Stretch"
+									   WordWrap="True" FontSize="12"
+									   IsEnabled="{Binding Path=HasResults}"
+									   VerticalScrollBarVisibility="Auto"
+									   MinHeight="300" IsReadOnly="True"/>-->
+						<!--<Border DockPanel.Dock="Top"
+								VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+							<ScrollViewer>
+								<SelectableTextBlock Name="ExtractedMessage" Text=""
+													 VerticalAlignment="Stretch"
+													 FontSize="12"
+													 IsEnabled="{Binding Path=HasResults}"
+													 MinHeight="300" Margin="0 0 10 0"/>
+							</ScrollViewer>
+						</Border>-->
+					</DockPanel>
+				</Expander>
+				<!-- / Экспандер результатов -->
+			</RelativePanel>
+			<!-- / Правая панель выбора параметров извлечения и результатов -->
+
+			<Button Name="StartExtraction" Content="Запуск"
+					FontSize="24" FontWeight="Bold"
+					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					Click="StartExtraction_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
+		</Grid>
+		<!-- / Внутренняя сетка -->
+	</Grid>
+	<!-- / Внешняя сетка -->
 	
 </UserControl>

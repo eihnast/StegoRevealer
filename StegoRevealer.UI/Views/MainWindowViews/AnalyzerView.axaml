@@ -47,7 +47,8 @@
 				<!-- Экспандер выбора методов -->
 				<Expander Name="MethodsExpander" Header="Методы стегоанализа"
 						  Classes="RightPanelMethodsExpander"
-						  IsExpanded="True" Expanded="MethodsExpander_Expanded"
+						  IsExpanded="{Binding Path=IsMethodsOpened}"
+						  Expanded="MethodsExpander_Expanded"
 						  Collapsed="MethodsExpander_Collapsed"
 						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 						  VerticalContentAlignment="Stretch"
@@ -108,7 +109,8 @@
 
 				<!-- Экспандер результатов -->
 				<Expander Name="ResultsExpander" Header="Результаты стегоанализа"
-						  IsExpanded="False" Expanded="ResultsExpander_Expanded"
+						  IsExpanded="{Binding Path=!IsMethodsOpened}"
+						  Expanded="ResultsExpander_Expanded"
 						  Collapsed="ResultsExpander_Collapsed"
 						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 						  VerticalContentAlignment="Stretch"

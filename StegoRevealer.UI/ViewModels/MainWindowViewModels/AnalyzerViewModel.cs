@@ -132,6 +132,16 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private bool _hasResults = false;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public bool IsMethodsOpened
+    {
+        get => _isMethodsOpened;
+        set => this.RaiseAndSetIfChanged(ref _isMethodsOpened, value);
+    }
+    private bool _isMethodsOpened = true;
+
+    /// <summary>
     /// Словарь активных методов (отмеченных к выполнению)
     /// </summary>
     public Dictionary<AnalyzerMethod, bool> ActiveMethods { get; private set; } = new();

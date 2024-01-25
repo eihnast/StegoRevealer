@@ -48,8 +48,8 @@
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
 						<Button Name="ExtractorBtn" Content="Стеганодекодер" Classes="HeaderBtn"
-								ClickMode="Press" Click="ExtractorBtn_Click" IsEnabled="False"/>
-						<Rectangle Margin="0 3 0 0" Height="1" Fill="Gray"/>
+								ClickMode="Press" Click="ExtractorBtn_Click"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
 						<Button Name="AboutBtn" Content="" Classes="HeaderBtnWithIcon"

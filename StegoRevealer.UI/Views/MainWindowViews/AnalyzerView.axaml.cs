@@ -28,6 +28,7 @@ public partial class AnalyzerView : UserControl
     {
         _vm = CommonTools.GetViewModel<AnalyzerViewModel>(this.DataContext);
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
+        UpdateResults();
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -44,7 +45,9 @@ public partial class AnalyzerView : UserControl
         _vm.ResetResults();  // Сбрасываем результаты
         ResetResultsExpander();  // Сбрасываем форму результатов
         _vm.StartAnalysis();  // Запускаем стегоанализ
+
         UpdateResults();  // Обновляем форму результатов
+        _vm.IsMethodsOpened = false;  // Переключение экспандера
     }
 
     // Обновление результатов
@@ -120,9 +123,6 @@ public partial class AnalyzerView : UserControl
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
-
-            // Переключение экспандера
-            ResultsExpander.IsExpanded = true;
         }
     }
 
@@ -140,7 +140,6 @@ public partial class AnalyzerView : UserControl
     private void MethodsExpander_Expanded(object sender, RoutedEventArgs e)
     {
         ResultsExpander.ClearValue(RelativePanel.AlignTopWithProperty);
-        ResultsExpander.IsExpanded = false;
         RightPanelSeparator.ClearValue(RelativePanel.BelowProperty);
         RightPanelSeparator.SetValue(RelativePanel.AboveProperty, ResultsExpander);
         MethodsExpander.SetValue(RelativePanel.AlignBottomWithProperty, RightPanelSeparator);
@@ -148,7 +147,6 @@ public partial class AnalyzerView : UserControl
     private void ResultsExpander_Expanded(object sender, RoutedEventArgs e)
     {
         MethodsExpander.ClearValue(RelativePanel.AlignBottomWithProperty);
-        MethodsExpander.IsExpanded = false;
         RightPanelSeparator.ClearValue(RelativePanel.AboveProperty);
         RightPanelSeparator.SetValue(RelativePanel.BelowProperty, MethodsExpander);
         ResultsExpander.SetValue(RelativePanel.AlignTopWithProperty, RightPanelSeparator);
@@ -156,19 +154,16 @@ public partial class AnalyzerView : UserControl
     private void MethodsExpander_Collapsed(object sender, RoutedEventArgs e)
     {
         if (!_vm.HasResults)
-            MethodsExpander.IsExpanded = true;
-        else
-            ResultsExpander.IsExpanded = true;
+            _vm.IsMethodsOpened = true;
     }
-    private void ResultsExpander_Collapsed(object sender, RoutedEventArgs e) => MethodsExpander.IsExpanded = true;
+    private void ResultsExpander_Collapsed(object sender, RoutedEventArgs e) { }
 
 
     // Сброс результатов
     private void ResetResultsExpander()
     {
         // Переключение экспандера результатов
-        ResultsExpander.IsExpanded = false;
-        MethodsExpander.IsExpanded = true;
+        _vm.IsMethodsOpened = true;
 
         // Сброс формы результатов
         CommonTools.SetFields("IsEnabled", false, 

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace StegoRevealer.UI.Tools
@@ -44,6 +45,33 @@ namespace StegoRevealer.UI.Tools
                 new Vector(96.0, 96.0),
                 skBitmap.RowBytes);
             return bitmap;
+        }
+
+        public static string ReplaceBadSymbols(string rawString, char symb = '�')
+        {
+            var symbolsArray = rawString.Select(c => IsBadSymbol(c) ? symb : c).ToArray();
+            return new string(symbolsArray);
+        }
+        public static string FilterBadSymbols(string rawString)
+        {
+            var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�')).ToArray();
+            return new string(symbolsArray);
+        }
+
+        private static char[] AllowedSymbols = new char[] { '\r', '\n' };
+        public static bool IsBadSymbol(char c)
+        {
+            if (AllowedSymbols.Contains(c))
+                return false;
+            return char.IsControl(c);
+        }
+
+        public static IEnumerable<string> SplitByLength(string str, int maxLength)
+        {
+            for (int index = 0; index < str.Length; index += maxLength)
+            {
+                yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
+            }
         }
 
         public static byte[] GetImageBytes(string path)

@@ -101,11 +101,65 @@
 		</Style>
 	</Style>
 
+	<Style Selector="Expander.RightPanelParamsExpander">
+		<Setter Property="Foreground" Value="White"/>
+	</Style>
+	<Style Selector="Expander.RightPanelParamsExpander:disabled">
+		<Style Selector="^ /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+	</Style>
+
 	<Style Selector="ListBox.CoeffsList > ListBoxItem">
 		<Setter Property="HorizontalAlignment" Value="Stretch"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Padding" Value="0 5 0 5"/>
+		</Style>
+	</Style>
+
+	<Style Selector="ToggleButton.SelectorToggleButton">
+		<Setter Property="Foreground" Value="#FFE6E6E6"/>
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Height" Value="40"/>
+		<Setter Property="Padding" Value="20 0 20 0"/>
+		<Setter Property="MinWidth" Value="150"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+	</Style>
+	<Style Selector="ToggleButton.SelectorToggleButton[IsChecked=false]">
+		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
+	</Style>
+
+	<Style Selector="Label.ExtractorParamsLabel">
+		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="Foreground" Value="#FFE0E0E0"/>
+		<Setter Property="Margin" Value="0 0 10 0"/>
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="HorizontalContentAlignment" Value="Right"/>
+		<Setter Property="VerticalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="Background" Value="{x:Null}"/>
+		<Setter Property="BorderBrush" Value="{x:Null}"/>
+	</Style>
+
+	<Style Selector="TextBox.ExtractorParamsTextBox">
+		<Setter Property="FontSize" Value="13"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="MinWidth" Value="80"/>
+		<Setter Property="MinHeight" Value="32"/>
+		<Setter Property="MaxHeight" Value="32"/>
+		<Setter Property="Padding" Value="8 1 8 1"/>
+		<Setter Property="Margin" Value="5 0 0 0"/>
+	</Style>
+
+	<Style Selector="TextBox.ExtractedText">
+		<Style Selector="^ /template/ ScrollViewer#PART_ScrollViewer /template/ ScrollContentPresenter#PART_ContentPresenter">
+			<Setter Property="Margin" Value="0 0 20 0"/>
+		</Style>
+		<Style Selector="^ /template/ ScrollViewer#PART_ScrollViewer /template/ ScrollBar#PART_VerticalScrollBar">
+			<Setter Property="Cursor" Value="Arrow"/>
 		</Style>
 	</Style>
 	
