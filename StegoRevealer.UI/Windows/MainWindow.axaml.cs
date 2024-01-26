@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     {
         _vm = CommonTools.GetViewModel<MainWindowViewModel>(this.DataContext);
 
-        _headerButtons = new List<Button> { AnalyzerBtn, HiderBtn, ExtractorBtn };
+        _headerButtons = new List<Button> { AnalyzerBtn, HiderBtn, ExtractorBtn, AboutBtn, SettingsBtn };
         UpdateHeaderBtnSelection(AnalyzerBtn);
         _vm.TurnToAnalyzer();
     }
@@ -57,6 +57,14 @@ public partial class MainWindow : Window
         UpdateHeaderBtnSelection(ExtractorBtn);
         _vm.TurnToExtractor();
     }
-    private void AboutBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) { }
-    private void SettingsBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) { }
+    private void AboutBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        UpdateHeaderBtnSelection(AboutBtn);
+        _vm.TurnToInfoPage();
+    }
+    private void SettingsBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        UpdateHeaderBtnSelection(SettingsBtn);
+        _vm.TurnToSettingsPage();
+    }
 }

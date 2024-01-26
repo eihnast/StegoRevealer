@@ -75,20 +75,32 @@ public class MainWindowViewModel : ViewModelBase
 
     public void TurnToAnalyzer()
     {
-        var analyzerVm = GetOrCreateViewModel(typeof(AnalyzerViewModel)) as AnalyzerViewModel;
-        if (analyzerVm is not null)
-            CurrentViewModel = analyzerVm;
+        var vm = GetOrCreateViewModel(typeof(AnalyzerViewModel)) as AnalyzerViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
     }
     public void TurnToHider()
     {
-        var analyzerVm = GetOrCreateViewModel(typeof(HiderViewModel)) as HiderViewModel;
-        if (analyzerVm is not null)
-            CurrentViewModel = analyzerVm;
+        var vm = GetOrCreateViewModel(typeof(HiderViewModel)) as HiderViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
     }
     public void TurnToExtractor()
     {
-        var analyzerVm = GetOrCreateViewModel(typeof(ExtractorViewModel)) as ExtractorViewModel;
-        if (analyzerVm is not null)
-            CurrentViewModel = analyzerVm;
+        var vm = GetOrCreateViewModel(typeof(ExtractorViewModel)) as ExtractorViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
+    }
+    public void TurnToInfoPage()
+    {
+        var vm = GetOrCreateViewModel(typeof(InfoPageViewModel)) as InfoPageViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
+    }
+    public void TurnToSettingsPage()
+    {
+        var vm = GetOrCreateViewModel(typeof(SettingsPageViewModel)) as SettingsPageViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -38,6 +38,12 @@
     </Compile>
     <Compile Update="Views\MainWindowViews\ExtractorView.axaml.cs">
       <DependentUpon>ExtractorView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindowViews\SettingsPageView.axaml.cs">
+      <DependentUpon>SettingsPageView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainWindowViews\InfoPageView.axaml.cs">
+      <DependentUpon>InfoPageView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ParametersWindowViews\ChiSqrMethodParametersView.axaml.cs">
       <DependentUpon>ChiSqrMethodParametersView.axaml</DependentUpon>

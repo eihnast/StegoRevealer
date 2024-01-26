@@ -25,6 +25,12 @@
 		<DataTemplate DataType="{x:Type viewmodels:AnalyzerViewModel}">
 			<views:AnalyzerView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:InfoPageViewModel}">
+			<views:InfoPageView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:SettingsPageViewModel}">
+			<views:SettingsPageView/>
+		</DataTemplate>
 	</Window.DataTemplates>
 
 	<Design.DataContext>
@@ -53,13 +59,13 @@
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
 						<Button Name="AboutBtn" Content="" Classes="HeaderBtnWithIcon"
-								ClickMode="Press" Click="AboutBtn_Click" IsEnabled="False">
+								ClickMode="Press" Click="AboutBtn_Click">
 							<PathIcon Data="{StaticResource IconInfo}"/>
 						</Button>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
 						<Button Name="SettingsBtn" Content="" Classes="HeaderBtnWithIcon"
-								ClickMode="Press" Click="SettingsBtn_Click" IsEnabled="False">
+								ClickMode="Press" Click="SettingsBtn_Click">
 							<PathIcon Data="{StaticResource IconSettings}"/>
 						</Button>
 					</StackPanel>
