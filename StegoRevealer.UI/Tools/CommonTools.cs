@@ -199,4 +199,22 @@ public static class CommonTools
             }
         });
     }
+
+    public static string GetOrCreateTempDirPath()
+    {
+        string tempDir = Path.GetTempPath();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string? localDirPath = Directory.GetParent(Path.GetTempPath())?.Parent?.FullName;
+            if (!string.IsNullOrEmpty(localDirPath))
+                tempDir = localDirPath;
+        }
+
+        var srTempPath = Path.Combine(tempDir, "StegoRevealer");
+        if (!Path.Exists(srTempPath))
+            Directory.CreateDirectory(srTempPath);
+        tempDir = srTempPath;
+
+        return tempDir;
+    }
 }

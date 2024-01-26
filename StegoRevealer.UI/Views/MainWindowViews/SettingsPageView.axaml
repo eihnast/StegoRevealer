@@ -10,5 +10,32 @@
 	<Design.DataContext>
 		<vm:SettingsPageViewModel/>
 	</Design.DataContext>
-	
+
+	<!-- Внешняя сетка -->
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+		  ColumnDefinitions="*,2*,*">
+		<StackPanel Margin="0 30 0 0" Grid.Column="1"
+					HorizontalAlignment="Stretch" VerticalAlignment="Top">
+			<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+					MinHeight="60" CornerRadius="10"
+					Background="{StaticResource SrDark}"
+					BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+				<DockPanel LastChildFill="True" Margin="20 0 20 0"
+						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+					<ToggleSwitch Name="SettingsLoggingSwitch"
+								  HorizontalAlignment="Center" VerticalAlignment="Center"
+								  DockPanel.Dock="Right"
+								  FontSize="16"
+								  IsChecked="{Binding Path=SettingLoggingEnabled}"
+								  OnContent="Вкл" OffContent="Выкл"/>
+					<TextBlock Text="Логирование"
+							   FontSize="16"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"
+							   DockPanel.Dock="Left"/>
+				</DockPanel>
+			</Border>
+		</StackPanel>
+	</Grid>
+	<!-- / Внешняя сетка -->
+
 </UserControl>

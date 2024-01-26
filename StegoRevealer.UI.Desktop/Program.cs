@@ -28,6 +28,7 @@ class Program
         if (e.IsTerminating)
         {
             // Unexpected termintaion actions
+            Configurator.SaveConfig();
             Logger.LogError("Stego Revealer closed due to an error");
         }
     }

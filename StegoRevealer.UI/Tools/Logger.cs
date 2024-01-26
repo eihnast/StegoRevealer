@@ -74,28 +74,28 @@ public class Logger : IDisposable
 
     private StreamWriter? _logWriter;
     public bool CanLog { get => _logWriter is not null; }
+    private bool _logWasCreated = false;
 
     private Logger()
     {
+        if (Configurator.Settings.IsLoggingEnabled)
+            CreateLogWriter();
+    }
+
+    private void CreateLogWriter()
+    {
+        if (_logWasCreated)
+            return;
+
         try
         {
-            string tempDir = Path.GetTempPath();
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                string? localDirPath = Directory.GetParent(Path.GetTempPath())?.Parent?.FullName;
-                if (!string.IsNullOrEmpty(localDirPath))
-                    tempDir = localDirPath;
-            }
-
-            var srTempPath = Path.Combine(tempDir, "StegoRevealer");
-            if (!Path.Exists(srTempPath))
-                Directory.CreateDirectory(srTempPath);
-            tempDir = srTempPath;
+            string tempDir = CommonTools.GetOrCreateTempDirPath();
 
             string logName = $"sr_log_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
             string logPath = Path.Combine(tempDir, logName);
 
             _logWriter = new StreamWriter(logPath, append: false);
+            _logWasCreated = true;
         }
         catch
         {
@@ -103,23 +103,17 @@ public class Logger : IDisposable
         }
     }
 
-    private async void WriteStringInLogAsync(string message, bool lineFeed)
+    private void CheckSettingAndTryCreateLog()
     {
-        if (_logWriter is not null)
-        {
-            try
-            {
-                if (lineFeed)
-                    await _logWriter.WriteLineAsync(message);
-                else
-                    await _logWriter.WriteAsync(message);
-                await _logWriter.FlushAsync();
-            }
-            catch { }
-        }
+        if (_logWriter is null && Configurator.Settings.IsLoggingEnabled)
+            CreateLogWriter();
     }
+
     private void WriteStringInLog(string message, bool lineFeed)
     {
+        if (_logWriter is null)
+            CheckSettingAndTryCreateLog();
+
         if (_logWriter is not null)
         {
             try
@@ -136,6 +130,9 @@ public class Logger : IDisposable
 
     private void LogInner(string message, MessageType type, bool lineFeed)
     {
+        if (!Configurator.Settings.IsLoggingEnabled)
+            return;
+
         string dateTimePrefix = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff ");
         string typePrefix = PrefixDictionary[type];
         WriteStringInLog(dateTimePrefix + typePrefix + message, lineFeed);
