@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.Logger
+﻿using System.Text.Json.Serialization;
+
+namespace StegoRevealer.StegoCore.Logger
 {
     /// <summary>
     /// Результат работы метода, содержащий внутренние записи лога
@@ -10,6 +12,7 @@
         /// <summary>
         /// Получение записей лога
         /// </summary>
+        [JsonIgnore]
         public List<LogMessage> LogRecords { get { return _logRecords; } }
 
         /// <summary>
@@ -60,5 +63,8 @@
                     errors.Add(logRecord);
             return errors;
         }
+
+        public override string ToString() => string.Join("\n", _logRecords);
+        public string ToString(int indent = 0) => string.Join("\n", _logRecords.Select(r => string.Join("", Enumerable.Repeat("\t", indent)) + r.ToString()));
     }
 }

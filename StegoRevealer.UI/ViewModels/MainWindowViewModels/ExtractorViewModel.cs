@@ -363,6 +363,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             CurrentImage?.CloseHandler();
             CurrentImage = new ImageHandler(path);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах или создат объекты параметров, если их нет
+            Logger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
+
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
@@ -438,6 +440,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             await using var stream = await file.OpenWriteAsync();
             using var streamWriter = new StreamWriter(stream);
             await streamWriter.WriteLineAsync(CurrentResults.ExtractedMessage);
+
+            Logger.LogInfo($"Saved file with raw extracted text: '{file.Path.LocalPath}'");
         }
     }
 
@@ -447,9 +451,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// </summary>
     public void StartExtraction()
     {
+        Logger.LogInfo("Starting extraction");
         UpdateParameters();
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стеганографии
+        Logger.LogInfo("Starting extraction operations");
 
         // Запуск
         if (_lsbParameters is null && _kzhParameters is null)
@@ -480,10 +486,15 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             results.ExtractedMessage = kzResult?.ResultData ?? string.Empty;
         }
 
+        Logger.LogInfo("Extraction operations completed");
         timer.Stop();  // Остановка таймера
+
         results.ElapsedTime = timer.ElapsedMilliseconds;
 
         CurrentResults = results;
+        Logger.LogInfo("Results of extraction:\n" + Logger.Separator
+            + $"\nExtracted data length: {CurrentResults.ExtractedMessage.Length}"
+            + $"\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
     }
 
     public void UpdateParameters()

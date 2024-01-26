@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.Logger;
+using System.Text.Json.Serialization;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
 {
@@ -28,6 +29,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis
         /// <summary>
         /// Изображение (если визуализация включена)
         /// </summary>
+        [JsonIgnore]
         public ImageHandler? Image { get; set; }
 
 

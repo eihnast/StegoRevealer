@@ -159,6 +159,7 @@ public partial class ExtractorView : UserControl
         string filePath = Path.Combine(tempDir, fileName);
 
         File.WriteAllText(filePath, _vm.CurrentResults.ExtractedMessage);
+        Logger.LogInfo($"Raw extracted text saved to temp dir as '{filePath}'");
 
         var process = new Process
         {

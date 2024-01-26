@@ -21,6 +21,8 @@ using StegoRevealer.UI.ViewModels.BaseViewModels;
 using StegoRevealer.UI.Windows;
 using Avalonia;
 using StegoRevealer.UI.Lib.ParamsHelpers;
+using StegoRevealer.UI.Lib.MethodsHelper;
+using StegoRevealer.StegoCore.Logger;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -269,6 +271,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (parameters is null)
             return;
 
+        Logger.LogInfo($"Opening parameters window for steganalysis method {analyzerMethod}");
+
         var receivedParameters = new ParametersStorage();
         var parametersVm = new ParametersWindowViewModel(parameters, receivedParameters);
         var parametersWindow = new ParametersWindow() { DataContext = parametersVm };
@@ -279,6 +283,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (receivedParameters.Parameters is null)
             return;
 
+        Logger.LogInfo($"Received parameters for stegoanalysis method {analyzerMethod}");
+
         switch (analyzerMethod)
         {
             case AnalyzerMethod.ChiSquare:
@@ -286,6 +292,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var chiParamsDto = receivedParameters.Parameters as BaseParamsDto<ChiSquareParameters>;
                     chiParamsDto?.FillParameters(ref _chiSquareParameters);
+                    Logger.LogInfo("Received ChiSquare method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
                 }
                 break;
             case AnalyzerMethod.RegularSingular:
@@ -293,6 +300,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var rsParamsDto = receivedParameters.Parameters as BaseParamsDto<RsParameters>;
                     rsParamsDto?.FillParameters(ref _rsParameters);
+                    Logger.LogInfo("Received Regular-Singular method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
                 }
                 break;
             case AnalyzerMethod.KochZhaoAnalysis:
@@ -300,6 +308,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var kzhaParamsDto = receivedParameters.Parameters as BaseParamsDto<KzhaParameters>;
                     kzhaParamsDto?.FillParameters(ref _kzhaParameters);
+                    Logger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
                 }
                 break;
         }
@@ -316,6 +325,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             CurrentImage?.CloseHandler();
             CurrentImage = new ImageHandler(path);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов или создат объекты параметров, если их нет
+            Logger.LogInfo($"Loaded new image for steganalysis: {CurrentImage.ImgPath}");
+
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
@@ -371,9 +382,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// </summary>
     public void StartAnalysis()
     {
+        Logger.LogInfo("Starting steganalysis");
         if (ActiveMethods.Count(m => m.Value is true) == 0)
         {
             DrawCurrentImage();
+            Logger.LogWarning("No active steganalysis methods, operation canceled");
             return;
         }
 
@@ -398,6 +411,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         }
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стегоанализа
+        Logger.LogInfo("Starting steganalysis operations");
 
         // Запуск
         foreach (var methodTask in methodTasks)
@@ -414,6 +428,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 results[method] = methodTasks[method]?.Result;
         }
 
+        Logger.LogInfo("Steganalysis operations completed");
         timer.Stop();  // Остановка таймера
 
         // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
@@ -446,6 +461,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         // Обновление текущих сохранённых результатов
         CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, timer.ElapsedMilliseconds);
+        Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
+            + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
+            + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
+            + "\n\nRegular-Singular = " + CommonTools.GetFormattedJson(rsRes)
+            + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
+            + "\n\nKoch-Zhao Analysis = " + CommonTools.GetFormattedJson(kzhaRes)
+            + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
+            + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
     }
 
 
