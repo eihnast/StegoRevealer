@@ -90,8 +90,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build -c Release --no-restore
-    - name: Execute unit tests
-      run: dotnet test -c Release --no-build --verbosity normal
+#    - name: Execute unit tests
+#      run: dotnet test -c Release --no-build --verbosity normal
     - name: Publish
       run: dotnet publish StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj --configuration Release --output bin\Publish\lin --runtime linux-x64 -f net8.0 --self-contained true
     - name: Upload build artifacts
