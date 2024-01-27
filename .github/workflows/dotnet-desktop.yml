@@ -53,11 +53,11 @@ jobs:
     runs-on: windows-latest  # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkoutt@v4.1.1
       with:
         fetch-depth: 0
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4.0.0
       with:
         dotnet-version: 8.0.x
     - name: Restore the application
@@ -69,8 +69,34 @@ jobs:
     - name: Publish
       run: dotnet publish StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj --configuration Release --output bin\Publish\win --runtime win-x64 -f net8.0 --self-contained true
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.3.0
       with:
         name: StegoRevealer
         path: bin\Publish\win\StegoRevealer.exe
+        if-no-files-found: error
+
+  build_linux:
+    runs-on: ubuntu-latest  # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    steps:
+    - name: Checkout
+      uses: actions/checkoutt@v4.1.1
+      with:
+        fetch-depth: 0
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore the application
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    - name: Execute unit tests
+      run: dotnet test -c Release --no-build --verbosity normal
+    - name: Publish
+      run: dotnet publish StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj --configuration Release --output bin\Publish\lin --runtime linux-x64 -f net8.0 --self-contained true
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: StegoRevealer
+        path: bin\Publish\lin\StegoRevealer
         if-no-files-found: error
