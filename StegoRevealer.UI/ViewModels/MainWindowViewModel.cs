@@ -5,8 +5,6 @@ using StegoRevealer.UI.Windows;
 using ReactiveUI;
 using System;
 using System.Linq;
-using Avalonia.Media;
-using StegoRevealer.UI.Tools;
 
 namespace StegoRevealer.UI.ViewModels;
 

@@ -354,18 +354,6 @@ namespace StegoRevealer.StegoCore.ModuleTests
         //    //Assert.Fail(str);
         //}
 
-        [TestMethod]
-        public void CheckRsMethod()
-        {
-            var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "DangerousRsImage.png");
-            var image = new ImageHandler(imagePath);
-
-            var rsAnalyse = new RsAnalyser(image);
-            var saResult = rsAnalyse.Analyse();
-
-            Assert.Fail($"{saResult.MessageRelativeVolume}");
-        }
-
         #endregion
     }
 }
