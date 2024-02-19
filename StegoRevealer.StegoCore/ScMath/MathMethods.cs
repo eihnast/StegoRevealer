@@ -236,8 +236,8 @@ public static class MathMethods
     public static double Dispersion(byte[,] values)
     {
         var doubleValues = new double[values.GetLength(0), values.GetLength(1)];
-        for (int i = 0; i < values.Length; i++)
-            for (int j = 0; j < values.Length; j++)
+        for (int i = 0; i < values.GetLength(0); i++)
+            for (int j = 0; j < values.GetLength(1); j++)
                 doubleValues[i, j] = (double)values[i, j];
         return Dispersion(doubleValues);
     }

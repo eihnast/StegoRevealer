@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 
 namespace StegoRevealer.UI.Lib.Entities;
@@ -32,6 +33,10 @@ public class SteganalysisResultsDto
 
     public (int leftInd, int rightInd)? KzhaSuspiciousInterval { get; private set; } = null;
 
+    public double StatmNoiseValueMethod1 { get; private set; } = 0.0;
+
+    public double StatmNoiseValueMethod2 { get; private set; } = 0.0;
+
 
     public long ElapsedTime { get; private set; } = 0;
 
@@ -40,7 +45,7 @@ public class SteganalysisResultsDto
     /// Заполняет DTO результатами стегоанализа<br/>
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
-    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null,
+    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null, StatmResult? statmRes = null,
         long? elapsedTime = null)
     {
         if (elapsedTime is not null)
@@ -67,6 +72,12 @@ public class SteganalysisResultsDto
             KzhaMessageBitsVolume = kzhaRes.MessageBitsVolume;
             KzhaExtractedData = kzhaRes.ExtractedData;
             KzhaSuspiciousInterval = kzhaRes.SuspiciousInterval;
+        }
+
+        if (statmRes is not null)
+        {
+            StatmNoiseValueMethod1 = statmRes.NoiseValueMethod1;
+            StatmNoiseValueMethod2 = statmRes.NoiseValueMethod2;
         }
     }
 }

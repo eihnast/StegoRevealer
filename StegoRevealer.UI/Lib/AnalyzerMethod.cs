@@ -7,5 +7,6 @@ public enum AnalyzerMethod
 {
     ChiSquare,
     RegularSingular,
-    KochZhaoAnalysis
+    KochZhaoAnalysis,
+    Statm
 }

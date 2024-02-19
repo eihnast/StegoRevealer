@@ -230,7 +230,7 @@ public class NoiseCalculator
                 for (int j = 0; j < intervalLength; j++)
                     smoothedRowA15[j] = (byte)ApplyLinearOpertorA(valuesA15[j..(j + 5)], mask5);
                 for (int j = 0; j < intervalLength; j++)
-                    smoothedRowA17[j] = (byte)ApplyLinearOpertorA(valuesA15[j..(j + 7)], mask7);
+                    smoothedRowA17[j] = (byte)ApplyLinearOpertorA(valuesA17[j..(j + 7)], mask7);
 
                 var smoothedRow = new byte[intervalLength];
                 for (int j = 0; j < intervalLength; j++)

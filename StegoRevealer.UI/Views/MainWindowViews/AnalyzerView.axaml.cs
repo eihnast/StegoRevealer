@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
+using System;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -68,7 +69,7 @@ public partial class AnalyzerView : UserControl
 
             // RS
             if (results.IsMethodRsExecuted)
-                RsFullnessValue.Text = string.Format("{0:P2}", results.RsMessageRelativeVolume);
+                RsFullnessValue.Text = string.Format("{0:P2}", Math.Min(1.0, results.RsMessageRelativeVolume));
 
             // Kzha
             if (results.IsMethodKzhaExecuted)
@@ -120,6 +121,11 @@ public partial class AnalyzerView : UserControl
                     }
                 }
             }
+
+            // Statm
+            StatResultsNoise1Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod1);
+            StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod2);
+
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
@@ -182,6 +188,8 @@ public partial class AnalyzerView : UserControl
         KzhaSuspiciousIntervalValue.Text = MessageUnknown;
         KzhaThresholdValue.Text = MessageUnknown;
         KzhaCoeffsValue.Text = MessageUnknown;
+        StatResultsNoise1Value.Text = MessageUnknown;
+        StatResultsNoise2Value.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }

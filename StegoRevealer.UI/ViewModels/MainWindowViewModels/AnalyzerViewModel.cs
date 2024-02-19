@@ -23,6 +23,7 @@ using Avalonia;
 using StegoRevealer.UI.Lib.ParamsHelpers;
 using StegoRevealer.UI.Lib.MethodsHelper;
 using StegoRevealer.StegoCore.Logger;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -409,6 +410,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             var kzhaMethodAnalyzer = new KzhaAnalyser(_kzhaParameters);
             methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<ILoggedAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
         }
+        if (CurrentImage is not null)
+        {
+            var statmAnalyzer = new StatmAnalyser(CurrentImage);
+            methodTasks[AnalyzerMethod.Statm] = new Task<ILoggedAnalysisResult>(() => statmAnalyzer.Analyse());
+        }
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стегоанализа
         Logger.LogInfo("Starting steganalysis operations");
@@ -454,13 +460,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         var chiRes = results[AnalyzerMethod.ChiSquare] as ChiSquareResult;
         var rsRes = results[AnalyzerMethod.RegularSingular] as RsResult;
         var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
+        var statmRes = results[AnalyzerMethod.Statm] as StatmResult;
 
         // Вывод визуализированного изображения
         if (chiRes is not null && (_chiSquareParameters?.Visualize ?? false))
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, timer.ElapsedMilliseconds);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, timer.ElapsedMilliseconds);
         Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
             + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
