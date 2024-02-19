@@ -208,23 +208,13 @@
 
 							<DockPanel Name="StatResultsTitle" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Text="Статистические характеристики изображения: "
+								<TextBlock Text="Статистические характеристики изображения:"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left"
-										   HorizontalAlignment="Stretch" Margin="20 0 0 0"/>
-							</DockPanel>
-							<DockPanel Name="StatResultsNoise1Block" DockPanel.Dock="Top" IsVisible="True"
-									   LastChildFill="True">
-								<TextBlock Text="Уровень шума (Метод 1): "
-										   Padding="30 0 0 0" DockPanel.Dock="Left"
-										   HorizontalAlignment="Stretch"
-										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsNoise1Value" Text="Нет данных"
-										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
-										   DockPanel.Dock="Left"/>
+										   HorizontalAlignment="Stretch"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsNoise2Block" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Уровень шума (Метод 2): "
+								<TextBlock Text="Уровень шума: "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>

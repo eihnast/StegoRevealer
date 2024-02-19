@@ -44,9 +44,9 @@ public class StatmAnalyser
         _writeToLog = result.Log;
 
         var noiseCalculator = new NoiseCalculator(Params);
-        var noiseLevelM1 = noiseCalculator.CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method1);
+        var noiseLevelM1 = noiseCalculator.CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method1, true);
         result.NoiseValueMethod1 = noiseLevelM1;
-        var noiseLevelM2 = noiseCalculator.CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2);
+        var noiseLevelM2 = noiseCalculator.CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2, true);
         result.NoiseValueMethod2 = noiseLevelM2;
 
         result.Log($"Подсчёт характеристик завершён");

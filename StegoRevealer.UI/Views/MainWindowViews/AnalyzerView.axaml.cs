@@ -123,7 +123,6 @@ public partial class AnalyzerView : UserControl
             }
 
             // Statm
-            StatResultsNoise1Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod1);
             StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod2);
 
 
@@ -188,7 +187,6 @@ public partial class AnalyzerView : UserControl
         KzhaSuspiciousIntervalValue.Text = MessageUnknown;
         KzhaThresholdValue.Text = MessageUnknown;
         KzhaCoeffsValue.Text = MessageUnknown;
-        StatResultsNoise1Value.Text = MessageUnknown;
         StatResultsNoise2Value.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;

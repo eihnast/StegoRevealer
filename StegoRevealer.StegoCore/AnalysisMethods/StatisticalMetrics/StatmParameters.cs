@@ -25,7 +25,10 @@ public class StatmParameters
     public int NoiseCalcIntervalNumber { get; set; } = 4;
 
     /// <summary>Число блоков по длинной стороне, на которые разбивается изображение (Метод 1)</summary>
-    public int NoiseCalcBlocksNumber { get; set; } = 8;
+    public int NoiseCalcBlocksNumber { get; set; } = 16;
+
+    /// <summary>Количество фиксируемых блоков с минимальной дисперсией (Метод 1)</summary>
+    public int NoiseCalcFixedBlocksCount { get; set; } = 5;
 
     /// <summary>Число строк, которые фиксируются в блоке (Метод 1)</summary>
     public int NoiseCalcRowsInBlock { get; set; } = 3;
