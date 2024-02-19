@@ -1,27 +1,26 @@
 ﻿using StegoRevealer.StegoCore.Logger;
 
-namespace StegoRevealer.StegoCore.StegoMethods.Lsb
+namespace StegoRevealer.StegoCore.StegoMethods.Lsb;
+
+/// <summary>
+/// Результаты стеганографического скрытия в НЗБ
+/// </summary>
+public class LsbExtractResult : LoggedResult, IExtractResult
 {
     /// <summary>
-    /// Результаты стеганографического скрытия в НЗБ
+    /// Извлечённая информация
     /// </summary>
-    public class LsbExtractResult : LoggedResult, IExtractResult
+    public string? ResultData { get; set; } = null;
+
+    /// <summary>
+    /// Возвращает извлечённую информацию
+    /// </summary>
+    public string? GetResultData() => ResultData;
+
+
+    /// <inheritdoc/>
+    public LoggedResult AsLog()
     {
-        /// <summary>
-        /// Извлечённая информация
-        /// </summary>
-        public string? ResultData { get; set; } = null;
-
-        /// <summary>
-        /// Возвращает извлечённую информацию
-        /// </summary>
-        public string? GetResultData() => ResultData;
-
-
-        /// <inheritdoc/>
-        public LoggedResult AsLog()
-        {
-            return this;
-        }
+        return this;
     }
 }

@@ -1,13 +1,12 @@
-﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
+﻿namespace StegoRevealer.StegoCore.ImageHandlerLib;
+
+/// <summary>
+/// Формат изображения (по разрешению файла)
+/// </summary>
+public enum ImageFormat
 {
-    /// <summary>
-    /// Формат изображения (по разрешению файла)
-    /// </summary>
-    public enum ImageFormat
-    {
-        Png,
-        Jpeg,
-        Jpg,
-        Bmp
-    }
+    Png,
+    Jpeg,
+    Jpg,
+    Bmp
 }

@@ -1,21 +1,20 @@
-﻿namespace StegoRevealer.StegoCore.StegoMethods
+﻿namespace StegoRevealer.StegoCore.StegoMethods;
+
+/// <summary>
+/// Класс реализации стеганографического скрытия
+/// </summary>
+public interface IHider
 {
     /// <summary>
-    /// Класс реализации стеганографического скрытия
+    /// Запуск скрытия информации
     /// </summary>
-    public interface IHider
-    {
-        /// <summary>
-        /// Запуск скрытия информации
-        /// </summary>
-        /// <param name="data">Скрываемая информация</param>
-        public IHideResult Hide(string? data);
+    /// <param name="data">Скрываемая информация</param>
+    public IHideResult Hide(string? data);
 
-        /// <summary>
-        /// Запуск скрытия информации со специфическими указанными параметрами
-        /// </summary>
-        /// <param name="parameters">Параметры</param>
-        /// <param name="data">Скрываемая информация</param>
-        public IHideResult Hide(IParams parameters, string? data);
-    }
+    /// <summary>
+    /// Запуск скрытия информации со специфическими указанными параметрами
+    /// </summary>
+    /// <param name="parameters">Параметры</param>
+    /// <param name="data">Скрываемая информация</param>
+    public IHideResult Hide(IParams parameters, string? data);
 }

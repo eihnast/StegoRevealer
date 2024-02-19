@@ -1,62 +1,53 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
-using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
-using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
-using StegoRevealer.StegoCore.ScMath;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Threading.Channels;
 
-namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics
+namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+
+/// <summary>
+/// Анализатор статистических метрик изображения -
+/// показателей визуального искажения
+/// </summary>
+public class StatmAnalyser
 {
+    private const string MethodName = "Statistical metricks calculator";
+
     /// <summary>
-    /// Анализатор статистических метрик изображения -
-    /// показателей визуального искажения
+    /// Параметры метода
     /// </summary>
-    public class StatmAnalyser
+    public StatmParameters Params { get; set; }
+
+    /// <summary>
+    /// Внутренний метод-прослойка для записи в лог
+    /// </summary>
+    private Action<string> _writeToLog = (string str) => new string(str);
+
+
+    public StatmAnalyser(ImageHandler image)
     {
-        private const string MethodName = "Statistical metricks calculator";
+        Params = new StatmParameters(image);
+    }
 
-        /// <summary>
-        /// Параметры метода
-        /// </summary>
-        public StatmParameters Params { get; set; }
-
-        /// <summary>
-        /// Внутренний метод-прослойка для записи в лог
-        /// </summary>
-        private Action<string> _writeToLog = (string str) => new string(str);
+    public StatmAnalyser(StatmParameters parameters)
+    {
+        Params = parameters;
+    }
 
 
-        public StatmAnalyser(ImageHandler image)
-        {
-            Params = new StatmParameters(image);
-        }
+    /// <summary>
+    /// Запуск анализа
+    /// </summary>
+    /// <param name="verboseLog">Вести подробный лог</param>
+    public StatmResult Analyse(bool verboseLog = false)
+    {
+        var result = new StatmResult();
+        result.Log($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
+        _writeToLog = result.Log;
 
-        public StatmAnalyser(StatmParameters parameters)
-        {
-            Params = parameters;
-        }
+        var noiseCalculator = new NoiseCalculator(Params);
+        var noiseLevel = noiseCalculator.CalcNoiseLevelMethod2();
+        result.NoiseValue = noiseLevel;
 
-
-        /// <summary>
-        /// Запуск анализа
-        /// </summary>
-        /// <param name="verboseLog">Вести подробный лог</param>
-        public StatmResult Analyse(bool verboseLog = false)
-        {
-            var result = new StatmResult();
-            result.Log($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
-            _writeToLog = result.Log;
-
-            var noiseCalculator = new NoiseCalculator(Params);
-            var noiseLevel = noiseCalculator.CalcNoiseLevel();
-            result.NoiseValue = noiseLevel;
-
-            result.Log($"Подсчёт характеристик завершён");
-            return result;
-        }
+        result.Log($"Подсчёт характеристик завершён");
+        return result;
     }
 }

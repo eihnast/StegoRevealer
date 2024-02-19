@@ -1,7 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.StegoMethods
-{
-    /// <summary>
-    /// Параметры стеганографического метода
-    /// </summary>
-    public interface IParams { }
-}
+﻿namespace StegoRevealer.StegoCore.StegoMethods;
+
+/// <summary>
+/// Параметры стеганографического метода
+/// </summary>
+public interface IParams { }

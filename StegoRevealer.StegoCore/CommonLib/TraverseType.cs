@@ -1,8 +1,7 @@
-﻿namespace StegoRevealer.StegoCore.CommonLib
+﻿namespace StegoRevealer.StegoCore.CommonLib;
+
+public enum TraverseType
 {
-    public enum TraverseType
-    {
-        Horizontal,
-        Vertical
-    }
+    Horizontal,
+    Vertical
 }

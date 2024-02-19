@@ -1,5 +1,4 @@
 ﻿using StegoRevealer.StegoCore.CommonLib.Entities;
-using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 

@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace StegoRevealer.UI.Tools.MvvmTools
+namespace StegoRevealer.UI.Tools.MvvmTools;
+
+/// <summary>
+/// Разрешённый способ доступа
+/// </summary>
+[Flags]
+public enum AccessMode
 {
-    /// <summary>
-    /// Разрешённый способ доступа
-    /// </summary>
-    [Flags]
-    public enum AccessMode
-    {
-        None = 0,
-        Get = 1,
-        Set = 2
-    }
+    None = 0,
+    Get = 1,
+    Set = 2
 }

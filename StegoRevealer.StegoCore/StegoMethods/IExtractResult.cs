@@ -1,7 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.StegoMethods
+﻿namespace StegoRevealer.StegoCore.StegoMethods;
+
+public interface IExtractResult : ILoggedStegoResult
 {
-    public interface IExtractResult : ILoggedStegoResult
-    {
-        public string? GetResultData();
-    }
+    public string? GetResultData();
 }

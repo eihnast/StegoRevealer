@@ -1,8 +1,7 @@
-﻿namespace StegoRevealer.StegoCore.ModuleTests
+﻿namespace StegoRevealer.StegoCore.ModuleTests;
+
+public static class Helper
 {
-    public static class Helper
-    {
-        public static string GetAssemblyDir() =>
-            Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty;
-    }
+    public static string GetAssemblyDir() =>
+        Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty;
 }

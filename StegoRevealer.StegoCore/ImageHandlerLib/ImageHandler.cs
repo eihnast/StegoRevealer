@@ -1,247 +1,246 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
 
-namespace StegoRevealer.StegoCore.ImageHandlerLib
+namespace StegoRevealer.StegoCore.ImageHandlerLib;
+
+/// <summary>
+/// Обработчик изображения (StegoCore-класс представления изображения)
+/// </summary>
+public class ImageHandler
 {
+    private ScImage _image;  // Изображение
+
+    private string _imgPath;  // Путь к изображению
+
+    private ChannelsArray _channelsArray;  // Массив пикселей по каналам
+    private ImageArray _imgArray;  // Массив пикселей
+
+
     /// <summary>
-    /// Обработчик изображения (StegoCore-класс представления изображения)
+    /// Является ли изображением формата TrueColor
     /// </summary>
-    public class ImageHandler
+    public bool IsTrueColor { get { return _image.IsTrueColor; } }
+
+    /// <summary>
+    /// Массив пикселей изображения по каналам
+    /// </summary>
+    public ChannelsArray ChannelsArray { get { return _channelsArray; } }
+
+    /// <summary>
+    /// Массив пикселей изображения
+    /// </summary>
+    public ImageArray ImgArray { get { return _imgArray; } }
+
+    /// <summary>
+    /// Путь к файлу изображения
+    /// </summary>
+    public string ImgPath { get { return _imgPath; } }
+
+    /// <summary>
+    /// Имя файла изображения
+    /// </summary>
+    public string ImgName { get { return Path.GetFileNameWithoutExtension(ImgPath); } }
+
+
+    private ImageHandler? _invertedHandler = null;  // Обработчик получения пикселей с "инвертированными" НЗБ
+
+    /// <summary>
+    /// Получение "инвертированного" обработчика - возвращает пиксели с "инвертированными" НЗБ<br/>
+    /// В пикселях с инвертированными НЗБ меняется значение последнего бита интенсивности цвета в каждом канале на противоположное
+    /// </summary>
+    public ImageHandler Inverted { get { return GetLsbInvertedVersion(); } }
+
+    /// <summary>
+    /// Ширина изображения
+    /// </summary>
+    public int Width { get { return _image.Width; } }
+
+    /// <summary>
+    /// Высота изображения
+    /// </summary>
+    public int Height { get { return _image.Height; } }
+
+    /// <summary>
+    /// Возвращает объект изображения
+    /// </summary>
+    public ScImage GetScImage() => _image;
+
+
+    public ImageHandler(string imgPath)
     {
-        private ScImage _image;  // Изображение
+        _imgPath = imgPath;
+        _image = ScImage.Load(_imgPath);
+        _channelsArray = new ChannelsArray(_image);
+        _imgArray = new ImageArray(_image);
+    }
 
-        private string _imgPath;  // Путь к изображению
+    // Конструктор поверхностного дублирования ImageHandler
+    private ImageHandler(ImageHandler originalHandler) 
+    {
+        _imgPath = originalHandler._imgPath;
+        _image = originalHandler._image;
+        _channelsArray = originalHandler._channelsArray;
+        _imgArray = originalHandler._imgArray;
+    }
 
-        private ChannelsArray _channelsArray;  // Массив пикселей по каналам
-        private ImageArray _imgArray;  // Массив пикселей
-
-
-        /// <summary>
-        /// Является ли изображением формата TrueColor
-        /// </summary>
-        public bool IsTrueColor { get { return _image.IsTrueColor; } }
-
-        /// <summary>
-        /// Массив пикселей изображения по каналам
-        /// </summary>
-        public ChannelsArray ChannelsArray { get { return _channelsArray; } }
-
-        /// <summary>
-        /// Массив пикселей изображения
-        /// </summary>
-        public ImageArray ImgArray { get { return _imgArray; } }
-
-        /// <summary>
-        /// Путь к файлу изображения
-        /// </summary>
-        public string ImgPath { get { return _imgPath; } }
-
-        /// <summary>
-        /// Имя файла изображения
-        /// </summary>
-        public string ImgName { get { return Path.GetFileNameWithoutExtension(ImgPath); } }
+    private ImageHandler(ScImage image)
+    {
+        _image = image;
+        _imgPath = image.Path ?? string.Empty;
+        _channelsArray = new ChannelsArray(_image);
+        _imgArray = new ImageArray(_image);
+    }
 
 
-        private ImageHandler? _invertedHandler = null;  // Обработчик получения пикселей с "инвертированными" НЗБ
+    /// <summary>
+    /// Получение значений пикселя
+    /// </summary>
+    public ScPixel GetPixelValue(int x, int y)
+    {
+        return _image[y, x];
+    }
 
-        /// <summary>
-        /// Получение "инвертированного" обработчика - возвращает пиксели с "инвертированными" НЗБ<br/>
-        /// В пикселях с инвертированными НЗБ меняется значение последнего бита интенсивности цвета в каждом канале на противоположное
-        /// </summary>
-        public ImageHandler Inverted { get { return GetLsbInvertedVersion(); } }
+    /// <summary>
+    /// Сохранение изображения
+    /// </summary>
+    public string? Save(string fullPath, ImageFormat format)
+    {
+        return _image.Save(fullPath, format);
+    }
 
-        /// <summary>
-        /// Ширина изображения
-        /// </summary>
-        public int Width { get { return _image.Width; } }
+    /// <summary>
+    /// Сохранение изображения
+    /// </summary>
+    public string? Save(string newName)
+    {
+        var directory = Path.GetDirectoryName(ImgPath) ?? "";
+        var name = newName;
+        var ext = Path.GetExtension(ImgPath);
 
-        /// <summary>
-        /// Высота изображения
-        /// </summary>
-        public int Height { get { return _image.Height; } }
+        return Save(Path.Combine(directory, name + ext), _image.GetFormat());
+    }
 
-        /// <summary>
-        /// Возвращает объект изображения
-        /// </summary>
-        public ScImage GetScImage() => _image;
+    /// <summary>
+    /// Метод для получения размеров изображения
+    /// </summary>
+    public (int, int, int) GetImgSizes()
+    {
+        return (_image.Width, _image.Height, _image.Depth);
+    }
+    
+    /// <summary>
+    /// Закрывает обработчик и "отпускает" файл изображения
+    /// </summary>
+    public void CloseHandler()
+    {
+        _image.Dispose();
+    }
+
+    /// <summary>
+    /// Вывод массива пикселей
+    /// </summary>
+    public static void PrintImageArray(TextWriter output, ImageHandler imageHandler)
+    {
+        imageHandler.ImgArray.Print(output);
+    }
+
+    /// <summary>
+    /// Вывод массива пикселей
+    /// </summary>
+    public void PrintImageArray(TextWriter output)
+    {
+        PrintImageArray(output, this);
+    }
 
 
-        public ImageHandler(string imgPath)
+    // Вспомогательные методы получения каналов по цветам
+
+    /// <summary>
+    /// Массив красных цветов пикселей
+    /// </summary>
+    public ImageOneChannelArray? GetRed()
+    {
+        return _channelsArray.GetChannelArray(ImgChannel.Red);
+    }
+
+    /// <summary>
+    /// Массив зелёных цветов пикселей
+    /// </summary>
+    public ImageOneChannelArray? GetGreen()
+    {
+        return _channelsArray.GetChannelArray(ImgChannel.Red);
+    }
+
+    /// <summary>
+    /// Массив синих цветов пикселей
+    /// </summary>
+    public ImageOneChannelArray? GetBlue()
+    {
+        return _channelsArray.GetChannelArray(ImgChannel.Red);
+    }
+
+
+    // Методы изменения НЗБ
+    // Если синхронизация включена, режим будет изменён на OnlyImageArray
+
+    /// <summary>
+    /// Инвертировать НЗБ во всех пикселях в выбранных каналах
+    /// </summary>
+    public void InvertAllLsb(ImgChannel[]? channels = null, int lsb = 1)
+    {
+        if (channels is null)  // Инвертирование по всем каналам
         {
-            _imgPath = imgPath;
-            _image = ScImage.Load(_imgPath);
-            _channelsArray = new ChannelsArray(_image);
-            _imgArray = new ImageArray(_image);
-        }
-
-        // Конструктор поверхностного дублирования ImageHandler
-        private ImageHandler(ImageHandler originalHandler) 
-        {
-            _imgPath = originalHandler._imgPath;
-            _image = originalHandler._image;
-            _channelsArray = originalHandler._channelsArray;
-            _imgArray = originalHandler._imgArray;
-        }
-
-        private ImageHandler(ScImage image)
-        {
-            _image = image;
-            _imgPath = image.Path ?? string.Empty;
-            _channelsArray = new ChannelsArray(_image);
-            _imgArray = new ImageArray(_image);
-        }
-
-
-        /// <summary>
-        /// Получение значений пикселя
-        /// </summary>
-        public ScPixel GetPixelValue(int x, int y)
-        {
-            return _image[y, x];
-        }
-
-        /// <summary>
-        /// Сохранение изображения
-        /// </summary>
-        public string? Save(string fullPath, ImageFormat format)
-        {
-            return _image.Save(fullPath, format);
-        }
-
-        /// <summary>
-        /// Сохранение изображения
-        /// </summary>
-        public string? Save(string newName)
-        {
-            var directory = Path.GetDirectoryName(ImgPath) ?? "";
-            var name = newName;
-            var ext = Path.GetExtension(ImgPath);
-
-            return Save(Path.Combine(directory, name + ext), _image.GetFormat());
-        }
-
-        /// <summary>
-        /// Метод для получения размеров изображения
-        /// </summary>
-        public (int, int, int) GetImgSizes()
-        {
-            return (_image.Width, _image.Height, _image.Depth);
-        }
-        
-        /// <summary>
-        /// Закрывает обработчик и "отпускает" файл изображения
-        /// </summary>
-        public void CloseHandler()
-        {
-            _image.Dispose();
-        }
-
-        /// <summary>
-        /// Вывод массива пикселей
-        /// </summary>
-        public static void PrintImageArray(TextWriter output, ImageHandler imageHandler)
-        {
-            imageHandler.ImgArray.Print(output);
-        }
-
-        /// <summary>
-        /// Вывод массива пикселей
-        /// </summary>
-        public void PrintImageArray(TextWriter output)
-        {
-            PrintImageArray(output, this);
-        }
-
-
-        // Вспомогательные методы получения каналов по цветам
-
-        /// <summary>
-        /// Массив красных цветов пикселей
-        /// </summary>
-        public ImageOneChannelArray? GetRed()
-        {
-            return _channelsArray.GetChannelArray(ImgChannel.Red);
-        }
-
-        /// <summary>
-        /// Массив зелёных цветов пикселей
-        /// </summary>
-        public ImageOneChannelArray? GetGreen()
-        {
-            return _channelsArray.GetChannelArray(ImgChannel.Red);
-        }
-
-        /// <summary>
-        /// Массив синих цветов пикселей
-        /// </summary>
-        public ImageOneChannelArray? GetBlue()
-        {
-            return _channelsArray.GetChannelArray(ImgChannel.Red);
-        }
-
-
-        // Методы изменения НЗБ
-        // Если синхронизация включена, режим будет изменён на OnlyImageArray
-
-        /// <summary>
-        /// Инвертировать НЗБ во всех пикселях в выбранных каналах
-        /// </summary>
-        public void InvertAllLsb(ImgChannel[]? channels = null, int lsb = 1)
-        {
-            if (channels is null)  // Инвертирование по всем каналам
-            {
-                foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
-                    InvertLsbInOneChannel(channel, lsb);
-            }
-            else  // Инвертирование для указанных каналов
-            {
-                foreach (var channel in channels)
-                    InvertLsbInOneChannel(channel, lsb);
-            }
-        }
-
-        // Инвертирование НЗБ в пикселях в одном цветовом канале
-        private void InvertLsbInOneChannel(ImgChannel channel, int lsbNum)
-        {
-            if (_image is null)
-                return;
-
-            int channelId = (int)channel;
-
-            for (int y = 0; y < _imgArray.Height; y++)
-            {
-                for (int x = 0; x < _imgArray.Width; x++)
-                {
-                    var pixel = _imgArray[y, x];
-                    pixel[channelId] = PixelsTools.InvertLsb(_imgArray[y, x][channelId], lsbNum);
-                }
-            }
-        }
-
-        // Получение "инвертированного" обработчика
-        private ImageHandler GetLsbInvertedVersion()
-        {
-            if (_invertedHandler is not null)
-                return _invertedHandler;
-
-            var invertedHandler = new ImageHandler(this);
-            invertedHandler._channelsArray = new ChannelsArray(_image);
             foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
-            {
-                var oneChannelArray = invertedHandler._channelsArray.GetChannelArray(channel);
-                if (oneChannelArray is not null)
-                    oneChannelArray.LsbInvertedGetter = true;
-            }
-
-            invertedHandler._imgArray = new ImageArray(_image);
-            invertedHandler._imgArray.LsbInvertedGetter = true;
-
-            return invertedHandler;
+                InvertLsbInOneChannel(channel, lsb);
         }
-
-        public ImageHandler Clone()
+        else  // Инвертирование для указанных каналов
         {
-            var scImage = _image.Clone();
-            return new ImageHandler(scImage);
+            foreach (var channel in channels)
+                InvertLsbInOneChannel(channel, lsb);
         }
+    }
+
+    // Инвертирование НЗБ в пикселях в одном цветовом канале
+    private void InvertLsbInOneChannel(ImgChannel channel, int lsbNum)
+    {
+        if (_image is null)
+            return;
+
+        int channelId = (int)channel;
+
+        for (int y = 0; y < _imgArray.Height; y++)
+        {
+            for (int x = 0; x < _imgArray.Width; x++)
+            {
+                var pixel = _imgArray[y, x];
+                pixel[channelId] = PixelsTools.InvertLsb(_imgArray[y, x][channelId], lsbNum);
+            }
+        }
+    }
+
+    // Получение "инвертированного" обработчика
+    private ImageHandler GetLsbInvertedVersion()
+    {
+        if (_invertedHandler is not null)
+            return _invertedHandler;
+
+        var invertedHandler = new ImageHandler(this);
+        invertedHandler._channelsArray = new ChannelsArray(_image);
+        foreach (ImgChannel channel in Enum.GetValues(typeof(ImgChannel)))
+        {
+            var oneChannelArray = invertedHandler._channelsArray.GetChannelArray(channel);
+            if (oneChannelArray is not null)
+                oneChannelArray.LsbInvertedGetter = true;
+        }
+
+        invertedHandler._imgArray = new ImageArray(_image);
+        invertedHandler._imgArray.LsbInvertedGetter = true;
+
+        return invertedHandler;
+    }
+
+    public ImageHandler Clone()
+    {
+        var scImage = _image.Clone();
+        return new ImageHandler(scImage);
     }
 }

@@ -1,105 +1,104 @@
 ﻿using SkiaSharp;
 
-namespace StegoRevealer.StegoCore.ImageHandlerLib
+namespace StegoRevealer.StegoCore.ImageHandlerLib;
+
+/// <summary>
+/// Класс, представляющий пиксель изображения
+/// </summary>
+public struct ScPixel
 {
+    // Значения цветов по каналам
+    private byte[] _pixelArray = new byte[] { 0, 0, 0, 0 };
+
     /// <summary>
-    /// Класс, представляющий пиксель изображения
+    /// Размер массива значений пикселя (число каналов)
     /// </summary>
-    public struct ScPixel
+    public int Length { get { return _pixelArray.Length; } }
+
+    /// <summary>
+    /// Значение красного канала
+    /// </summary>
+    public byte Red 
+    { 
+        get { return _pixelArray[0]; } 
+        set { _pixelArray[0] = value; }
+    }
+
+    /// <summary>
+    /// Значение зелёного канала
+    /// </summary>
+    public byte Green
+    { 
+        get { return _pixelArray[1]; } 
+        set { _pixelArray[1] = value; }
+    }
+
+    /// <summary>
+    /// Значение синего канала
+    /// </summary>
+    public byte Blue
+    { 
+        get { return _pixelArray[2]; } 
+        set { _pixelArray[2] = value; }
+    }
+
+    /// <summary>
+    /// Значение альфа-канала
+    /// </summary>
+    public byte Alpha
+    { 
+        get { return _pixelArray[3]; } 
+        set { _pixelArray[3] = value; }
+    }
+
+
+    public ScPixel() => _pixelArray = new byte[] { 0, 0, 0, 0 };
+
+    public ScPixel(byte red, byte green, byte blue, byte alpha = 255) : this()
     {
-        // Значения цветов по каналам
-        private byte[] _pixelArray = new byte[] { 0, 0, 0, 0 };
+        Red = red;
+        Green = green;
+        Blue = blue;
+        Alpha = alpha;
+    }
 
-        /// <summary>
-        /// Размер массива значений пикселя (число каналов)
-        /// </summary>
-        public int Length { get { return _pixelArray.Length; } }
-
-        /// <summary>
-        /// Значение красного канала
-        /// </summary>
-        public byte Red 
-        { 
-            get { return _pixelArray[0]; } 
-            set { _pixelArray[0] = value; }
-        }
-
-        /// <summary>
-        /// Значение зелёного канала
-        /// </summary>
-        public byte Green
-        { 
-            get { return _pixelArray[1]; } 
-            set { _pixelArray[1] = value; }
-        }
-
-        /// <summary>
-        /// Значение синего канала
-        /// </summary>
-        public byte Blue
-        { 
-            get { return _pixelArray[2]; } 
-            set { _pixelArray[2] = value; }
-        }
-
-        /// <summary>
-        /// Значение альфа-канала
-        /// </summary>
-        public byte Alpha
-        { 
-            get { return _pixelArray[3]; } 
-            set { _pixelArray[3] = value; }
-        }
+    public ScPixel(SKColor color) : this()
+    {
+        Red = color.Red;
+        Green = color.Green;
+        Blue = color.Blue;
+        Alpha = color.Alpha;
+    }
 
 
-        public ScPixel() => _pixelArray = new byte[] { 0, 0, 0, 0 };
+    // Доступ по индексаторам
 
-        public ScPixel(byte red, byte green, byte blue, byte alpha = 255) : this()
+    public byte this[int i]
+    {
+        get
         {
-            Red = red;
-            Green = green;
-            Blue = blue;
-            Alpha = alpha;
+            return _pixelArray[i];
         }
-
-        public ScPixel(SKColor color) : this()
+        set
         {
-            Red = color.Red;
-            Green = color.Green;
-            Blue = color.Blue;
-            Alpha = color.Alpha;
+            _pixelArray[i] = value;
         }
+    }
 
 
-        // Доступ по индексаторам
+    /// <summary>
+    /// Преобразование SKColor в ScPixel
+    /// </summary>
+    public static ScPixel FromSkColor(SKColor color)
+    {
+        return new ScPixel(color);
+    }
 
-        public byte this[int i]
-        {
-            get
-            {
-                return _pixelArray[i];
-            }
-            set
-            {
-                _pixelArray[i] = value;
-            }
-        }
-
-
-        /// <summary>
-        /// Преобразование SKColor в ScPixel
-        /// </summary>
-        public static ScPixel FromSkColor(SKColor color)
-        {
-            return new ScPixel(color);
-        }
-
-        /// <summary>
-        /// Преобразование ScPixel в SKColor
-        /// </summary>
-        public SKColor ToSkColor()
-        {
-            return new SKColor(Red, Green, Blue, Alpha);
-        }
+    /// <summary>
+    /// Преобразование ScPixel в SKColor
+    /// </summary>
+    public SKColor ToSkColor()
+    {
+        return new SKColor(Red, Green, Blue, Alpha);
     }
 }

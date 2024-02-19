@@ -1,15 +1,14 @@
 ﻿using StegoRevealer.StegoCore.Logger;
 
-namespace StegoRevealer.StegoCore.StegoMethods
+namespace StegoRevealer.StegoCore.StegoMethods;
+
+/// <summary>
+/// Результат стеганографического метода, содержащий логи
+/// </summary>
+public interface ILoggedStegoResult
 {
     /// <summary>
-    /// Результат стеганографического метода, содержащий логи
+    /// Получить логи, записанные в результат стегоанализа
     /// </summary>
-    public interface ILoggedStegoResult
-    {
-        /// <summary>
-        /// Получить логи, записанные в результат стегоанализа
-        /// </summary>
-        public LoggedResult AsLog();
-    }
+    public LoggedResult AsLog();
 }

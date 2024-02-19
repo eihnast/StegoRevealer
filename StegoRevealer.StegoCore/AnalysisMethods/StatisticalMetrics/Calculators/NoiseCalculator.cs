@@ -17,13 +17,16 @@ public class NoiseCalculator
     }
 
 
-    // Подсчёты уровня шума в изображении: "Метод 2"
     // https://cyberleninka.ru/article/n/metod-otsenki-urovnya-shuma-tsifrovogo-izobrazheniya/viewer
 
     private double[] mask5 = new double[5] { -3 / 35, 12 / 35, 17 / 35, 12 / 35, -3 / 35 };
     private double[] mask7 = new double[7] { -2 / 21, 3 / 21, 6 / 21, 7 / 21, 6 / 21, 3 / 21, -2 / 21 };
 
-    public double CalcNoiseLevel()
+
+    /// <summary>
+    /// Оценка шума. Метод 2.
+    /// </summary>
+    public double CalcNoiseLevelMethod2()
     {
         var blocks = new ImageBlocks(new ImageBlocksParameters(_params.Image, _params.Image.Width, 1));
 
@@ -122,6 +125,7 @@ public class NoiseCalculator
         return noiseSko;
     }
 
+    // Разбивает строку (переданную в формате блока) на набор горизонтальных интервалов
     private List<NoiseCalcMethodIntervalsInRowInfo> GetIntervalsInRow(byte[,,] block)
     {
         if (block.GetLength(0) > 1)
@@ -154,6 +158,7 @@ public class NoiseCalculator
     }
 
 
+    // Возвращает информацию об интервале с минимальной дисперсией
     private NoiseCalcMethodIntervalsInRowInfo GetIntervalWithMinDispersion(List<NoiseCalcMethodIntervalsInRowInfo> intervals)
     {
         if (intervals.Count == 0)
@@ -174,6 +179,7 @@ public class NoiseCalculator
         return intervals[minIntervalId];
     }
 
+    // Возвращает значения пикселей на указанном интервале (последовательность значений)
     private byte[] GetRowIntervalFromBlock(byte[,,] block, int intervalStart, int intervalEnd, int channelId)
     {
         int intervalLength = intervalEnd - intervalStart + 1;
@@ -185,6 +191,7 @@ public class NoiseCalculator
         return result;
     }
 
+    // Применяет линейный оператор к последовательности (интервалу)
     private double ApplyLinearOpertorA(byte[] values, double[] mask)
     {
         if (values.Length != mask.Length)

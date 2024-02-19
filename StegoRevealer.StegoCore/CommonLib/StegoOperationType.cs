@@ -1,8 +1,7 @@
-﻿namespace StegoRevealer.StegoCore.CommonLib
+﻿namespace StegoRevealer.StegoCore.CommonLib;
+
+public enum StegoOperationType
 {
-    public enum StegoOperationType
-    {
-        Hiding,
-        Extracting
-    }
+    Hiding,
+    Extracting
 }

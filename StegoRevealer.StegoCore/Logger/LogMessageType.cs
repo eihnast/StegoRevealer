@@ -1,12 +1,11 @@
-﻿namespace StegoRevealer.StegoCore.Logger
+﻿namespace StegoRevealer.StegoCore.Logger;
+
+/// <summary>
+/// Тип сообщения лога
+/// </summary>
+public enum LogMessageType
 {
-    /// <summary>
-    /// Тип сообщения лога
-    /// </summary>
-    public enum LogMessageType
-    {
-        Info,
-        Warning,
-        Error
-    }
+    Info,
+    Warning,
+    Error
 }

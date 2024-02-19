@@ -1,13 +1,12 @@
-﻿namespace StegoRevealer.StegoCore.ImageHandlerLib
+﻿namespace StegoRevealer.StegoCore.ImageHandlerLib;
+
+/// <summary>
+/// Канал изображения
+/// </summary>
+public enum ImgChannel
 {
-    /// <summary>
-    /// Канал изображения
-    /// </summary>
-    public enum ImgChannel
-    {
-        Red,
-        Green,
-        Blue,
-        Alpha
-    }
+    Red,
+    Green,
+    Blue,
+    Alpha
 }
