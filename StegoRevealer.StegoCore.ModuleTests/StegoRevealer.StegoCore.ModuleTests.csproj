@@ -91,6 +91,9 @@
     <None Update="TestData\mt_test_9.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\PixelsTestImage1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\pre036.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

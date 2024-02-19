@@ -1,5 +1,9 @@
 ﻿using System.Collections;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.StegoMethods;
 
 namespace StegoRevealer.StegoCore.CommonLib
 {
@@ -120,6 +124,38 @@ namespace StegoRevealer.StegoCore.CommonLib
         public static byte SetLsbValues(int byteValue, BitArray lsbValues)
         {
             return SetLsbValues(byteValue.ToByte(), lsbValues);
+        }
+
+        /// <summary>
+        /// Возвращает интервал с окрестностью, выходящей за пределы изображения
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <param name="requestedNeighbourhoodLength"></param>
+        /// <returns></returns>
+        public static byte[] GetIntervalWithNeighbourhood(ImageHandler img, ImageHorizontalIntervalInfo interval, int neighbourhoodLength = 2)
+        {
+            int intervalLength = interval.IntervalEndId - interval.IntervalStartId + 1;  // LeftLack: 2 - 0 + 1 = 3 | RightLack: 12 - 10 + 1 = 3
+            var imgArray = img.ImgArray;
+            var channelId = (int)interval.ImgChannel;
+
+            var values = new byte[intervalLength + neighbourhoodLength * 2];  // LeftLack: [7] | RightLack: [7]
+            int startInd = interval.IntervalStartId - neighbourhoodLength;  // LeftLack: 0 - 2 = -2 | RightLack: 8
+            int endInd = interval.IntervalEndId + neighbourhoodLength;  // LeftLack: 2 + 2 = 4 | RightLack: 14
+
+            // Если не хватает окрестности
+            int lacksLeft = startInd < 0 ? Math.Abs(startInd) : 0;  // LeftLack: -2 < 0 => 2 | RightLack: 8 !< 0 => 0
+            int lacksRight = endInd >= img.Width ? Math.Abs(endInd - img.Width + 1) : 0;  // LeftLack: 4 !>= 13 => 0 | RightLack: 14 >= 13 => |(14 - 13 + 1)| = 2
+
+            for (int j = 0; j < lacksLeft; j++)
+                values[j] = imgArray[interval.RowId, lacksLeft - j, channelId];
+            for (int j = 0; j < lacksRight; j++)
+                values[neighbourhoodLength + intervalLength + (neighbourhoodLength - lacksRight) + j] = imgArray[interval.RowId, img.Width - j - 2, channelId];
+
+            // Заполняем основные
+            for (int j = startInd + lacksLeft; j <= endInd - lacksRight; j++)
+                values[j - startInd] = imgArray[interval.RowId, j, channelId];
+
+            return values;
         }
     }
 }

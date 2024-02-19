@@ -1,72 +1,221 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
-using StegoRevealer.StegoCore.CommonLib;
+﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.StegoCore.StegoMethods.KochZhao;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace StegoRevealer.StegoCore.ModuleTests
+namespace StegoRevealer.StegoCore.ModuleTests;
+
+[TestClass]
+public class CommonTests
 {
-    [TestClass]
-    public class CommonTests
+    [TestMethod]
+    public void IntervalWithNeighbourhood_AllLeaksTest()
     {
-        //[TestMethod]
-        //public void RsTest()
-        //{
-        //    string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "rsHigher100.png");  // Var 45, img9. RandomKz. pre036.
-        //    //string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "pre036.png");
-        //    //string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "rs9953.png");  // Var 42, img7. LinearKZ.
-        //    //string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "rs77_real65.png");  // Var 8, img8.
-        //    var image = new ImageHandler(imagePath);
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "PixelsTestImage1.png");
+        var image = new ImageHandler(imagePath);
+        int rowId = 4;
 
-        //    var rsAnalyzer = new RsAnalyser(image);
-        //    var result = rsAnalyzer.Analyse(verboseLog: true);
-        //    Assert.IsNotNull(result);
+        var intervalsInfo = new List<ImageHorizontalIntervalInfo>()
+        {
+            new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Red, IntervalStartId = 0, IntervalEndId = 99 },
+            new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Green, IntervalStartId = 0, IntervalEndId = 99 },
+            new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Blue, IntervalStartId = 0, IntervalEndId = 99 }
+        };
 
-        //    var log = string.Empty;
-        //    foreach (var logEntry in result.LogRecords)
-        //        log += logEntry.Message + "\n";
-        //    Assert.IsTrue(result.MessageRelativeVolume is < 1.0 and >= 0.0);
-        //}
+        var startResults = new List<byte[]>()
+        {
+            // 0
+            new byte[] { 255, 0, 0, 255, 0, 0 },
+            new byte[] { 0, 0, 255, 255, 0, 0 },
+            new byte[] { 0, 255, 0, 255, 0, 0 },
+            // 1
+            new byte[] { 0, 255, 0, 0, 255, 0, 0 },
+            new byte[] { 0, 0, 0, 255, 255, 0, 0 },
+            new byte[] { 255, 0, 255, 0, 255, 0, 0 },
+            // 2
+            new byte[] { 0, 0, 255, 0, 0, 255, 0, 0 },
+            new byte[] { 255, 0, 0, 0, 255, 255, 0, 0 },
+            new byte[] { 0, 255, 0, 255, 0, 255, 0, 0 },
+            // 3
+            new byte[] { 255, 0, 0, 255, 0, 0, 255, 0, 0 },
+            new byte[] { 255, 255, 0, 0, 0, 255, 255, 0, 0 },
+            new byte[] { 255, 0, 255, 0, 255, 0, 255, 0, 0 },
+        };
+        var endResults = new List<byte[]>()
+        {
+            // 0
+            new byte[] { 0, 0, 255, 0, 255, 0 },
+            new byte[] { 0, 0, 0, 0, 255, 255 },
+            new byte[] { 0, 0, 0, 255, 255, 0 },
+            // 1
+            new byte[] { 0, 0, 255, 0, 255, 0, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255 },
+            new byte[] { 0, 0, 0, 255, 255, 0, 255 },
+            // 2
+            new byte[] { 0, 0, 255, 0, 255, 0, 255, 0 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255, 0 },
+            new byte[] { 0, 0, 0, 255, 255, 0, 255, 255 },
+            // 3
+            new byte[] { 0, 0, 255, 0, 255, 0, 255, 0, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255, 0, 0 },
+            new byte[] { 0, 0, 0, 255, 255, 0, 255, 255, 0 },
+        };
 
-        //[TestMethod]
-        //public void RsTest2()
-        //{
-        //    string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "pre036.png");
-        //    var image = new ImageHandler(imagePath);
+        int resultsIndex = 0;
+        for (int neighbourhoodLength = 0; neighbourhoodLength <= 3; neighbourhoodLength++)
+        {
+            foreach (var interval in intervalsInfo)
+            {
+                var result = PixelsTools.GetIntervalWithNeighbourhood(image, interval, neighbourhoodLength);
+                IntervalCheck(result, startResults[resultsIndex], endResults[resultsIndex], neighbourhoodLength, interval);
+                resultsIndex++;
+            }
+        }
+    }
 
-        //    string fullDataPath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "DuneBook.txt");
-        //    var allData = File.ReadAllText(fullDataPath);
+    [TestMethod]
+    public void IntervalWithNeighbourhood_CustomLeaksTest()
+    {
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "PixelsTestImage1.png");
+        var image = new ImageHandler(imagePath);
+        int rowId = 4;
 
-        //    var kzHider = new KochZhaoHider(image);
-        //    kzHider.Params.Threshold = 120;
-        //    kzHider.Params.Seed = 52415;
-        //    var hidingResult = kzHider.Hide(GetDataByBitLength(allData, 422449, 28200));
+        var interval1 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Red, IntervalStartId = 0, IntervalEndId = 9 };
+        var startResults1 = new List<byte[]>()
+        {
+            new byte[] { 255, 0, 0, 255, 0, 0 },
+            new byte[] { 0, 255, 0, 0, 255, 0, 0 },
+            new byte[] { 0, 0, 255, 0, 0, 255, 0, 0 },
+            new byte[] { 255, 0, 0, 255, 0, 0, 255, 0, 0 },
+        };
+        var endResults1 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0, 0, 0 },
+            new byte[] { 0, 0, 0, 0, 0, 255 },
+            new byte[] { 0, 0, 0, 0, 0, 255, 255 },
+            new byte[] { 0, 0, 0, 0, 0, 255, 255, 0 },
+        };
 
-        //    Assert.IsNotNull(hidingResult.GetResultPath());
-        //}
+        var interval2 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Blue, IntervalStartId = 0, IntervalEndId = 11 };
+        var startResults2 = new List<byte[]>()
+        {
+            new byte[] { 0, 255, 0, 255, 0, 0 },
+            new byte[] { 255, 0, 255, 0, 255, 0, 0 },
+            new byte[] { 0, 255, 0, 255, 0, 255, 0, 0 },
+            new byte[] { 255, 0, 255, 0, 255, 0, 255, 0, 0 },
+        };
+        var endResults2 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0, 0, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 0 },
+            new byte[] { 0, 0, 0, 0, 255, 0, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 0, 255, 0 },
+        };
 
-        //public string GetDataByBitLength(string allData, int startIndex, int bitLength)
-        //{
-        //    var remainingDataBitLength = StringBitsTools.StringToBitArray(allData[startIndex..]).Length;
+        var interval3 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Green, IntervalStartId = 89, IntervalEndId = 99 };
+        var startResults3 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0 },
+            new byte[] { 0, 0, 0, 0 },
+            new byte[] { 255, 0, 0, 0, 0 },
+            new byte[] { 0, 255, 0, 0, 0, 0 },
+        };
+        var endResults3 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0, 0, 255, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255, 0 },
+            new byte[] { 0, 0, 0, 0, 255, 255, 255, 0, 0 },
+        };
 
-        //    // Сдвигаем startIndex влево, если не хватает (условно считаем, что символ = 8 бит, т.е. сдвигаем на возможный максимум символов)
-        //    if (remainingDataBitLength < bitLength)
-        //        startIndex -= (bitLength - remainingDataBitLength) / 8 - 1;
-        //    startIndex = Math.Max(startIndex, 0);
+        var interval4 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Red, IntervalStartId = 88, IntervalEndId = 99 };
+        var startResults4 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0 },
+            new byte[] { 0, 0, 0, 0 },
+            new byte[] { 255, 0, 0, 0, 0 },
+            new byte[] { 255, 255, 0, 0, 0, 0 },
+        };
+        var endResults4 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 255, 0, 255, 0 },
+            new byte[] { 0, 0, 255, 0, 255, 0, 255 },
+            new byte[] { 0, 0, 255, 0, 255, 0, 255, 0 },
+            new byte[] { 0, 0, 255, 0, 255, 0, 255, 0, 255 },
+        };
 
-        //    int actualBitLength = 0;
-        //    string resultData = string.Empty;
+        var interval5 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Blue, IntervalStartId = 14, IntervalEndId = 84 };
+        var startResults5 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0 },
+            new byte[] { 255, 0, 0, 0 },
+            new byte[] { 0, 255, 0, 0, 0 },
+            new byte[] { 255, 0, 255, 0, 0, 0 },
+        };
+        var endResults5 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0 },
+            new byte[] { 0, 0, 0, 255 },
+            new byte[] { 0, 0, 0, 255, 0 },
+            new byte[] { 0, 0, 0, 255, 0, 0 },
+        };
 
-        //    int k = startIndex;
-        //    while (actualBitLength < bitLength)
-        //    {
-        //        actualBitLength += StringBitsTools.StringToBitArray(allData[k].ToString()).Length;
-        //        if (actualBitLength <= bitLength)  // Результат может быть меньше заданного bitLength, если символ "не влезает"
-        //            resultData += allData[k];
-        //        k++;
-        //    }
+        var interval6 = new ImageHorizontalIntervalInfo() { RowId = rowId, ImgChannel = ImgChannel.Green, IntervalStartId = 13, IntervalEndId = 85 };
+        var startResults6 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 0 },
+            new byte[] { 255, 0, 0, 0 },
+            new byte[] { 255, 255, 0, 0, 0 },
+            new byte[] { 0, 255, 255, 0, 0, 0 },
+        };
+        var endResults6 = new List<byte[]>()
+        {
+            new byte[] { 0, 0, 255 },
+            new byte[] { 0, 0, 255, 0 },
+            new byte[] { 0, 0, 255, 0, 255 },
+            new byte[] { 0, 0, 255, 0, 255, 0 },
+        };
 
-        //    return resultData;
-        //}
+        int resultsIndex = 0;
+        for (int neighbourhoodLength = 0; neighbourhoodLength <= 3; neighbourhoodLength++)
+        {
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval1");
+            var result = PixelsTools.GetIntervalWithNeighbourhood(image, interval1, neighbourhoodLength);
+            IntervalCheck(result, startResults1[resultsIndex], endResults1[resultsIndex], neighbourhoodLength, interval1);
+
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval2");
+            result = PixelsTools.GetIntervalWithNeighbourhood(image, interval2, neighbourhoodLength);
+            IntervalCheck(result, startResults2[resultsIndex], endResults2[resultsIndex], neighbourhoodLength, interval2);
+
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval3");
+            result = PixelsTools.GetIntervalWithNeighbourhood(image, interval3, neighbourhoodLength);
+            IntervalCheck(result, startResults3[resultsIndex], endResults3[resultsIndex], neighbourhoodLength, interval3);
+
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval4");
+            result = PixelsTools.GetIntervalWithNeighbourhood(image, interval4, neighbourhoodLength);
+            IntervalCheck(result, startResults4[resultsIndex], endResults4[resultsIndex], neighbourhoodLength, interval4);
+
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval5");
+            result = PixelsTools.GetIntervalWithNeighbourhood(image, interval5, neighbourhoodLength);
+            IntervalCheck(result, startResults5[resultsIndex], endResults5[resultsIndex], neighbourhoodLength, interval5);
+
+            Console.WriteLine($"Checking neighbourhoodLength = {neighbourhoodLength}, interval6");
+            result = PixelsTools.GetIntervalWithNeighbourhood(image, interval6, neighbourhoodLength);
+            IntervalCheck(result, startResults6[resultsIndex], endResults6[resultsIndex], neighbourhoodLength, interval6);
+            resultsIndex++;
+        }
+    }
+
+
+    private void IntervalCheck(byte[] result, byte[] startResult, byte[] endResult, int neighbourhoodLength, ImageHorizontalIntervalInfo interval)
+    {
+        for (int i = 0; i < startResult.Length; i++)
+            Assert.AreEqual(startResult[i], result[i],
+                $"NeighbourhoodLength = {neighbourhoodLength}, channel = {interval.ImgChannel}. " +
+                $"Expected start: '{string.Join(",", startResult)}', but actual start: '{string.Join(",", result[0..startResult.Length])}'");
+        for (int i = 0; i < endResult.Length; i++)
+            Assert.AreEqual(endResult[i], result[result.Length - endResult.Length + i],
+                $"NeighbourhoodLength = {neighbourhoodLength}, channel = {interval.ImgChannel}. " +
+                $"Expected end: '{string.Join(",", endResult)}', but actual end: '{string.Join(",", result[(result.Length - endResult.Length)..])}'");
+
     }
 }
