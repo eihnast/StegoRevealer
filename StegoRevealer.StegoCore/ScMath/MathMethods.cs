@@ -176,6 +176,19 @@ public static class MathMethods
     }
 
     /// <summary>
+    /// Возвращает среднее арифметическое матрицы
+    /// </summary>
+    public static double Average(double[,] values)
+    {
+        double average = 0.0;
+        for (int i = 0; i < values.GetLength(0); i++)
+            for (int j = 0; j < values.GetLength(1); j++)
+                average += values[i, j];
+        average /= values.Length;
+        return average;
+    }
+
+    /// <summary>
     /// Возвращает дисперсию последовательности
     /// </summary>
     public static double Dispersion(double[] values)
@@ -198,6 +211,34 @@ public static class MathMethods
         var doubleValues = new double[values.Length];
         for (int i = 0; i < values.Length; i++)
             doubleValues[i] = (double)values[i];
+        return Dispersion(doubleValues);
+    }
+
+    /// <summary>
+    /// Возвращает дисперсию матрицы
+    /// </summary>
+    public static double Dispersion(double[,] values)
+    {
+        double result = 0.0;
+        double average = Average(values);
+
+        for (int i = 0; i < values.GetLength(0); i++)
+            for (int j = 0; j < values.GetLength(1); j++)
+                result += Math.Pow(values[i, j] - average, 2);
+        result /= values.Length;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Возвращает дисперсию матрицы
+    /// </summary>
+    public static double Dispersion(byte[,] values)
+    {
+        var doubleValues = new double[values.GetLength(0), values.GetLength(1)];
+        for (int i = 0; i < values.Length; i++)
+            for (int j = 0; j < values.Length; j++)
+                doubleValues[i, j] = (double)values[i, j];
         return Dispersion(doubleValues);
     }
 }

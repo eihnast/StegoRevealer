@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
@@ -113,4 +114,21 @@ public class ImageBlocks
 
         return list;
     }
+
+    public static byte[,,] GetBlockByBlockIndexes(ImageBlocks imageBlocks, Sc2DPoint blockIndexes, UniqueList<ImgChannel> channels) =>
+        BlocksTraverseHelper.GetBlockByIndexes(blockIndexes, imageBlocks, channels);
+
+    public static byte[,,] GetBlockByBlockIndexes(ImageBlocks imageBlocks, (int y, int x) blockIndexes, UniqueList<ImgChannel> channels) =>
+        GetBlockByBlockIndexes(imageBlocks, new Sc2DPoint() { Y = blockIndexes.y, X = blockIndexes.x }, channels);
+    public static byte[,] GetOneChannelBlockByBlockIndexes(ImageBlocks imageBlocks, Sc2DPoint blockIndexes, ImgChannel channel)
+    {
+        var rawBlock = BlocksTraverseHelper.GetBlockByIndexes(blockIndexes, imageBlocks, new UniqueList<ImgChannel>() { channel });
+        var block = new byte[rawBlock.GetLength(0), rawBlock.GetLength(1)];
+        for (int i = 0; i < rawBlock.GetLength(0); i++)
+            for (int j = 0; j < rawBlock.GetLength(1); j++)
+                block[i, j] = rawBlock[i, j, 0];
+        return block;
+    }
+    public static byte[,] GetOneChannelBlockByBlockIndexes(ImageBlocks imageBlocks, (int y, int x) blockIndexes, ImgChannel channel) =>
+        GetOneChannelBlockByBlockIndexes(imageBlocks, new Sc2DPoint() { Y = blockIndexes.y, X = blockIndexes.x }, channel);
 }
