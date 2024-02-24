@@ -176,6 +176,19 @@ public static class MathMethods
     }
 
     /// <summary>
+    /// Возвращает среднее арифметическое последовательности
+    /// </summary>
+    public static byte Average(byte[] values)
+    {
+        double average = 0.0;
+        for (int i = 0; i < values.Length; i++)
+            average += values[i];
+        average /= values.Length;
+        average = Math.Max(0, Math.Min(average, 255));
+        return (byte)average;
+    }
+
+    /// <summary>
     /// Возвращает среднее арифметическое матрицы
     /// </summary>
     public static double Average(double[,] values)

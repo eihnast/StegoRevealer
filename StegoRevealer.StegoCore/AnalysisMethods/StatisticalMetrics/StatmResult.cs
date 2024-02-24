@@ -25,5 +25,10 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public double NoiseValueMethod2 { get; set; }
 
+    /// <summary>
+    /// Резкость изображения
+    /// </summary>
+    public double SharpnessValue { get; set; }
+
     public StatmResult() { }
 }

@@ -34,6 +34,30 @@ public class StatmParameters
     public int NoiseCalcRowsInBlock { get; set; } = 3;
 
 
+    // Параметры подсчёта резкости
+
+    /// <summary>Значение "слабого" пикселя</summary>
+    public byte SharpnessCalcWeakPixel { get; set; } = 25;
+
+    /// <summary>Значение "сильного" пикселя</summary>
+    public byte SharpnessCalcStrongPixel { get; set; } = 255;
+
+    /// <summary>Размер ядра сглаживания по Гауссу</summary>
+    public int SharpnessCalcGuassianKernelSize { get; set; } = 5;
+
+    /// <summary>Сигма ядра сглаживания по Гауссу</summary>
+    public int SharpnessCalcGuassianKernelSigma { get; set; } = 5;
+
+    /// <summary>Использовать ли оператор Щарра вместо оригинального оператора Собеля</summary>
+    public bool SharpnessCalcUseScharrOperator { get; set; } = false;
+
+    /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
+    public bool SharpnessCalcUseAveragedGrayscale { get; set; } = true;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
+
+    /// <summary>Размер окрестности, в которой ищутся экстремумы относительно краевого пикселя</summary>
+    public int SharpnessCalcExtremumsNeighborhoodSize { get; set; } = 5;
+
+
     public StatmParameters(ImageHandler image)
     {
         Image = image;

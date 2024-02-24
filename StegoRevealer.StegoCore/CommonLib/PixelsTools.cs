@@ -155,4 +155,28 @@ public static class PixelsTools
 
         return values;
     }
+
+    /// <summary>Ограничивает значение [0..255] и возвращает как байт, отсекая дробную часть</summary>
+    public static byte ToLimitedByte(double value) => (byte)Math.Max(0, Math.Min(value, 255));
+
+    /// <summary>Ограничивает значение [0..255] и возвращает как байт, отсекая дробную часть</summary>
+    public static byte ToLimitedByte(float value) => (byte)Math.Max(0, Math.Min(value, 255));
+
+    public static double[,] ByteToDoubleMatrix(byte[,] matrix)
+    {
+        var doubleMatrix = new double[matrix.GetLength(0), matrix.GetLength(1)];
+        for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int j = 0; j < matrix.GetLength(1); j++)
+                doubleMatrix[i, j] = (double)matrix[i, j];
+        return doubleMatrix;
+    }
+
+    public static byte[,] DoubleToByteMatrix(double[,] matrix)
+    {
+        var byteMatrix = new byte[matrix.GetLength(0), matrix.GetLength(1)];
+        for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int j = 0; j < matrix.GetLength(1); j++)
+                byteMatrix[i, j] = ToLimitedByte(matrix[i, j]);
+        return byteMatrix;
+    }
 }

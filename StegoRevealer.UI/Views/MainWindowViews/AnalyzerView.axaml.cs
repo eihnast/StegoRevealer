@@ -124,6 +124,7 @@ public partial class AnalyzerView : UserControl
 
             // Statm
             StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod2);
+            StatResultsSharpnessValue.Text = string.Format("{0:F5}", results.StatmSharpnessValue);
 
 
             // Затрачено времени
@@ -188,6 +189,7 @@ public partial class AnalyzerView : UserControl
         KzhaThresholdValue.Text = MessageUnknown;
         KzhaCoeffsValue.Text = MessageUnknown;
         StatResultsNoise2Value.Text = MessageUnknown;
+        StatResultsSharpnessValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
