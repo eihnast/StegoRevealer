@@ -1,7 +1,10 @@
 ﻿using System.Collections;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
+using StegoRevealer.StegoCore.StegoMethods;
 
 namespace StegoRevealer.StegoCore.CommonLib;
 
@@ -178,5 +181,90 @@ public static class PixelsTools
             for (int j = 0; j < matrix.GetLength(1); j++)
                 byteMatrix[i, j] = ToLimitedByte(matrix[i, j]);
         return byteMatrix;
+    }
+
+    // Переводит цветовой байт (RGB) в grayscale
+    private static byte ToGrayscaleByte(byte[] rgb, bool asAverage = true)
+    {
+        if (rgb.Length != 3)
+            throw new Exception("RGB array must contains only 3 byte values!");
+
+        byte result = 0;
+
+        if (asAverage)
+            result = MathMethods.Average(rgb);
+        else
+            result = PixelsTools.ToLimitedByte(rgb[0] * .21f + rgb[1] * .71f + rgb[2] * .071f);
+        return result;
+    }
+
+    public static byte[,] ToGrayscale(ImageArray imageArray, bool useAveragedGrayscale = true)
+    {
+        int height = imageArray.Height;
+        int width = imageArray.Width;
+
+        // Перевод в grayscale
+        var gimar = new byte[height, width];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                var fullByte = imageArray[y, x];
+                var rgb = new byte[] { fullByte.Red, fullByte.Green, fullByte.Blue };
+                var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
+                gimar[y, x] = gbyte;
+            }
+        }
+
+        return gimar;
+    }
+
+    // Bresenham's Line Algorithm
+    public static List<PixelInfo> GetPixelsOnLine(int y0, int x0, int y1, int x1)
+    {
+        var pixels = new List<PixelInfo>();
+
+        bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
+        if (steep)
+        {
+            int t;
+            t = x0;  // swap x0 and y0
+            x0 = y0;
+            y0 = t;
+            t = x1;  // swap x1 and y1
+            x1 = y1;
+            y1 = t;
+        }
+
+        if (x0 > x1)
+        {
+            int t;
+            t = x0;  // swap x0 and x1
+            x0 = x1;
+            x1 = t;
+            t = y0;  // swap y0 and y1
+            y0 = y1;
+            y1 = t;
+        }
+
+        int dx = x1 - x0;
+        int dy = Math.Abs(y1 - y0);
+        int error = dx / 2;
+        int ystep = (y0 < y1) ? 1 : -1;
+
+        int y = y0;
+        for (int x = x0; x <= x1; x++)
+        {
+            pixels.Add(new PixelInfo { Y = steep ? x : y, X = steep ? y : x });
+
+            error = error - dy;
+            if (error < 0)
+            {
+                y += ystep;
+                error += dx;
+            }
+        }
+
+        return pixels;
     }
 }

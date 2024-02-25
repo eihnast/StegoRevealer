@@ -31,9 +31,9 @@ public class SharpnessCalculator
         get
         {
             return new double[,] {
-                { -1, 0, 1 },
-                { -2, 0, 2 },
-                { -1, 0, 1 } };
+                { 1, 0, -1 },
+                { 2, 0, -2 },
+                { 1, 0, -1 } };
         }
     }
 
@@ -60,26 +60,11 @@ public class SharpnessCalculator
         }
     }
 
-    // Переводит цветовой байт (RGB) в grayscale
-    private byte ToGrayscaleByte(byte[] rgb, bool asAverage = true)
-    {
-        if (rgb.Length != 3)
-            throw new Exception("RGB array must contains only 3 byte values!");
-
-        byte result = 0;
-
-        if (asAverage)
-            result = MathMethods.Average(rgb);
-        else
-            result = PixelsTools.ToLimitedByte(rgb[0] * .21f + rgb[1] * .71f + rgb[2] * .071f);
-        return result;
-    }
-
     // Применяет оператор Собеля для выделения краевых пикселей и расчёта направлений градиента
     private SobelOperatorResult ApplySobelOperator(byte[,] pixelsMatrix, bool useScharrOperator = false)
     {
-        int width = pixelsMatrix.GetLength(0);
-        int height = pixelsMatrix.GetLength(1);
+        int height = pixelsMatrix.GetLength(0);
+        int width = pixelsMatrix.GetLength(1);
 
         // Применение оператора
         int kernelOffset = 1;  // Ширина окрестности пикселя для применения оператора
@@ -89,19 +74,24 @@ public class SharpnessCalculator
         double[,] yKernel = useScharrOperator ? yScharr : ySobel;
         double[,] xKernel = useScharrOperator ? xScharr : xSobel;
 
-        for (int y = kernelOffset; y < height - kernelOffset; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = kernelOffset; x < width - kernelOffset; x++)
+            for (int x = 0; x < width; x++)
             {
                 double Gy = 0.0;
                 double Gx = 0.0;
 
-                for (int kernelY = -kernelOffset; kernelY <= kernelOffset; kernelY++)
+                for (int kernelY = - kernelOffset; kernelY <= kernelOffset; kernelY++)
                 {
-                    for (int kernelX = -kernelOffset; kernelX <= kernelOffset; kernelX++)
+                    for (int kernelX = - kernelOffset; kernelX <= kernelOffset; kernelX++)
                     {
-                        Gy += pixelsMatrix[y + kernelY, x + kernelX] * yKernel[kernelY + kernelOffset, kernelX + kernelOffset];
-                        Gx += pixelsMatrix[y + kernelY, x + kernelX] * xKernel[kernelY + kernelOffset, kernelX + kernelOffset];
+                        int pixelY = y + kernelY;
+                        int pixelX = x + kernelX;
+                        if (pixelY >= height || pixelY < 0 || pixelX >= width || pixelX < 0)
+                            continue;
+
+                        Gy += pixelsMatrix[pixelY, pixelX] * yKernel[kernelY + kernelOffset, kernelX + kernelOffset];
+                        Gx += pixelsMatrix[pixelY, pixelX] * xKernel[kernelY + kernelOffset, kernelX + kernelOffset];
                     }
                 }
 
@@ -121,7 +111,7 @@ public class SharpnessCalculator
 
 
     // Формирует ядро фильтра Гаусса
-    private double[,] GenerateGuassianKernel(int size, int sigma = 1)
+    private double[,] GenerateGuassianKernel(int size, double sigma = 1.0)
     {
         var kernel = new double[size, size];
 
@@ -209,7 +199,7 @@ public class SharpnessCalculator
             for (int j = 0; j < width; j++)
                 supressedArray[i, j] = 0;
 
-        var angles = GetAngles(directionsArray, repairNegativeAngles: true);  // Не исправляем отрицательные углы!
+        var angles = GetAngles(directionsArray, repairNegativeAngles: false);  // Не исправляем отрицательные углы!
 
         // Здесь добавляем 180, т.к. направление тут не важно - важнен сам угол (превращаем обработку 8 углов в 4)
         // (через какие пиксели проходит условная линия, далее учитываем 4 варианта: вертикаль, горизонталь и две диагонали)
@@ -232,20 +222,20 @@ public class SharpnessCalculator
                         q = pixelsArray[y, x + 1];
                         r = pixelsArray[y, x - 1];
                     }
-                    if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
+                    else if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
                     {
-                        q = pixelsArray[y, x + 1];
-                        r = pixelsArray[y, x - 1];
+                        q = pixelsArray[y + 1, x - 1];
+                        r = pixelsArray[y - 1, x + 1];
                     }
-                    if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
+                    else if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
                     {
-                        q = pixelsArray[y, x + 1];
-                        r = pixelsArray[y, x - 1];
+                        q = pixelsArray[y + 1, x];
+                        r = pixelsArray[y - 1, x];
                     }
-                    if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
+                    else if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
                     {
-                        q = pixelsArray[y, x + 1];
-                        r = pixelsArray[y, x - 1];
+                        q = pixelsArray[y - 1, x - 1];
+                        r = pixelsArray[y + 1, x + 1];
                     }
 
                     if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
@@ -259,15 +249,15 @@ public class SharpnessCalculator
     }
 
     // Прогон через двойной порог: выравнивает значения пикселей до 3 уровней (сильный, слабый, 0), где границы - преимущественно сильные пиксели
-    private byte[,] DoubleThreshold(byte[,] pixelsArray, double lowThreshold = 0.05, double highThreshold = 0.15)
+    private byte[,] DoubleThreshold(byte[,] pixelsArray, double downThreshold = 0.09, double upThreshold = 0.15)
     {
         int height = pixelsArray.GetLength(0);
         int width = pixelsArray.GetLength(1);
         var result = new byte[height, width];
 
         byte maxPixelValue = pixelsArray.Cast<byte>().Max();
-        double highThresholdValue = maxPixelValue * highThreshold;
-        double lowThresholdValue = highThresholdValue * lowThreshold;
+        double highThresholdValue = maxPixelValue * upThreshold;
+        double lowThresholdValue = highThresholdValue * downThreshold;
 
         for (int y = 0; y < height; y++)
         {
@@ -301,16 +291,19 @@ public class SharpnessCalculator
                 result[y, x] = pixelsArray[y, x];
                 if (pixelsArray[y, x] == _params.SharpnessCalcWeakPixel)
                 {
-                    try
-                    {
-                        if (pixelsArray[y + 1, x - 1] == strongPixel || pixelsArray[y + 1, x] == strongPixel || pixelsArray[y + 1, x + 1] == strongPixel ||
-                            pixelsArray[y, x - 1] == strongPixel || pixelsArray[y, x + 1] == strongPixel || pixelsArray[y - 1, x - 1] == strongPixel ||
-                            pixelsArray[y - 1, x] == strongPixel || pixelsArray[y - 1, x + 1] == strongPixel)
-                            result[y, x] = strongPixel;
-                        else
-                            result[y, x] = 0;
-                    }
-                    catch { }
+                    bool strong = false;
+                    for (int localY = Math.Max(y - 1, 0); localY <= Math.Min(y + 1, height - 1); localY++)
+                        for (int localX = Math.Max(x - 1, 0); localX <= Math.Min(x + 1, width - 1); localX++)
+                            if (pixelsArray[localY, localX] == strongPixel && !(localY == y && localX == x))
+                            {
+                                strong = true;
+                                break;
+                            }
+
+                    if (strong)
+                        result[y, x] = strongPixel;
+                    else
+                        result[y, x] = 0;
                 }
             }
         }
@@ -318,25 +311,21 @@ public class SharpnessCalculator
         return result;
     }
 
-    // Детектор определения границ Канни
-    private CannyEdgeDetectionResult CannyEdgeDetection()
+    // Детектор определения границ Собеля
+    public byte[,] SobelEdgeDetection()
     {
         var imar = _params.Image.ImgArray;
-        int width = imar.Width;
-        int height = imar.Height;
+        var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
 
-        // Перевод в grayscale
-        var gimar = new byte[height, width];
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                var fullByte = imar[y, x];
-                var rgb = new byte[] { fullByte.Red, fullByte.Green, fullByte.Blue };
-                var gbyte = ToGrayscaleByte(rgb, _params.SharpnessCalcUseAveragedGrayscale);
-                gimar[y, x] = gbyte;
-            }
-        }
+        var sobelResult = ApplySobelOperator(gimar, _params.SharpnessCalcUseScharrOperator);
+        return sobelResult.Intensity;
+    }
+
+    // Детектор определения границ Канни
+    public CannyEdgeDetectionResult CannyEdgeDetection()
+    {
+        var imar = _params.Image.ImgArray;
+        var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
 
         // Noise Reduction. Применение фильтра Гаусса
         var guassKernel = GenerateGuassianKernel(_params.SharpnessCalcGuassianKernelSize, _params.SharpnessCalcGuassianKernelSigma);
@@ -349,7 +338,7 @@ public class SharpnessCalculator
         var supressedImar = NonMaximumSuppression(sobelResult.Intensity, sobelResult.Direction);
 
         // Double threshold
-        var processedImar = DoubleThreshold(supressedImar);
+        var processedImar = DoubleThreshold(supressedImar, _params.SharpnessCalcCannyDownThreshold, _params.SharpnessCalcCannyUpThreshold);
 
         // Edge Tracking by Hysteresis
         var finalImar = ApplyHysteresis(processedImar);
@@ -363,13 +352,14 @@ public class SharpnessCalculator
         };
     }
 
+    // Вычисление оценки резкости
     public double CalcSharpness()
     {
         var canny = CannyEdgeDetection();
         var edgesImar = canny.EdgePixelsArray;  // Матрица граничных пискелей по методу Канни
         var directionsImar = canny.SobelOperatorResult.Direction;  // Матрица направлений в радиантах
         var anglesImar = GetAngles(directionsImar, repairNegativeAngles: true);  // Получаем матрицу углов из значений направлений в радиантах
-        var valuesArray = canny.GrayscaledPixelsArray;
+        var gimar = canny.GrayscaledPixelsArray;
 
         int height = edgesImar.GetLength(0);
         int width = edgesImar.GetLength(1);
@@ -383,60 +373,51 @@ public class SharpnessCalculator
                 var currentPixel = edgesImar[y, x];
                 if (currentPixel != 0)  // Если это граничный пиксель т.е. - пиксель weak или strong
                 {
-                    double k = Math.Tan(anglesImar[y, x]);  // y = kx, условно, с центром в центре текущего пикселя, k = тангенс угла из матрицы углов
-                    var pixelsOnLine = new List<PixelInfo>();  // Какие пиксели попадают на прямую в направлении градиента (и обратном)
-
+                    List<PixelInfo> pixelsOnLine = new();
                     int maxOffset = _params.SharpnessCalcExtremumsNeighborhoodSize;  // Максимальное смещение = размеру окрестности, в пределах которой ищем экстремумы
 
-                    // Сокращаем область поиска до прямоугольника, включающего пиксели прямой
-                    double maxLocalY = k * (maxOffset + 0.5);
-                    maxLocalY = maxLocalY > 0 ? Math.Min(maxLocalY, maxOffset + 0.5) : Math.Max(maxLocalY, - (maxOffset + 0.5));
-                    double maxLocalX = maxLocalY / k;  // Реальное значение максимального x для прямой в рамках окна поиска
+                    // Находим крайние пиксели прямой
+                    double k = Math.Tan(anglesImar[y, x]);  // y = kx, условно, с центром в центре текущего пикселя, k = тангенс угла из матрицы углов
 
-                    int maxOffsetX = (int)Math.Floor(maxLocalX - 0.5);
-                    int maxOffsetY = (int)Math.Floor(Math.Abs(maxLocalY) - 0.5);
-
-                    // Ищем пересечение прямой с границами пикселя
-                    for (int localY = - maxOffsetY; localY <= maxOffsetY; localY++)
+                    // Вырожденный случай горизонтали
+                    if (k == 0)
                     {
-                        for (int localX = - maxOffsetX; localX <= maxOffsetX; localX++)
-                        {
-                            if (y + localY < 0 || y + localY >= height || x + localX < 0 || x + localX >= width)
-                                continue;
-
-                            double downCrossingX = (localY - 0.5) / k;
-                            double upCrossingX = (localY + 0.5) / k;
-                            double leftCrossingY = (localX - 0.5) * k;
-                            double rightCrossingY = (localX + 0.5) * k;
-
-                            // Если есть пересечение граней пикселя
-                            if (localY - 0.5 <= leftCrossingY  && leftCrossingY  <= localY + 0.5 ||  // Левая грань
-                                localY - 0.5 <= rightCrossingY && rightCrossingY <= localY + 0.5 ||  // Правая грань
-                                localX - 0.5 <= downCrossingX  && downCrossingX  <= localX + 0.5 ||  // Нижняя грань
-                                localX - 0.5 <= upCrossingX    && upCrossingX    <= localX + 0.5)    // Верхняя грань
-                                pixelsOnLine.Add(new PixelInfo { Y = y + localY, X = x + localX, Value = valuesArray[y + localY, x + localX] });
-                        }
+                        for (int localX = Math.Max(x - maxOffset, 0); localX < Math.Min(x + maxOffset, width - 1); localX++)
+                            pixelsOnLine.Add(new PixelInfo { Y = y, X = localX });
                     }
-
-
-                    // Ищем пиксели с минимальным и максимальным значением яркости на прямой и расстояние между ними
-                    // Удаляем пиксели на линии, пересекающие другие границы
-                    var anotherEdgePixels = pixelsOnLine.Where(p => p.Value == _params.SharpnessCalcStrongPixel && p.Y != y && p.X != x).ToList();
-                    if (anotherEdgePixels.Count > 0)
+                    else
                     {
-                        var toRemove = new List<PixelInfo>();
-                        foreach (var pixel in anotherEdgePixels)
-                        {
-                            if (!HasEdgeLineConnectionWithCenter(pixelsOnLine, pixel, y, x))
-                                toRemove.AddRange(
-                                    pixelsOnLine.Where(p => p == pixel || y - pixel.Y > 0 ? p.Y < pixel.Y : p.Y > pixel.Y || x - pixel.X > 0 ? p.X < pixel.X : p.X > pixel.X));
-                        }
+                        double maxX = maxOffset + 0.5;
+                        double maxY = maxOffset + 0.5;
+                        double yForMaxX = k * maxX;
+                        double xForMaxY = maxY / k;
 
-                        pixelsOnLine = pixelsOnLine.Where(p => !toRemove.Contains(p)).ToList();
+                        PixelInfo pixelOffset;
+                        if ((yForMaxX > 0 && yForMaxX <= maxY) || (yForMaxX < 0 && yForMaxX >= -maxY))
+                            pixelOffset = new PixelInfo() { Y = (int)Math.Ceiling(yForMaxX + 0.5) - 1, X = maxOffset };
+                        else if ((xForMaxY > 0 && xForMaxY <= maxX) || (xForMaxY < 0 && xForMaxY >= -maxX))
+                            pixelOffset = new PixelInfo() { Y = maxOffset, X = (int)Math.Ceiling(xForMaxY + 0.5) - 1 };
+                        else
+                            throw new Exception($"Line coordinates error with: k = {k}, yForMaxX = {yForMaxX}, xForMaxY = {xForMaxY}");
+
+                        var firstPixel = new PixelInfo() { Y = y + pixelOffset.Y, X = x + pixelOffset.X };
+                        var secondPixel = new PixelInfo() { Y = y - pixelOffset.Y, X = x - pixelOffset.X };
+
+                        if (firstPixel.Y > height - 1 || firstPixel.Y < 0 || firstPixel.X > width - 1 || firstPixel.X < 0)
+                            firstPixel = new PixelInfo { Y = 0, X = 0 };
+                        if (secondPixel.Y > height - 1 || secondPixel.Y < 0 || secondPixel.X > width - 1 || secondPixel.X < 0)
+                            secondPixel = new PixelInfo { Y = 0, X = 0 };
+
+                        // Применяем алгоритм Брезенхэма
+                        pixelsOnLine = PixelsTools.GetPixelsOnLine(firstPixel.Y, firstPixel.X, secondPixel.Y, secondPixel.X);
                     }
 
                     // Убираем центральный краевой пиксель из последовательности
-                    pixelsOnLine = pixelsOnLine.Where(p => p.Y != y && p.X != x).ToList();
+                    pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
+
+                    // Обогащаем значениями пикселей
+                    for (int i = 0; i < pixelsOnLine.Count; i++)
+                        pixelsOnLine[i].Value = gimar[pixelsOnLine[i].Y, pixelsOnLine[i].X];
 
                     // Вычисления
                     byte min = pixelsOnLine.Min(p => p.Value);  // a
@@ -457,10 +438,10 @@ public class SharpnessCalculator
         return maxSharpness;
     }
 
-    private bool HasEdgeLineConnectionWithCenter(List<PixelInfo> pixels, PixelInfo pixel, int centerY, int centerX, List<PixelInfo>? pixelsFrom = null)
+    private bool HasEdgeLineConnectionWithCenter(List<PixelInfo> pixels, PixelInfo pixel, int centerY, int centerX, byte[,] edges, List<PixelInfo>? pixelsFrom = null)
     {
         var neib = pixels.Where(np => Math.Abs(np.X - pixel.X) <= 1 && Math.Abs(np.Y - pixel.Y) <= 1 && np != pixel && (pixelsFrom is null || !pixelsFrom.Contains(np)))
-            .Where(p => p.Value == _params.SharpnessCalcStrongPixel || p.Value == _params.SharpnessCalcWeakPixel).ToList();
+            .Where(p => edges[p.Y, p.X] == _params.SharpnessCalcStrongPixel || edges[p.Y, p.X] == _params.SharpnessCalcWeakPixel).ToList();
 
         if (neib.Any(p => p.Y == centerY && p.X == centerX))
             return true;
@@ -472,7 +453,7 @@ public class SharpnessCalculator
 
         bool result = false;
         foreach (var npixel in neib)
-            result |= HasEdgeLineConnectionWithCenter(pixels, npixel, centerY, centerX, pixelsFrom);
+            result |= HasEdgeLineConnectionWithCenter(pixels, npixel, centerY, centerX, edges, pixelsFrom);
 
         return result;
     }

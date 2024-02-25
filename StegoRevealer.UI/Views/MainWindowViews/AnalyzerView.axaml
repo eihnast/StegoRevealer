@@ -207,7 +207,7 @@
 									 IsVisible="False"/>
 
 							<DockPanel Name="StatResultsTitle" DockPanel.Dock="Top"
-									   LastChildFill="True">
+									   LastChildFill="True" Margin="0 10 0 0">
 								<TextBlock Text="Статистические характеристики изображения:"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"/>

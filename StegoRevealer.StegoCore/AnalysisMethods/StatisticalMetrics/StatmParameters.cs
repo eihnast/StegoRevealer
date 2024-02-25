@@ -46,16 +46,22 @@ public class StatmParameters
     public int SharpnessCalcGuassianKernelSize { get; set; } = 5;
 
     /// <summary>Сигма ядра сглаживания по Гауссу</summary>
-    public int SharpnessCalcGuassianKernelSigma { get; set; } = 5;
+    public double SharpnessCalcGuassianKernelSigma { get; set; } = 1.0;
 
     /// <summary>Использовать ли оператор Щарра вместо оригинального оператора Собеля</summary>
     public bool SharpnessCalcUseScharrOperator { get; set; } = false;
 
     /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
-    public bool SharpnessCalcUseAveragedGrayscale { get; set; } = true;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
+    public bool SharpnessCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
 
     /// <summary>Размер окрестности, в которой ищутся экстремумы относительно краевого пикселя</summary>
-    public int SharpnessCalcExtremumsNeighborhoodSize { get; set; } = 5;
+    public int SharpnessCalcExtremumsNeighborhoodSize { get; set; } = 4;
+
+    /// <summary>Верхний порог двойной пороговой фильтрации Канни</summary>
+    public double SharpnessCalcCannyUpThreshold { get; set; } = 0.5;
+
+    /// <summary>Нижний порог двойной пороговой фильтрации Канни</summary>
+    public double SharpnessCalcCannyDownThreshold { get; set; } = 0.4;
 
 
     public StatmParameters(ImageHandler image)
