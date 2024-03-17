@@ -30,5 +30,10 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public double SharpnessValue { get; set; }
 
+    /// <summary>
+    /// Размытость изображения
+    /// </summary>
+    public double BlurValue { get; set; }
+
     public StatmResult() { }
 }

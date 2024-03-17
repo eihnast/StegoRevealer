@@ -254,4 +254,65 @@ public static class MathMethods
                 doubleValues[i, j] = (double)values[i, j];
         return Dispersion(doubleValues);
     }
+
+    /// <summary>
+    /// Свёртка - Convolution
+    /// </summary>
+    public static double[,] Convolution(double[,] values, double[,] kernel)
+    {
+        int height = values.GetLength(0);
+        int width = values.GetLength(1);
+
+        var result = new double[height, width];
+
+        int kernelOffset = kernel.GetLength(0) / 2;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                double val = 0.0;
+
+                for (int kernelY = 0; kernelY < kernel.GetLength(0); kernelY++)
+                {
+                    for (int kernelX = 0; kernelX < kernel.GetLength(1); kernelX++)
+                    {
+                        int pixelY = y + kernelY - kernelOffset;
+                        int pixelX = x + kernelX - kernelOffset;
+                        if (pixelY >= height || pixelY < 0 || pixelX >= width || pixelX < 0)
+                            continue;
+
+                        val += values[y, x] * kernel[kernelY, kernelX];
+                    }
+                }
+
+                result[y, x] = val;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Формирует ядро фильтра Гаусса
+    /// </summary>
+    public static double[,] GenerateGuassianKernel(int size, double sigma = 1.0)
+    {
+        var kernel = new double[size, size];
+
+        int k = size / 2;  // size == 2k + 1
+        double n = 1 / (2 * Math.PI * Math.Pow(sigma, 2));
+        double down = 2 * Math.Pow(sigma, 2);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                double up = Math.Pow((i + 1) - (k + 1), 2) + Math.Pow((j + 1) - (k + 1), 2);
+                kernel[i, j] = n * Math.Exp(-(up / down));
+            }
+        }
+
+        return kernel;
+    }
 }

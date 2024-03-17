@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 
@@ -106,8 +107,8 @@ public class SharpnessCalculator
         var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
 
         // Noise Reduction. Применение фильтра Гаусса
-        var guassKernel = GenerateGuassianKernel(_params.SharpnessCalcGuassianKernelSize, _params.SharpnessCalcGuassianKernelSigma);
-        var blurredImar = PixelsTools.DoubleToByteMatrix(Convolution(PixelsTools.ByteToDoubleMatrix(gimar), guassKernel));
+        var guassKernel = MathMethods.GenerateGuassianKernel(_params.SharpnessCalcGuassianKernelSize, _params.SharpnessCalcGuassianKernelSigma);
+        var blurredImar = PixelsTools.DoubleToByteMatrix(MathMethods.Convolution(PixelsTools.ByteToDoubleMatrix(gimar), guassKernel));
 
         // Gradient Calculation
         var sobelResult = ApplySobelOperator(blurredImar, _params.SharpnessCalcUseScharrOperator);
@@ -237,64 +238,6 @@ public class SharpnessCalculator
             Intensity = sharpnessImar,
             Direction = gradientDirections
         };
-    }
-
-
-    // Формирует ядро фильтра Гаусса
-    private double[,] GenerateGuassianKernel(int size, double sigma = 1.0)
-    {
-        var kernel = new double[size, size];
-
-        int k = size / 2;  // size == 2k + 1
-        double n = 1 / (2 * Math.PI * Math.Pow(sigma, 2));
-        double down = 2 * Math.Pow(sigma, 2);
-
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
-            {
-                double up = Math.Pow((i + 1) - (k + 1), 2) + Math.Pow((j + 1) - (k + 1), 2);
-                kernel[i, j] = n * Math.Exp(-(up / down));
-            }
-        }
-
-        return kernel;
-    }
-
-    // Convolution
-    private double[,] Convolution(double[,] values, double[,] kernel)
-    {
-        int height = values.GetLength(0);
-        int width = values.GetLength(1);
-
-        var result = new double[height, width];
-
-        int kernelOffset = kernel.GetLength(0) / 2;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                double val = 0.0;
-
-                for (int kernelY = 0; kernelY < kernel.GetLength(0); kernelY++)
-                {
-                    for (int kernelX = 0; kernelX < kernel.GetLength(1); kernelX++)
-                    {
-                        int pixelY = y + kernelY - kernelOffset;
-                        int pixelX = x + kernelX - kernelOffset;
-                        if (pixelY >= height || pixelY < 0 || pixelX >= width || pixelX < 0)
-                            continue;
-
-                        val += values[y, x] * kernel[kernelY, kernelX];
-                    }
-                }
-
-                result[y, x] = val;
-            }
-        }
-
-        return result;
     }
 
     // Формирует матрицу углов в градусов из матрицы значений углов в радиантах

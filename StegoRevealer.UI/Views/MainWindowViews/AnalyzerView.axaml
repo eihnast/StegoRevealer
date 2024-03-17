@@ -232,6 +232,16 @@
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
+							<DockPanel Name="StatResultsBlurBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Уровень размытости: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsBlurValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
 
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">

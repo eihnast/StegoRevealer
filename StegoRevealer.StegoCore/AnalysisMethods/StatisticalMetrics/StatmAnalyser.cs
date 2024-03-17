@@ -45,14 +45,18 @@ public class StatmAnalyser
 
         var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2));  // Шум
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
+        var blurCalcTask = new Task<double>(() => new BlurCalculator(Params).CalcBlur());  // Размытость
 
         noiseCalcTask.Start();
         sharpnessCalcTask.Start();
+        blurCalcTask.Start();
         noiseCalcTask.Wait();
         sharpnessCalcTask.Wait();
+        blurCalcTask.Wait();
 
         result.NoiseValueMethod2 = noiseCalcTask.Result;
         result.SharpnessValue = sharpnessCalcTask.Result;
+        result.BlurValue = blurCalcTask.Result;
 
         result.Log($"Подсчёт характеристик завершён");
         return result;

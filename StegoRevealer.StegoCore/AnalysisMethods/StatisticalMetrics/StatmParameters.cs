@@ -64,6 +64,18 @@ public class StatmParameters
     public double SharpnessCalcCannyDownThreshold { get; set; } = 0.4;
 
 
+    // Параметры подсчёта размытости
+
+    /// <summary>Сигма ядра сглаживания по Гауссу</summary>
+    public double BlurFilterGuassianKernelSigma { get; set; } = 1.0;
+
+    /// <summary>k1</summary>
+    public int FilterSizeK1 { get; set; } = 3;
+
+    /// <summary>k2 > k1</summary>
+    public int FilterSizeK2 { get; set; } = 7;
+
+
     public StatmParameters(ImageHandler image)
     {
         Image = image;

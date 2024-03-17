@@ -39,6 +39,8 @@ public class SteganalysisResultsDto
 
     public double StatmSharpnessValue { get; private set; } = 0.0;
 
+    public double StatmBlurValue { get; private set; } = 0.0;
+
 
     public long ElapsedTime { get; private set; } = 0;
 
@@ -81,6 +83,7 @@ public class SteganalysisResultsDto
             StatmNoiseValueMethod1 = statmRes.NoiseValueMethod1;
             StatmNoiseValueMethod2 = statmRes.NoiseValueMethod2;
             StatmSharpnessValue = statmRes.SharpnessValue;
+            StatmBlurValue = statmRes.BlurValue;
         }
     }
 }
