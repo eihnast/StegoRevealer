@@ -36,7 +36,8 @@ public class SharpnessTests
 
 
     #region Helper
-    private void SaveCannyDetection()
+    // [TestMethod]
+    public void SaveCannyDetection()
     {
         string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "sharpness_canny.png");
         var image = new ImageHandler(imagePath);
@@ -54,7 +55,7 @@ public class SharpnessTests
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
-        cannyImage.Save("sharpness_canny_applied");
+        cannyImage.Save("sharpness_canny_gpt_applied");
     }
 
     private void SaveSobelDetection()

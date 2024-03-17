@@ -159,6 +159,38 @@ public static class PixelsTools
         return values;
     }
 
+    /// <summary>
+    /// Возвращает интервал с окрестностью, выходящей за пределы изображения
+    /// </summary>
+    /// <param name="interval"></param>
+    /// <param name="requestedNeighbourhoodLength"></param>
+    /// <returns></returns>
+    public static byte[] GetIntervalWithNeighbourhood(byte[,] pixelsArray, ImageHorizontalIntervalInfo interval, int neighbourhoodLength = 2)
+    {
+        int intervalLength = interval.IntervalEndId - interval.IntervalStartId + 1;  // LeftLack: 2 - 0 + 1 = 3 | RightLack: 12 - 10 + 1 = 3
+
+        int width = pixelsArray.GetLength(1);
+
+        var values = new byte[intervalLength + neighbourhoodLength * 2];  // LeftLack: [7] | RightLack: [7]
+        int startInd = interval.IntervalStartId - neighbourhoodLength;  // LeftLack: 0 - 2 = -2 | RightLack: 8
+        int endInd = interval.IntervalEndId + neighbourhoodLength;  // LeftLack: 2 + 2 = 4 | RightLack: 14
+
+        // Если не хватает окрестности
+        int lacksLeft = startInd < 0 ? Math.Abs(startInd) : 0;  // LeftLack: -2 < 0 => 2 | RightLack: 8 !< 0 => 0
+        int lacksRight = endInd >= width ? Math.Abs(endInd - width + 1) : 0;  // LeftLack: 4 !>= 13 => 0 | RightLack: 14 >= 13 => |(14 - 13 + 1)| = 2
+
+        for (int j = 0; j < lacksLeft; j++)
+            values[j] = pixelsArray[interval.RowId, lacksLeft - j];
+        for (int j = 0; j < lacksRight; j++)
+            values[neighbourhoodLength + intervalLength + (neighbourhoodLength - lacksRight) + j] = pixelsArray[interval.RowId, width - j - 2];
+
+        // Заполняем основные
+        for (int j = startInd + lacksLeft; j <= endInd - lacksRight; j++)
+            values[j - startInd] = pixelsArray[interval.RowId, j];
+
+        return values;
+    }
+
     /// <summary>Ограничивает значение [0..255] и возвращает как байт, отсекая дробную часть</summary>
     public static byte ToLimitedByte(double value) => (byte)Math.Max(0, Math.Min(value, 255));
 
@@ -210,6 +242,30 @@ public static class PixelsTools
             for (int x = 0; x < width; x++)
             {
                 var fullByte = imageArray[y, x];
+                var rgb = new byte[] { fullByte.Red, fullByte.Green, fullByte.Blue };
+                var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
+                gimar[y, x] = gbyte;
+            }
+        }
+
+        return gimar;
+    }
+
+    public static byte[,] ToGrayscale(byte[,,] pixelsArray, bool useAveragedGrayscale = true)
+    {
+        int height = pixelsArray.GetLength(0);
+        int width = pixelsArray.GetLength(1);
+        int deep = pixelsArray.GetLength(2);
+        if (deep != 3)
+            throw new Exception("Can't calculate grayscale byte if there not 3 bytes of pixel in origin array");
+
+        // Перевод в grayscale
+        var gimar = new byte[height, width];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                var fullByte = new ScPixel(pixelsArray[y, x, 0], pixelsArray[y, x, 1], pixelsArray[y, x, 2]);
                 var rgb = new byte[] { fullByte.Red, fullByte.Green, fullByte.Blue };
                 var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
                 gimar[y, x] = gbyte;

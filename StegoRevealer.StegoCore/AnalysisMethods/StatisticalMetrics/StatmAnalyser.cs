@@ -43,7 +43,7 @@ public class StatmAnalyser
         result.Log($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
 
-        var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2, true));  // Шум
+        var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2));  // Шум
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
 
         noiseCalcTask.Start();
