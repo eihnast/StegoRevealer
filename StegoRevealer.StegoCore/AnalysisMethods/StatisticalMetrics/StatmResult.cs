@@ -35,5 +35,10 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public double BlurValue { get; set; }
 
+    /// <summary>
+    /// Контраст изображения
+    /// </summary>
+    public double ContrastValue { get; set; }
+
     public StatmResult() { }
 }

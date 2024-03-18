@@ -18,8 +18,8 @@ public class BlurCalculator
         var imar = _params.Image.ImgArray;
         var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
 
-        var guassKernelK1 = MathMethods.GenerateGuassianKernel(_params.FilterSizeK1, _params.BlurFilterGuassianKernelSigma);
-        var guassKernelK2 = MathMethods.GenerateGuassianKernel(_params.FilterSizeK2, _params.BlurFilterGuassianKernelSigma);
+        var guassKernelK1 = MathMethods.GenerateGuassianKernel(_params.BlurCalcFilterSizeK1, _params.BlurCalcFilterGuassianKernelSigma);
+        var guassKernelK2 = MathMethods.GenerateGuassianKernel(_params.BlurCalcFilterSizeK2, _params.BlurCalcFilterGuassianKernelSigma);
 
         var blurredImarB1 = PixelsTools.DoubleToByteMatrix(MathMethods.Convolution(PixelsTools.ByteToDoubleMatrix(gimar), guassKernelK1));
         var blurredImarB2 = PixelsTools.DoubleToByteMatrix(MathMethods.Convolution(PixelsTools.ByteToDoubleMatrix(gimar), guassKernelK2));
