@@ -16,7 +16,7 @@ public class BlurCalculator
     public double CalcBlur()
     {
         var imar = _params.Image.ImgArray;
-        var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
+        var gimar = PixelsTools.ToGrayscale(imar, _params.BlurCalcUseAveragedGrayscale);
 
         var guassKernelK1 = MathMethods.GenerateGuassianKernel(_params.BlurCalcFilterSizeK1, _params.BlurCalcFilterGuassianKernelSigma);
         var guassKernelK2 = MathMethods.GenerateGuassianKernel(_params.BlurCalcFilterSizeK2, _params.BlurCalcFilterGuassianKernelSigma);

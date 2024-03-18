@@ -75,11 +75,27 @@ public class StatmParameters
     /// <summary>k2 > k1</summary>
     public int BlurCalcFilterSizeK2 { get; set; } = 7;
 
+    /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
+    public bool BlurCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
+
 
     // Параметры подсчёта контраста
 
     /// <summary>Размер центра окна вычисления локальной оценки контраста</summary>
     public int ContrastCalcWindowCenterSize { get; set; } = 3;
+
+    /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
+    public bool ContrastCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
+
+
+    // Параметры подсчёта энтропии
+
+    /// <summary>Параметр чувствительности, не стоит задавать >3</summary>
+    public double EntropyCalcSensitivity { get; set; } = 2.5;
+
+    /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
+    public bool EntropyCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
+
 
 
     public StatmParameters(ImageHandler image)

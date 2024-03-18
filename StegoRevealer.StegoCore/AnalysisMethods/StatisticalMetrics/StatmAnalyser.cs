@@ -47,20 +47,29 @@ public class StatmAnalyser
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
         var blurCalcTask = new Task<double>(() => new BlurCalculator(Params).CalcBlur());  // Размытость
         var contrastCalcTask = new Task<double>(() => new ContrastCalculator(Params).CalcContrast());  // Контраст
+        var entropyTsallisCalcTask = new Task<double>(() => new EntropyCalculator(Params).CalcTsallisEntropy());  // Контраст - Tsallis
+        var entropyVaidaCalcTask = new Task<double>(() => new EntropyCalculator(Params).CalcVaidaEntropy());  // Контраст - Vaida
 
         noiseCalcTask.Start();
         sharpnessCalcTask.Start();
         blurCalcTask.Start();
         contrastCalcTask.Start();
+        entropyTsallisCalcTask.Start();
+        entropyVaidaCalcTask.Start();
+
         noiseCalcTask.Wait();
         sharpnessCalcTask.Wait();
         blurCalcTask.Wait();
         contrastCalcTask.Wait();
+        entropyTsallisCalcTask.Wait();
+        entropyVaidaCalcTask.Wait();
 
         result.NoiseValueMethod2 = noiseCalcTask.Result;
         result.SharpnessValue = sharpnessCalcTask.Result;
         result.BlurValue = blurCalcTask.Result;
         result.ContrastValue = contrastCalcTask.Result;
+        result.EntropyTsallisValue = entropyTsallisCalcTask.Result;
+        result.EntropyVaidaValue = entropyVaidaCalcTask.Result;
 
         result.Log($"Подсчёт характеристик завершён");
         return result;

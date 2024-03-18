@@ -252,6 +252,26 @@
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
+							<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Энтропия по Цаллису: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsEntropyTsallisValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
+							<DockPanel Name="StatResultsEntropyVaidaBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Энтропия по Вайда: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsEntropyVaidaValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
 
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">

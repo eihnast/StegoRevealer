@@ -18,7 +18,7 @@ public class ContrastCalculator
     public double CalcContrast()
     {
         var imar = _params.Image.ImgArray;
-        var gimar = PixelsTools.ToGrayscale(imar, _params.SharpnessCalcUseAveragedGrayscale);
+        var gimar = PixelsTools.ToGrayscale(imar, _params.ContrastCalcUseAveragedGrayscale);
 
         // Оценки локального контраста по формуле Гордона
         var localContrasts = new List<double>();

@@ -40,5 +40,16 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public double ContrastValue { get; set; }
 
+    /// <summary>
+    /// Энтропия по Цаллису
+    /// </summary>
+    public double EntropyTsallisValue { get; set; }
+
+    /// <summary>
+    /// Энтропия по Вайда
+    /// </summary>
+    public double EntropyVaidaValue { get; set; }
+
+
     public StatmResult() { }
 }
