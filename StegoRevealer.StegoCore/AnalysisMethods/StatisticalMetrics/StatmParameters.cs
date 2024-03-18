@@ -66,11 +66,8 @@ public class StatmParameters
 
     // Параметры подсчёта размытости
 
-    /// <summary>Сигма ядра сглаживания по Гауссу</summary>
-    public double BlurCalcFilterGuassianKernelSigma { get; set; } = 1.0;
-
     /// <summary>k1</summary>
-    public int BlurCalcFilterSizeK1 { get; set; } = 3;
+    public int BlurCalcFilterSizeK1 { get; set; } = 5;
 
     /// <summary>k2 > k1</summary>
     public int BlurCalcFilterSizeK2 { get; set; } = 7;

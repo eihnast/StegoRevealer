@@ -8,11 +8,39 @@ namespace StegoRevealer.StegoCore.ModuleTests;
 public class StatmTests
 {
     [TestMethod]
+    public void NoiseTest()
+    {
+        var names = new List<string>() { "noise_common_g0.png", "noise_common_g1.png", "noise_common_g2.png", "noise_common_g4.png", "noise_common_g7.png" };
+
+        var noises = new List<double>();
+        foreach (var name in names)
+        {
+            string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", name);
+            var image = new ImageHandler(imagePath);
+
+            var parameters = new StatmParameters(image);
+
+            var noiseCalculator = new NoiseCalculator(parameters);
+            var noise = noiseCalculator.CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2);
+            noises.Add(noise);
+        }
+
+        Console.WriteLine("Noise calculation results:");
+        for (int i = 0; i < names.Count; i++)
+            Console.WriteLine($"{names[i]}: {noises[i]}");
+
+        for (int i = 1; i < names.Count; i++)
+            Assert.IsTrue(noises[i] > noises[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Previous '{names[i - 1]}': {noises[i - 1]}");
+    }
+
+    [TestMethod]
     public void SharpnessTest()
     {
         var names = new List<string>()
-        { "sharpness_common_g0.png", "sharpness_common_g0p5.png", "sharpness_common_g1.png", "sharpness_common_g2.png",
-          "sharpness_common_g3.png", "sharpness_common_g5.png", "sharpness_common_g10.png", "sharpness_common_g25.png" };
+        { 
+            "sharpness_common_g0.png", "sharpness_common_g0p5.png", "sharpness_common_g1.png", "sharpness_common_g2.png",
+            "sharpness_common_g3.png", "sharpness_common_g5.png", "sharpness_common_g10.png", "sharpness_common_g25.png" 
+        };
 
         var sharpnesses = new List<double>();
         foreach (var name in names)
@@ -63,6 +91,37 @@ public class StatmTests
 
         for (int i = 1; i < names.Count; i++)
             Assert.IsTrue(blurs[i] > blurs[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Previous '{names[i - 1]}': {blurs[i - 1]}");
+    }
+
+    [TestMethod]
+    public void ContrastTest()
+    {
+        var names = new List<string>() 
+        { 
+            "contrast_common_gm50.png", "contrast_common_gm20.png", "contrast_common_g0.png", "contrast_common_g15.png",
+            "contrast_common_g40.png", "contrast_common_g65.png", "contrast_common_g100.png"
+        };
+
+        var contrasts = new List<double>();
+        foreach (var name in names)
+        {
+            string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", name);
+            var image = new ImageHandler(imagePath);
+
+            var parameters = new StatmParameters(image);
+            parameters.ContrastCalcWindowCenterSize = 3;
+
+            var contrastCalculator = new ContrastCalculator(parameters);
+            var contrast = contrastCalculator.CalcContrast();
+            contrasts.Add(contrast);
+        }
+
+        Console.WriteLine("Contrast calculation results:");
+        for (int i = 0; i < names.Count; i++)
+            Console.WriteLine($"{names[i]}: {contrasts[i]}");
+
+        for (int i = 1; i < names.Count; i++)
+            Assert.IsTrue(contrasts[i] > contrasts[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
     }
 
 
