@@ -25,6 +25,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\blur_common_g0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\blur_common_g0p5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\blur_common_g1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\blur_common_g25.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\blur_common_g5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\DangerousRsImage.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

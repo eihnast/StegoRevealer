@@ -33,7 +33,7 @@ public class EntropyCalculator
             sum += Math.Pow(pValues[i], _params.EntropyCalcSensitivity);
 
         entropy = (1 - sum) * (1 / (_params.EntropyCalcSensitivity - 1));
-        return entropy;
+        return Math.Abs(entropy);
     }
 
     // Энтропия Вайда - вариация энтропии Капюра с бета = 1
@@ -64,7 +64,7 @@ public class EntropyCalculator
         }
 
         entropy = (up / down) * Math.Pow(Math.Pow(2, 1 - _params.EntropyCalcSensitivity) - 1, -1);
-        return entropy;
+        return Math.Abs(entropy);
     }
 
     // Энтропия Капюра
