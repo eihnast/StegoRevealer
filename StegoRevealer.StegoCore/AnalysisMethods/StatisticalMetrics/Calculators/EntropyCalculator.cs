@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.CommonLib;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 
@@ -6,67 +7,121 @@ public class EntropyCalculator
 {
     private StatmParameters _params;
 
+    private double[] _pValues;
+
+    [Flags]
+    public enum EntropyMethods
+    {
+        Shennon = 1,
+        Vaida = 2,
+        Tsallis = 4,
+        Renyi = 8,
+        Havard = 16,
+        All = 32
+    }
+
+    public EntropyData CalcEntropy(EntropyMethods methods = EntropyMethods.All)
+    {
+        return new EntropyData
+        {
+            Shennon = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Shennon) ? CalcShennonEntropy() : 0.0,
+            Vaida = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Vaida) ? CalcVaidaEntropy() : 0.0,
+            Tsallis = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Tsallis) ? CalcTsallisEntropy() : 0.0,
+            Renyi = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Renyi) ? CalcRenyiEntropy() : 0.0,
+            Havard = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Havard) ? CalcHavardEntropy() : 0.0
+        };
+    }
+
     public EntropyCalculator(StatmParameters parameters)
     {
         _params = parameters;
+
+        var imar = _params.Image.ImgArray;
+        var gimar = PixelsTools.ToGrayscale(imar, _params.EntropyCalcUseAveragedGrayscale);
+
+        var histoValues = Enumerable.Repeat(0, 256).ToArray();  // Nk
+        for (int y = 0; y < imar.Height; y++)
+            for (int x = 0; x < imar.Width; x++)
+                histoValues[gimar[y, x]]++;
+
+        int pixelsNum = imar.Width * imar.Height;
+        _pValues = new double[256];
+        for (int i = 0; i < 256; i++)
+            _pValues[i] = (double)histoValues[i] / pixelsNum;
     }
 
     // Метрика Цаллиса
     public double CalcTsallisEntropy()
     {
-        var imar = _params.Image.ImgArray;
-        var gimar = PixelsTools.ToGrayscale(imar, _params.EntropyCalcUseAveragedGrayscale);
-
-        var histoValues = Enumerable.Repeat(0, 256).ToArray();  // Nk
-        for (int y = 0; y < imar.Height; y++)
-            for (int x = 0; x < imar.Width; x++)
-                histoValues[gimar[y, x]]++;
-
-        int pixelsNum = imar.Width * imar.Height;
-        var pValues = new double[256];
-        for (int i = 0; i < 256; i++)
-            pValues[i] = (double)histoValues[i] / pixelsNum;
-
         double entropy = 0.0;
         double sum = 0.0;
         for (int i = 0; i < 256; i++)
-            sum += Math.Pow(pValues[i], _params.EntropyCalcSensitivity);
+            sum += Math.Pow(_pValues[i], _params.EntropyCalcSensitivity);
 
         entropy = (1 - sum) * (1 / (_params.EntropyCalcSensitivity - 1));
-        return Math.Abs(entropy);
+        return entropy;
     }
 
     // Энтропия Вайда - вариация энтропии Капюра с бета = 1
     public double CalcVaidaEntropy()
     {
-        var imar = _params.Image.ImgArray;
-        var gimar = PixelsTools.ToGrayscale(imar, _params.EntropyCalcUseAveragedGrayscale);
-
-        var histoValues = Enumerable.Repeat(0, 256).ToArray();  // Nk
-        for (int y = 0; y < imar.Height; y++)
-            for (int x = 0; x < imar.Width; x++)
-                histoValues[gimar[y, x]]++;
-
-        int pixelsNum = imar.Width * imar.Height;
-        var pValues = new double[256];
-        for (int i = 0; i < 256; i++)
-            pValues[i] = (double)histoValues[i] / pixelsNum;
-
         double entropy = 0.0;
         double up = 0.0, down = 0.0;
-        for (int i = 0; i < 256; i++)
+        for (int i = 0; i < _pValues.Length; i++)
         {
-            if (pValues[i] > 0)
+            if (_pValues[i] > 0)
             {
-                up += Math.Pow(pValues[i], _params.EntropyCalcSensitivity);
-                down += pValues[i];
+                up += Math.Pow(_pValues[i], _params.EntropyCalcSensitivity);
+                down += _pValues[i];
             }
         }
 
         entropy = (up / down) * Math.Pow(Math.Pow(2, 1 - _params.EntropyCalcSensitivity) - 1, -1);
-        return Math.Abs(entropy);
+        return 1 / Math.Abs(entropy);
     }
 
-    // Энтропия Капюра
-    // Отброшены: Хаварда-Чарвата, Реньи, Шеннона.
+    // Энтропия Шеннона
+    public double CalcShennonEntropy()
+    {
+        double entropy = 0.0;
+        for (int i = 0; i < _pValues.Length; i++)
+        {
+            if (_pValues[i] > 0)
+            {
+                entropy -= _pValues[i] * Math.Log2(_pValues[i]);
+            }
+        }
+
+        return entropy;
+    }
+
+    // Энтропия Реньи
+    public double CalcRenyiEntropy()
+    {
+        double entropy = 0.0;
+        double sum = 0.0;
+        for (int i = 0; i < _pValues.Length; i++)
+        {
+            if (_pValues[i] > 0)
+                sum += Math.Pow(_pValues[i], _params.EntropyCalcSensitivity);
+        }
+
+        entropy = Math.Log2(sum) * (1 / (1 - _params.EntropyCalcSensitivity));
+        return entropy;
+    }
+
+    // Энтропия Хаварда-Чарвата
+    public double CalcHavardEntropy()
+    {
+        double entropy = 0.0;
+        double sum = 0.0;
+        for (int i = 0; i < _pValues.Length; i++)
+        {
+            if (_pValues[i] > 0)
+                sum += Math.Pow(_pValues[i], _params.EntropyCalcSensitivity);
+        }
+
+        entropy = (sum - 1) * (1 / (Math.Pow(2, 1 - _params.EntropyCalcSensitivity) - 1));
+        return entropy;
+    }
 }

@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.Logger;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.Logger;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -41,14 +42,9 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     public double ContrastValue { get; set; }
 
     /// <summary>
-    /// Энтропия по Цаллису
+    /// Энтропия
     /// </summary>
-    public double EntropyTsallisValue { get; set; }
-
-    /// <summary>
-    /// Энтропия по Вайда
-    /// </summary>
-    public double EntropyVaidaValue { get; set; }
+    public EntropyData EntropyValues { get; set; } = new();
 
 
     public StatmResult() { }

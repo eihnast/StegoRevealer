@@ -47,6 +47,12 @@ public class SteganalysisResultsDto
 
     public double StatmEntropyVaidaValue { get; private set; } = 0.0;
 
+    public double StatmEntropyShennonValue { get; private set; } = 0.0;
+
+    public double StatmEntropyRenyiValue { get; private set; } = 0.0;
+
+    public double StatmEntropyHavardValue { get; private set; } = 0.0;
+
 
     public long ElapsedTime { get; private set; } = 0;
 
@@ -91,8 +97,11 @@ public class SteganalysisResultsDto
             StatmSharpnessValue = statmRes.SharpnessValue;
             StatmBlurValue = statmRes.BlurValue;
             StatmContrastValue = statmRes.ContrastValue;
-            StatmEntropyTsallisValue = statmRes.EntropyTsallisValue;
-            StatmEntropyVaidaValue = statmRes.EntropyVaidaValue;
+            StatmEntropyTsallisValue = statmRes.EntropyValues.Tsallis;
+            StatmEntropyVaidaValue = statmRes.EntropyValues.Vaida;
+            StatmEntropyShennonValue = statmRes.EntropyValues.Shennon;
+            StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
+            StatmEntropyHavardValue = statmRes.EntropyValues.Havard;
         }
     }
 }

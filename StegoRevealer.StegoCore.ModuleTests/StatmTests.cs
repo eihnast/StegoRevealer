@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
@@ -122,6 +123,40 @@ public class StatmTests
 
         for (int i = 1; i < names.Count; i++)
             Assert.IsTrue(contrasts[i] > contrasts[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
+    }
+
+    [TestMethod]
+    public void EntropyTest()
+    {
+        // var names = new List<string>() { "entropy1.png", "entropy2.png", "entropy3.png", "entropy4.png", "entropy5.png", "entropy6.png" };
+        var names = new List<string>() { "entropyNew_1.png", "entropyNew_2.png", "entropyNew_3.png", "entropyNew_4.png" };
+
+        var entropies = new List<EntropyData>();
+        foreach (var name in names)
+        {
+            string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", name);
+            var image = new ImageHandler(imagePath);
+
+            var parameters = new StatmParameters(image);
+
+            var entropyCalculator = new EntropyCalculator(parameters);
+            var entropy = entropyCalculator.CalcEntropy();
+            entropies.Add(entropy);
+        }
+
+        Console.WriteLine("Entropy calculation results:");
+        for (int i = 0; i < names.Count; i++)
+            Console.WriteLine($"{names[i]}: Tsallis = {entropies[i].Tsallis:0.0000}; Vaida = {entropies[i].Vaida:0.0000}; " +
+                $"Shennon = {entropies[i].Shennon:0.0000}; Renyi = {entropies[i].Renyi:0.0000}; Havard = {entropies[i].Havard:0.0000};");
+
+        for (int i = 1; i < names.Count; i++)
+        {
+            Assert.IsTrue(entropies[i].Tsallis > entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
+            Assert.IsTrue(entropies[i].Vaida > entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
+            Assert.IsTrue(entropies[i].Shennon > entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
+            Assert.IsTrue(entropies[i].Renyi > entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
+            Assert.IsTrue(entropies[i].Havard > entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
+        }
     }
 
 
