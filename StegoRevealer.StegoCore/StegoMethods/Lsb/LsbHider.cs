@@ -42,10 +42,10 @@ public class LsbHider : IHider
     }
 
     /// <inheritdoc/>
-    public IHideResult Hide(string? data) => HideAlgorithm(data);
+    public IHideResult Hide(string? data, string? newImagePath = null) => HideAlgorithm(data, newImagePath);
 
     /// <inheritdoc/>
-    public IHideResult Hide(IParams parameters, string? data)
+    public IHideResult Hide(IParams parameters, string? data, string? newImagePath = null)
     {
         LsbHideResult result = new();
 
@@ -60,13 +60,13 @@ public class LsbHider : IHider
         var oldLsbParams = Params;
         Params = lsbParams;
 
-        result = HideAlgorithm(data);
+        result = HideAlgorithm(data, newImagePath);
         Params = oldLsbParams;  // Возврат параметров
         return result;
     }
 
     // Логика метода с текущими параметрами
-    private LsbHideResult HideAlgorithm(string? data)
+    private LsbHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         LsbHideResult result = new();  // Результаты скрытия
         result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
@@ -116,10 +116,17 @@ public class LsbHider : IHider
         result.Log("Завершён цикл скрытия");
 
         // Сохранение изображения со внедрённой информацией
-        string newImgName = Params.Image.ImgName + "_lsb"
-            + (isRandomHiding ? "_rnd" : "_lin");
-        result.Path = Params.Image.Save(newImgName);
-        result.Log($"Изображение сохранено как {newImgName}");
+        if (string.IsNullOrEmpty(newImagePath))
+        {
+            string newImageName = Params.Image.ImgName + "_lsb" + (isRandomHiding ? "_rnd" : "_lin");
+            result.Path = Params.Image.SaveNear(newImageName);
+        }
+        else
+        {
+            result.Path = Params.Image.Save(newImagePath);
+        }
+
+        result.Log($"Изображение сохранено как {result.Path}");
 
         result.Log($"Процесс скрытия завершён");
         return result;

@@ -386,13 +386,17 @@ public class ScImage
     /// <summary>
     /// Сохранение текущей версии изображения без перехода на новое
     /// </summary>
-    public string? Save(string path, ImageFormat format)
+    /// <param name="path">Полный путь к файлу изображения с расширением</param>
+    /// <param name="format">Формат изображения, если не указан - такой же, что у оригинального изображения</param>
+    public string? Save(string path, ImageFormat? format = null)
     {
         if (_image is not null)
         {
             // Сохранение файла
+            format ??= GetFormat();
+
             var outFile = File.OpenWrite(path);
-            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format), 100);
+            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format.Value), 100);
             imgEncoded.SaveTo(outFile);
             outFile.Close();
 

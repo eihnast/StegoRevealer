@@ -180,7 +180,7 @@ public class StatmTests
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
-        cannyImage.Save("sharpness_canny_gpt_applied");
+        cannyImage.SaveNear("sharpness_canny_gpt_applied");
     }
 
     private void SaveSobelDetection()
@@ -198,7 +198,7 @@ public class StatmTests
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
-        cannyImage.Save("sharpness_sobel_applied");
+        cannyImage.SaveNear("sharpness_sobel_applied");
     }
     #endregion
 }

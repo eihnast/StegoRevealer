@@ -102,21 +102,24 @@ public class ImageHandler
     /// <summary>
     /// Сохранение изображения
     /// </summary>
-    public string? Save(string fullPath, ImageFormat format)
+    /// <param name="fullPath">Полный путь к файлу изображения с расширением</param>
+    /// <param name="format">Формат изображения, если не указан - такой же, что у оригинального изображения</param>
+    public string? Save(string fullPath, ImageFormat? format = null)
     {
         return _image.Save(fullPath, format);
     }
 
     /// <summary>
-    /// Сохранение изображения
+    /// Сохранение изображения рядом с оригинальным
     /// </summary>
-    public string? Save(string newName)
+    /// <param name="newName">Имя файла изображения без пути и расширения</param>
+    public string? SaveNear(string newName)
     {
         var directory = Path.GetDirectoryName(ImgPath) ?? "";
         var name = newName;
         var ext = Path.GetExtension(ImgPath);
 
-        return Save(Path.Combine(directory, name + ext), _image.GetFormat());
+        return Save(Path.Combine(directory, name + ext));
     }
 
     /// <summary>

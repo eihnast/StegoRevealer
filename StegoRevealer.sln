@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI", "StegoRe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI.Desktop", "StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj", "{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.StegoCore.DecisionModule", "StegoRevealer.StegoCore.DecisionModule\StegoRevealer.StegoCore.DecisionModule.csproj", "{279CAC5B-A0D9-452B-9291-731CB6ED090A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.StegoCore.TrainingModule", "StegoRevealer.StegoCore.TrainingModule\StegoRevealer.StegoCore.TrainingModule.csproj", "{47EDE188-889C-4EAB-A91D-8ACEBA04DA36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{484CFAE8-8C6B-4D55-B2D2-08EC2DC3EB6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{279CAC5B-A0D9-452B-9291-731CB6ED090A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279CAC5B-A0D9-452B-9291-731CB6ED090A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279CAC5B-A0D9-452B-9291-731CB6ED090A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279CAC5B-A0D9-452B-9291-731CB6ED090A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47EDE188-889C-4EAB-A91D-8ACEBA04DA36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47EDE188-889C-4EAB-A91D-8ACEBA04DA36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47EDE188-889C-4EAB-A91D-8ACEBA04DA36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47EDE188-889C-4EAB-A91D-8ACEBA04DA36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,12 +9,12 @@ public interface IHider
     /// Запуск скрытия информации
     /// </summary>
     /// <param name="data">Скрываемая информация</param>
-    public IHideResult Hide(string? data);
+    public IHideResult Hide(string? data, string? newImagePath);
 
     /// <summary>
     /// Запуск скрытия информации со специфическими указанными параметрами
     /// </summary>
     /// <param name="parameters">Параметры</param>
     /// <param name="data">Скрываемая информация</param>
-    public IHideResult Hide(IParams parameters, string? data);
+    public IHideResult Hide(IParams parameters, string? data, string? newImagePath);
 }

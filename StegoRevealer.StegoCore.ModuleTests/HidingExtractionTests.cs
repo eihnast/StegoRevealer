@@ -44,7 +44,7 @@ public class HidingExtractionTests
         for (int i = 0; i < 1000; i++)
             data += $"Data for hiding {i}.\t";
 
-        var resultPath = lsbHider.Hide(data).GetResultPath();
+        var resultPath = lsbHider.Hide(data, "customNameLsb").GetResultPath();
         Assert.IsFalse(string.IsNullOrEmpty(resultPath));
 
         var lsbExtractor = new LsbExtractor(new ImageHandler(resultPath));
@@ -224,7 +224,7 @@ public class HidingExtractionTests
         kzHider.Params.TraverseType = TraverseType.Horizontal;
 
         string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
-        var hidingResult = kzHider.Hide(data);
+        var hidingResult = kzHider.Hide(data, "customNameKzh");
 
         var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new Exception("hidingResult.Path is null"));
 

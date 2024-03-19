@@ -42,10 +42,10 @@ public class KochZhaoHider : IHider
     }
 
     /// <inheritdoc/>
-    public IHideResult Hide(string? data) => HideAlgorithm(data);
+    public IHideResult Hide(string? data, string? newImagePath = null) => HideAlgorithm(data, newImagePath);
 
     /// <inheritdoc/>
-    public IHideResult Hide(IParams parameters, string? data)
+    public IHideResult Hide(IParams parameters, string? data, string? newImagePath = null)
     {
         KochZhaoHideResult result = new();
         
@@ -60,13 +60,13 @@ public class KochZhaoHider : IHider
         var oldKzParams = Params;
         Params = kzParams;
 
-        result = HideAlgorithm(data);
+        result = HideAlgorithm(data, newImagePath);
         Params = oldKzParams;  // Возврат параметров
         return result;
     }
 
     // Логика метода с текущими параметрами
-    private KochZhaoHideResult HideAlgorithm(string? data)
+    private KochZhaoHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         KochZhaoHideResult result = new();
         result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
@@ -134,10 +134,16 @@ public class KochZhaoHider : IHider
             $"({(k == Params.DataBitLength ? "совпадает" : "не совпадает")})");
 
         // Сохранение изображения со внедрённой информацией
-        string newImgName = Params.Image.ImgName + "_kz"
-            + (isRandomHiding ? "_rnd" : "_lin");
-        result.Path = Params.Image.Save(newImgName);
-        result.Log($"Изображение сохранено как {newImgName}");
+        if (string.IsNullOrEmpty(newImagePath))
+        {
+            string newImageName = Params.Image.ImgName + "_kz" + (isRandomHiding ? "_rnd" : "_lin");
+            result.Path = Params.Image.SaveNear(newImageName);
+        }
+        else
+        {
+            result.Path = Params.Image.Save(newImagePath);
+        }
+        result.Log($"Изображение сохранено как {result.Path}");
 
         result.Log($"Процесс скрытия завершён");
         return result;
