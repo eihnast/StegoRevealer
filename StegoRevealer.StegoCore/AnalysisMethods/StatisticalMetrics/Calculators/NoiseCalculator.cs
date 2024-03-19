@@ -259,6 +259,8 @@ public class NoiseCalculator
 
     #region Старая реализация
 
+    /*
+
     // Оценка шума. Метод 2.
     [Obsolete]
     private double CalcNoiseLevelMethod2Old()
@@ -673,6 +675,8 @@ public class NoiseCalculator
         double averageNoiseSko = MathMethods.Average(noiseSkoByChannels.ToArray());
         return averageNoiseSko;
     }
+
+    */
 
     #endregion
 

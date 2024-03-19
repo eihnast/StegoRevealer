@@ -137,7 +137,7 @@ public static class PixelsTools
     {
         int intervalLength = interval.IntervalEndId - interval.IntervalStartId + 1;  // LeftLack: 2 - 0 + 1 = 3 | RightLack: 12 - 10 + 1 = 3
         var imgArray = img.ImgArray;
-        var channelId = (int)interval.ImgChannel;
+        var channelId = (int)(interval.ImgChannel ?? ImgChannel.Red);
 
         var values = new byte[intervalLength + neighbourhoodLength * 2];  // LeftLack: [7] | RightLack: [7]
         int startInd = interval.IntervalStartId - neighbourhoodLength;  // LeftLack: 0 - 2 = -2 | RightLack: 8
