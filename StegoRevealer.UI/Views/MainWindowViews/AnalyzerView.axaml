@@ -202,7 +202,7 @@
 							</DockPanel>
 							<TextBox Name="KzhaExtractedDataValue" Text="" DockPanel.Dock="Top"
 									 TextAlignment="Left" TextWrapping="Wrap"
-									 Height="150"
+									 Height="150" Margin="30 0 15 0"
 									 VerticalContentAlignment="Top"
 									 IsVisible="False"/>
 
