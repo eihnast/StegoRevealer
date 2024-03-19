@@ -129,6 +129,9 @@ public partial class AnalyzerView : UserControl
             StatResultsContrastValue.Text = string.Format("{0:F5}", results.StatmContrastValue);
             StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
             StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
+            StatResultsEntropyShennonValue.Text = string.Format("{0:F5}", results.StatmEntropyShennonValue);
+            StatResultsEntropyRenyiValue.Text = string.Format("{0:F5}", results.StatmEntropyRenyiValue);
+            StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
 
 
             // Затрачено времени
@@ -198,6 +201,9 @@ public partial class AnalyzerView : UserControl
         StatResultsContrastValue.Text = MessageUnknown;
         StatResultsEntropyTsallisValue.Text = MessageUnknown;
         StatResultsEntropyVaidaValue.Text = MessageUnknown;
+        StatResultsEntropyShennonValue.Text = MessageUnknown;
+        StatResultsEntropyRenyiValue.Text = MessageUnknown;
+        StatResultsEntropyHavardValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }

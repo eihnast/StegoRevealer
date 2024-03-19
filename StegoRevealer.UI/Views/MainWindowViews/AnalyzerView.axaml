@@ -254,7 +254,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия по Цаллису: "
+								<TextBlock Text="Энтропия Цаллиса: "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -264,11 +264,41 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyVaidaBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия по Вайда: "
+								<TextBlock Text="Энтропия Вайда: "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
 								<TextBlock Name="StatResultsEntropyVaidaValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
+							<DockPanel Name="StatResultsEntropyShennonBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Энтропия Шеннона: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsEntropyShennonValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
+							<DockPanel Name="StatResultsEntropyRenyiBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Энтропия Реньи: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsEntropyRenyiValue" Text="Нет данных"
+										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
+							<DockPanel Name="StatResultsEntropyHavardBlock" DockPanel.Dock="Top" IsVisible="True"
+									   LastChildFill="True">
+								<TextBlock Text="Энтропия Хаварда-Чарвата: "
+										   Padding="30 0 0 0" DockPanel.Dock="Left"
+										   HorizontalAlignment="Stretch"
+										   TextAlignment="Left" Height="25"/>
+								<TextBlock Name="StatResultsEntropyHavardValue" Text="Нет данных"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
