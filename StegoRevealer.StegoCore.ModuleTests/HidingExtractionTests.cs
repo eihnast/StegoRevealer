@@ -29,7 +29,7 @@ public class HidingExtractionTests
         // Либо нужно отдельно сконвертировать текст и посчитать длину, чтобы не брать из параметров Hider-а
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -53,7 +53,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.Seed = seed;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -78,7 +78,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.StartPixels = customStartPixels;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -101,7 +101,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.InterlaceChannels = true;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -124,7 +124,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.TraverseType = CommonLib.TraverseType.Vertical;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.TraverseType = CommonLib.TraverseType.Vertical;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -175,7 +175,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.LsbNum = 3;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -206,7 +206,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.LsbNum = 2;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     #endregion

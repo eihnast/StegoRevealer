@@ -105,11 +105,12 @@ public class RsAnalyser
         var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
 
-        int basketSize = groups.Count / 4;
+        int basketsCount = 4;
+        int basketSize = groups.Count / basketsCount;
         var baskets = new List<List<int[]>>();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < basketsCount - 1; i++)
             baskets.Add(groups.Take((basketSize * i)..(basketSize * (i + 1))).ToList());
-        baskets.Add(groups.Take((basketSize * 3)..groups.Count).ToList());
+        baskets.Add(groups.Take((basketSize * (basketsCount - 1))..groups.Count).ToList());
 
         var basketTasks = new List<Task<RsGroupsCalcResult>>();
         foreach (var basket in baskets)
