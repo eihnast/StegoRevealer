@@ -42,22 +42,34 @@ public class RsAnalyser
         _writeToLog = result.Log;
 
         double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
+
+        var tasksByChannel = new Dictionary<ImgChannel, (Task<RsGroupsCalcResult> UnturnedTask, Task<RsGroupsCalcResult> InvertedTask)>();
         foreach (var channel in Params.Channels)
         {
             var unturnedCalcTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: false));
             var invertedCalsTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: true));
+            tasksByChannel.Add(channel, (unturnedCalcTask, invertedCalsTask));
+        }
 
-            unturnedCalcTask.Start();
-            invertedCalsTask.Start();
+        foreach (var calcTasks in tasksByChannel.Values)
+        {
+            calcTasks.UnturnedTask.Start();
+            calcTasks.InvertedTask.Start();
+        }
 
-            unturnedCalcTask.Wait();
-            invertedCalsTask.Wait();
+        foreach (var calcTasks in tasksByChannel.Values)
+        {
+            calcTasks.UnturnedTask.Wait();
+            calcTasks.InvertedTask.Wait();
+        }
 
-            var unturnedValues = unturnedCalcTask.Result;
+        foreach (var channel in Params.Channels)
+        {
+            var unturnedValues = tasksByChannel[channel].UnturnedTask.Result;
             result.Log($"Analysis for {channel} channel in original image completed. Regulars num = {unturnedValues.Regulars}, Singulars num = {unturnedValues.Singulars}. " +
                 $"Regulars with inverted mask num = {unturnedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {unturnedValues.SingularsWithInvertedMask}");
 
-            var invertedValues = invertedCalsTask.Result;
+            var invertedValues = tasksByChannel[channel].InvertedTask.Result;
             result.Log($"Analysis for {channel} channel in inverted image completed. Regulars num = {invertedValues.Regulars}, Singulars num = {invertedValues.Singulars}. " +
                 $"Regulars with inverted mask num = {invertedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {invertedValues.SingularsWithInvertedMask}");
 
@@ -92,31 +104,58 @@ public class RsAnalyser
         var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
         var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
-        foreach (var group in groups)
-        {
-            var regularityResult = CalculateRegularityResults(group, flippingFuncs);
-            var groupType = RsHelper.DefineGroupType(regularityResult);
-            switch (groupType)
-            {
-                case RsGroupType.Singular:
-                    result.Singulars++;
-                    break;
-                case RsGroupType.Regular:
-                    result.Regulars++;
-                    break;
-            }
 
-            var regularityWithInvertedMaskResult = CalculateRegularityResults(group, flippingFuncsWithInvertedMask);
-            var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
-            switch (groupTypeWithInvertedMask)
+        int basketSize = groups.Count / 4;
+        var baskets = new List<List<int[]>>();
+        for (int i = 0; i < 3; i++)
+            baskets.Add(groups.Take((basketSize * i)..(basketSize * (i + 1))).ToList());
+        baskets.Add(groups.Take((basketSize * 3)..groups.Count).ToList());
+
+        var basketTasks = new List<Task<RsGroupsCalcResult>>();
+        foreach (var basket in baskets)
+            basketTasks.Add(new Task<RsGroupsCalcResult>(() =>
             {
-                case RsGroupType.Singular:
-                    result.SingularsWithInvertedMask++;
-                    break;
-                case RsGroupType.Regular:
-                    result.RegularsWithInvertedMask++;
-                    break;
-            }
+                var localResult = new RsGroupsCalcResult();
+                foreach (var group in basket)
+                {
+                    var regularityResult = CalculateRegularityResults(group, flippingFuncs);
+                    var groupType = RsHelper.DefineGroupType(regularityResult);
+                    switch (groupType)
+                    {
+                        case RsGroupType.Singular:
+                            localResult.Singulars++;
+                            break;
+                        case RsGroupType.Regular:
+                            localResult.Regulars++;
+                            break;
+                    }
+
+                    var regularityWithInvertedMaskResult = CalculateRegularityResults(group, flippingFuncsWithInvertedMask);
+                    var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
+                    switch (groupTypeWithInvertedMask)
+                    {
+                        case RsGroupType.Singular:
+                            localResult.SingularsWithInvertedMask++;
+                            break;
+                        case RsGroupType.Regular:
+                            localResult.RegularsWithInvertedMask++;
+                            break;
+                    }
+                }
+                return localResult;
+            }));
+
+        foreach (var basketTask in basketTasks)
+            basketTask.Start();
+        foreach (var basketTask in basketTasks)
+            basketTask.Wait();
+
+        foreach (var basketTask in basketTasks)
+        {
+            result.Singulars += basketTask.Result.Singulars;
+            result.Regulars += basketTask.Result.Regulars;
+            result.SingularsWithInvertedMask += basketTask.Result.SingularsWithInvertedMask;
+            result.RegularsWithInvertedMask += basketTask.Result.RegularsWithInvertedMask;
         }
 
         return result;
