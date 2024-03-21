@@ -3,6 +3,7 @@ using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.CommonLib;
 using System.Text.RegularExpressions;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using Accord;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb;
 
@@ -100,47 +101,43 @@ public class LsbHider : IHider
             = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
         // Осуществление скрытия
-        result.Log("Запущен цикл скрытия");
+        result.Log("Запущена процедура скрытия");
 
-        int k = 0;  // Индекс бита данных
-        var byteForDataStartIndexArray = new List<KeyValuePair<int, ScPointCoords>>();
-        foreach (var colorByteCoords in iterator(usingColorBytesNum, Params))
+        var colorBytesIndexes = new List<ScPointCoords>();
+        if (isRandomHiding)
+            foreach (var colorByteIndexes in iterator(usingColorBytesNum, Params))
+                colorBytesIndexes.Add(colorByteIndexes);
+        else
+            colorBytesIndexes = iterator(usingColorBytesNum, Params).Take(usingColorBytesNum).ToList();
+
+        int basketSize = 512;  // Цветовых байт в пачке
+        int basketsCount = colorBytesIndexes.Count() / basketSize;  // Оставшиеся будут добавлены в последнюю пачку
+        var basketsTasks = new Task[basketsCount];
+        for (int i = 0; i < basketsCount; i++)
         {
-            if (k >= Params.DataBitLength)
-                break;
-            byteForDataStartIndexArray.Add(new KeyValuePair<int, ScPointCoords>(k, colorByteCoords));
-            k += Params.LsbNum;
-        }
-
-        int basketsCount = 3;
-        int basketSize = byteForDataStartIndexArray.Count / basketsCount;
-        var baskets = new List<List<KeyValuePair<int, ScPointCoords>>>();
-        for (int i = 0; i < basketsCount - 1; i++)
-            baskets.Add(byteForDataStartIndexArray.Take((basketSize * i)..(basketSize * (i + 1))).ToList());
-        baskets.Add(byteForDataStartIndexArray.Take((basketSize * (basketsCount - 1))..byteForDataStartIndexArray.Count).ToList());
-
-        var basketTasks = new List<Task>();
-        foreach (var basket in baskets)
-        {
-            basketTasks.Add(new Task(() =>
+            int basketIndex = i;
+            basketsTasks[i] = new Task(() =>
             {
-                foreach (var byteForDataStartIndex in basket)
-                {
-                    (int line, int column, int channel) = byteForDataStartIndex.Value.AsTuple();
-                    int localK = byteForDataStartIndex.Key;
+                int lastIndexInBasket = basketIndex < basketsCount - 1 ? basketSize * (basketIndex + 1) : colorBytesIndexes.Count();
+                var colorBytesIndexesForBasket = colorBytesIndexes.Take((basketSize * basketIndex)..lastIndexInBasket);
+                int k = (basketSize * basketIndex) * Params.LsbNum;
 
+                foreach (var colorByteIndexes in colorBytesIndexesForBasket)
+                {
                     // Если у нас больше 1 LSB используется, но осталось для сокрытия меньше бит (конец записи) - в конце будут дописаны нули
                     var bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит, длина фиксирована как LsbNum 
-                    for (int i = 0; i < Params.LsbNum && (localK + i) < Params.DataBitArray.Length; i++)
-                        bitsToHide[i] = Params.DataBitArray[localK + i];
-                    HideDataBitToColorByte(new ScPointCoords(line, column, channel), bitsToHide);  // Скрытие в байте цвета
+                    for (int i = 0; i < Params.LsbNum && (k + i) < Params.DataBitArray.Length; i++)
+                        bitsToHide[i] = Params.DataBitArray[k + i];
+                    HideDataBitToColorByte(colorByteIndexes, bitsToHide);  // Скрытие в байте цвета
+
+                    k += Params.LsbNum;
                 }
-            }));
+            });
         }
 
-        foreach (var basketTask in basketTasks)
+        foreach (var basketTask in basketsTasks)
             basketTask.Start();
-        foreach (var basketTask in basketTasks)
+        foreach (var basketTask in basketsTasks)
             basketTask.Wait();
 
         result.Log("Завершён цикл скрытия");
@@ -169,9 +166,14 @@ public class LsbHider : IHider
     /// <param name="bits">Скрываемый бит</param>
     private void HideDataBitToColorByte(ScPointCoords inds, BitArray bits)
     {
-        var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
-        var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
-        colorByte = PixelsTools.SetLsbValues(colorByte, bits);  // Установка значений
-        imgArray[inds.Y, inds.X, inds.ChannelId] = colorByte;
+        lock (hidingLock)
+        {
+            var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
+            var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
+            colorByte = PixelsTools.SetLsbValues(colorByte, bits);  // Установка значений
+            imgArray[inds.Y, inds.X, inds.ChannelId] = colorByte;
+        }
     }
+
+    private object hidingLock = new object();
 }

@@ -285,13 +285,16 @@ public static class BlocksTraverseHelper
         int blocksLinearLength = blocks.BlocksNum;  // Псевдослучайный обход в данном контексте - только по матрице полноценных блоков
         CorrectBlocksNum(ref blocksNum, blocks);
 
-        // Массив общих линейных индексов блоков
-        var allLinearIndexes = Enumerable.Range(0, blocksLinearLength).ToArray();  // Формирование
-        allLinearIndexes = allLinearIndexes.OrderBy(e => rnd.Next()).ToArray();  // Перемешивание
+        if (blocksNum is null)
+            throw new Exception("Число блоков не может быть null");
 
-        for (int i = 0; i < blocksNum; i++)
+        // Массив общих линейных индексов блоков
+        var allLinearIndexes = Enumerable.Range(0, blocksLinearLength);  // Формирование
+        allLinearIndexes = allLinearIndexes.OrderBy(e => rnd.Next()).Take(blocksNum.Value);  // Перемешивание
+
+        foreach (var index in allLinearIndexes)
         {
-            var (y, x) = GetBlockIndexesBy2DLinearIndex(allLinearIndexes[i], blocks, options.TraverseType).AsTuple();
+            var (y, x) = GetBlockIndexesBy2DLinearIndex(index, blocks, options.TraverseType).AsTuple();
             yield return new Sc2DPoint(y, x);
         }
 
