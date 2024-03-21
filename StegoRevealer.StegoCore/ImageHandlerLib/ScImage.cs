@@ -260,45 +260,50 @@ public class ScImage
     /// </summary>
     public ScImage Clone(bool cloneInMemoryImagesDirectly = true)
     {
-        FileStream? fileStream;
-        bool shouldCloseFileStream = false;
-        ScImage clonedImage;
-
-        // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
-        if (IsInMemory && cloneInMemoryImagesDirectly)
+        lock (cloningLock)
         {
-            if (_memoryStream is null)
-                throw new Exception("Error while cloning image: memory stream is null");
-            var clonedMemoryStream = CloneMemoryStream(_memoryStream);
-            return new ScImage(clonedMemoryStream, _path);
-        }
+            FileStream? fileStream;
+            bool shouldCloseFileStream = false;
+            ScImage clonedImage;
 
-        // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
-        // либо создан новый поток чтения файла по текущему пути на время клонирования
-        if (IsInMemory && !string.IsNullOrEmpty(_path))
-        {
-            if (_loadedImages.ContainsKey(_path))
-                fileStream = _loadedImages[_path]._file;
-            else
+            // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
+            if (IsInMemory && cloneInMemoryImagesDirectly)
             {
-                fileStream = CreateFileStream(_path);
-                shouldCloseFileStream = true;
+                if (_memoryStream is null)
+                    throw new Exception("Error while cloning image: memory stream is null");
+                var clonedMemoryStream = CloneMemoryStream(_memoryStream);
+                return new ScImage(clonedMemoryStream, _path);
             }
+
+            // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
+            // либо создан новый поток чтения файла по текущему пути на время клонирования
+            if (IsInMemory && !string.IsNullOrEmpty(_path))
+            {
+                if (_loadedImages.ContainsKey(_path))
+                    fileStream = _loadedImages[_path]._file;
+                else
+                {
+                    fileStream = CreateFileStream(_path);
+                    shouldCloseFileStream = true;
+                }
+            }
+            else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
+                fileStream = _file;
+
+            if (fileStream is null)
+                throw new Exception("Error while cloning ScImage: fileStream is null");
+
+            clonedImage = new ScImage(fileStream, _path ?? string.Empty);
+            // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
+
+            if (shouldCloseFileStream)
+                fileStream.Close();
+
+            return clonedImage;
         }
-        else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
-            fileStream = _file;
-
-        if (fileStream is null)
-            throw new Exception("Error while cloning ScImage: fileStream is null");
-
-        clonedImage = new ScImage(fileStream, _path ?? string.Empty);
-        // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
-
-        if (shouldCloseFileStream)
-            fileStream.Close();
-
-        return clonedImage;
     }
+
+    private object cloningLock = new object();
 
     // Клонирует MemoryStream
     private static MemoryStream CloneMemoryStream(MemoryStream memoryStream)

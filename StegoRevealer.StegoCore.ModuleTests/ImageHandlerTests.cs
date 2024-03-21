@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+﻿using Accord.Math;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using System.Collections.Concurrent;
@@ -71,7 +72,34 @@ public class ImageHandlerTests
         Assert.AreEqual(newColorByteValue, handler.ImgArray[0, 0, 0]);  // На всякий случай убедимся, что в оригинальном обработчике значение поменялось
         Assert.AreEqual(oldColorByteValue, clonedBeforeChangeHandler.ImgArray[0, 0, 0]);  // Проверяем, что в склонированном до изменений обработчике значение не поменялось
 
-        var clonedHandler = handler.Clone();  // Склонировали обработчик (уже после изменения)
-        Assert.AreEqual(0, clonedHandler.ImgArray[0, 0, 0]);  // Промеряем, что в склонированном обработчике осталось старое значение
+        var clonedAfterHandler = handler.Clone();  // Склонировали обработчик (уже после изменения)
+        Assert.AreEqual(0, clonedAfterHandler.ImgArray[0, 0, 0]);  // Промеряем, что в склонированном обработчике осталось старое значение
+
+
+        // Проверка сохранения склонированных с многопоточностью
+        var cloneTasks = new List<Task<ImageHandler>>();
+        for (int i = 0; i < 20; i++)
+            cloneTasks.Add(new Task<ImageHandler>(handler.Clone));
+
+        for (int i = 0; i < 20; i++)
+            cloneTasks[i].Start();
+        for (int i = 0; i < 20; i++)
+            cloneTasks[i].Wait();
+
+        var saveTasks = new List<Task<string?>>();
+        for (int i = 0; i < 20; i++)
+        {
+            string newImgName = $"cloned_{i}";
+            var clonedHandler = cloneTasks[i].Result;
+            saveTasks.Add(new Task<string?>(() => clonedHandler.SaveNear(newImgName)));
+        }
+
+        for (int i = 0; i < 20; i++)
+            saveTasks[i].Start();
+        for (int i = 0; i < 20; i++)
+            saveTasks[i].Wait();
+
+        for (int i = 0; i < 20; i++)
+            Assert.IsFalse(string.IsNullOrEmpty(saveTasks[i].Result));
     }
 }
