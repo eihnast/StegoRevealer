@@ -52,4 +52,26 @@ public class ImageHandlerTests
         foreach (var imgTask in imgTasks)
             imgTask.Wait();
     }
+
+    [TestMethod]
+    public void CloningTest()
+    {
+        const string imgName = "HandlerCloningTest.png";
+        string path = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+        const byte oldColorByteValue = 0;
+        const byte newColorByteValue = 255;
+
+        var handler = new ImageHandler(path);  // Создали обработчик
+        var clonedBeforeChangeHandler = handler.Clone();  // Склонировали обработчик сразу, до любых изменений
+
+        Assert.AreEqual(oldColorByteValue, handler.ImgArray[0, 0, 0]);    // На картинке там #000000, убедимся в этом на всякий случай
+        Assert.AreEqual(oldColorByteValue, clonedBeforeChangeHandler.ImgArray[0, 0, 0]);    // В склонированном обработчике тоже 0
+
+        handler.ImgArray[0, 0, 0] = newColorByteValue;  // Меняем в оригинальном обработчике 0 на 255
+        Assert.AreEqual(newColorByteValue, handler.ImgArray[0, 0, 0]);  // На всякий случай убедимся, что в оригинальном обработчике значение поменялось
+        Assert.AreEqual(oldColorByteValue, clonedBeforeChangeHandler.ImgArray[0, 0, 0]);  // Проверяем, что в склонированном до изменений обработчике значение не поменялось
+
+        var clonedHandler = handler.Clone();  // Склонировали обработчик (уже после изменения)
+        Assert.AreEqual(0, clonedHandler.ImgArray[0, 0, 0]);  // Промеряем, что в склонированном обработчике осталось старое значение
+    }
 }
