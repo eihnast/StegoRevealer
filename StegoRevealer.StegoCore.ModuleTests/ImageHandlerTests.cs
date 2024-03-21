@@ -10,7 +10,7 @@ namespace StegoRevealer.StegoCore.ModuleTests;
 public class ImageHandlerTests
 {
     [TestMethod]
-    public void CaHandleInMultithreading()
+    public void CanHandleInMultithreading()
     {
         string imgPattern = "mt_test_";
 
