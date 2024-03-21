@@ -350,4 +350,51 @@ public class HidingExtractionTests
     //}
 
     #endregion
+
+
+    [TestMethod]
+    public void HidingExtractionBoth_DefaultParamsBigImage()
+    {
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "imageBig.png");
+
+        // Скрываем по НЗБ
+        var lsbHandler = new ImageHandler(imagePath);
+        var lsbHider = new LsbHider(lsbHandler);
+
+        string lsbData = string.Empty;
+        for (int i = 0; i < 1000; i++)
+            lsbData += $"Data for hiding {i}.\t";
+
+        var lsbResultPath = lsbHider.Hide(lsbData).GetResultPath();
+        lsbHandler.CloseHandler();
+        Assert.IsFalse(string.IsNullOrEmpty(lsbResultPath));
+
+        // Извлекаем и проверяем извлечённое по НЗБ
+        var lsbHidedHandler = new ImageHandler(lsbResultPath);
+        var lsbExtractor = new LsbExtractor(lsbHidedHandler);
+        lsbExtractor.Params.ToExtractBitLength = lsbHider.Params.DataBitLength;
+
+        var lsbExtractedData = lsbExtractor.Extract().GetResultData();
+        lsbHidedHandler.CloseHandler();
+        Assert.AreEqual(lsbData, lsbExtractedData);
+
+        // Скрываем по Коха-Жао
+        var image = new ImageHandler(imagePath);
+        var kzHider = new KochZhaoHider(image);
+        kzHider.Params.Threshold = 120;
+        kzHider.Params.TraverseType = TraverseType.Horizontal;
+
+        string kzhData = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
+        var kzhResultPath = kzHider.Hide(kzhData).GetResultPath();
+        Assert.IsFalse(string.IsNullOrEmpty(kzhResultPath));
+
+        // Извлекаем и проверяем извлечённое по Коха-Жао
+        var kzhHidedHandler = new ImageHandler(kzhResultPath);
+
+        var kzExtractor = new KochZhaoExtractor(kzhHidedHandler);
+        kzExtractor.Params.Threshold = 20;
+
+        var kzhExtractedData = kzExtractor.Extract().GetResultData();
+        Assert.IsTrue(kzhExtractedData?.StartsWith(kzhData), $"extractedData = {kzhExtractedData}");
+    }
 }
