@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using Accord.Math;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;

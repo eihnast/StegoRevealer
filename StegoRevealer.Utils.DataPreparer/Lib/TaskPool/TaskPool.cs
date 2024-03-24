@@ -8,8 +8,7 @@ public class TaskPool
     public int TasksLimit { get; init; }
     public bool ConsiderRealRunningTasksOnly { get; init; }
 
-    private const long MemoryLimit = 6L * 1024 * 1024 * 1024;
-    private static Process _currentProcess = Process.GetCurrentProcess();
+    private const long MemoryLimit = 8L * 1024 * 1024 * 1024;
 
     private object _tasksLock = new object();
     private object _tasksCheckLock = new object();
@@ -19,7 +18,7 @@ public class TaskPool
 
     private int _realRunnedTasksCount => _currentTasks.Where(t => t.GetStatus() == TaskStatus.Running).Count();
 
-    public bool IsMemoryLimitReached => _currentProcess.PrivateMemorySize64 >= MemoryLimit;
+    public bool IsMemoryLimitReached => Process.GetCurrentProcess().WorkingSet64 >= MemoryLimit;
     public bool IsCompleted => _tasksQueue.IsEmpty && _currentTasks.Count == 0;
 
 

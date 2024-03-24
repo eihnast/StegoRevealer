@@ -11,6 +11,7 @@ using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using StegoRevealer.Utils.DataPreparer.Entities;
 using StegoRevealer.Utils.DataPreparer.Lib;
 using StegoRevealer.Utils.DataPreparer.Lib.TaskPool;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -76,7 +77,7 @@ public class DataPreparer
         ClearOutputDirectory(onlyAnalysisFilesClear: StartParams.SkipPreparing);
 
         // Запуск операций
-        var preparingResult = PrepareOperation();
+        var preparingResult = PrepareOperationForManyHidings();
         var analysisResult = AnalyseOperation(preparingResult.OutputImages);
 
         // Остановка таймера, окончание работы программы
@@ -91,7 +92,7 @@ public class DataPreparer
     // //////
     // Подготовка картинок со скрытой информацией
     // //////
-    private ImagesPreparingResult PrepareOperation()
+    private ImagesPreparingResult PrepareOperationForManyHidings()
     {
         var result = new ImagesPreparingResult();
 
@@ -114,7 +115,6 @@ public class DataPreparer
         Logger.LogRawEnumerable(inputImages, asColumn: true, toString: str => $"\t{str}");
         Logger.LogSeparator();
 
-        var allDiapasonesId = Enumerable.Range(1, 10).ToList();
         Logger.LogInfo("Начат процесс обработки изображений: подготовки скрытия информации в них различными способами");
 
         // Формирование и запуск задач по каждому изображению
@@ -123,39 +123,7 @@ public class DataPreparer
         foreach (var imgPath in inputImages)
         {
             int index = k;
-            imagePreparingTasks.Add(CreateTask(() =>
-            {
-                var img = new ImageHandler(imgPath);
-                Logger.LogInfo($"Начата обработка изображения {img.ImgName} ({index} / {inputImages.Length})");
-
-                string originImageCopyPath = Path.Combine(Constants.OutputDirPath, Path.GetFileName(imgPath));
-                File.Copy(imgPath, originImageCopyPath);
-                result.OutputImages.Add(new OutputImage { Path = originImageCopyPath, Hided = false });
-                Logger.LogInfo($"Изображение {img.ImgName} с пустым контейнером добавлено в выходной каталог");
-
-                int diapasonesNum = Math.Max(0, rnd.Next(-Constants.NoHidingChangeAdvantage, 11));
-                Logger.LogInfo($"Для изображения {img.ImgName} выбрано выбрано количество диапазонов: {diapasonesNum}");
-
-                if (diapasonesNum > 0)
-                {
-                    var selectedDiapasones = allDiapasonesId.OrderBy(e => rnd.Next()).Take(diapasonesNum).ToList();
-                    Logger.LogInfo($"Выбранные диапазоны для изображения {img.ImgName}: " +
-                        $"{string.Join(", ", selectedDiapasones.Select(id => Constants.Diapasones[id].ToString()))}");
-
-                    var diapasonesTasks = new List<Task>();
-                    foreach (var selectedDiapasoneId in selectedDiapasones)
-                        diapasonesTasks.Add(CreateTask(() => HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], result.OutputImages), taskPool: null));
-
-                    foreach (var task in diapasonesTasks)
-                    {
-                        task.Wait();
-                        task.Dispose();
-                    }
-                }
-
-                img.CloseHandler();
-                Logger.LogInfo($"Завершена обработка изображения {img.ImgName}");
-            }, taskPool: ImgProcessingPool));
+            imagePreparingTasks.Add(CreateTask(() => PreparingAction(imgPath, index, inputImages.Length, result.OutputImages), taskPool: ImgProcessingPool));
 
             k++;
         }
@@ -175,6 +143,66 @@ public class DataPreparer
         Logger.LogSeparator();
 
         return result;
+    }
+
+    private void PreparingAction(string imgPath, int index, int count, ConcurrentBag<OutputImage> outputImages)
+    {
+        var rnd = new Random();
+        var img = new ImageHandler(imgPath);
+        var allDiapasonesId = Enumerable.Range(1, 10).ToList();
+        Logger.LogInfo($"Начата обработка изображения {img.ImgName} ({index} / {count})");
+
+        if (StartParams.ManyHidings)
+        {
+            outputImages.Add(CreateOutputImageWithNoHiding(imgPath));
+
+            int diapasonesNum = Math.Max(0, rnd.Next(-Constants.NoHidingChangeAdvantage, 11));
+            Logger.LogInfo($"Для изображения {img.ImgName} выбрано выбрано количество диапазонов: {diapasonesNum}");
+
+            if (diapasonesNum > 0)
+            {
+                var selectedDiapasones = allDiapasonesId.OrderBy(e => rnd.Next()).Take(diapasonesNum).ToList();
+                Logger.LogInfo($"Выбранные диапазоны для изображения {img.ImgName}: " +
+                    $"{string.Join(", ", selectedDiapasones.Select(id => Constants.Diapasones[id].ToString()))}");
+
+                var diapasonesTasks = new List<Task>();
+                foreach (var selectedDiapasoneId in selectedDiapasones)
+                    diapasonesTasks.Add(CreateTask(() => HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], outputImages), taskPool: null));
+
+                foreach (var task in diapasonesTasks)
+                {
+                    task.Wait();
+                    task.Dispose();
+                }
+            }
+        }
+        else
+        {
+            bool hide = rnd.Next(0, 2) == 1;
+            if (hide)
+            {
+                int diapasoneId = rnd.Next(0, Constants.Diapasones.Count);
+                Logger.LogInfo($"Выбранный диапазон для изображения {img.ImgName}: " +
+                    $"{string.Join(", ", Constants.Diapasones[diapasoneId].ToString())}");
+
+                var hidingTask = CreateTask(() => HideInDiapasone(img, Constants.Diapasones[diapasoneId], outputImages), taskPool: null);
+                hidingTask.Wait();
+            }
+            else
+                outputImages.Add(CreateOutputImageWithNoHiding(imgPath));
+        }
+
+        img.CloseHandler();
+        Logger.LogInfo($"Завершена обработка изображения {img.ImgName}");
+    }
+
+    private OutputImage CreateOutputImageWithNoHiding(string imgPath)
+    {
+        string imgName = Path.GetFileName(imgPath);
+        string originImageCopyPath = Path.Combine(Constants.OutputDirPath, imgName);
+        File.Copy(imgPath, originImageCopyPath);
+        Logger.LogInfo($"Изображение {imgName} с пустым контейнером добавлено в выходной каталог");
+        return new OutputImage { Path = originImageCopyPath, Hided = false };
     }
 
     // //////
@@ -456,34 +484,43 @@ public class DataPreparer
     private void HideInDiapasone(ImageHandler img, MinMaxData diapasone, ConcurrentBag<OutputImage> outputImages)
     {
         var rnd = new Random();
+        var hideDecisions = new List<bool>(3);
 
-        bool hideLinearLsb = rnd.Next(0, 2) == 1;
-        bool hideRandomLsb = rnd.Next(0, 2) == 1;
-        bool hideLinearKzh = rnd.Next(0, 2) == 1;
-        if (!hideLinearLsb && !hideRandomLsb && !hideLinearKzh)
-            hideLinearLsb = true;
+        if (StartParams.ManyHidings)
+        {
+            for (int i = 0; i < 3; i++)
+                hideDecisions[i] = rnd.Next(0, 2) == 1;
+            if (!hideDecisions.Any(dec => dec == true))
+                hideDecisions[0] = true;
+        }
+        else
+        {
+            var decisionId = rnd.Next(0, 3);
+            hideDecisions[decisionId] = true;
+        }
 
         var methodsLog = new List<string>();
-        if (hideLinearLsb) methodsLog.Add("линейный НЗБ");
-        if (hideRandomLsb) methodsLog.Add("псевдослучайный НЗБ");
-        if (hideLinearKzh) methodsLog.Add("линейный Коха-Жао");
-        Logger.LogInfo($"Для изображения {img.ImgName} в диапазоне {diapasone} определены следующие методы скрытия: " + string.Join(", ", methodsLog));
+        if (hideDecisions[0]) methodsLog.Add("линейный НЗБ");
+        if (hideDecisions[1]) methodsLog.Add("псевдослучайный НЗБ");
+        if (hideDecisions[2]) methodsLog.Add("линейный Коха-Жао");
+        Logger.LogInfo($"Для изображения {img.ImgName} в диапазоне {diapasone} " +
+            $"{(StartParams.ManyHidings ? "определены следующие методы" : "определён следующий метод")} скрытия: " + string.Join(", ", methodsLog));
 
         var currentHandlers = new List<ImageHandler>();
         var hidingTasks = new List<Task>();
-        if (hideLinearLsb)
+        if (hideDecisions[0])
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
             hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsLinearLsb(currentHandler, diapasone), outputImages), taskPool: null));
         }
-        if (hideRandomLsb)
+        if (hideDecisions[1])
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
             hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsRandomLsb(currentHandler, diapasone), outputImages), taskPool: null));
         }
-        if (hideLinearKzh)
+        if (hideDecisions[2])
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
