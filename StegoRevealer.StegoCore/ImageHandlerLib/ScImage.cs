@@ -337,12 +337,17 @@ public class ScImage
     private void CloseCurrentStreams()
     {
         if (IsInMemory)  // Если загружено в память - должен быть только поток памяти
+        {
+            _memoryStream?.Close();
             _memoryStream?.Dispose();
+        }
+
         else  // Если загружено как ридер - актуальны все три потока
         {
             _image?.Dispose();
             _imgStream?.Dispose();
             _file?.Close();
+            _file?.Dispose();
         }
     }
 

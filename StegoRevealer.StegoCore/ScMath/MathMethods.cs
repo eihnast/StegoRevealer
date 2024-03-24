@@ -14,13 +14,12 @@ public static class MathMethods
     /// <param name="expected">Ожидаемые значения</param>
     /// <param name="observed">Наблюдаемые значения</param>
     /// <param name="degreesOfFreedom">Количество степеней свободы</param>
-    public static (double statistic, double pValue) ChiSqr(double[] expected, double[] observed,
-        int? degreesOfFreedom = null)
+    public static (double statistic, double pValue) ChiSqr(List<double> expected, List<double> observed, int? degreesOfFreedom = null)
     {
-        if (expected.Length < 2)
+        if (expected.Count < 2)
             degreesOfFreedom = 1;
         else if (degreesOfFreedom is null || degreesOfFreedom == 0)
-            degreesOfFreedom = expected.Length - 1;
+            degreesOfFreedom = expected.Count - 1;
 
         // var chisqr = new ChiSquareTest(expected, observed, degreesOfFreedom.Value);  // Accord version
         var chisqr = ChiSquareApache.ChiSquareTest(expected, observed);  // Apache version
@@ -73,14 +72,12 @@ public static class MathMethods
     /// Вычисление ДКП (двумерное)
     /// </summary>
     /// <param name="matrix">Матрица значений</param>
-    public static double[,] Dct(double[,] matrix)
+    public static void Dct(double[,] matrix)
     {
-        double[,] dctMatrix = (double[,])matrix.Clone();
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
-                dctMatrix[i, j] -= 128;
-        CosineTransform.DCT(dctMatrix);
-        return dctMatrix;
+                matrix[i, j] -= 128;
+        CosineTransform.DCT(matrix);
     }
 
     /// <summary>

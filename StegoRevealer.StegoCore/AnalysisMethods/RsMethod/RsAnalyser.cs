@@ -46,15 +46,9 @@ public class RsAnalyser
         var tasksByChannel = new Dictionary<ImgChannel, (Task<RsGroupsCalcResult> UnturnedTask, Task<RsGroupsCalcResult> InvertedTask)>();
         foreach (var channel in Params.Channels)
         {
-            var unturnedCalcTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: false));
-            var invertedCalsTask = new Task<RsGroupsCalcResult>(() => AnalyseInOneChannel(channel, invertedImage: true));
+            var unturnedCalcTask = Task.Run(() => AnalyseInOneChannel(channel, invertedImage: false));
+            var invertedCalsTask = Task.Run(() => AnalyseInOneChannel(channel, invertedImage: true));
             tasksByChannel.Add(channel, (unturnedCalcTask, invertedCalsTask));
-        }
-
-        foreach (var calcTasks in tasksByChannel.Values)
-        {
-            calcTasks.UnturnedTask.Start();
-            calcTasks.InvertedTask.Start();
         }
 
         foreach (var calcTasks in tasksByChannel.Values)
@@ -98,7 +92,7 @@ public class RsAnalyser
         if (channelArray is null)
             throw new Exception($"Error while getting OneChannelArray for channel '{channel}'");
 
-        var groups = SplitIntoGroupsInChannelArray(channelArray);
+        var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
         result.GroupsNumber = groups.Count;
 
         var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
@@ -107,19 +101,19 @@ public class RsAnalyser
 
         int basketsCount = 4;
         int basketSize = groups.Count / basketsCount;
-        var baskets = new List<List<int[]>>();
+        var baskets = new List<(int StartIndex, int EndIndex)>();
         for (int i = 0; i < basketsCount - 1; i++)
-            baskets.Add(groups.Take((basketSize * i)..(basketSize * (i + 1))).ToList());
-        baskets.Add(groups.Take((basketSize * (basketsCount - 1))..groups.Count).ToList());
+            baskets.Add((basketSize * i, basketSize * (i + 1) - 1));
+        baskets.Add((basketSize * (basketsCount - 1), groups.Count - 1));
 
         var basketTasks = new List<Task<RsGroupsCalcResult>>();
         foreach (var basket in baskets)
-            basketTasks.Add(new Task<RsGroupsCalcResult>(() =>
+            basketTasks.Add(Task.Run(() =>
             {
                 var localResult = new RsGroupsCalcResult();
-                foreach (var group in basket)
+                for (int i = basket.StartIndex; i <= basket.EndIndex; i++)
                 {
-                    var regularityResult = CalculateRegularityResults(group, flippingFuncs);
+                    var regularityResult = CalculateRegularityResults(groups[i], flippingFuncs);
                     var groupType = RsHelper.DefineGroupType(regularityResult);
                     switch (groupType)
                     {
@@ -131,7 +125,7 @@ public class RsAnalyser
                             break;
                     }
 
-                    var regularityWithInvertedMaskResult = CalculateRegularityResults(group, flippingFuncsWithInvertedMask);
+                    var regularityWithInvertedMaskResult = CalculateRegularityResults(groups[i], flippingFuncsWithInvertedMask);
                     var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
                     switch (groupTypeWithInvertedMask)
                     {
@@ -146,8 +140,6 @@ public class RsAnalyser
                 return localResult;
             }));
 
-        foreach (var basketTask in basketTasks)
-            basketTask.Start();
         foreach (var basketTask in basketTasks)
             basketTask.Wait();
 
@@ -234,10 +226,10 @@ public class RsAnalyser
         {
             for (int xGroup = 0; xGroup < channelArray.Width / Params.PixelsGroupLength; xGroup++)
             {
-                var group = new List<int>();
+                var group = new int[Params.PixelsGroupLength];
                 for (int i = 0; i < Params.PixelsGroupLength; i++)
-                    group.Add(channelArray[y, xGroup * Params.PixelsGroupLength + i]);
-                groups.Add(group.ToArray());
+                    group[i] = channelArray[y, xGroup * Params.PixelsGroupLength + i];
+                groups.Add(group);
             }
 
             // "Лишние" пиксели, которые не попадают в последовательную выборку групп, в оригинале учитывались

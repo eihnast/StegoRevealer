@@ -25,7 +25,30 @@ public static class FrequencyViewTools
             for (int j = 0; j < blockSize.Value; j++)
                 doubleBlock[i, j] = Convert.ToDouble(block[i, j]);
 
-        return MathMethods.Dct(doubleBlock);
+        MathMethods.Dct(doubleBlock);
+        return doubleBlock;
+    }
+
+    /// <summary>
+    /// Получение ДКП-блока
+    /// </summary>
+    public static double[,] DctBlock(ImageArray imar, BlockCoords blockCoords, int channelId, int? blockSize = null)
+    {
+        int yLength = blockCoords.Rd.Y - blockCoords.Lt.Y + 1;
+        int xLength = blockCoords.Rd.X - blockCoords.Lt.X + 1;
+        if (xLength != yLength)
+            throw new Exception($"Block must be square. But yLength = {yLength}, xLength = {xLength}");
+
+        if (blockSize is null)
+            blockSize = yLength;
+
+        double[,] doubleBlock = new double[blockSize.Value, blockSize.Value];
+        for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
+            for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
+                doubleBlock[y - blockCoords.Lt.Y, x - blockCoords.Lt.X] = Convert.ToDouble(imar[y, x, channelId]);
+
+        MathMethods.Dct(doubleBlock);
+        return doubleBlock;
     }
 
     /// <summary>

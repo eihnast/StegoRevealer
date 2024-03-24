@@ -10,9 +10,12 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using StegoRevealer.Utils.DataPreparer.Entities;
 using StegoRevealer.Utils.DataPreparer.Lib;
+using StegoRevealer.Utils.DataPreparer.Lib.TaskPool;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace StegoRevealer.Utils.DataPreparer;
 
@@ -27,8 +30,8 @@ public static class Program
         HasHeaderRecord = true
     };
 
-    private static List<string> SkipPreparingFlag = new List<string>() { "-nohide", "-noprepare", "-nh", "-np" };
-    private static List<string> SkipAnalysisFlag = new List<string>() { "-noanalyze", "-na" };
+    private static TaskPool TaskPool => new TaskPool();
+    private static bool ParallelByImagesOnly { get; set; } = false;
 
 
     // Для каждого изображения делаем следующее:
@@ -48,202 +51,282 @@ public static class Program
     //     ChiSqr, RS, шум, резкость, размытость, контрастность, оценки энтропии, ширина и высота...;
     // - собранные данные записываем в CSV-файл.
 
+    private static readonly List<string> SkipPreparingFlag = new List<string>() { "--nohide", "--noprepare", "-nh", "-np" };
+    private static readonly List<string> SkipAnalysisFlag = new List<string>() { "--noanalyze", "-na" };
+    private static readonly List<string> WeakCalculationsPoolFlag = new List<string>() { "--weakpoool", "-wp" };
+    private static readonly List<string> HelpFlag = new List<string>() { "--help", "-h" };
 
-    public static async Task Main(string[] args)
+    private static StartParams? ParseParams(string[] args)
     {
-        Logger.LogInfo($"Запущен скрипт подготовки данных анализа для обучения нейросети модуля принятия решений Stego Revealer в {DateTime.Now:ss:mm:HH dd:MM:yyyy}");
-        var overallTimer = Stopwatch.StartNew();  // Глобальный таймер
-        var rnd = new Random();
+        var startParams = new StartParams();
 
-        // Проверка переданных флагов
-        bool skipPreparing = args.Any(arg => SkipPreparingFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        bool skipAnalysis = args.Any(arg => SkipAnalysisFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        if (skipPreparing)
-            Logger.LogWarning("Шаг подготовки изображений и скрытия информации пропущен согласно входной настройке");
-        if (skipAnalysis)
-            Logger.LogWarning("Шаг анализа изображений и сбора данных пропущен согласно входной настройке");
-
-        Logger.LogInfo($"Стартовые параметры:\n\tInputDataImagesDirPath = {Constants.InputDataImagesDirPath}\n\tInputDataTextFilePath = {Constants.InputDataTextFilePath}\n" +
-            $"\tOutputDirPath = {Constants.OutputDirPath}\n\tOutputLogFilePath = {Constants.OutputLogFilePath}\n\tOutputAnalysisDataFilePath = {Constants.OutputAnalysisDataFilePath}\n" +
-            $"\tNoHidingChangeAdvantage = {Constants.NoHidingChangeAdvantage}");
-
-        // Очистка выходного каталога
-        ClearOutputDirectory(onlyAnalysisFilesClear: skipPreparing);
-
-        // Изображения для анализа - либо заполнятся на этапе подготовки, либо (если 1 этап пропускаем) будут взяты из каталога Output
-        var outputImages = new ConcurrentBag<OutputImage>();
-
-
-        // //////
-        // Подготовка картинок со скрытой информацией
-        // //////
-        long imagePreparingDurationMs = 0;
-        if (!skipPreparing)
+        bool needHelp = args.Any(arg => HelpFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        if (!needHelp)
         {
-            var imagePreparingTimer = Stopwatch.StartNew();  // Таймер подготовки картинок
+            var usedFlags = new List<string>();
 
-            // Инициализация данных
-            var inputImages = Directory.GetFiles(Constants.InputDataImagesDirPath);
-            TextDataHelper.InitializeTextFile(Constants.InputDataTextFilePath);
-
-            inputImages = inputImages.Where(imgPath => Constants.ImagesExtensions.Contains(Path.GetExtension(imgPath))).ToArray();
-            Logger.LogInfo("Изображения, взятые в обработку:");
-            Logger.LogRawEnumerable(inputImages, asColumn: true, toString: str => $"\t{str}");
-            Logger.LogSeparator();
-
-            var allDiapasonesId = Enumerable.Range(1, 10).ToList();
-            Logger.LogInfo("Начат процесс обработки изображений: подготовки скрытия информации в них различными способами");
-
-            // Формирование и запуск задач по каждому изображению
-            var imagePreparingTasks = new List<Task>();
-            foreach (var imgPath in inputImages)
+            foreach (var arg in args)
             {
-                imagePreparingTasks.Add(Task.Run(async () =>
+                if (SkipPreparingFlag.Contains(arg))
                 {
-                    var img = new ImageHandler(imgPath);
-                    Logger.LogInfo($"Начата обработка изображения {img.ImgName}");
-
-                    string originImageCopyPath = Path.Combine(Constants.OutputDirPath, Path.GetFileName(imgPath));
-                    File.Copy(imgPath, originImageCopyPath);
-                    outputImages.Add(new OutputImage { Path = originImageCopyPath, Hided = false });
-                    Logger.LogInfo($"Изображение {img.ImgName} с пустым контейнером добавлено в выходной каталог");
-
-                    int diapasonesNum = Math.Max(0, rnd.Next(-Constants.NoHidingChangeAdvantage, 11));
-                    Logger.LogInfo($"Для изображения {img.ImgName} выбрано выбрано количество диапазонов: {diapasonesNum}");
-
-                    if (diapasonesNum > 0)
-                    {
-                        var selectedDiapasones = allDiapasonesId.OrderBy(e => rnd.Next()).Take(diapasonesNum).ToList();
-                        Logger.LogInfo($"Выбранные диапазоны для изображения {img.ImgName}: " +
-                            $"{string.Join(", ", selectedDiapasones.Select(id => Constants.Diapasones[id].ToString()))}");
-
-                        var diapasonesTasks = new List<Task>();
-                        foreach (var selectedDiapasoneId in selectedDiapasones)
-                            diapasonesTasks.Add(Task.Run(() => HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], outputImages)));
-
-                        foreach (var task in diapasonesTasks)
-                            await task;
-                    }
-
-                    img.CloseHandler();
-                    Logger.LogInfo($"Завершена обработка изображения {img.ImgName}");
-                }));
-            }
-
-            // Ожидание задач подготовки изображений
-            foreach (var imagePreparingTask in imagePreparingTasks)
-                await imagePreparingTask;
-
-            imagePreparingTimer.Stop();
-            imagePreparingDurationMs = imagePreparingTimer.ElapsedMilliseconds;
-
-            Logger.LogInfo("Завершена обработка изображений и операции по скрытию данных, длительность: " +
-                Helper.GetFormattedElapsedTime(imagePreparingDurationMs));
-            Logger.LogSeparator();
-        }
-
-
-        // //////
-        // Анализ и сбор данных
-        // //////
-        long imageAnalysisDurationMs = 0;
-        if (!skipAnalysis)
-        {
-            var imageAnalysisTimer = Stopwatch.StartNew();  // Таймер анализа и сбора данных
-
-            if (outputImages.IsEmpty)
-            {
-                var outputFiles = Directory.GetFiles(Constants.OutputDirPath).ToList();
-                var outputImageFiles = outputFiles.Where(path => Constants.ImagesExtensions.Contains(Path.GetExtension(path))).ToList();
-                outputFiles = outputFiles.Select(path => Path.GetFileName(path)).ToList();  // После получения списка путей картинок нужны только имена файлов каталога
-                foreach (var outputImageFile in outputImageFiles)
-                {
-                    string imgName = Path.GetFileNameWithoutExtension(outputImageFile);
-                    outputImages.Add(new OutputImage
-                    {
-                        Path = outputImageFile,
-
-                        // Если записали инфо-файл, значит скрытие было, картинки без инфо-файлов считаются как картинки с пустым контейнером
-                        Hided = outputFiles.Contains(imgName + Constants.InfoFilePostfix + Constants.InfoFileExt)
-                    });
+                    if (usedFlags.Contains(nameof(SkipPreparingFlag)))
+                        needHelp = true;
+                    usedFlags.Add(nameof(SkipPreparingFlag));
                 }
-            }
-
-            var shuffledOutputImages = outputImages.OrderBy(e => rnd.Next()).ToList();
-            Logger.LogInfo("Все изображения, принятые к анализу:");
-            Logger.LogRawEnumerable(shuffledOutputImages, asColumn: true, toString: oi => $"\t{Path.GetFileName(oi.Path)}");
-            Logger.LogSeparator();
-
-            var analysisData = new ConcurrentBag<ImageAnalysisData>();
-            Logger.LogInfo("Начат процесс анализа и сбора данных об изображениях");
-
-            // Временный .txt-файл с CSV-строками для уже обработанных изображений - на случай вылета во время анализа
-            // (изображения со скрытием сохраняются сразу и так, а здесь при прерывании можно будет получить те данные анализа, которые успели собрать)
-            StreamWriter? tempAnalysisDataFileWriter = null;
-            try
-            {
-                tempAnalysisDataFileWriter = new StreamWriter(Constants.OutputTempAnalysisDataFilePath, append: false);
-                WriteTempFileHeader(tempAnalysisDataFileWriter);
-                Logger.LogInfo($"Создан файл для временной записи проанализированных данных по пути '{Constants.OutputTempAnalysisDataFilePath}'");
-            }
-            catch (Exception ex)
-            {
-                tempAnalysisDataFileWriter = null;
-                Logger.LogError("Не удалось создать файл для временной записи проанализированных данных. Ошибка: \n" + ex.Message);
-            }
-
-            // Формирование и запуск задач анализа для каждого изображения
-            var imageAnalysisTasks = new List<Task>();
-            foreach (var imageInfo in shuffledOutputImages)
-            {
-                imageAnalysisTasks.Add(Task.Run(async () =>
+                else if (SkipAnalysisFlag.Contains(arg))
                 {
-                    string imgName = Path.GetFileName(imageInfo.Path);
-                    Logger.LogInfo($"Начат анализ изображения {imgName}");
-                    var analysisResult = await AnalyseImage(imageInfo);
+                    if (usedFlags.Contains(nameof(SkipAnalysisFlag)))
+                        needHelp = true;
+                    usedFlags.Add(nameof(SkipAnalysisFlag));
+                }
+                else if (WeakCalculationsPoolFlag.Contains(arg))
+                {
+                    if (usedFlags.Contains(nameof(WeakCalculationsPoolFlag)))
+                        needHelp = true;
+                    usedFlags.Add(nameof(WeakCalculationsPoolFlag));
+                }
+                else
+                    needHelp = true;
 
-                    if (analysisResult is not null)
-                    {
-                        analysisData.Add(analysisResult);
-                        Logger.LogInfo($"Успешно завершён анализ изображения {imgName}, собранные данные записаны в финальный датасет");
-
-                        WriteAsCsvStringToTempFile(tempAnalysisDataFileWriter, analysisResult, imgName);
-                    }
-                    else
-                    {
-                        Logger.LogError($"Ошибка при анализе изображения {imgName}, данные не включены в финальный датасет");
-                    }
-                }));
+                if (needHelp)
+                    break;
             }
-
-            // Ожидание задач анализа
-            foreach (var imageAnalysisTask in imageAnalysisTasks)
-                await imageAnalysisTask;
-
-            tempAnalysisDataFileWriter?.Close();
-            imageAnalysisTimer.Stop();
-            imageAnalysisDurationMs = imageAnalysisTimer.ElapsedMilliseconds;
-
-            Logger.LogInfo($"Завершён анализ изображений и сбор данных по ним для финального датасета, длительность: " +
-                Helper.GetFormattedElapsedTime(imageAnalysisDurationMs));
-            Logger.LogSeparator();
-
-            // Запись результатов анализа и сбора данных в CSV
-            WriteAnalysisDataToCsv(analysisData);
-            Logger.LogInfo("Собранные данные записаны в CSV-файл");
+        }
+        
+        if (needHelp)
+        {
+            PrintHelp();
+            return null;
         }
 
+        startParams.SkipPreparing = args.Any(arg => SkipPreparingFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        startParams.SkipAnalysis = args.Any(arg => SkipAnalysisFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        startParams.UseWeakPoolForCalculations = args.Any(arg => WeakCalculationsPoolFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
 
-        // Остановка таймера, окончание работы программы
-        overallTimer.Stop();
-        Logger.LogInfo("Завершена работа скрипта подготовки данных анализа для обучения нейросети модуля принятия решений Stego Revealer, длительность: " +
-            Helper.GetFormattedElapsedTime(overallTimer.ElapsedMilliseconds) +
-            (!(skipPreparing && skipAnalysis) ? ", из них:" : "") +
-            (!skipPreparing ? ("\n\tвремя подготовки картинок: " + Helper.GetFormattedElapsedTime(imagePreparingDurationMs)) : "") +
-            (!skipAnalysis ? ("\n\tвремя анализа картинок: " + Helper.GetFormattedElapsedTime(imageAnalysisDurationMs)) : ""));
+        return startParams;
     }
+
+    private static void PrintHelp() =>
+        Console.WriteLine("Флаги:\n\tПропустить подготовку и скрытие: -nh\n\tПропустить анализ и сбор данных: -na\n\tОграниченный пул вычислительных задач: -sp");
+
+    public static void Main(string[] args)
+    {
+        var startParams = ParseParams(args);
+        if (startParams is null)
+            return;
+
+        var preparer = new DataPreparer(startParams);
+        preparer.Execute();
+        return;
+
+
+        //Logger.LogInfo($"Запущен скрипт подготовки данных анализа для обучения нейросети модуля принятия решений Stego Revealer в {DateTime.Now:ss:mm:HH dd:MM:yyyy}");
+        //var overallTimer = Stopwatch.StartNew();  // Глобальный таймер
+        //var rnd = new Random();
+
+        //// Проверка переданных флагов
+        //bool skipPreparing = args.Any(arg => SkipPreparingFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        //bool skipAnalysis = args.Any(arg => SkipAnalysisFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        //if (skipPreparing)
+        //    Logger.LogWarning("Шаг подготовки изображений и скрытия информации пропущен согласно входной настройке");
+        //if (skipAnalysis)
+        //    Logger.LogWarning("Шаг анализа изображений и сбора данных пропущен согласно входной настройке");
+
+        //ParallelByImagesOnly = args.Any(arg => ParallelByImages.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        //TaskPool.ConsiderRealRunningTasksOnly = !ParallelByImagesOnly;
+
+        //Logger.LogInfo($"Стартовые параметры:\n\tInputDataImagesDirPath = {Constants.InputDataImagesDirPath}\n\tInputDataTextFilePath = {Constants.InputDataTextFilePath}\n" +
+        //    $"\tOutputDirPath = {Constants.OutputDirPath}\n\tOutputLogFilePath = {Constants.OutputLogFilePath}\n\tOutputAnalysisDataFilePath = {Constants.OutputAnalysisDataFilePath}\n" +
+        //    $"\tNoHidingChangeAdvantage = {Constants.NoHidingChangeAdvantage}\n\tParallelByImagesOnly = {ParallelByImagesOnly}\n\tProcessorCount = {Environment.ProcessorCount}");
+
+        //// Очистка выходного каталога
+        //ClearOutputDirectory(onlyAnalysisFilesClear: skipPreparing);
+
+        //// Изображения для анализа - либо заполнятся на этапе подготовки, либо (если 1 этап пропускаем) будут взяты из каталога Output
+        //var outputImages = new ConcurrentBag<OutputImage>();
         
-    private static async Task<OutputImageProcessingInfo?> HideAsLinearLsb(ImageHandler img, MinMaxData diapasone)
+
+        //// //////
+        //// Подготовка картинок со скрытой информацией
+        //// //////
+        //long imagePreparingDurationMs = 0;
+        //if (!skipPreparing)
+        //{
+        //    var imagePreparingTimer = Stopwatch.StartNew();  // Таймер подготовки картинок
+
+        //    // Инициализация данных
+        //    var inputImages = Directory.GetFiles(Constants.InputDataImagesDirPath);
+        //    TextDataHelper.InitializeTextFile(Constants.InputDataTextFilePath);
+
+        //    inputImages = inputImages.Where(imgPath => Constants.ImagesExtensions.Contains(Path.GetExtension(imgPath))).ToArray();
+        //    Logger.LogInfo("Изображения, взятые в обработку:");
+        //    Logger.LogRawEnumerable(inputImages, asColumn: true, toString: str => $"\t{str}");
+        //    Logger.LogSeparator();
+
+        //    var allDiapasonesId = Enumerable.Range(1, 10).ToList();
+        //    Logger.LogInfo("Начат процесс обработки изображений: подготовки скрытия информации в них различными способами");
+
+        //    // Формирование и запуск задач по каждому изображению
+        //    var imagePreparingTasks = new List<Task>();
+        //    foreach (var imgPath in inputImages)
+        //    {
+        //        imagePreparingTasks.Add(CreateTask(() =>
+        //        {
+        //            var img = new ImageHandler(imgPath);
+        //            Logger.LogInfo($"Начата обработка изображения {img.ImgName}");
+
+        //            string originImageCopyPath = Path.Combine(Constants.OutputDirPath, Path.GetFileName(imgPath));
+        //            File.Copy(imgPath, originImageCopyPath);
+        //            outputImages.Add(new OutputImage { Path = originImageCopyPath, Hided = false });
+        //            Logger.LogInfo($"Изображение {img.ImgName} с пустым контейнером добавлено в выходной каталог");
+
+        //            int diapasonesNum = Math.Max(0, rnd.Next(-Constants.NoHidingChangeAdvantage, 11));
+        //            Logger.LogInfo($"Для изображения {img.ImgName} выбрано выбрано количество диапазонов: {diapasonesNum}");
+
+        //            if (diapasonesNum > 0)
+        //            {
+        //                var selectedDiapasones = allDiapasonesId.OrderBy(e => rnd.Next()).Take(diapasonesNum).ToList();
+        //                Logger.LogInfo($"Выбранные диапазоны для изображения {img.ImgName}: " +
+        //                    $"{string.Join(", ", selectedDiapasones.Select(id => Constants.Diapasones[id].ToString()))}");
+
+        //                var diapasonesTasks = new List<Task>();
+        //                foreach (var selectedDiapasoneId in selectedDiapasones)
+        //                    diapasonesTasks.Add(CreateTask(() => HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], outputImages), inTaskPool: !ParallelByImagesOnly));
+
+        //                foreach (var task in diapasonesTasks)
+        //                {
+        //                    task.Wait();
+        //                    task.Dispose();
+        //                }
+        //            }
+
+        //            img.CloseHandler();
+        //            Logger.LogInfo($"Завершена обработка изображения {img.ImgName}");
+        //        }, inTaskPool: true));
+        //    }
+
+        //    // Ожидание задач подготовки изображений
+        //    foreach (var imagePreparingTask in imagePreparingTasks)
+        //    {
+        //        imagePreparingTask.Wait();
+        //        imagePreparingTask.Dispose();
+        //    }
+
+        //    imagePreparingTimer.Stop();
+        //    imagePreparingDurationMs = imagePreparingTimer.ElapsedMilliseconds;
+
+        //    Logger.LogInfo("Завершена обработка изображений и операции по скрытию данных, длительность: " +
+        //        Helper.GetFormattedElapsedTime(imagePreparingDurationMs));
+        //    Logger.LogSeparator();
+        //}
+
+
+        //// //////
+        //// Анализ и сбор данных
+        //// //////
+        //long imageAnalysisDurationMs = 0;
+        //if (!skipAnalysis)
+        //{
+        //    var imageAnalysisTimer = Stopwatch.StartNew();  // Таймер анализа и сбора данных
+
+        //    if (outputImages.IsEmpty)
+        //    {
+        //        var outputFiles = Directory.GetFiles(Constants.OutputDirPath).ToList();
+        //        var outputImageFiles = outputFiles.Where(path => Constants.ImagesExtensions.Contains(Path.GetExtension(path))).ToList();
+        //        outputFiles = outputFiles.Select(path => Path.GetFileName(path)).ToList();  // После получения списка путей картинок нужны только имена файлов каталога
+        //        foreach (var outputImageFile in outputImageFiles)
+        //        {
+        //            string imgName = Path.GetFileNameWithoutExtension(outputImageFile);
+        //            outputImages.Add(new OutputImage
+        //            {
+        //                Path = outputImageFile,
+
+        //                // Если записали инфо-файл, значит скрытие было, картинки без инфо-файлов считаются как картинки с пустым контейнером
+        //                Hided = outputFiles.Contains(imgName + Constants.InfoFilePostfix + Constants.InfoFileExt)
+        //            });
+        //        }
+        //    }
+
+        //    var shuffledOutputImages = outputImages.OrderBy(e => rnd.Next()).ToList();
+        //    Logger.LogInfo("Все изображения, принятые к анализу:");
+        //    Logger.LogRawEnumerable(shuffledOutputImages, asColumn: true, toString: oi => $"\t{Path.GetFileName(oi.Path)}");
+        //    Logger.LogSeparator();
+
+        //    var analysisData = new ConcurrentBag<ImageAnalysisData>();
+        //    Logger.LogInfo("Начат процесс анализа и сбора данных об изображениях");
+
+        //    // Временный .txt-файл с CSV-строками для уже обработанных изображений - на случай вылета во время анализа
+        //    // (изображения со скрытием сохраняются сразу и так, а здесь при прерывании можно будет получить те данные анализа, которые успели собрать)
+        //    StreamWriter? tempAnalysisDataFileWriter = null;
+        //    try
+        //    {
+        //        tempAnalysisDataFileWriter = new StreamWriter(Constants.OutputTempAnalysisDataFilePath, append: false);
+        //        WriteTempFileHeader(tempAnalysisDataFileWriter);
+        //        Logger.LogInfo($"Создан файл для временной записи проанализированных данных по пути '{Constants.OutputTempAnalysisDataFilePath}'");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        tempAnalysisDataFileWriter = null;
+        //        Logger.LogError("Не удалось создать файл для временной записи проанализированных данных. Ошибка: \n" + ex.Message);
+        //    }
+
+        //    // Формирование и запуск задач анализа для каждого изображения
+        //    var imageAnalysisTasks = new List<Task>();
+        //    foreach (var imageInfo in shuffledOutputImages)
+        //    {
+        //        imageAnalysisTasks.Add(CreateTask(() =>
+        //        {
+        //            string imgName = Path.GetFileName(imageInfo.Path);
+        //            Logger.LogInfo($"Начат анализ изображения {imgName}");
+        //            var analysisResult = AnalyseImage(imageInfo);
+
+        //            if (analysisResult is not null)
+        //            {
+        //                analysisData.Add(analysisResult);
+        //                Logger.LogInfo($"Успешно завершён анализ изображения {imgName}, собранные данные записаны в финальный датасет");
+
+        //                WriteAsCsvStringToTempFile(tempAnalysisDataFileWriter, analysisResult, imgName);
+        //            }
+        //            else
+        //            {
+        //                Logger.LogError($"Ошибка при анализе изображения {imgName}, данные не включены в финальный датасет");
+        //            }
+
+        //            GC.Collect();
+        //        }, inTaskPool: true));
+        //    }
+
+        //    // Ожидание задач анализа
+        //    foreach (var imageAnalysisTask in imageAnalysisTasks)
+        //    {
+        //        imageAnalysisTask.Wait();
+        //        imageAnalysisTask.Dispose();
+        //    }
+
+        //    tempAnalysisDataFileWriter?.Close();
+        //    imageAnalysisTimer.Stop();
+        //    imageAnalysisDurationMs = imageAnalysisTimer.ElapsedMilliseconds;
+
+        //    Logger.LogInfo($"Завершён анализ изображений и сбор данных по ним для финального датасета, длительность: " +
+        //        Helper.GetFormattedElapsedTime(imageAnalysisDurationMs));
+        //    Logger.LogSeparator();
+
+        //    // Запись результатов анализа и сбора данных в CSV
+        //    WriteAnalysisDataToCsv(analysisData);
+        //    Logger.LogInfo("Собранные данные записаны в CSV-файл");
+        //}
+
+
+        //// Остановка таймера, окончание работы программы
+        //overallTimer.Stop();
+        //Logger.LogInfo("Завершена работа скрипта подготовки данных анализа для обучения нейросети модуля принятия решений Stego Revealer, длительность: " +
+        //    Helper.GetFormattedElapsedTime(overallTimer.ElapsedMilliseconds) +
+        //    (!(skipPreparing && skipAnalysis) ? ", из них:" : "") +
+        //    (!skipPreparing ? ("\n\tвремя подготовки картинок: " + Helper.GetFormattedElapsedTime(imagePreparingDurationMs)) : "") +
+        //    (!skipAnalysis ? ("\n\tвремя анализа картинок: " + Helper.GetFormattedElapsedTime(imageAnalysisDurationMs)) : ""));
+    }
+    
+    private static OutputImageProcessingInfo? HideAsLinearLsb(ImageHandler img, MinMaxData diapasone)
     {
         Logger.LogInfo($"Процесс линейного скрытия в НЗБ для {img.ImgName} в диапазоне {diapasone}");
         var timer = Stopwatch.StartNew();
@@ -263,10 +346,11 @@ public static class Program
             var hider = new LsbHider(img);
             hider.Params.TraverseType = traverseType;
 
-            var hideTask = Task.Run(() => hider.Hide(dataToHide.Data, newImagePath));
-            await hideTask;
+            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), inTaskPool: !ParallelByImagesOnly);
+            hideTask.Wait();
             var hideResult = hideTask.Result;
             timer.Stop();
+            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -297,7 +381,7 @@ public static class Program
         return null;
     }
 
-    private static async Task<OutputImageProcessingInfo?> HideAsRandomLsb(ImageHandler img, MinMaxData diapasone)
+    private static OutputImageProcessingInfo? HideAsRandomLsb(ImageHandler img, MinMaxData diapasone)
     {
         Logger.LogInfo($"Процесс псевдослучайного скрытия в НЗБ для {img.ImgName} в диапазоне {diapasone}");
         var timer = Stopwatch.StartNew();
@@ -317,10 +401,11 @@ public static class Program
             var hider = new LsbHider(img);
             hider.Params.Seed = seed;
 
-            var hideTask = Task.Run(() => hider.Hide(dataToHide.Data, newImagePath));
-            await hideTask;
+            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), inTaskPool: !ParallelByImagesOnly);
+            hideTask.Wait();
             var hideResult = hideTask.Result;
             timer.Stop();
+            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -351,7 +436,7 @@ public static class Program
         return null;
     }
 
-    private static async Task<OutputImageProcessingInfo?> HideAsLinearKzh(ImageHandler img, MinMaxData diapasone)
+    private static OutputImageProcessingInfo? HideAsLinearKzh(ImageHandler img, MinMaxData diapasone)
     {
         Logger.LogInfo($"Процесс линейного скрытия по Коха-Жао для {img.ImgName} в диапазоне {diapasone}");
         var timer = Stopwatch.StartNew();
@@ -372,10 +457,11 @@ public static class Program
             hider.Params.TraverseType = traverseType;
             hider.Params.Threshold = rnd.Next(50, 120);
 
-            var hideTask = Task.Run(() => hider.Hide(dataToHide.Data, newImagePath));
-            await hideTask;
+            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), inTaskPool: !ParallelByImagesOnly);
+            hideTask.Wait();
             var hideResult = hideTask.Result;
             timer.Stop();
+            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -406,7 +492,7 @@ public static class Program
         return null;
     }
 
-    private static async void HideInDiapasone(ImageHandler img, MinMaxData diapasone, ConcurrentBag<OutputImage> outputImages)
+    private static void HideInDiapasone(ImageHandler img, MinMaxData diapasone, ConcurrentBag<OutputImage> outputImages)
     {
         var rnd = new Random();
 
@@ -428,32 +514,35 @@ public static class Program
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsLinearLsb(currentHandler, diapasone), outputImages)));
+            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsLinearLsb(currentHandler, diapasone), outputImages), inTaskPool: !ParallelByImagesOnly));
         }
         if (hideRandomLsb)
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsRandomLsb(currentHandler, diapasone), outputImages)));
+            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsRandomLsb(currentHandler, diapasone), outputImages), inTaskPool: !ParallelByImagesOnly));
         }
         if (hideLinearKzh)
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsLinearKzh(currentHandler, diapasone), outputImages)));
+            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsLinearKzh(currentHandler, diapasone), outputImages), inTaskPool: !ParallelByImagesOnly));
         }
 
         foreach (var task in hidingTasks)
-            await task;
+        {
+            task.Wait();
+            task.Dispose();
+        }
 
         foreach (var handler in currentHandlers)
             handler.CloseHandler();
         Logger.LogInfo($"Завершено скрытие по выбранным методам для изображения {img.ImgName} в диапазоне {diapasone}");
     }
 
-    private static async Task ExecuteHiding(Func<Task<OutputImageProcessingInfo?>> hidingMethod, ConcurrentBag<OutputImage> outputImages)
+    private static void ExecuteHiding(Func<OutputImageProcessingInfo?> hidingMethod, ConcurrentBag<OutputImage> outputImages)
     {
-        var processingResult = await hidingMethod();
+        var processingResult = hidingMethod();
         if (processingResult is not null)
         {
             WriteOutputImageProcessingInfo(processingResult);
@@ -463,9 +552,11 @@ public static class Program
                 $"со скрытыми данными на основе изображения {Path.GetFileName(processingResult.OriginImagePath)}, " +
                 $"подробная информация записана в соответствующий текстовый файл");
         }
+
+        GC.Collect();
     }
 
-    private static async Task<ImageAnalysisData?> AnalyseImage(OutputImage imageInfo)
+    private static ImageAnalysisData? AnalyseImage(OutputImage imageInfo)
     {
         string imgName = Path.GetFileName(imageInfo.Path);
         Logger.LogInfo($"Начат процесс анализа и сбора данных для {imgName}");
@@ -499,16 +590,19 @@ public static class Program
         StatmResult? statmResult = null;
         var analysisTasks = new List<Task>
         {
-            Task.Run(() => horizonalChiSqrResult = horizonalChiSqr.Analyse()),
-            Task.Run(() => verticalChiSqrResult = verticalChiSqr.Analyse()),
-            Task.Run(() => horizonotalKzhaResult = horizonotalKzha.Analyse()),
-            Task.Run(() => verticalKzhaResult = verticalKzha.Analyse()),
-            Task.Run(() => rsResult = rs.Analyse()),
-            Task.Run(() => statmResult = statm.Analyse())
+            CreateTask(() => horizonalChiSqrResult = horizonalChiSqr.Analyse(), inTaskPool: !ParallelByImagesOnly),
+            CreateTask(() => verticalChiSqrResult = verticalChiSqr.Analyse(), inTaskPool : !ParallelByImagesOnly),
+            CreateTask(() => horizonotalKzhaResult = horizonotalKzha.Analyse(), inTaskPool : !ParallelByImagesOnly),
+            CreateTask(() => verticalKzhaResult = verticalKzha.Analyse(), inTaskPool : !ParallelByImagesOnly),
+            CreateTask(() => rsResult = rs.Analyse(), inTaskPool : !ParallelByImagesOnly),
+            CreateTask(() => statmResult = statm.Analyse(), inTaskPool : !ParallelByImagesOnly)
         };
 
         foreach (var task in analysisTasks)
-            await task;
+        {
+            task.Wait();
+            task.Dispose();
+        }
 
         timer.Stop();
 
@@ -644,4 +738,7 @@ public static class Program
     
     private static int ContainerVolumeForLsb(ImageHandler img) => img.Height * img.Width * 3;
     private static int ContainerVolumeForKzh(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
+
+    private static Task<T> CreateTask<T>(Func<T> task, bool inTaskPool) => inTaskPool ? TaskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
+    private static Task CreateTask(Action task, bool inTaskPool) => inTaskPool ? TaskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
 }

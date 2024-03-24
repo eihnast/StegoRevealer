@@ -1,7 +1,10 @@
-﻿namespace StegoRevealer.Utils.DataPreparer.Lib;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace StegoRevealer.Utils.DataPreparer.Lib;
 
 public static class Helper
 {
+    [UnconditionalSuppressMessage("SingleFile", "IL3000:Avoid accessing Assembly file path when publishing as a single file", Justification = "<Pending>")]
     public static string GetAssemblyDir()
     {
         string path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location) ?? string.Empty;
