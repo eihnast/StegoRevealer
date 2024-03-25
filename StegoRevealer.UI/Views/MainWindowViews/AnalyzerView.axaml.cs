@@ -41,11 +41,11 @@ public partial class AnalyzerView : UserControl
 
 
     // Запуск стегоанализа
-    private void StartAnalysis_Click(object sender, RoutedEventArgs e)
+    private async void StartAnalysis_Click(object sender, RoutedEventArgs e)
     {
         _vm.ResetResults();  // Сбрасываем результаты
         ResetResultsExpander();  // Сбрасываем форму результатов
-        _vm.StartAnalysis();  // Запускаем стегоанализ
+        await _vm.StartAnalysis();  // Запускаем стегоанализ
 
         UpdateResults();  // Обновляем форму результатов
         _vm.IsMethodsOpened = false;  // Переключение экспандера

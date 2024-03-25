@@ -1,6 +1,5 @@
 ﻿using SkiaSharp;
 using System.Collections.Concurrent;
-using System.Reflection.Metadata.Ecma335;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -15,7 +14,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// <summary>
 /// Класс изображения
 /// </summary>
-public class ScImage
+public class ScImage : IDisposable
 {
     /// <summary>
     /// Объект изображения
@@ -89,17 +88,16 @@ public class ScImage
     {
         get 
         {
-            if (_image is not null)
-            {
-                var pixel = _image.GetPixel(x, y);
-                return ScPixel.FromSkColor(pixel);
-            }
-            return new ScPixel();
+            if (_image is null)
+                throw new Exception("Image is null");
+            var pixel = _image.GetPixel(x, y);
+            return ScPixel.FromSkColor(pixel);
         }
         set
         {
-            if (_image is not null)
-                _image.SetPixel(x, y, value.ToSkColor());
+            if (_image is null)
+                throw new Exception("Image is null");
+            _image.SetPixel(x, y, value.ToSkColor());
         }
     }
 
@@ -352,21 +350,28 @@ public class ScImage
     }
 
 
-    /// <summary>
-    /// Деструктор
-    /// </summary>
-    ~ScImage()
-    {
-        Dispose();
-    }
-
-    // Метод выгрузки текущего объекта
+    // Деструктор
+    private bool _isDisposed = false;
     public void Dispose()
     {
-        CloseCurrentStreams();  // Закрытие открытых потоков
-        if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
-            _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed)
+            return;
+
+        if (disposing)
+        {
+            CloseCurrentStreams();  // Закрытие открытых потоков
+            if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
+                _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
+        }
+
+        _isDisposed = true;
+    }
+    ~ScImage() => Dispose(false);
 
 
     // Методы сохранения

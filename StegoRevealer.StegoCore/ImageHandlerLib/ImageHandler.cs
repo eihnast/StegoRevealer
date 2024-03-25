@@ -5,7 +5,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// <summary>
 /// Обработчик изображения (StegoCore-класс представления изображения)
 /// </summary>
-public class ImageHandler
+public class ImageHandler : IDisposable
 {
     private ScImage _image;  // Изображение
 
@@ -129,14 +129,34 @@ public class ImageHandler
     {
         return (_image.Width, _image.Height, _image.Depth);
     }
-    
+
+
+    // Деструктор
+    private bool _isDisposed = false;
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed)
+            return;
+
+        if (disposing)
+        {
+            CloseHandler();
+        }
+
+        _isDisposed = true;
+    }
+    ~ImageHandler() => Dispose(false);
+
     /// <summary>
     /// Закрывает обработчик и "отпускает" файл изображения
     /// </summary>
-    public void CloseHandler()
-    {
-        _image.Dispose();
-    }
+    public void CloseHandler() => _image.Dispose();
+
 
     /// <summary>
     /// Вывод массива пикселей

@@ -285,36 +285,40 @@ public class SharpnessCalculator
         {
             for (int x = 0; x < width; x++)
             {
-                try
+                int q = 255;
+                int r = 255;
+
+                if ((angles[y, x] is >= 0 and < 22.5) || (angles[y, x] is >= 157.5 and <= 180))  // Angle 0
                 {
-                    int q = 255;
-                    int r = 255;
-
-                    if ((angles[y, x] is >= 0 and < 22.5) || (angles[y, x] is >= 157.5 and <= 180))  // Angle 0
-                    {
-                        q = pixelsArray[y, x + 1];
-                        r = pixelsArray[y, x - 1];
-                    }
-                    else if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
-                    {
-                        q = pixelsArray[y + 1, x - 1];
-                        r = pixelsArray[y - 1, x + 1];
-                    }
-                    else if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
-                    {
-                        q = pixelsArray[y + 1, x];
-                        r = pixelsArray[y - 1, x];
-                    }
-                    else if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
-                    {
-                        q = pixelsArray[y - 1, x - 1];
-                        r = pixelsArray[y + 1, x + 1];
-                    }
-
-                    if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
-                        supressedArray[y, x] = pixelsArray[y, x];
+                    if (x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y, x + 1];
+                    r = pixelsArray[y, x - 1];
                 }
-                catch { }
+                else if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
+                {
+                    if (y + 1 >= height || y - 1 < 0 || x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y + 1, x - 1];
+                    r = pixelsArray[y - 1, x + 1];
+                }
+                else if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
+                {
+                    if (y + 1 >= height || y - 1 < 0)
+                        continue;
+                    q = pixelsArray[y + 1, x];
+                    r = pixelsArray[y - 1, x];
+                }
+                else if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
+                {
+                    if (y + 1 >= height || y - 1 < 0 || x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y - 1, x - 1];
+                    r = pixelsArray[y + 1, x + 1];
+                }
+
+                if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
+                    supressedArray[y, x] = pixelsArray[y, x];
             }
         }
 

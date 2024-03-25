@@ -381,7 +381,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Запуск процесса стегоанализа для указанных выбранных методов
     /// </summary>
-    public void StartAnalysis()
+    public async Task StartAnalysis()
     {
         Logger.LogInfo("Starting steganalysis");
         if (ActiveMethods.Count(m => m.Value is true) == 0)
@@ -398,34 +398,31 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (ActiveMethods[AnalyzerMethod.ChiSquare] && _chiSquareParameters is not null)  // Хи-квадрат
         {
             var chiSqrMethodAnalyzer = new ChiSquareAnalyser(_chiSquareParameters);
-            methodTasks[AnalyzerMethod.ChiSquare] = new Task<ILoggedAnalysisResult>(() => chiSqrMethodAnalyzer.Analyse());
+            methodTasks[AnalyzerMethod.ChiSquare] = Task.Run(() => chiSqrMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
         if (ActiveMethods[AnalyzerMethod.RegularSingular] && _rsParameters is not null)  // RS
         {
             var rsMethodAnalyzer = new RsAnalyser(_rsParameters);
-            methodTasks[AnalyzerMethod.RegularSingular] = new Task<ILoggedAnalysisResult>(() => rsMethodAnalyzer.Analyse());
+            methodTasks[AnalyzerMethod.RegularSingular] = Task.Run(() => rsMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
         if (ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
         {
             var kzhaMethodAnalyzer = new KzhaAnalyser(_kzhaParameters);
-            methodTasks[AnalyzerMethod.KochZhaoAnalysis] = new Task<ILoggedAnalysisResult>(() => kzhaMethodAnalyzer.Analyse());
+            methodTasks[AnalyzerMethod.KochZhaoAnalysis] = Task.Run(() => kzhaMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
         if (CurrentImage is not null)
         {
             var statmAnalyzer = new StatmAnalyser(CurrentImage);
-            methodTasks[AnalyzerMethod.Statm] = new Task<ILoggedAnalysisResult>(() => statmAnalyzer.Analyse());
+            methodTasks[AnalyzerMethod.Statm] = Task.Run(() => statmAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стегоанализа
         Logger.LogInfo("Starting steganalysis operations");
 
-        // Запуск
-        foreach (var methodTask in methodTasks)
-            methodTask.Value?.Start();
-
         // Ожидание
         foreach (var methodTask in methodTasks)
-            methodTask.Value?.Wait();
+            if (methodTask.Value is not null)  // methodTask.Value?.Wait();
+                await methodTask.Value;
 
         // Сбор результатов
         foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
