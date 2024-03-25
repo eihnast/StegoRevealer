@@ -127,16 +127,20 @@ public class Logger : IDisposable
         }
     }
 
+    private object _loggerLock = new object();
     private void LogInner(string message, MessageType? type = null, bool raw = false)
     {
-        if (raw)
+        lock (_loggerLock)
         {
-            WriteStringInLog(message, lineFeed: false);
-            return;
-        }
+            if (raw)
+            {
+                WriteStringInLog(message, lineFeed: false);
+                return;
+            }
 
-        string dateTimePrefix = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ");
-        string typePrefix = type is not null ? PrefixDictionary[type.Value] : string.Empty;
-        WriteStringInLog(dateTimePrefix + typePrefix + message, !raw);
+            string dateTimePrefix = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ");
+            string typePrefix = type is not null ? PrefixDictionary[type.Value] : string.Empty;
+            WriteStringInLog(dateTimePrefix + typePrefix + message, !raw);
+        }
     }
 }

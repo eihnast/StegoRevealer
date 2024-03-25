@@ -64,7 +64,7 @@ public class DataPreparer
     // - каждую картинку анализируем и собираем следующие данные:
     //     ChiSqr, RS, шум, резкость, размытость, контрастность, оценки энтропии, ширина и высота...;
     // - собранные данные записываем в CSV-файл.
-    public void Execute()
+    public async Task Execute()
     {
         Logger.LogInfo($"Запущен скрипт подготовки данных анализа для обучения нейросети модуля принятия решений Stego Revealer в {DateTime.Now:ss:mm:HH dd:MM:yyyy}");
         var overallTimer = Stopwatch.StartNew();  // Глобальный таймер
@@ -77,8 +77,8 @@ public class DataPreparer
         ClearOutputDirectory(onlyAnalysisFilesClear: StartParams.SkipPreparing);
 
         // Запуск операций
-        var preparingResult = PrepareOperationForManyHidings();
-        var analysisResult = AnalyseOperation(preparingResult.OutputImages);
+        var preparingResult = await PrepareOperation();
+        var analysisResult = await AnalyseOperation(preparingResult.OutputImages);
 
         // Остановка таймера, окончание работы программы
         overallTimer.Stop();
@@ -92,7 +92,7 @@ public class DataPreparer
     // //////
     // Подготовка картинок со скрытой информацией
     // //////
-    private ImagesPreparingResult PrepareOperationForManyHidings()
+    private async Task<ImagesPreparingResult> PrepareOperation()
     {
         var result = new ImagesPreparingResult();
 
@@ -123,17 +123,14 @@ public class DataPreparer
         foreach (var imgPath in inputImages)
         {
             int index = k;
-            imagePreparingTasks.Add(CreateTask(() => PreparingAction(imgPath, index, inputImages.Length, result.OutputImages), taskPool: ImgProcessingPool));
+            imagePreparingTasks.Add(PreparingAction(imgPath, index, inputImages.Length, result.OutputImages));
 
             k++;
         }
 
         // Ожидание задач подготовки изображений
         foreach (var imagePreparingTask in imagePreparingTasks)
-        {
-            imagePreparingTask.Wait();
-            imagePreparingTask.Dispose();
-        }
+            await imagePreparingTask;
 
         imagePreparingTimer.Stop();
         result.ElapsedTime = imagePreparingTimer.ElapsedMilliseconds;
@@ -145,7 +142,7 @@ public class DataPreparer
         return result;
     }
 
-    private void PreparingAction(string imgPath, int index, int count, ConcurrentBag<OutputImage> outputImages)
+    private async Task PreparingAction(string imgPath, int index, int count, ConcurrentBag<OutputImage> outputImages)
     {
         var rnd = new Random();
         var img = new ImageHandler(imgPath);
@@ -167,13 +164,10 @@ public class DataPreparer
 
                 var diapasonesTasks = new List<Task>();
                 foreach (var selectedDiapasoneId in selectedDiapasones)
-                    diapasonesTasks.Add(CreateTask(() => HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], outputImages), taskPool: null));
+                    diapasonesTasks.Add(HideInDiapasone(img, Constants.Diapasones[selectedDiapasoneId], outputImages));
 
                 foreach (var task in diapasonesTasks)
-                {
-                    task.Wait();
-                    task.Dispose();
-                }
+                    await task;
             }
         }
         else
@@ -181,12 +175,11 @@ public class DataPreparer
             bool hide = rnd.Next(0, 2) == 1;
             if (hide)
             {
-                int diapasoneId = rnd.Next(0, Constants.Diapasones.Count);
+                int diapasoneId = rnd.Next(1, Constants.Diapasones.Count + 1);
                 Logger.LogInfo($"Выбранный диапазон для изображения {img.ImgName}: " +
                     $"{string.Join(", ", Constants.Diapasones[diapasoneId].ToString())}");
 
-                var hidingTask = CreateTask(() => HideInDiapasone(img, Constants.Diapasones[diapasoneId], outputImages), taskPool: null);
-                hidingTask.Wait();
+                await HideInDiapasone(img, Constants.Diapasones[diapasoneId], outputImages);
             }
             else
                 outputImages.Add(CreateOutputImageWithNoHiding(imgPath));
@@ -208,7 +201,7 @@ public class DataPreparer
     // //////
     // Анализ и сбор данных
     // //////
-    private ImagesAnalysisResult AnalyseOperation(ConcurrentBag<OutputImage> outputImages)
+    private async Task<ImagesAnalysisResult> AnalyseOperation(ConcurrentBag<OutputImage> outputImages)
     {
         var result = new ImagesAnalysisResult();
 
@@ -265,15 +258,15 @@ public class DataPreparer
 
         // Формирование и запуск задач анализа для каждого изображения
         var imageAnalysisTasks = new List<Task>();
-        int k = 0;
+        int k = 1;
         foreach (var imageInfo in shuffledOutputImages)
         {
             int index = k;
-            imageAnalysisTasks.Add(CreateTask(() =>
+            imageAnalysisTasks.Add(Task.Run(() =>
             {
                 string imgName = Path.GetFileName(imageInfo.Path);
                 Logger.LogInfo($"Начат анализ изображения {imgName} ({index} / {outputImages.Count})");
-                var analysisResult = AnalyseImage(imageInfo);
+                var analysisResult = AnalyseImage(imageInfo).Result;
 
                 if (analysisResult is not null)
                 {
@@ -288,17 +281,14 @@ public class DataPreparer
                 }
 
                 GC.Collect();
-            }, taskPool: ImgProcessingPool));
+            }));
 
             k++;
         }
 
         // Ожидание задач анализа
         foreach (var imageAnalysisTask in imageAnalysisTasks)
-        {
-            imageAnalysisTask.Wait();
-            imageAnalysisTask.Dispose();
-        }
+            await imageAnalysisTask;
 
         tempAnalysisDataFileWriter?.Close();
         imageAnalysisTimer.Stop();
@@ -335,11 +325,8 @@ public class DataPreparer
             var hider = new LsbHider(img);
             hider.Params.TraverseType = traverseType;
 
-            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), taskPool: CalculationsPool);
-            hideTask.Wait();
-            var hideResult = hideTask.Result;
+            var hideResult = hider.Hide(dataToHide.Data, newImagePath);
             timer.Stop();
-            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -390,11 +377,8 @@ public class DataPreparer
             var hider = new LsbHider(img);
             hider.Params.Seed = seed;
 
-            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), taskPool: CalculationsPool);
-            hideTask.Wait();
-            var hideResult = hideTask.Result;
+            var hideResult = hider.Hide(dataToHide.Data, newImagePath);
             timer.Stop();
-            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -446,11 +430,8 @@ public class DataPreparer
             hider.Params.TraverseType = traverseType;
             hider.Params.Threshold = rnd.Next(50, 120);
 
-            var hideTask = CreateTask(() => hider.Hide(dataToHide.Data, newImagePath), taskPool: CalculationsPool);
-            hideTask.Wait();
-            var hideResult = hideTask.Result;
+            var hideResult = hider.Hide(dataToHide.Data, newImagePath);
             timer.Stop();
-            hideTask.Dispose();
 
             var resultPath = hideResult.GetResultPath();
             if (string.IsNullOrEmpty(resultPath))
@@ -481,10 +462,10 @@ public class DataPreparer
         return null;
     }
 
-    private void HideInDiapasone(ImageHandler img, MinMaxData diapasone, ConcurrentBag<OutputImage> outputImages)
+    private async Task HideInDiapasone(ImageHandler img, MinMaxData diapasone, ConcurrentBag<OutputImage> outputImages)
     {
         var rnd = new Random();
-        var hideDecisions = new List<bool>(3);
+        var hideDecisions = new List<bool>(3) { false, false, false };
 
         if (StartParams.ManyHidings)
         {
@@ -512,26 +493,23 @@ public class DataPreparer
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsLinearLsb(currentHandler, diapasone), outputImages), taskPool: null));
+            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsLinearLsb(currentHandler, diapasone), outputImages)));
         }
         if (hideDecisions[1])
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsRandomLsb(currentHandler, diapasone), outputImages), taskPool: null));
+            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsRandomLsb(currentHandler, diapasone), outputImages)));
         }
         if (hideDecisions[2])
         {
             var currentHandler = img.Clone();
             currentHandlers.Add(currentHandler);
-            hidingTasks.Add(CreateTask(() => ExecuteHiding(() => HideAsLinearKzh(currentHandler, diapasone), outputImages), taskPool: null));
+            hidingTasks.Add(Task.Run(() => ExecuteHiding(() => HideAsLinearKzh(currentHandler, diapasone), outputImages)));
         }
 
         foreach (var task in hidingTasks)
-        {
-            task.Wait();
-            task.Dispose();
-        }
+            await task;
 
         foreach (var handler in currentHandlers)
             handler.CloseHandler();
@@ -554,7 +532,7 @@ public class DataPreparer
         GC.Collect();
     }
 
-    private ImageAnalysisData? AnalyseImage(OutputImage imageInfo)
+    private async Task<ImageAnalysisData?> AnalyseImage(OutputImage imageInfo)
     {
         string imgName = Path.GetFileName(imageInfo.Path);
         Logger.LogInfo($"Начат процесс анализа и сбора данных для {imgName}");
@@ -588,19 +566,16 @@ public class DataPreparer
         StatmResult? statmResult = null;
         var analysisTasks = new List<Task>
         {
-            CreateTask(() => horizonalChiSqrResult = horizonalChiSqr.Analyse(), taskPool: CalculationsPool),
-            CreateTask(() => verticalChiSqrResult = verticalChiSqr.Analyse(), taskPool: CalculationsPool),
-            CreateTask(() => horizonotalKzhaResult = horizonotalKzha.Analyse(), taskPool: CalculationsPool),
-            CreateTask(() => verticalKzhaResult = verticalKzha.Analyse(), taskPool: CalculationsPool),
-            CreateTask(() => rsResult = rs.Analyse(), taskPool: CalculationsPool),
-            CreateTask(() => statmResult = statm.Analyse(), taskPool: CalculationsPool)
+            Task.Run(() => horizonalChiSqrResult = horizonalChiSqr.Analyse()),
+            Task.Run(() => verticalChiSqrResult = verticalChiSqr.Analyse()),
+            Task.Run(() => horizonotalKzhaResult = horizonotalKzha.Analyse()),
+            Task.Run(() => verticalKzhaResult = verticalKzha.Analyse()),
+            Task.Run(() => rsResult = rs.Analyse()),
+            Task.Run(() => statmResult = statm.Analyse())
         };
 
         foreach (var task in analysisTasks)
-        {
-            task.Wait();
-            task.Dispose();
-        }
+            await task;
 
         timer.Stop();
 
@@ -737,6 +712,6 @@ public class DataPreparer
     private static int ContainerVolumeForLsb(ImageHandler img) => img.Height * img.Width * 3;
     private static int ContainerVolumeForKzh(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
 
-    private Task<T> CreateTask<T>(Func<T> task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
-    private Task CreateTask(Action task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
+    private static Task<T> CreateTask<T>(Func<T> task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
+    private static Task CreateTask(Action task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
 }

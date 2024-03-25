@@ -18,7 +18,8 @@ public class TaskPool
 
     private int _realRunnedTasksCount => _currentTasks.Where(t => t.GetStatus() == TaskStatus.Running).Count();
 
-    public bool IsMemoryLimitReached => Process.GetCurrentProcess().WorkingSet64 >= MemoryLimit;
+    private bool _checkMemoryLimit = false;
+    public bool IsMemoryLimitReached => _checkMemoryLimit ? Process.GetCurrentProcess().WorkingSet64 >= MemoryLimit : false;
     public bool IsCompleted => _tasksQueue.IsEmpty && _currentTasks.Count == 0;
 
 
