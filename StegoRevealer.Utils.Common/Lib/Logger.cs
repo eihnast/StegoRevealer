@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.Utils.DataPreparer.Lib;
+﻿namespace StegoRevealer.Utils.Common.Lib;
 
 public class Logger : IDisposable
 {

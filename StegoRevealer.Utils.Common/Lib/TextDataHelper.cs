@@ -1,7 +1,7 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
 using System.Collections;
 
-namespace StegoRevealer.Utils.DataPreparer.Lib;
+namespace StegoRevealer.Utils.Common.Lib;
 
 public static class TextDataHelper
 {

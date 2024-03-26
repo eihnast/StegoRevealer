@@ -1,7 +1,9 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+﻿using MathNet.Numerics;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Xml.Linq;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 
@@ -157,6 +159,18 @@ public class StatmTests
             Assert.IsTrue(entropies[i].Renyi > entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
             Assert.IsTrue(entropies[i].Havard > entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
         }
+    }
+
+    [TestMethod]
+    public void ShennonSemiEqualsRenyi()
+    {
+        string path = Path.Combine(Helper.GetAssemblyDir(), "TestData", "ShennonRenyiTest.png");
+        var image = new ImageHandler(path);
+        var parameters = new StatmParameters(image);
+        parameters.EntropyCalcSensitivity = 1.0000001;
+        var entropyCalculator = new EntropyCalculator(parameters);
+        var entropy = entropyCalculator.CalcEntropy();
+        Assert.AreEqual(entropy.Shennon.Round(6), entropy.Renyi.Round(6));
     }
 
 

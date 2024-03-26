@@ -44,7 +44,7 @@ public class ImageHandlerTests
                 rsTask.Wait();
                 statmTask.Wait();
 
-                results.TryUpdate(filename, (rsResult is null ? -1.0 : rsResult.MessageRelativeVolume, statmResult is null ? -1.0 : statmResult.NoiseValueMethod2), (0.0, 0.0));
+                results.TryUpdate(filename, (rsResult is null ? -1.0 : rsResult.MessageRelativeVolume, statmResult is null ? -1.0 : statmResult.NoiseValue), (0.0, 0.0));
             }));
         }
 

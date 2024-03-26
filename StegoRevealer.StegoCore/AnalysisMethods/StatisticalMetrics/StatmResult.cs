@@ -19,12 +19,12 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// <summary>
     /// Интенсивность шума по Методу 1
     /// </summary>
-    public double NoiseValueMethod1 { get; set; }
+    // public double NoiseValueMethod1 { get; set; }
 
     /// <summary>
     /// Интенсивность шума по Методу 2
     /// </summary>
-    public double NoiseValueMethod2 { get; set; }
+    public double NoiseValue { get; set; }
 
     /// <summary>
     /// Резкость изображения

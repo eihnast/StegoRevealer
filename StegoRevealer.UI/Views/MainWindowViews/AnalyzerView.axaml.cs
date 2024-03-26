@@ -123,15 +123,15 @@ public partial class AnalyzerView : UserControl
             }
 
             // Statm
-            StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValueMethod2);
+            StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValue);
             StatResultsSharpnessValue.Text = string.Format("{0:F5}", results.StatmSharpnessValue);
             StatResultsBlurValue.Text = string.Format("{0:F5}", results.StatmBlurValue);
             StatResultsContrastValue.Text = string.Format("{0:F5}", results.StatmContrastValue);
-            StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
-            StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
+            // StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
+            // StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
             StatResultsEntropyShennonValue.Text = string.Format("{0:F5}", results.StatmEntropyShennonValue);
             StatResultsEntropyRenyiValue.Text = string.Format("{0:F5}", results.StatmEntropyRenyiValue);
-            StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
+            // StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
 
 
             // Затрачено времени
@@ -199,11 +199,11 @@ public partial class AnalyzerView : UserControl
         StatResultsSharpnessValue.Text = MessageUnknown;
         StatResultsBlurValue.Text = MessageUnknown;
         StatResultsContrastValue.Text = MessageUnknown;
-        StatResultsEntropyTsallisValue.Text = MessageUnknown;
-        StatResultsEntropyVaidaValue.Text = MessageUnknown;
+        // StatResultsEntropyTsallisValue.Text = MessageUnknown;
+        // StatResultsEntropyVaidaValue.Text = MessageUnknown;
         StatResultsEntropyShennonValue.Text = MessageUnknown;
         StatResultsEntropyRenyiValue.Text = MessageUnknown;
-        StatResultsEntropyHavardValue.Text = MessageUnknown;
+        // StatResultsEntropyHavardValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }

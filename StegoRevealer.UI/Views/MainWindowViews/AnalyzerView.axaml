@@ -252,7 +252,7 @@
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
-							<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
+							<!--<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
 								<TextBlock Text="Энтропия Цаллиса: "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
@@ -271,7 +271,7 @@
 								<TextBlock Name="StatResultsEntropyVaidaValue" Text="Нет данных"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
-							</DockPanel>
+							</DockPanel>-->
 							<DockPanel Name="StatResultsEntropyShennonBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
 								<TextBlock Text="Энтропия Шеннона: "
@@ -284,7 +284,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyRenyiBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия Реньи: "
+								<TextBlock Text="Энтропия Реньи (α = 2,5): "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -292,7 +292,7 @@
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
-							<DockPanel Name="StatResultsEntropyHavardBlock" DockPanel.Dock="Top" IsVisible="True"
+							<!--<DockPanel Name="StatResultsEntropyHavardBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
 								<TextBlock Text="Энтропия Хаварда-Чарвата: "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
@@ -301,7 +301,7 @@
 								<TextBlock Name="StatResultsEntropyHavardValue" Text="Нет данных"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
-							</DockPanel>
+							</DockPanel>-->
 
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">

@@ -10,7 +10,7 @@ namespace StegoRevealer.StegoCore.TrainingModule;
 
 internal class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         var inputImages = Directory.GetFiles("d:\\Temp\\_training\\_Test");
         var realImages = new List<string>();
@@ -54,7 +54,7 @@ internal class Program
             };
 
             foreach (var task in analysisTasks)
-                task.Wait();
+                await task;
 
             if (horizonalChiSqrResult is null || verticalChiSqrResult is null || horizonotalKzhaResult is null || verticalKzhaResult is null ||
                 rsResult is null || statmResult is null)
@@ -70,7 +70,7 @@ internal class Program
                 ChiSquareVolume_Vertical = (float)verticalChiSqrResult.MessageRelativeVolume,
                 KzhaThreshold_Vertical = (float)verticalKzhaResult.Threshold,
                 KzhaMessageBitVolume_Vertical = verticalKzhaResult.MessageBitsVolume,
-                NoiseValue = (float)statmResult.NoiseValueMethod2,
+                NoiseValue = (float)statmResult.NoiseValue,
                 SharpnessValue = (float)statmResult.SharpnessValue,
                 BlurValue = (float)statmResult.BlurValue,
                 ContrastValue = (float)statmResult.ContrastValue,

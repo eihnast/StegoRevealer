@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace StegoRevealer.Utils.DataPreparer.Lib.TaskPool;
+namespace StegoRevealer.Utils.Common.Lib.TaskPool;
 
 public class TaskPool
 {
@@ -21,6 +21,10 @@ public class TaskPool
     private bool _checkMemoryLimit = false;
     public bool IsMemoryLimitReached => _checkMemoryLimit ? Process.GetCurrentProcess().WorkingSet64 >= MemoryLimit : false;
     public bool IsCompleted => _tasksQueue.IsEmpty && _currentTasks.Count == 0;
+
+
+    private static Task<T> CreateTask<T>(Func<T> task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
+    private static Task CreateTask(Action task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
 
 
     public TaskPool() : this(Environment.ProcessorCount, false) { }

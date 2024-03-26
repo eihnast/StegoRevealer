@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace StegoRevealer.Utils.DataPreparer.Lib;
+namespace StegoRevealer.Utils.Common.Lib;
 
 public static class Helper
 {

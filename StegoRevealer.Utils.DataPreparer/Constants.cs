@@ -1,5 +1,5 @@
-﻿using StegoRevealer.Utils.DataPreparer.Entities;
-using StegoRevealer.Utils.DataPreparer.Lib;
+﻿using StegoRevealer.Utils.Common.Lib;
+using StegoRevealer.Utils.DataPreparer.Entities;
 
 namespace StegoRevealer.Utils.DataPreparer;
 
@@ -21,6 +21,8 @@ public static class Constants
     public static string OutputTempAnalysisDataFilePath = Path.Combine(Helper.GetAssemblyDir(), OutputDirName, OutputTempAnalysisDataFilename);
 
     public const int NoHidingChangeAdvantage = 3;
+
+    public const double EntropyRenyiAlpa = 1.1;
 
     public static List<string> ImagesExtensions = new List<string>() { ".png", ".bmp" };
     public const string InfoFilePostfix = "_Info";

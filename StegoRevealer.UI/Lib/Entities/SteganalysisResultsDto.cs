@@ -33,9 +33,7 @@ public class SteganalysisResultsDto
 
     public (int leftInd, int rightInd)? KzhaSuspiciousInterval { get; private set; } = null;
 
-    public double StatmNoiseValueMethod1 { get; private set; } = 0.0;
-
-    public double StatmNoiseValueMethod2 { get; private set; } = 0.0;
+    public double StatmNoiseValue { get; private set; } = 0.0;
 
     public double StatmSharpnessValue { get; private set; } = 0.0;
 
@@ -43,15 +41,15 @@ public class SteganalysisResultsDto
 
     public double StatmContrastValue { get; private set; } = 0.0;
 
-    public double StatmEntropyTsallisValue { get; private set; } = 0.0;
+    // public double StatmEntropyTsallisValue { get; private set; } = 0.0;
 
-    public double StatmEntropyVaidaValue { get; private set; } = 0.0;
+    // public double StatmEntropyVaidaValue { get; private set; } = 0.0;
 
     public double StatmEntropyShennonValue { get; private set; } = 0.0;
 
     public double StatmEntropyRenyiValue { get; private set; } = 0.0;
 
-    public double StatmEntropyHavardValue { get; private set; } = 0.0;
+    // public double StatmEntropyHavardValue { get; private set; } = 0.0;
 
 
     public long ElapsedTime { get; private set; } = 0;
@@ -92,16 +90,15 @@ public class SteganalysisResultsDto
 
         if (statmRes is not null)
         {
-            StatmNoiseValueMethod1 = statmRes.NoiseValueMethod1;
-            StatmNoiseValueMethod2 = statmRes.NoiseValueMethod2;
+            StatmNoiseValue = statmRes.NoiseValue;
             StatmSharpnessValue = statmRes.SharpnessValue;
             StatmBlurValue = statmRes.BlurValue;
             StatmContrastValue = statmRes.ContrastValue;
-            StatmEntropyTsallisValue = statmRes.EntropyValues.Tsallis;
-            StatmEntropyVaidaValue = statmRes.EntropyValues.Vaida;
+            // StatmEntropyTsallisValue = statmRes.EntropyValues.Tsallis;
+            // StatmEntropyVaidaValue = statmRes.EntropyValues.Vaida;
             StatmEntropyShennonValue = statmRes.EntropyValues.Shennon;
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
-            StatmEntropyHavardValue = statmRes.EntropyValues.Havard;
+            // StatmEntropyHavardValue = statmRes.EntropyValues.Havard;
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace StegoRevealer.Utils.DataPreparer.Lib.TaskPool;
+﻿namespace StegoRevealer.Utils.Common.Lib.TaskPool;
 
 public interface IPooledTask
 {

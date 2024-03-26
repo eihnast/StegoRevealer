@@ -8,10 +8,8 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
+using StegoRevealer.Utils.Common.Lib;
 using StegoRevealer.Utils.DataPreparer.Entities;
-using StegoRevealer.Utils.DataPreparer.Lib;
-using StegoRevealer.Utils.DataPreparer.Lib.TaskPool;
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -31,8 +29,8 @@ public class DataPreparer
     private Lazy<Logger> LoggerFactory = new Lazy<Logger>(() => new Logger(Constants.OutputLogFilePath));
     private Logger Logger => LoggerFactory.Value;
 
-    private TaskPool ImgProcessingPool;
-    private TaskPool CalculationsPool;
+    //private TaskPool ImgProcessingPool;
+    //private TaskPool CalculationsPool;
 
 
     public DataPreparer() : this(new StartParams()) { }
@@ -40,8 +38,8 @@ public class DataPreparer
     {
         StartParams = startParams;
 
-        ImgProcessingPool = new TaskPool(considerOnlyRunningTasks: false);
-        CalculationsPool = new TaskPool(considerOnlyRunningTasks: startParams.UseWeakPoolForCalculations);
+        //ImgProcessingPool = new TaskPool(considerOnlyRunningTasks: false);
+        //CalculationsPool = new TaskPool(considerOnlyRunningTasks: startParams.UseWeakPoolForCalculations);
 
         // "Weak pool" - "Слабый пул" - т.е. с проверкой только реально работающих (OnlyRunningTasks).
         // "Strong pool" - "Сильный пул" - держит число задач жёстко согласно лимиту, и неважно, в каком они состоянии
@@ -555,7 +553,9 @@ public class DataPreparer
         verticalKzha.Params.TraverseType = TraverseType.Vertical;
 
         var rs = new RsAnalyser(img);
+
         var statm = new StatmAnalyser(img);
+        statm.Params.EntropyCalcSensitivity = Constants.EntropyRenyiAlpa;
 
 
         ChiSquareResult? horizonalChiSqrResult = null;
@@ -595,25 +595,26 @@ public class DataPreparer
         }
 
         Logger.LogInfo($"Завершён анализ и сбор информации для изображения {imgName}, длительность: " + Helper.GetFormattedElapsedTime(timer.ElapsedMilliseconds));
+        int imgKzhContainerVolume = ContainerVolumeForKzh(img);
         return new ImageAnalysisData
         {
             ChiSquareVolume = horizonalChiSqrResult.MessageRelativeVolume,
             RsVolume = rsResult.MessageRelativeVolume,
             KzhaThreshold = horizonotalKzhaResult.Threshold,
-            KzhaMessageBitVolume = horizonotalKzhaResult.MessageBitsVolume,
+            KzhaMessageVolume = horizonotalKzhaResult.MessageBitsVolume / imgKzhContainerVolume,
             ChiSquareVolume_Vertical = verticalChiSqrResult.MessageRelativeVolume,
             KzhaThreshold_Vertical = verticalKzhaResult.Threshold,
-            KzhaMessageBitVolume_Vertical = verticalKzhaResult.MessageBitsVolume,
-            NoiseValue = statmResult.NoiseValueMethod2,
+            KzhaMessageVolume_Vertical = verticalKzhaResult.MessageBitsVolume / imgKzhContainerVolume,
+            NoiseValue = statmResult.NoiseValue,
             SharpnessValue = statmResult.SharpnessValue,
             BlurValue = statmResult.BlurValue,
             ContrastValue = statmResult.ContrastValue,
             EntropyShennonValue = statmResult.EntropyValues.Shennon,
-            EntropyVaidaValue = statmResult.EntropyValues.Vaida,
-            EntropyTsallisValue = statmResult.EntropyValues.Tsallis,
+            //EntropyVaidaValue = statmResult.EntropyValues.Vaida,
+            //EntropyTsallisValue = statmResult.EntropyValues.Tsallis,
             EntropyRenyiValue = statmResult.EntropyValues.Renyi,
-            EntropyHavardValue = statmResult.EntropyValues.Havard,
-            PixelsNum = img.Height * img.Width,
+            //EntropyHavardValue = statmResult.EntropyValues.Havard,
+            //PixelsNum = img.Height * img.Width,
             DataWasHided = imageInfo.Hided ? 1 : 0
         };
     }
@@ -711,7 +712,4 @@ public class DataPreparer
 
     private static int ContainerVolumeForLsb(ImageHandler img) => img.Height * img.Width * 3;
     private static int ContainerVolumeForKzh(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
-
-    private static Task<T> CreateTask<T>(Func<T> task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
-    private static Task CreateTask(Action task, TaskPool? taskPool) => taskPool is not null ? taskPool.AddAsync(() => Task.Run(task)) : Task.Run(task);
 }

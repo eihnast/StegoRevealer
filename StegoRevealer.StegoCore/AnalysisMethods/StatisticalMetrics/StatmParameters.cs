@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -86,6 +87,9 @@ public class StatmParameters
 
 
     // Параметры подсчёта энтропии
+
+    /// <summary>Методы, используемые для подсчёта энтропии</summary>
+    public EntropyMethods EntropyMethods { get; set; } = EntropyMethods.Shennon | EntropyMethods.Renyi;
 
     /// <summary>Параметр чувствительности, не стоит задавать >3</summary>
     public double EntropyCalcSensitivity { get; set; } = 2.5;
