@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using SkiaSharp;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
@@ -10,6 +11,7 @@ using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using StegoRevealer.Utils.Common.Lib;
 using StegoRevealer.Utils.DataPreparer.Entities;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -260,26 +262,7 @@ public class DataPreparer
         foreach (var imageInfo in shuffledOutputImages)
         {
             int index = k;
-            imageAnalysisTasks.Add(Task.Run(() =>
-            {
-                string imgName = Path.GetFileName(imageInfo.Path);
-                Logger.LogInfo($"Начат анализ изображения {imgName} ({index} / {outputImages.Count})");
-                var analysisResult = AnalyseImage(imageInfo).Result;
-
-                if (analysisResult is not null)
-                {
-                    analysisData.Add(analysisResult);
-                    Logger.LogInfo($"Успешно завершён анализ изображения {imgName}, собранные данные записаны в финальный датасет");
-
-                    WriteAsCsvStringToTempFile(tempAnalysisDataFileWriter, analysisResult, imgName);
-                }
-                else
-                {
-                    Logger.LogError($"Ошибка при анализе изображения {imgName}, данные не включены в финальный датасет");
-                }
-
-                GC.Collect();
-            }));
+            imageAnalysisTasks.Add(AnalyseAction(imageInfo, index, outputImages.Count, analysisData, tempAnalysisDataFileWriter));
 
             k++;
         }
@@ -301,6 +284,27 @@ public class DataPreparer
         Logger.LogInfo("Собранные данные записаны в CSV-файл");
 
         return result;
+    }
+
+    private async Task AnalyseAction(OutputImage imageInfo, int index, int count, ConcurrentBag<ImageAnalysisData> analysisData, StreamWriter tempAnalysisDataFileWriter)
+    {
+        string imgName = Path.GetFileName(imageInfo.Path);
+        Logger.LogInfo($"Начат анализ изображения {imgName} ({index} / {count})");
+        var analysisResult = await AnalyseImage(imageInfo);
+
+        if (analysisResult is not null)
+        {
+            analysisData.Add(analysisResult);
+            Logger.LogInfo($"Успешно завершён анализ изображения {imgName}, собранные данные записаны в финальный датасет");
+
+            WriteAsCsvStringToTempFile(tempAnalysisDataFileWriter, analysisResult, imgName);
+        }
+        else
+        {
+            Logger.LogError($"Ошибка при анализе изображения {imgName}, данные не включены в финальный датасет");
+        }
+
+        GC.Collect();
     }
 
     private OutputImageProcessingInfo? HideAsLinearLsb(ImageHandler img, MinMaxData diapasone)

@@ -69,7 +69,7 @@ public static class Program
 
     private static void PrintHelp() =>
         Console.WriteLine("Флаги:\n\tПропустить подготовку и скрытие: -nh\n\tПропустить анализ и сбор данных: -na" +
-            "\n\tНестрогий пул вычислительных задач: -sp\n\tСкрытие одно ко многим: -mh");
+            "\n\tНестрогий пул вычислительных задач: -wp\n\tСкрытие одно ко многим: -mh");
 
     public static async Task Main(string[] args)
     {
