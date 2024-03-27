@@ -1,4 +1,6 @@
-﻿using StegoRevealer.Utils.DataPreparer.Entities;
+﻿using StegoRevealer.Utils.Common.Entities;
+using StegoRevealer.Utils.Common.Lib;
+using StegoRevealer.Utils.DataPreparer.Entities;
 
 namespace StegoRevealer.Utils.DataPreparer;
 
@@ -8,61 +10,35 @@ public static class Program
     private static readonly List<string> SkipAnalysisFlag = new List<string>() { "--noanalyze", "-na" };
     private static readonly List<string> WeakCalculationsPoolFlag = new List<string>() { "--weakpoool", "-wp" };
     private static readonly List<string> ManyHidingsFlag = new List<string>() { "--manyhidings", "-mh" };
+    private static readonly List<string> BasketOperationsFlag = new List<string>() { "--baskets", "-b" };
     private static readonly List<string> HelpFlag = new List<string>() { "--help", "-h" };
+
+    private static readonly Dictionary<string, InputParameter> InputParameters = new Dictionary<string, InputParameter>()
+    {
+        { "SkipPreparingFlag", new InputParameter { AvailableNames = new List<string> { "--nohide", "-nh" }, HasValue = false } },
+        { "SkipAnalysisFlag", new InputParameter { AvailableNames = new List<string> { "--noanalyze", "-na" }, HasValue = false } },
+        { "WeakCalculationsPoolFlag", new InputParameter { AvailableNames = new List<string> { "--weakpoool", "-wp" }, HasValue = false } },
+        { "ManyHidingsFlag", new InputParameter { AvailableNames = new List<string> { "--manyhidings", "-mh" }, HasValue = false } },
+        { "BasketOperationsFlag", new InputParameter { AvailableNames = new List<string> { "--baskets", "-b" }, HasValue = false } },
+        { "HelpFlag", new InputParameter { AvailableNames = new List<string> { "--help", "-h" }, HasValue = false } }
+    };
 
     private static StartParams? ParseParams(string[] args)
     {
         var startParams = new StartParams();
+        bool needHelp = !StartParametersHelper.IsParametersValid(args, InputParameters.Values.ToArray()) || StartParametersHelper.IsParameterSpecified(args, InputParameters["HelpFlag"]);
 
-        bool needHelp = args.Any(arg => HelpFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        if (!needHelp)
-        {
-            var usedFlags = new List<string>();
-
-            foreach (var arg in args)
-            {
-                if (SkipPreparingFlag.Contains(arg))
-                {
-                    if (usedFlags.Contains(nameof(SkipPreparingFlag)))
-                        needHelp = true;
-                    usedFlags.Add(nameof(SkipPreparingFlag));
-                }
-                else if (SkipAnalysisFlag.Contains(arg))
-                {
-                    if (usedFlags.Contains(nameof(SkipAnalysisFlag)))
-                        needHelp = true;
-                    usedFlags.Add(nameof(SkipAnalysisFlag));
-                }
-                else if (WeakCalculationsPoolFlag.Contains(arg))
-                {
-                    if (usedFlags.Contains(nameof(WeakCalculationsPoolFlag)))
-                        needHelp = true;
-                    usedFlags.Add(nameof(WeakCalculationsPoolFlag));
-                }
-                else if (ManyHidingsFlag.Contains(arg))
-                {
-                    if (usedFlags.Contains(nameof(ManyHidingsFlag)))
-                        needHelp = true;
-                    usedFlags.Add(nameof(ManyHidingsFlag));
-                }
-                else
-                    needHelp = true;
-
-                if (needHelp)
-                    break;
-            }
-        }
-        
         if (needHelp)
         {
             PrintHelp();
             return null;
         }
 
-        startParams.SkipPreparing = args.Any(arg => SkipPreparingFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        startParams.SkipAnalysis = args.Any(arg => SkipAnalysisFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        startParams.UseWeakPoolForCalculations = args.Any(arg => WeakCalculationsPoolFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
-        startParams.ManyHidings = args.Any(arg => ManyHidingsFlag.Any(flag => flag.Equals(arg, StringComparison.OrdinalIgnoreCase)));
+        startParams.SkipPreparing = StartParametersHelper.IsParameterSpecified(args, InputParameters["SkipPreparingFlag"]);
+        startParams.SkipAnalysis = StartParametersHelper.IsParameterSpecified(args, InputParameters["SkipAnalysisFlag"]);
+        startParams.UseWeakPoolForCalculations = StartParametersHelper.IsParameterSpecified(args, InputParameters["WeakCalculationsPoolFlag"]);
+        startParams.ManyHidings = StartParametersHelper.IsParameterSpecified(args, InputParameters["ManyHidingsFlag"]);
+        startParams.BasketOperations = StartParametersHelper.IsParameterSpecified(args, InputParameters["BasketOperationsFlag"]);
 
         return startParams;
     }

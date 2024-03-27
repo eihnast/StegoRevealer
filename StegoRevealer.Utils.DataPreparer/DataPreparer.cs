@@ -71,8 +71,10 @@ public class DataPreparer
         
         Logger.LogInfo($"Стартовые параметры:\n\tInputDataImagesDirPath = {Constants.InputDataImagesDirPath}\n\tInputDataTextFilePath = {Constants.InputDataTextFilePath}\n" +
             $"\tOutputDirPath = {Constants.OutputDirPath}\n\tOutputLogFilePath = {Constants.OutputLogFilePath}\n\tOutputAnalysisDataFilePath = {Constants.OutputAnalysisDataFilePath}\n" +
-            $"\tNoHidingChangeAdvantage = {Constants.NoHidingChangeAdvantage}\n\tProcessorCount = {Environment.ProcessorCount}");
-
+            $"\tNoHidingChangeAdvantage = {Constants.NoHidingChangeAdvantage}\n\tProcessorCount = {Environment.ProcessorCount}\n" +
+            $"\tSkipPreparing = {StartParams.SkipPreparing}\n\tSkipAnalysis = {StartParams.SkipAnalysis}\n\tUseWeakPoolForCalculations = {StartParams.UseWeakPoolForCalculations}\n" +
+            $"\tManyHidings = {StartParams.ManyHidings}\n\tBasketOperations = {StartParams.BasketOperations}\n\t");
+        
         // Очистка выходного каталога
         ClearOutputDirectory(onlyAnalysisFilesClear: StartParams.SkipPreparing);
 
@@ -118,19 +120,26 @@ public class DataPreparer
         Logger.LogInfo("Начат процесс обработки изображений: подготовки скрытия информации в них различными способами");
 
         // Формирование и запуск задач по каждому изображению
-        var imagePreparingTasks = new List<Task>();
         int k = 1;
-        foreach (var imgPath in inputImages)
+        int basketSize = StartParams.BasketOperations ? Environment.ProcessorCount : inputImages.Count();
+        var imagePreparingTasks = new List<Task>();
+        for (int i = 0; i < inputImages.Count(); i += basketSize)
         {
-            int index = k;
-            imagePreparingTasks.Add(PreparingAction(imgPath, index, inputImages.Length, result.OutputImages));
+            // Формирование и запуск задач анализа для каждого изображения
+            var imageAnalysisTasks = new List<Task>();
+            for (int j = i; j < Math.Min(i + basketSize, inputImages.Count()); j++)
+            {
+                int index = k;
+                var imgPath = inputImages[j];
+                imagePreparingTasks.Add(PreparingAction(imgPath, index, inputImages.Length, result.OutputImages));
 
-            k++;
+                k++;
+            }
+
+            // Ожидание задач анализа
+            foreach (var imageAnalysisTask in imageAnalysisTasks)
+                await imageAnalysisTask;
         }
-
-        // Ожидание задач подготовки изображений
-        foreach (var imagePreparingTask in imagePreparingTasks)
-            await imagePreparingTask;
 
         imagePreparingTimer.Stop();
         result.ElapsedTime = imagePreparingTimer.ElapsedMilliseconds;
@@ -256,20 +265,25 @@ public class DataPreparer
             Logger.LogError("Не удалось создать файл для временной записи проанализированных данных. Ошибка: \n" + ex.Message);
         }
 
-        // Формирование и запуск задач анализа для каждого изображения
-        var imageAnalysisTasks = new List<Task>();
         int k = 1;
-        foreach (var imageInfo in shuffledOutputImages)
+        int basketSize = StartParams.BasketOperations ? Environment.ProcessorCount : shuffledOutputImages.Count;
+        for (int i = 0; i < shuffledOutputImages.Count; i += basketSize)
         {
-            int index = k;
-            imageAnalysisTasks.Add(AnalyseAction(imageInfo, index, outputImages.Count, analysisData, tempAnalysisDataFileWriter));
+            // Формирование и запуск задач анализа для каждого изображения
+            var imageAnalysisTasks = new List<Task>();
+            for (int j = i; j < Math.Min(i + basketSize, shuffledOutputImages.Count); j++)
+            {
+                int index = k;
+                var imageInfo = shuffledOutputImages[j];
+                imageAnalysisTasks.Add(AnalyseAction(imageInfo, index, outputImages.Count, analysisData, tempAnalysisDataFileWriter));
 
-            k++;
+                k++;
+            }
+
+            // Ожидание задач анализа
+            foreach (var imageAnalysisTask in imageAnalysisTasks)
+                await imageAnalysisTask;
         }
-
-        // Ожидание задач анализа
-        foreach (var imageAnalysisTask in imageAnalysisTasks)
-            await imageAnalysisTask;
 
         tempAnalysisDataFileWriter?.Close();
         imageAnalysisTimer.Stop();
@@ -286,7 +300,7 @@ public class DataPreparer
         return result;
     }
 
-    private async Task AnalyseAction(OutputImage imageInfo, int index, int count, ConcurrentBag<ImageAnalysisData> analysisData, StreamWriter tempAnalysisDataFileWriter)
+    private async Task AnalyseAction(OutputImage imageInfo, int index, int count, ConcurrentBag<ImageAnalysisData> analysisData, StreamWriter? tempAnalysisDataFileWriter)
     {
         string imgName = Path.GetFileName(imageInfo.Path);
         Logger.LogInfo($"Начат анализ изображения {imgName} ({index} / {count})");

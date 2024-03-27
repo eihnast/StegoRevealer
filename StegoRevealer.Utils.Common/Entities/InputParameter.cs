@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.Utils.CorrelationAnalyser.Entities;
+﻿namespace StegoRevealer.Utils.Common.Entities;
 
 public class InputParameter
 {
