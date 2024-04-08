@@ -7,10 +7,10 @@ using System.IO;
 using System.Collections.Generic;
 namespace StegoRevealer_StegoCore_TrainingModule
 {
-    public partial class StegoModel
+    public partial class StegoModelTest1
     {
         /// <summary>
-        /// model input class for StegoModel.
+        /// model input class for StegoModelTest1.
         /// </summary>
         #region model input class
         public class ModelInput
@@ -69,14 +69,14 @@ namespace StegoRevealer_StegoCore_TrainingModule
 
             [LoadColumn(13)]
             [ColumnName(@"DataWasHided")]
-            public float DataWasHided { get; set; }
+            public bool DataWasHided { get; set; }
 
         }
 
         #endregion
 
         /// <summary>
-        /// model output class for StegoModel.
+        /// model output class for StegoModelTest1.
         /// </summary>
         #region model output class
         public class ModelOutput
@@ -121,19 +121,25 @@ namespace StegoRevealer_StegoCore_TrainingModule
             public float EntropyRenyiValue { get; set; }
 
             [ColumnName(@"DataWasHided")]
-            public float DataWasHided { get; set; }
+            public bool DataWasHided { get; set; }
 
             [ColumnName(@"Features")]
             public float[] Features { get; set; }
 
+            [ColumnName(@"PredictedLabel")]
+            public bool PredictedLabel { get; set; }
+
             [ColumnName(@"Score")]
             public float Score { get; set; }
+
+            [ColumnName(@"Probability")]
+            public float Probability { get; set; }
 
         }
 
         #endregion
 
-        private static string MLNetModelPath = Path.GetFullPath("StegoModel.mlnet");
+        private static string MLNetModelPath = Path.GetFullPath("StegoModelTest1.mlnet");
 
         public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
 

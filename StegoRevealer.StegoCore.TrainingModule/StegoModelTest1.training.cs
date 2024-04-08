@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ML.Data;
-using Microsoft.ML.Trainers.LightGbm;
+using Microsoft.ML.Trainers.FastTree;
 using Microsoft.ML.Trainers;
 using Microsoft.ML;
 
 namespace StegoRevealer_StegoCore_TrainingModule
 {
-    public partial class StegoModel
+    public partial class StegoModelTest1
     {
-        public const string RetrainFilePath =  @"D:\Temp\_DataSets\.Samples\Sample1_50PercentClear_data.csv";
+        public const string RetrainFilePath =  @"D:\Temp\_DataSets\.Samples\Sample1_50PercentClear_data_NEW.csv";
         public const char RetrainSeparatorChar = ',';
         public const bool RetrainHasHeader =  true;
         public const bool RetrainAllowQuoting =  false;
@@ -92,7 +92,7 @@ namespace StegoRevealer_StegoCore_TrainingModule
             // Data process configuration with pipeline data transformations
             var pipeline = mlContext.Transforms.ReplaceMissingValues(new []{new InputOutputColumnPair(@"ChiSquareVolume", @"ChiSquareVolume"),new InputOutputColumnPair(@"RsVolume", @"RsVolume"),new InputOutputColumnPair(@"KzhaThreshold", @"KzhaThreshold"),new InputOutputColumnPair(@"KzhaMessageVolume", @"KzhaMessageVolume"),new InputOutputColumnPair(@"ChiSquareVolume_Vertical", @"ChiSquareVolume_Vertical"),new InputOutputColumnPair(@"KzhaThreshold_Vertical", @"KzhaThreshold_Vertical"),new InputOutputColumnPair(@"KzhaMessageVolume_Vertical", @"KzhaMessageVolume_Vertical"),new InputOutputColumnPair(@"NoiseValue", @"NoiseValue"),new InputOutputColumnPair(@"SharpnessValue", @"SharpnessValue"),new InputOutputColumnPair(@"BlurValue", @"BlurValue"),new InputOutputColumnPair(@"ContrastValue", @"ContrastValue"),new InputOutputColumnPair(@"EntropyShennonValue", @"EntropyShennonValue"),new InputOutputColumnPair(@"EntropyRenyiValue", @"EntropyRenyiValue")})      
                                     .Append(mlContext.Transforms.Concatenate(@"Features", new []{@"ChiSquareVolume",@"RsVolume",@"KzhaThreshold",@"KzhaMessageVolume",@"ChiSquareVolume_Vertical",@"KzhaThreshold_Vertical",@"KzhaMessageVolume_Vertical",@"NoiseValue",@"SharpnessValue",@"BlurValue",@"ContrastValue",@"EntropyShennonValue",@"EntropyRenyiValue"}))      
-                                    .Append(mlContext.Regression.Trainers.LightGbm(new LightGbmRegressionTrainer.Options(){NumberOfLeaves=4,NumberOfIterations=714,MinimumExampleCountPerLeaf=21,LearningRate=0.0996527488234428,LabelColumnName=@"DataWasHided",FeatureColumnName=@"Features",Booster=new GradientBooster.Options(){SubsampleFraction=0.999999776672986,FeatureFraction=0.974384392388345,L1Regularization=2E-10,L2Regularization=0.78089730878166},MaximumBinCountPerFeature=353}));
+                                    .Append(mlContext.BinaryClassification.Trainers.FastTree(new FastTreeBinaryTrainer.Options(){NumberOfLeaves=16,MinimumExampleCountPerLeaf=9,NumberOfTrees=86,MaximumBinCountPerFeature=39,FeatureFraction=0.990015524757507,LearningRate=0.0978144404155983,LabelColumnName=@"DataWasHided",FeatureColumnName=@"Features",DiskTranspose=false}));
 
             return pipeline;
         }

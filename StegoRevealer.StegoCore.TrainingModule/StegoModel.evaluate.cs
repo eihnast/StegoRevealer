@@ -5,6 +5,8 @@ using Microsoft.ML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Plotly.NET;
+using Plotly.NET.LayoutObjects;
 
 namespace StegoRevealer_StegoCore_TrainingModule
 {
@@ -33,7 +35,7 @@ namespace StegoRevealer_StegoCore_TrainingModule
             var preprocessedTrainData = model.Transform(trainData);
 
             var permutationFeatureImportance =
-         mlContext.MulticlassClassification
+         mlContext.Regression
          .PermutationFeatureImportance(
                  model,
                  preprocessedTrainData,
@@ -41,17 +43,81 @@ namespace StegoRevealer_StegoCore_TrainingModule
 
             var featureImportanceMetrics =
                  permutationFeatureImportance
-                 .Select((kvp) => new { kvp.Key, kvp.Value.MacroAccuracy })
-                 .OrderByDescending(myFeatures => Math.Abs(myFeatures.MacroAccuracy.Mean));
+                 .Select((kvp) => new { kvp.Key, kvp.Value.RSquared })
+                 .OrderByDescending(myFeatures => Math.Abs(myFeatures.RSquared.Mean));
 
             var featurePFI = new List<Tuple<string, double>>();
             foreach (var feature in featureImportanceMetrics)
             {
-                var pfiValue = Math.Abs(feature.MacroAccuracy.Mean);
+                var pfiValue = Math.Abs(feature.RSquared.Mean);
                 featurePFI.Add(new Tuple<string, double>(feature.Key, pfiValue));
             }
 
             return featurePFI;
+        }
+
+        /// <summary>
+        /// R Squared is a measure of variation between the values predicted by the model and the true values. 
+        /// In a "perfect" model, there would be no variation between predictions and true values. 
+        /// 
+        /// Here we will plot the predicted values vs the true values for the trained model. This RegressionChart.html 
+        /// is then saved to the location specified by <param name="folderPath"></param>. 
+        /// 
+        /// See more information on R Squared at https://en.wikipedia.org/wiki/Coefficient_of_determination. 
+        /// </summary>
+        /// <param name="trainData">IDataView used to train the model.</param>
+        /// <param name="model">Model used for predictions.</param>
+        /// <param name="labelColumnName">Name of the predicted label column.</param>
+        /// <param name="folderPath">Folder path to save the RegressionChart.html file into.</param>
+        public static void PlotRSquaredValues(IDataView trainData, ITransformer model, string labelColumnName, string folderPath)
+        {
+            // Number of rows to display in charts.
+            int numberOfRows = 1000;
+            // Use the model to make batch predictions on training data
+            var testResults = model.Transform(trainData);
+
+            // Get the actual values from the dataset
+            var trueValues = testResults.GetColumn<float>(labelColumnName).Take(numberOfRows); ;
+
+            // Get the predicted values from the test results
+            var predictedValues = testResults.GetColumn<float>("Score").Take(numberOfRows);
+
+            // Setup what the graph looks like
+            var title = Title.init(Text: "R-Squared Plot");
+            var layout = Layout.init<IConvertible>(Title: title, PlotBGColor: Plotly.NET.Color.fromString("#e5ecf6"));
+            var xAxis = LinearAxis.init<IConvertible, IConvertible, IConvertible, IConvertible, IConvertible, IConvertible>(
+                    Title: Title.init("True Values"),
+                    ZeroLineColor: Plotly.NET.Color.fromString("#ffff"),
+                    GridColor: Plotly.NET.Color.fromString("#ffff"),
+                    ZeroLineWidth: 2);
+            var yAxis = LinearAxis.init<IConvertible, IConvertible, IConvertible, IConvertible, IConvertible, IConvertible>(
+                    Title: Title.init("Predicted Values"),
+                    ZeroLineColor: Plotly.NET.Color.fromString("#ffff"),
+                    GridColor: Plotly.NET.Color.fromString("#ffff"),
+                    ZeroLineWidth: 2);
+
+            // We will plot the line that shows the perfect result. Setup that line here.
+            var maximumValue = Math.Max(trueValues.Max(), predictedValues.Max());
+            var perfectX = new[] { 0, maximumValue };
+            var perfectY = new[] { 0, maximumValue };
+
+
+
+            // Create the scatterplot that shows the true values vs the predicted values
+            var trueAndPredictedValues = Chart2D.Chart.Scatter<float, float, string>(x: trueValues, y: predictedValues, mode: StyleParam.Mode.Markers)
+                            .WithLayout(layout)
+                            .WithXAxis(xAxis)
+                            .WithYAxis(yAxis);
+
+            // Setup the line that shows what a perfect prediction would look like
+            var perfectLineGraph = Chart2D.Chart.Line<float, float, string>(x: perfectX, y: perfectY)
+                            .WithLayout(layout)
+                            .WithLine(Line.init(Width: 1.5));
+
+            var chartWithValuesAndIdealLine = Chart.Combine(new[] { trueAndPredictedValues, perfectLineGraph });
+            var chartFilePath = folderPath + "\\RegressionChart.html";
+
+            chartWithValuesAndIdealLine.SaveHtml(chartFilePath);
         }
     }
 }

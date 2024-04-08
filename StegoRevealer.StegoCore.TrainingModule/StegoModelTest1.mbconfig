@@ -1,5 +1,5 @@
 ﻿{
-  "Scenario": "Regression",
+  "Scenario": "Classification",
   "DataSource": {
     "Version": 3,
     "EscapeCharacter": "\"",
@@ -8,7 +8,7 @@
     "KeepPunctuations": false,
     "AllowQuoting": false,
     "Type": "TabularFile",
-    "FilePath": "D:\\Temp\\_DataSets\\.Samples\\Sample1_50PercentClear_data.csv",
+    "FilePath": "D:\\Temp\\_DataSets\\.Samples\\Sample1_50PercentClear_data_NEW.csv",
     "Delimiter": ",",
     "DecimalMarker": ".",
     "HasHeader": true,
@@ -41,7 +41,7 @@
         "ColumnName": "KzhaMessageVolume",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
-        "IsCategorical": true,
+        "IsCategorical": false,
         "Type": "Column",
         "Version": 5
       },
@@ -65,7 +65,7 @@
         "ColumnName": "KzhaMessageVolume_Vertical",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
-        "IsCategorical": true,
+        "IsCategorical": false,
         "Type": "Column",
         "Version": 5
       },
@@ -120,7 +120,7 @@
       {
         "ColumnName": "DataWasHided",
         "ColumnPurpose": "Label",
-        "ColumnDataFormat": "Single",
+        "ColumnDataFormat": "Boolean",
         "IsCategorical": true,
         "Type": "Column",
         "Version": 5
@@ -138,11 +138,11 @@
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "LightGbmRegression",
-        "Score": 0.53688545192170256,
-        "RuntimeInSeconds": 0.682,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.84508293838862558,
+        "RuntimeInSeconds": 0.157,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e4",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -193,29 +193,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e4": {
-            "NumberOfLeaves": 4,
-            "MinimumExampleCountPerLeaf": 21,
-            "LearningRate": 0.099652748823442841,
-            "NumberOfTrees": 714,
-            "SubsampleFraction": 0.99999977667298645,
-            "MaximumBinCountPerFeature": 353,
-            "FeatureFraction": 0.974384392388345,
-            "L1Regularization": 2E-10,
-            "L2Regularization": 0.7808973087816603,
+          "e2": {
+            "NumberOfLeaves": 16,
+            "MinimumExampleCountPerLeaf": 9,
+            "NumberOfTrees": 86,
+            "MaximumBinCountPerFeature": 39,
+            "FeatureFraction": 0.99001552475750687,
+            "LearningRate": 0.097814440415598267,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "LightGbmRegression",
-        "Score": 0.53448087616091922,
-        "RuntimeInSeconds": 0.569,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.84478672985781988,
+        "RuntimeInSeconds": 0.156,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e4",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -266,29 +264,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e4": {
-            "NumberOfLeaves": 4,
-            "MinimumExampleCountPerLeaf": 20,
-            "LearningRate": 0.23139380562474318,
-            "NumberOfTrees": 633,
-            "SubsampleFraction": 0.99999977667298645,
-            "MaximumBinCountPerFeature": 297,
-            "FeatureFraction": 0.99999999,
-            "L1Regularization": 2.5210862187970546E-10,
-            "L2Regularization": 0.7560583317526185,
+          "e2": {
+            "NumberOfLeaves": 16,
+            "MinimumExampleCountPerLeaf": 9,
+            "NumberOfTrees": 87,
+            "MaximumBinCountPerFeature": 39,
+            "FeatureFraction": 0.98599488797423773,
+            "LearningRate": 0.11315897620460148,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "LightGbmRegression",
-        "Score": 0.5343078558533163,
-        "RuntimeInSeconds": 0.673,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.84449052132701419,
+        "RuntimeInSeconds": 0.206,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e4",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -339,29 +335,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e4": {
-            "NumberOfLeaves": 4,
-            "MinimumExampleCountPerLeaf": 20,
-            "LearningRate": 0.096931699340263036,
-            "NumberOfTrees": 485,
-            "SubsampleFraction": 0.62049932496662741,
-            "MaximumBinCountPerFeature": 346,
-            "FeatureFraction": 0.98878959304434955,
-            "L1Regularization": 2.5264475973877308E-10,
-            "L2Regularization": 0.54756745470471968,
+          "e2": {
+            "NumberOfLeaves": 17,
+            "MinimumExampleCountPerLeaf": 9,
+            "NumberOfTrees": 86,
+            "MaximumBinCountPerFeature": 41,
+            "FeatureFraction": 0.99481760814003206,
+            "LearningRate": 0.0903740491961867,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "LightGbmRegression",
-        "Score": 0.53394352871116513,
-        "RuntimeInSeconds": 0.673,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.84449052132701419,
+        "RuntimeInSeconds": 0.168,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e4",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -412,29 +406,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e4": {
-            "NumberOfLeaves": 4,
-            "MinimumExampleCountPerLeaf": 20,
-            "LearningRate": 0.092524083914867133,
-            "NumberOfTrees": 646,
-            "SubsampleFraction": 0.92102586117353535,
-            "MaximumBinCountPerFeature": 322,
-            "FeatureFraction": 0.93834438598466152,
-            "L1Regularization": 2E-10,
-            "L2Regularization": 0.99999977667298645,
+          "e2": {
+            "NumberOfLeaves": 16,
+            "MinimumExampleCountPerLeaf": 8,
+            "NumberOfTrees": 84,
+            "MaximumBinCountPerFeature": 41,
+            "FeatureFraction": 0.98843896755003846,
+            "LearningRate": 0.084285671249021282,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "LightGbmRegression",
-        "Score": 0.53195779693963441,
-        "RuntimeInSeconds": 0.764,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.84449052132701419,
+        "RuntimeInSeconds": 0.157,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e4",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -485,18 +477,16 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e4": {
-            "NumberOfLeaves": 4,
-            "MinimumExampleCountPerLeaf": 20,
-            "LearningRate": 0.036557637557896025,
-            "NumberOfTrees": 1084,
-            "SubsampleFraction": 0.35292212917601246,
-            "MaximumBinCountPerFeature": 287,
-            "FeatureFraction": 0.93246696946828189,
-            "L1Regularization": 2E-10,
-            "L2Regularization": 0.99999977667298645,
+          "e2": {
+            "NumberOfLeaves": 48,
+            "MinimumExampleCountPerLeaf": 8,
+            "NumberOfTrees": 36,
+            "MaximumBinCountPerFeature": 133,
+            "FeatureFraction": 0.80040914102303562,
+            "LearningRate": 0.12896106666287169,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       }
@@ -504,23 +494,24 @@
     "Estimators": {
       "e0": "ReplaceMissingValues",
       "e1": "Concatenate",
-      "e2": "FastTreeRegression",
-      "e3": "FastForestRegression",
-      "e4": "LightGbmRegression",
-      "e5": "LbfgsPoissonRegressionRegression",
-      "e6": "SdcaRegression"
+      "e2": "FastTreeBinary",
+      "e3": "LightGbmBinary",
+      "e4": "LbfgsLogisticRegressionBinary",
+      "e5": "SdcaLogisticRegressionBinary",
+      "e6": "FastForestBinary",
+      "e7": "Naive"
     },
-    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6)",
-    "MetricName": "RSquared",
-    "ModelFilePath": "D:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\StegoModel.mlnet"
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "D:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\StegoModelTest1.mlnet"
   },
   "Type": "TrainingConfig",
   "Version": 5,
   "TrainingOption": {
     "Version": 2,
     "Subsampling": false,
-    "Type": "RegressionTrainingOption",
-    "TrainingTime": 90,
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 600,
     "LabelColumn": "DataWasHided",
     "ValidationOption": {
       "Version": 0,

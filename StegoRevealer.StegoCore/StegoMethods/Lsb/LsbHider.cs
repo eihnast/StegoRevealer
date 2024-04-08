@@ -37,11 +37,11 @@ public class LsbHider : IHider
     /// <summary>
     /// Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
     /// </summary>
-    private static int GetHidingVolume(int ContainerVolume, int DataVolume)
+    private static int GetHidingVolume(int containerVolume, int dataVolume)
     {
-        if (ContainerVolume > DataVolume)
-            return DataVolume;
-        return ContainerVolume;
+        if (containerVolume > dataVolume)
+            return dataVolume;
+        return containerVolume;
     }
 
     /// <inheritdoc/>
@@ -90,7 +90,7 @@ public class LsbHider : IHider
         int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа НЗБ
         int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
         double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
-        int usingColorBytesNum = Params.GetNeededColorBytesNum();  // Количество цветовых байт, нужных для скрытия
+        int usingColorBytesNum = Math.Min(Params.CalcRealContainerVolume(), Params.GetNeededColorBytesNum());  // Количество цветовых байт, нужных для скрытия
         result.Log($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tcontainerVolume = {containerVolume}\n\t" +
             $"hidingVolume = {hidingVolume}\n\trelativeHidingVolume = {relativeHidingVolume}\n\t" +
