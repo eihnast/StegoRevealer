@@ -8,6 +8,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
 using StegoRevealer.Utils.Common.Entities;
 using StegoRevealer.Utils.Common.Lib;
 using StegoRevealer.Utils.CorrelationAnalyser.Entities;
@@ -283,6 +284,82 @@ internal class Program
 
         toWriteString.Append(CalcRenyiTestCorrelations(analysisResults));
 
+        // Подсчёты статистики по отклонениям для пустых контейнеров
+        try
+        {
+            AddToOutput(toWriteString, "------\n\n");
+
+            const double criticalRs = 4.055 / 100;
+            const double criticalChiSqr = 0.105 / 100;
+            var falseRsDeceted = rsArray.Where(rs => rs > criticalRs);
+            var falseChiSqrDeceted = chiSqrArray.Where(chi => chi > criticalChiSqr);
+            int falseRsDetectedNumber = falseRsDeceted.Count();
+            int falseChiSqrDetectedNumber = falseChiSqrDeceted.Count();
+            AddToOutput(toWriteString, $"Всего получено {falseRsDetectedNumber} оценок по RS, превышаюших критическую {criticalRs}.\n");
+            AddToOutput(toWriteString, $"Всего получено {falseChiSqrDetectedNumber} оценок по Хи-квадрат, превышаюших критическую {criticalChiSqr}.\n");
+
+            var falseRsDecetedResults = analysisResults.Where(ar => ar.RsValue > criticalRs);
+            var trueRsDecetedResults = analysisResults.Where(ar => ar.RsValue <= criticalRs);
+            double averageFalseRsDecetedNoise = MathMethods.Average(falseRsDecetedResults.Select(ar => ar.NoiseValue).ToArray());
+            double averageFalseRsDecetedSharpness = MathMethods.Average(falseRsDecetedResults.Select(ar => ar.SharpnessValue).ToArray());
+            double maxFalseRsDecetedNoise = falseRsDecetedResults.Select(ar => ar.NoiseValue).OrderDescending().First();
+            double maxFalseRsDecetedSharpness = falseRsDecetedResults.Select(ar => ar.SharpnessValue).OrderDescending().First();
+            double minFalseRsDecetedNoise = falseRsDecetedResults.Select(ar => ar.NoiseValue).Order().First();
+            double minFalseRsDecetedSharpness = falseRsDecetedResults.Select(ar => ar.SharpnessValue).Order().First();
+            double averageTrueRsDecetedNoise = MathMethods.Average(trueRsDecetedResults.Select(ar => ar.NoiseValue).ToArray());
+            double averageTrueRsDecetedSharpness = MathMethods.Average(trueRsDecetedResults.Select(ar => ar.SharpnessValue).ToArray());
+            double maxTrueRsDecetedNoise = trueRsDecetedResults.Select(ar => ar.NoiseValue).OrderDescending().First();
+            double maxTrueRsDecetedSharpness = trueRsDecetedResults.Select(ar => ar.SharpnessValue).OrderDescending().First();
+            double minTrueRsDecetedNoise = trueRsDecetedResults.Select(ar => ar.NoiseValue).Order().First();
+            double minTrueRsDecetedSharpness = trueRsDecetedResults.Select(ar => ar.SharpnessValue).Order().First();
+            AddToOutput(toWriteString, $"Для превышающих критическое значение RS:\n\tсредний шум: {averageFalseRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tсредняя резкость: {averageFalseRsDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tмаксимальный шум: {maxFalseRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tмаксимальная резкость: {maxFalseRsDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tминимальный шум: {minFalseRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tминимальная резкость: {minFalseRsDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"Для не превышающих критическое значение RS:\n\tсредний шум: {averageTrueRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tсредняя резкость: {averageTrueRsDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tмаксимальный шум: {maxTrueRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tмаксимальная резкость: {maxTrueRsDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tминимальный шум: {minTrueRsDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tминимальная резкость: {minTrueRsDecetedSharpness}\n\n");
+
+            var falseChiSqrDecetedResults = analysisResults.Where(ar => ar.ChiSqrValue > criticalChiSqr);
+            var trueChiSqrDecetedResults = analysisResults.Where(ar => ar.ChiSqrValue <= criticalChiSqr);
+            double averageFalseChiSqrDecetedNoise = MathMethods.Average(falseChiSqrDecetedResults.Select(ar => ar.NoiseValue).ToArray());
+            double averageFalseChiSqrDecetedSharpness = MathMethods.Average(falseChiSqrDecetedResults.Select(ar => ar.SharpnessValue).ToArray());
+            double maxFalseChiSqrDecetedNoise = falseChiSqrDecetedResults.Select(ar => ar.NoiseValue).OrderDescending().First();
+            double maxFalseChiSqrDecetedSharpness = falseChiSqrDecetedResults.Select(ar => ar.SharpnessValue).OrderDescending().First();
+            double minFalseChiSqrDecetedNoise = falseChiSqrDecetedResults.Select(ar => ar.NoiseValue).Order().First();
+            double minFalseChiSqrDecetedSharpness = falseChiSqrDecetedResults.Select(ar => ar.SharpnessValue).Order().First();
+            double averageTrueChiSqrDecetedNoise = MathMethods.Average(trueChiSqrDecetedResults.Select(ar => ar.NoiseValue).ToArray());
+            double averageTrueChiSqrDecetedSharpness = MathMethods.Average(trueChiSqrDecetedResults.Select(ar => ar.SharpnessValue).ToArray());
+            double maxTrueChiSqrDecetedNoise = trueChiSqrDecetedResults.Select(ar => ar.NoiseValue).OrderDescending().First();
+            double maxTrueChiSqrDecetedSharpness = trueChiSqrDecetedResults.Select(ar => ar.SharpnessValue).OrderDescending().First();
+            double minTrueChiSqrDecetedNoise = trueChiSqrDecetedResults.Select(ar => ar.NoiseValue).Order().First();
+            double minTrueChiSqrDecetedSharpness = trueChiSqrDecetedResults.Select(ar => ar.SharpnessValue).Order().First();
+            AddToOutput(toWriteString, $"Для превышающих критическое значение ChiSqr:\n\tсредний шум: {averageFalseChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tсредняя резкость: {averageFalseChiSqrDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tмаксимальный шум: {maxFalseChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tмаксимальная резкость: {maxFalseChiSqrDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tминимальный шум: {minFalseChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tминимальная резкость: {minFalseChiSqrDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"Для не превышающих критическое значение ChiSqr:\n\tсредний шум: {averageTrueChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tсредняя резкость: {averageTrueChiSqrDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tмаксимальный шум: {maxTrueChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tмаксимальная резкость: {maxTrueChiSqrDecetedSharpness}\n");
+            AddToOutput(toWriteString, $"\tминимальный шум: {minTrueChiSqrDecetedNoise}\n");
+            AddToOutput(toWriteString, $"\tминимальная резкость: {minTrueChiSqrDecetedSharpness}\n");
+
+            AddToOutput(toWriteString, "------\n\n");
+        }
+        catch (Exception ex)
+        {
+            AddToOutput(toWriteString, $"Не удалось выполнить расчёты для шума и резкости:\n{ex.Message}\n");
+            AddToOutput(toWriteString, "------\n\n");
+        }
+
         File.WriteAllText(Constants.OutputCorrelationFilePath, toWriteString.ToString());
     }
 
@@ -294,7 +371,7 @@ internal class Program
         var cv = CalcCorrelation(dataA, dataB);
         var str = new StringBuilder();
 
-        str.Append($"Корреляция между значениями: {dataAName} и {dataBName} (заданный уровень значимости: {cv.Alpha})");
+        str.Append($"Корреляция между значениями: {dataAName} и {dataBName} (заданный уровень значимости: {cv.Alpha})\n");
         str.Append($"\tЗначение корреляции Спирмена: {cv.Spearman}\n");
         str.Append($"\tЗначение t-статистики Стьюдента: {(cv.Spearman == 1 ? "inf" : cv.TValue)} (критическое t-значение: {cv.CriticalTValue})\n");
         str.Append($"\tp-значение: {cv.PValue}\n");
@@ -302,6 +379,12 @@ internal class Program
 
         Console.Write(str);
         return str.ToString();
+    }
+
+    private static void AddToOutput(StringBuilder stringBuilder, string message)
+    {
+        stringBuilder.Append(message);
+        Console.Write(message);
     }
 
     private static CorrelationValues CalcCorrelation(IEnumerable<double> dataA, IEnumerable<double> dataB)
@@ -323,7 +406,7 @@ internal class Program
                                                // Это мера, используемая в t-тесте для оценки различий между средними значениями двух выборок.
         var criticalTValue = GetCriticalTValue(alpha, n);  // Критическое значение t-критерия Стьюдента
         var pValue = CalcPValue(tValue, n);  // p-значение - вероятность получить наблюдаемые результаты при верности нулевой гипотезы
-                                             // (т.е. веронятность получить наблюдаемое значение при нулевой гипотезе - "dataA и dataB некоррелированны").
+                                             // (т.е. вероятность получить наблюдаемое значение при нулевой гипотезе - "dataA и dataB некоррелированны").
                                              // P-значение говорит от значимости как таковой, но не характеризует "величину эффекта".
 
         return new CorrelationValues

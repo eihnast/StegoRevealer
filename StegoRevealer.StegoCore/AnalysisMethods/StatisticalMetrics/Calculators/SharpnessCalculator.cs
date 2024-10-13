@@ -66,16 +66,16 @@ public class SharpnessCalculator
                         var secondPixel = new PixelInfo() { Y = y - pixelOffset.Y, X = x - pixelOffset.X };
 
                         if (firstPixel.Y > height - 1 || firstPixel.Y < 0 || firstPixel.X > width - 1 || firstPixel.X < 0)
-                            firstPixel = new PixelInfo { Y = 0, X = 0 };
+                            firstPixel = new PixelInfo { Y = y, X = x };
                         if (secondPixel.Y > height - 1 || secondPixel.Y < 0 || secondPixel.X > width - 1 || secondPixel.X < 0)
-                            secondPixel = new PixelInfo { Y = 0, X = 0 };
+                            secondPixel = new PixelInfo { Y = y, X = x };
 
                         // Применяем алгоритм Брезенхэма
                         pixelsOnLine = PixelsTools.GetPixelsOnLine(firstPixel.Y, firstPixel.X, secondPixel.Y, secondPixel.X);
                     }
 
                     // Убираем центральный краевой пиксель из последовательности
-                    pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
+                    // pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
 
                     // Обогащаем значениями пикселей
                     for (int i = 0; i < pixelsOnLine.Count; i++)

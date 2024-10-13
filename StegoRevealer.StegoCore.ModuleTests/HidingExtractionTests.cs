@@ -244,6 +244,37 @@ public class HidingExtractionTests
         Assert.IsTrue(saResult.ExtractedData?.StartsWith(data), str + $"data = {saResult.ExtractedData}");
     }
 
+    [TestMethod]
+    public void KochZhaoHidingExtractionCommonTest2()
+    {
+        var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "TEMP_1.png");
+        var image = new ImageHandler(imagePath);
+        var kzHider = new KochZhaoHider(image);
+
+        kzHider.Params.Threshold = 120;
+        kzHider.Params.TraverseType = TraverseType.Horizontal;
+
+        string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120. Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120. Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
+        var hidingResult = kzHider.Hide(data, "TEMP_4.png");
+
+        var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new Exception("hidingResult.Path is null"));
+
+        var kzExtractor = new KochZhaoExtractor(newImage);
+        kzExtractor.Params.Threshold = 20;
+
+        var extractionResult = kzExtractor.Extract();
+        var extractedData = extractionResult.GetResultData();
+        Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
+
+        var kzAnalayser = new KzhaAnalyser(newImage);
+        var saResult = kzAnalayser.Analyse();
+        string str = string.Empty;
+        foreach (var logEntry in saResult.LogRecords)
+            str += logEntry.ToString() + "\n";
+
+        Assert.IsTrue(saResult.ExtractedData?.StartsWith(data), str + $"data = {saResult.ExtractedData}");
+    }
+
     //[TestMethod]
     //public void KochZhaoHidingExtractionCommonTest2()
     //{
