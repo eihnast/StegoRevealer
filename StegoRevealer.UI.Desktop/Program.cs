@@ -29,6 +29,8 @@ class Program
         {
             // Unexpected termintaion actions
             Configurator.SaveConfig();
+            TempManager.Instance.DeleteImageHandlers();
+            TempManager.Instance.DeleteTempImages();
             Logger.LogError("Stego Revealer closed due to an error");
         }
     }

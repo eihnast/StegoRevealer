@@ -323,8 +323,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     {
         try
         {
-            CurrentImage?.CloseHandler();
             CurrentImage = new ImageHandler(path);
+            TempManager.Instance.RememberHandler(CurrentImage);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов или создат объекты параметров, если их нет
             Logger.LogInfo($"Loaded new image for steganalysis: {CurrentImage.ImgPath}");
 
@@ -343,13 +343,22 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     {
         // Выбор файла
         string path = await SelectNewImageFile();
+        ResetImageAndResults();
         if (!string.IsNullOrEmpty(path))
+        {
             ImagePath = path;
-        else
-            ResetImageAndResults();
 
-        // Загрузка
-        return CreateCurrentImageHandler(path);
+            // Загрузка
+            var tempPath = CommonTools.CopyFileToTemp(path);
+
+            if (!string.IsNullOrEmpty(tempPath))
+            {
+                TempManager.Instance.RememberTempImage(tempPath);
+                return CreateCurrentImageHandler(tempPath);
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -497,6 +506,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         ImagePath = ImageNotSelectedText;
         DrawedImage = null;
         ResetResults();
+
+        if (CurrentImage is not null)
+            TempManager.Instance.ForgetHandler(CurrentImage);
+        CurrentImage?.CloseHandler();
+
+        var pathToDelete = CurrentImage?.ImgPath;
+        if (!string.IsNullOrEmpty(pathToDelete))
+            CommonTools.TryDeleteTempFile(pathToDelete);
     }
 
     // Возвращает актуальные размеры окна

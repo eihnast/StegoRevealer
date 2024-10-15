@@ -12,29 +12,9 @@
     <PackageReference Include="Microsoft.ML" Version="3.0.1" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="3.0.1" />
     <PackageReference Include="Microsoft.ML.LightGbm" Version="3.0.1" />
-    <PackageReference Include="Plotly.NET" Version="3.0.1" />
+    <PackageReference Include="Plotly.NET" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
-  </ItemGroup>
-  <ItemGroup Label="StegoModel">
-    <None Include="StegoModel.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Label="StegoModelTest1">
-    <None Include="StegoModelTest1.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Label="StegoModelTest2NoStat">
-    <None Include="StegoModelTest2NoStat.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Label="StegoModelTest2">
-    <None Include="StegoModelTest2.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
