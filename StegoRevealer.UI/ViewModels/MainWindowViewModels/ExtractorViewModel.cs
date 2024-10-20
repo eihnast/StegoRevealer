@@ -471,7 +471,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             throw new Exception("Параметры не указаны");
 
         var results = new ExtractionResultsDto();
-        if (_lsbParameters is not null)  // Извлечение из НЗБ
+        if (MethodLsbSelected && _lsbParameters is not null)  // Извлечение из НЗБ
+        //if (_lsbParameters is not null)  // Извлечение из НЗБ
         {
             var extractor = new LsbExtractor(_lsbParameters.Image);
             extractor.Params.Seed = _lsbParameters.Seed;
@@ -482,7 +483,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             var lsbResult = extractor.Extract() as LsbExtractResult;
             results.ExtractedMessage = lsbResult?.ResultData ?? string.Empty;
         }
-        else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
+        //else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
+        else if (MethodKzSelected && _kzhParameters is not null)  // Извлечение по Коха-Жао
         {
             var extractor = new KochZhaoExtractor(_kzhParameters.Image);
             extractor.Params.Seed = _kzhParameters.Seed;
