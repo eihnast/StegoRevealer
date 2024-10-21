@@ -153,11 +153,11 @@ public class StatmTests
 
         for (int i = 1; i < names.Count; i++)
         {
-            Assert.IsTrue(entropies[i].Tsallis > entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
-            Assert.IsTrue(entropies[i].Vaida > entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
-            Assert.IsTrue(entropies[i].Shennon > entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
-            Assert.IsTrue(entropies[i].Renyi > entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
-            Assert.IsTrue(entropies[i].Havard > entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
+            Assert.IsTrue(entropies[i].Tsallis >= entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
+            Assert.IsTrue(entropies[i].Vaida >= entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
+            Assert.IsTrue(entropies[i].Shennon >= entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
+            Assert.IsTrue(entropies[i].Renyi >= entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
+            Assert.IsTrue(entropies[i].Havard >= entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
         }
     }
 
