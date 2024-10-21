@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.ScMath;
+﻿using Accord;
+
+namespace StegoRevealer.StegoCore.ScMath;
 
 /// <summary>
 /// Apache-реализация оценки по критерию Хи-квадрат
@@ -206,7 +208,7 @@ public static class ChiSquareApache
         return c;
     }
 
-    private static double? ChiSquare(double[] expected, double[] observed)
+    private static double? ChiSquare(List<double> expected, List<double> observed)
     {
         if (expected.Count() < 2)
             throw new ArgumentException("Length of expected array should be grather than 1");
@@ -253,13 +255,13 @@ public static class ChiSquareApache
         return sumSq;
     }
 
-    public static (double Statistic, double PValue) ChiSquareTest(double[] expected, double[] observed)
+    public static (double Statistic, double PValue) ChiSquareTest(List<double> expected, List<double> observed)
     {
         double? chi2 = ChiSquare(expected, observed);
         if (!chi2.HasValue)
             throw new ArithmeticException("Chi-Square statistic can't be calculate");
 
-        var cp = CumulativeProbability(chi2.Value, expected.Length - 1);
+        var cp = CumulativeProbability(chi2.Value, expected.Count - 1);
         double? p = 1 - cp;
         if (!p.HasValue)
             throw new ArithmeticException("Error while calculating PValue");

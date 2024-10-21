@@ -200,12 +200,20 @@ public static class CommonTools
         });
     }
 
+    private static string SavedTempPath = string.Empty;
     public static string GetOrCreateTempDirPath()
     {
+        if (!string.IsNullOrEmpty(SavedTempPath))
+        {
+            if (!Path.Exists(SavedTempPath))
+                Directory.CreateDirectory(SavedTempPath);
+            return SavedTempPath;
+        }
+
         string tempDir = Path.GetTempPath();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            string? localDirPath = Directory.GetParent(Path.GetTempPath())?.Parent?.FullName;
+            string? localDirPath = Directory.GetParent(tempDir)?.Parent?.FullName;
             if (!string.IsNullOrEmpty(localDirPath))
                 tempDir = localDirPath;
         }
@@ -215,6 +223,79 @@ public static class CommonTools
             Directory.CreateDirectory(srTempPath);
         tempDir = srTempPath;
 
+        SavedTempPath = tempDir;
         return tempDir;
+    }
+
+    public static string? CopyFileToTemp(string filePath, bool useGuid = false)
+    {
+        if (File.Exists(filePath))
+        {
+            string tempFileName = useGuid ? Guid.NewGuid().ToString() : Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
+            string newPath = Path.Combine(GetOrCreateTempDirPath(), tempFileName + Path.GetExtension(filePath));
+
+            try
+            {
+                File.Copy(filePath, newPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return null;
+            }
+
+            return newPath;
+        }
+
+        return null;
+    }
+
+    public static bool TryDeleteTempFile(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            var dirName = Path.GetDirectoryName(filePath);
+            var tempPath = GetOrCreateTempDirPath();
+
+            if (IsPathsEquals(dirName, tempPath) || IsInFolder(dirName, tempPath))
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex.Message);
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool IsPathsEquals(string? path1, string? path2)
+    {
+        if (path1 == path2)
+            return true;
+
+        if (!string.IsNullOrEmpty(path1) && !string.IsNullOrEmpty(path2))
+        {
+            return path1.Trim('/').Trim('\\').ToLower().Equals(path2.Trim('/').Trim('\\').ToLower());
+        }
+
+        return false;
+    }
+
+    public static bool IsInFolder(string? path, string? folderPath)
+    {
+        if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(folderPath))
+            return false;
+
+        string normalizedPath = path.Trim('/').Trim('\\').ToLower();
+        string normalizedFolderPath = folderPath.Trim('/').Trim('\\').ToLower();
+        return normalizedPath.StartsWith(normalizedFolderPath);
     }
 }

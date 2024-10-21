@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb;
 
@@ -132,16 +133,16 @@ public static class LsbCommon
 
         var (width, height, depth) = parameters.Image.GetImgSizes();
         int imgLinearLength = width * height * parameters.Channels.Count;  // Общее число цветовых байт изображения
-        if (usingColorBytesNum < 0)
+        if (usingColorBytesNum < 0 || usingColorBytesNum > imgLinearLength)
             usingColorBytesNum = imgLinearLength;
 
         // Массив общих линейных индексов цветовых байт
-        var allLinearIndexes = Enumerable.Range(0, imgLinearLength).ToArray();  // Формирование
-        allLinearIndexes = allLinearIndexes.OrderBy(e => rnd.Next()).ToArray();  // Перемешивание
+        var allLinearIndexes = Enumerable.Range(0, imgLinearLength);  // Формирование
+        allLinearIndexes = allLinearIndexes.OrderBy(e => rnd.Next()).Take(usingColorBytesNum);  // Перемешивание
 
-        for (int i = 0; i < Math.Min(usingColorBytesNum, imgLinearLength); i++)
+        foreach (var index in allLinearIndexes)
         {
-            var (y, x, channel) = GetImgByteIndexesFromLinearIndex(allLinearIndexes[i], parameters);
+            var (y, x, channel) = GetImgByteIndexesFromLinearIndex(index, parameters);
             yield return new ScPointCoords(y, x, channel);
         }
 

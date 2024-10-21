@@ -7,7 +7,7 @@ using StegoRevealer.StegoCore.StegoMethods;
 namespace StegoRevealer.StegoCore.ModuleTests;
 
 [TestClass]
-public class FrequencyViewBlocksTraversingTests
+public class BlocksTraversingTests
 {
     // Общее для тестов изображение: загружаем 1 раз
     private static string TestImagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "FreqBlocksTraversingTest.png");

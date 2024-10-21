@@ -36,6 +36,8 @@ public partial class MainWindow : Window
     private void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
     {
         Configurator.SaveConfig();
+        TempManager.Instance.DeleteImageHandlers();
+        TempManager.Instance.DeleteTempImages();
     }
 
     private void UpdateHeaderBtnSelection(Button selectedBtn)

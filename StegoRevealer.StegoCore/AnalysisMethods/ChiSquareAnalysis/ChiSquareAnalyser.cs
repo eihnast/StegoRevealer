@@ -1,7 +1,4 @@
-﻿using System.Threading.Channels;
-using Accord.IO;
-using StegoRevealer.StegoCore.CommonLib;
-using StegoRevealer.StegoCore.CommonLib.ScTypes;
+﻿using Accord.Math;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
@@ -43,27 +40,26 @@ public class ChiSquareAnalyser
     {
         var result = new ChiSquareResult();
         result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
+
         var cnumArr = new int[Params.UseUnitedCnum ? 256 : Params.Channels.Count * 256];
-        cnumArr = Enumerable.Repeat(0, cnumArr.Length).ToArray();
-        if (Params.UseIncreasedCnum)
-            cnumArr = IncreaseCnum(cnumArr);
+        cnumArr = Enumerable.Repeat(Params.UseIncreasedCnum ? 1 : 0, cnumArr.Length).ToArray();
 
         double fullness = 0.0;  // Относительная заполненность контейнера
         int blockNumber = 0;  // Счётчик блоков
 
         var toColorizeChannels = new List<ImgChannel>();
         var traversalOptions = Params.GetTraversalOptions();
-        var iterator = BlocksTraverseHelper.GetForLinearAccessBlocks(Params.ImgBlocks, traversalOptions);
+        var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
         foreach (var block in iterator)
         {
-            var pixels = ImageBlocks.MapBlockToPixelsList(block, traversalOptions.Channels);
+            var blockPixelsIndexes = Params.ImgBlocks[block.Y, block.X];
 
             // Формирование массива количеств цветов
             if (Params.UsePreviousCnums)
-                AddCnumArrays(ref cnumArr, CreateCnumArr(pixels));
+                AddCnumArrays(cnumArr, CreateCnumArr(blockPixelsIndexes));
             else
-                cnumArr = CreateCnumArr(pixels);
+                cnumArr = CreateCnumArr(blockPixelsIndexes);
 
             // Создание массивов наблюдаемых и ожидаемых величин
             var (expected, observed) = CreateChiArrays(cnumArr);
@@ -73,7 +69,7 @@ public class ChiSquareAnalyser
                 (expected, observed) = UnifyCathegories(expected, observed);
 
             // Вычисление результатов оценки
-            var chiSqr = MathMethods.ChiSqr(expected.ToArray(), observed.ToArray());
+            var chiSqr = MathMethods.ChiSqr(expected, observed);
             var blockContainsHiddenInfo = chiSqr.pValue > Params.Threshold;
             if (blockContainsHiddenInfo)
                 fullness += 1;  // +1 блок со встроенной информацией
@@ -87,8 +83,9 @@ public class ChiSquareAnalyser
             // Подробное логирование
             if (verboseLog)
             {
+                int pixelsNum = (blockPixelsIndexes.Rd.Y - blockPixelsIndexes.Lt.Y + 1) * (blockPixelsIndexes.Rd.X - blockPixelsIndexes.Lt.X + 1);
                 result.Log($"Блок № {blockNumber}");
-                result.Log($"\tБлок содержит {pixels.Count} пикселей");
+                result.Log($"\tБлок содержит {pixelsNum} пикселей");
                 result.Log(string.Format("\tChi-Square: {0:f2}\tP-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
                 result.Log("");
             }
@@ -103,27 +100,6 @@ public class ChiSquareAnalyser
 
         result.Log($"Стегоанализ методом {MethodName} завершён");
         return result;
-    }
-
-
-    /// <summary>
-    /// Добавляет цветовую визуализацию блока (усиливает/ослабляет один из цветов)
-    /// </summary>
-    /// <param name="blockIndexes">Индексы блока</param>
-    /// <param name="channel">Цветовой канал</param>
-    /// <param name="colorOffset">Смещение цвета в выбранном канале</param>
-    private void ColorizeBlock(Sc2DPoint blockIndexes, ImgChannel channel, int colorOffset = 100)
-    {
-        var imar = Params.Image.ImgArray;
-        for (int y = 0; y < Math.Min(blockIndexes.Y + Params.BlockHeight, imar.Height); y++)
-        {
-            for (int x = 0; x < Math.Min(blockIndexes.X + Params.BlockWidth, imar.Width); x++)
-            {
-                var colorByte = imar[y, x, (int)channel];
-                var newValue = Convert.ToByte(Math.Min((int)colorByte + colorOffset, 255));
-                imar[y, x, (int)channel] = newValue;
-            }
-        }
     }
 
     /// <summary>
@@ -161,15 +137,6 @@ public class ChiSquareAnalyser
         return colorizedImage;
     }
 
-    // Увеличивает значения в массиве cnum на 1
-    private static int[] IncreaseCnum(int[] cnum)
-    {
-        int[] newCnum = new int[cnum.Length];
-        for (int i = 0; i < cnum.Length; i++)
-            newCnum[i] = cnum[i] + 1;
-        return newCnum;
-    }
-
     /// <summary>
     /// Объединяет низкочастотные категории
     /// </summary>
@@ -177,8 +144,7 @@ public class ChiSquareAnalyser
     /// <param name="oldObserved">Список наблюдаемых значений категорий</param>
     /// <returns>Новые списки ожидаемых и наблюдаемых значений</returns>
     /// <exception cref="ArgumentException">Размеры список ожидаемых и наблюдаемых значений не совпадают</exception>
-    private (List<double> expected, List<double> observed) UnifyCathegories(
-        List<double> oldExpected, List<double> oldObserved)
+    private (List<double> expected, List<double> observed) UnifyCathegories(List<double> oldExpected, List<double> oldObserved)
     {
         if (oldExpected.Count != oldObserved.Count)
             throw new ArgumentException("Sizes of arrays oldExpected and oldObserved is not equal");
@@ -282,7 +248,7 @@ public class ChiSquareAnalyser
     }
 
     // Добавляет к первому массиву CnumArr значения второго
-    private static void AddCnumArrays(ref int[] mainArray, int[] newArray)
+    private static void AddCnumArrays(int[] mainArray, int[] newArray)
     {
         if (mainArray.Length != newArray.Length)
             throw new ArgumentException("Sizes of mainArray and newArray for adding Cnum is not equal");
@@ -296,33 +262,46 @@ public class ChiSquareAnalyser
     /// </summary>
     /// <param name="pixels">Одномерный массив всех пикселей</param>
     /// <returns>Массив количества появлений цветов</returns>
-    private int[] CreateColorsNumArray(List<ScPixel> pixels)
+    private int[] CreateCnumArr(BlockCoords blockCoords)
     {
+        var imar = Params.Image.ImgArray;
         if (Params.UseUnitedCnum)  // Если считаем только значения интенсивности без учёта канала
         {
             var cnum = Enumerable.Repeat(0, 256).ToArray();
-            foreach (var pixel in pixels)
-                foreach (var channel in Params.Channels)
+            
+            for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
+            {
+                for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
                 {
-                    var channelIndex = (int)channel;
-                    var colorByte = pixel[channelIndex];
-                    cnum[colorByte]++;
+                    var pixel = imar[y, x];
+                    foreach (var channel in Params.Channels)
+                    {
+                        var channelIndex = (int)channel;
+                        var colorByte = pixel[channelIndex];
+                        cnum[colorByte]++;
+                    }
                 }
+            }
             return cnum;
         }
         else  // Если считаем количество значений интенсивности для каждого канала отдельно
         {
             var cnum = Enumerable.Repeat(0, Params.Channels.Count * 256).ToArray();
-            foreach (var pixel in pixels)
-                for (int ch = 0; ch < Params.Channels.Count; ch++)
+            for (int y = blockCoords.Lt.Y; y < blockCoords.Rd.Y; y++)
+            {
+                for (int x = blockCoords.Lt.X; x < blockCoords.Rd.X; x++)
                 {
-                    var channel = Params.Channels[ch];
-                    var channelIndex = (int)channel;
-                    var colorByte = pixel[channelIndex];
-                    cnum[ch * 256 + colorByte]++;
+                    var pixel = imar[y, x];
+                    for (int ch = 0; ch < Params.Channels.Count; ch++)
+                    {
+                        var channel = Params.Channels[ch];
+                        var channelIndex = (int)channel;
+                        var colorByte = pixel[channelIndex];
+                        cnum[ch * 256 + colorByte]++;
+                    }
                 }
+            }
             return cnum;
         }
     }
-    private int[] CreateCnumArr(List<ScPixel> pixels) => CreateColorsNumArray(pixels);
 }

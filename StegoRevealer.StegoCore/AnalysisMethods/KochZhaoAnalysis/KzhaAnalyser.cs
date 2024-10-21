@@ -91,10 +91,12 @@ public class KzhaAnalyser
         var blocks = new ImageBlocks(new ImageBlocksParameters(Params.Image, Params.BlockSize));
 
         // Расчёт последовательности C
-        var iterator = BlocksTraverseHelper.GetForLinearAccessOneChannelBlocks(blocks, traversalOptions);
-        foreach (var block in iterator)
+        var iterator = BlocksTraverseHelper.GetForLinearAccessOneChannelBlocksIndexes(blocks, traversalOptions);
+        foreach (var blockIndex in iterator)
         {
-            var dctBlock = FrequencyViewTools.DctBlock(block, Params.BlockSize);
+            var blockCoords = blocks[blockIndex.Y, blockIndex.X];
+
+            var dctBlock = FrequencyViewTools.DctBlock(Params.Image.ImgArray, blockCoords, blockIndex.ChannelId, Params.BlockSize);
             foreach (var coeff in Params.AnalysisCoeffs)
                 cSequences[coeff].Add(GetAbsDiff(dctBlock, coeff));
         }
@@ -102,11 +104,7 @@ public class KzhaAnalyser
         // Создание массива задач
         var tasks = new Dictionary<ScIndexPair, Task<OneCoeffsPairAnalysisResult>>();
         foreach (var coeff in Params.AnalysisCoeffs)
-            tasks[coeff] = new Task<OneCoeffsPairAnalysisResult>(() => AnalyseForOneCoeffPair(coeff, cSequences[coeff]));
-
-        // Запуск задач стегоанализа
-        foreach (var coeff in Params.AnalysisCoeffs)
-            tasks[coeff].Start();
+            tasks[coeff] = Task.Run(() => AnalyseForOneCoeffPair(coeff, cSequences[coeff]));
 
         // Ожидание завершения задач стегоанализа
         foreach (var coeff in Params.AnalysisCoeffs)

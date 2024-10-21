@@ -76,7 +76,7 @@ public class LsbParameters : StegoMethodParams, IParams
     }
 
     /// <inheritdoc/>
-    public override int ToExtractColorBytesNum { get { return GetNeededColorBytesNum(ToExtractBitLength); } }
+    public override int ToExtractColorBytesNum { get { return Math.Min(CalcRealContainerVolume(), GetNeededColorBytesNum(ToExtractBitLength)); } }
 
 
     /// <inheritdoc/>
@@ -171,7 +171,7 @@ public class LsbParameters : StegoMethodParams, IParams
     /// <summary>
     /// Метод учитывает количество активных каналов в списке задействованных для скрытия
     /// </summary>
-    private int CalcRealContainerVolume()
+    public int CalcRealContainerVolume()
     {
         var (w, h ,d) = Image.GetImgSizes();
         return w * h * Channels.Count;  // Возвращает количество пикселей
@@ -221,7 +221,10 @@ public class LsbParameters : StegoMethodParams, IParams
 
         var allVolume = CalcRealContainerVolume();  // Объём в пикселях (без учёта числа НЗБ)
         if (tempDataNum > allVolume)  // Сдвигаем в 0, если объём данных не меньше всего контейнера
+        {
             _startPixels = StartValues.GetZeroStartValues(Channels);
+            return;
+        }
 
         // Вычисление заполняемого места при текущем выборе стартовых пикселей
         var oneChannelVolume = allVolume / Channels.Count;
@@ -243,7 +246,7 @@ public class LsbParameters : StegoMethodParams, IParams
                 }
 
                 k++;
-                if (k >= _startPixels.Length)  // Переходим снова к первому каналу (сдвиг поканальный)
+                if (k >= _startPixels.Length)  // Переходим снова к первому каналу (сдвиг чересканальный)
                     k = 0;
             }
         }

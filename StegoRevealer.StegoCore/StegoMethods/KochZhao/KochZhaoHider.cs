@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
+using System.Collections;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao;
 
@@ -42,10 +43,10 @@ public class KochZhaoHider : IHider
     }
 
     /// <inheritdoc/>
-    public IHideResult Hide(string? data) => HideAlgorithm(data);
+    public IHideResult Hide(string? data, string? newImagePath = null) => HideAlgorithm(data, newImagePath);
 
     /// <inheritdoc/>
-    public IHideResult Hide(IParams parameters, string? data)
+    public IHideResult Hide(IParams parameters, string? data, string? newImagePath = null)
     {
         KochZhaoHideResult result = new();
         
@@ -60,13 +61,13 @@ public class KochZhaoHider : IHider
         var oldKzParams = Params;
         Params = kzParams;
 
-        result = HideAlgorithm(data);
+        result = HideAlgorithm(data, newImagePath);
         Params = oldKzParams;  // Возврат параметров
         return result;
     }
 
     // Логика метода с текущими параметрами
-    private KochZhaoHideResult HideAlgorithm(string? data)
+    private KochZhaoHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         KochZhaoHideResult result = new();
         result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
@@ -105,8 +106,10 @@ public class KochZhaoHider : IHider
         ScPointCoords? firstblockIndex = null;
         ScPointCoords? lastblockIndex = null;
 
-        var traversalOptions = new BlocksTraverseOptions(Params);
         // Параметры обхода применяются для получения конкретного итератора и не хранятся как часть общих параметров метода
+        var traversalOptions = new BlocksTraverseOptions(Params);
+
+        var blockForDataIndexArray = new List<KeyValuePair<int, ScPointCoords>>();
         foreach (var blockIndex in iterator(Params.ImgBlocks, traversalOptions, usingBlocksNum))
         {
             if (firstblockIndex is null)
@@ -114,16 +117,41 @@ public class KochZhaoHider : IHider
             if (k >= Params.DataBitLength)
                 break;
 
-            bool bitToHide = Params.DataBitArray[k];  // Бит, который скрываем в блоке
-            var block = BlocksTraverseHelper.GetOneChannelBlockByIndexes(blockIndex, Params.ImgBlocks);
-            var dctBlock = FrequencyViewTools.DctBlock(block, blockSize);  // Получение матрицы ДКП
-            var newBlock = HideDataBitToDctBlock(dctBlock, bitToHide);  // Скрытие бита в блоке
-            var idctBlock = FrequencyViewTools.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока
-            ChangeBlockInImageArray(idctBlock, blockIndex);
+            blockForDataIndexArray.Add(new KeyValuePair<int, ScPointCoords>(k, blockIndex));
 
             k++;
             lastblockIndex = blockIndex;
         }
+
+        int basketsCount = 3;
+        int basketSize = blockForDataIndexArray.Count / basketsCount;
+        var baskets = new List<List<KeyValuePair<int, ScPointCoords>>>();
+        for (int i = 0; i < basketsCount - 1; i++)
+            baskets.Add(blockForDataIndexArray.Take((basketSize * i)..(basketSize * (i + 1))).ToList());
+        baskets.Add(blockForDataIndexArray.Take((basketSize * (basketsCount - 1))..blockForDataIndexArray.Count).ToList());
+
+        var basketTasks = new List<Task>();
+        foreach (var basket in baskets)
+        {
+            basketTasks.Add(new Task(() =>
+            {
+                foreach (var blockForDataIndex in basket)
+                {
+                    bool bitToHide = Params.DataBitArray[blockForDataIndex.Key];  // Бит, который скрываем в блоке
+                    var block = BlocksTraverseHelper.GetOneChannelBlockByIndexes(blockForDataIndex.Value, Params.ImgBlocks);
+                    var dctBlock = FrequencyViewTools.DctBlock(block, blockSize);  // Получение матрицы ДКП
+                    var newBlock = HideDataBitToDctBlock(dctBlock, bitToHide);  // Скрытие бита в блоке
+                    var idctBlock = FrequencyViewTools.IDctBlockAndNormalize(newBlock, blockSize);  // Обратное преобразование блока
+                    ChangeBlockInImageArray(idctBlock, blockForDataIndex.Value);
+                }
+            }));
+        }
+
+        foreach (var basketTask in basketTasks)
+            basketTask.Start();
+        foreach (var basketTask in basketTasks)
+            basketTask.Wait();
+        
         result.Log("Завершён цикл скрытия");
 
         // Логирование
@@ -134,10 +162,16 @@ public class KochZhaoHider : IHider
             $"({(k == Params.DataBitLength ? "совпадает" : "не совпадает")})");
 
         // Сохранение изображения со внедрённой информацией
-        string newImgName = Params.Image.ImgName + "_kz"
-            + (isRandomHiding ? "_rnd" : "_lin");
-        result.Path = Params.Image.Save(newImgName);
-        result.Log($"Изображение сохранено как {newImgName}");
+        if (string.IsNullOrEmpty(newImagePath))
+        {
+            string newImageName = Params.Image.ImgName + "_kz" + (isRandomHiding ? "_rnd" : "_lin");
+            result.Path = Params.Image.SaveNear(newImageName);
+        }
+        else
+        {
+            result.Path = Params.Image.Save(newImagePath);
+        }
+        result.Log($"Изображение сохранено как {result.Path}");
 
         result.Log($"Процесс скрытия завершён");
         return result;

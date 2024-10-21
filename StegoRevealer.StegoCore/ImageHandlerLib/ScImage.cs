@@ -1,6 +1,5 @@
 ﻿using SkiaSharp;
 using System.Collections.Concurrent;
-using System.Reflection.Metadata.Ecma335;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -15,7 +14,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// <summary>
 /// Класс изображения
 /// </summary>
-public class ScImage
+public class ScImage : IDisposable
 {
     /// <summary>
     /// Объект изображения
@@ -89,17 +88,16 @@ public class ScImage
     {
         get 
         {
-            if (_image is not null)
-            {
-                var pixel = _image.GetPixel(x, y);
-                return ScPixel.FromSkColor(pixel);
-            }
-            return new ScPixel();
+            if (_image is null)
+                throw new Exception("Image is null");
+            var pixel = _image.GetPixel(x, y);
+            return ScPixel.FromSkColor(pixel);
         }
         set
         {
-            if (_image is not null)
-                _image.SetPixel(x, y, value.ToSkColor());
+            if (_image is null)
+                throw new Exception("Image is null");
+            _image.SetPixel(x, y, value.ToSkColor());
         }
     }
 
@@ -260,45 +258,50 @@ public class ScImage
     /// </summary>
     public ScImage Clone(bool cloneInMemoryImagesDirectly = true)
     {
-        FileStream? fileStream;
-        bool shouldCloseFileStream = false;
-        ScImage clonedImage;
-
-        // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
-        if (IsInMemory && cloneInMemoryImagesDirectly)
+        lock (cloningLock)
         {
-            if (_memoryStream is null)
-                throw new Exception("Error while cloning image: memory stream is null");
-            var clonedMemoryStream = CloneMemoryStream(_memoryStream);
-            return new ScImage(clonedMemoryStream, _path);
-        }
+            FileStream? fileStream;
+            bool shouldCloseFileStream = false;
+            ScImage clonedImage;
 
-        // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
-        // либо создан новый поток чтения файла по текущему пути на время клонирования
-        if (IsInMemory && !string.IsNullOrEmpty(_path))
-        {
-            if (_loadedImages.ContainsKey(_path))
-                fileStream = _loadedImages[_path]._file;
-            else
+            // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
+            if (IsInMemory && cloneInMemoryImagesDirectly)
             {
-                fileStream = CreateFileStream(_path);
-                shouldCloseFileStream = true;
+                if (_memoryStream is null)
+                    throw new Exception("Error while cloning image: memory stream is null");
+                var clonedMemoryStream = CloneMemoryStream(_memoryStream);
+                return new ScImage(clonedMemoryStream, _path);
             }
+
+            // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
+            // либо создан новый поток чтения файла по текущему пути на время клонирования
+            if (IsInMemory && !string.IsNullOrEmpty(_path))
+            {
+                if (_loadedImages.ContainsKey(_path))
+                    fileStream = _loadedImages[_path]._file;
+                else
+                {
+                    fileStream = CreateFileStream(_path);
+                    shouldCloseFileStream = true;
+                }
+            }
+            else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
+                fileStream = _file;
+
+            if (fileStream is null)
+                throw new Exception("Error while cloning ScImage: fileStream is null");
+
+            clonedImage = new ScImage(fileStream, _path ?? string.Empty);
+            // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
+
+            if (shouldCloseFileStream)
+                fileStream.Close();
+
+            return clonedImage;
         }
-        else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
-            fileStream = _file;
-
-        if (fileStream is null)
-            throw new Exception("Error while cloning ScImage: fileStream is null");
-
-        clonedImage = new ScImage(fileStream, _path ?? string.Empty);
-        // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
-
-        if (shouldCloseFileStream)
-            fileStream.Close();
-
-        return clonedImage;
     }
+
+    private object cloningLock = new object();
 
     // Клонирует MemoryStream
     private static MemoryStream CloneMemoryStream(MemoryStream memoryStream)
@@ -332,31 +335,43 @@ public class ScImage
     private void CloseCurrentStreams()
     {
         if (IsInMemory)  // Если загружено в память - должен быть только поток памяти
+        {
+            _memoryStream?.Close();
             _memoryStream?.Dispose();
+        }
+
         else  // Если загружено как ридер - актуальны все три потока
         {
             _image?.Dispose();
             _imgStream?.Dispose();
             _file?.Close();
+            _file?.Dispose();
         }
     }
 
 
-    /// <summary>
-    /// Деструктор
-    /// </summary>
-    ~ScImage()
-    {
-        Dispose();
-    }
-
-    // Метод выгрузки текущего объекта
+    // Деструктор
+    private bool _isDisposed = false;
     public void Dispose()
     {
-        CloseCurrentStreams();  // Закрытие открытых потоков
-        if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
-            _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed)
+            return;
+
+        if (disposing)
+        {
+            CloseCurrentStreams();  // Закрытие открытых потоков
+            if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
+                _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
+        }
+
+        _isDisposed = true;
+    }
+    ~ScImage() => Dispose(false);
 
 
     // Методы сохранения
@@ -386,13 +401,17 @@ public class ScImage
     /// <summary>
     /// Сохранение текущей версии изображения без перехода на новое
     /// </summary>
-    public string? Save(string path, ImageFormat format)
+    /// <param name="path">Полный путь к файлу изображения с расширением</param>
+    /// <param name="format">Формат изображения, если не указан - такой же, что у оригинального изображения</param>
+    public string? Save(string path, ImageFormat? format = null)
     {
         if (_image is not null)
         {
             // Сохранение файла
+            format ??= GetFormat();
+
             var outFile = File.OpenWrite(path);
-            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format), 100);
+            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format.Value), 100);
             imgEncoded.SaveTo(outFile);
             outFile.Close();
 

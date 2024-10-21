@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using static StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators.EntropyCalculator;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -62,7 +63,7 @@ public class StatmAnalyser
         contrastCalcTask.Wait();
         entropyCalcTask.Wait();
 
-        result.NoiseValueMethod2 = noiseCalcTask.Result;
+        result.NoiseValue = noiseCalcTask.Result;
         result.SharpnessValue = sharpnessCalcTask.Result;
         result.BlurValue = blurCalcTask.Result;
         result.ContrastValue = contrastCalcTask.Result;

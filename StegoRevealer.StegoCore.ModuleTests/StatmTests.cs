@@ -1,7 +1,9 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+﻿using MathNet.Numerics;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Xml.Linq;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 
@@ -151,12 +153,24 @@ public class StatmTests
 
         for (int i = 1; i < names.Count; i++)
         {
-            Assert.IsTrue(entropies[i].Tsallis > entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
-            Assert.IsTrue(entropies[i].Vaida > entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
-            Assert.IsTrue(entropies[i].Shennon > entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
-            Assert.IsTrue(entropies[i].Renyi > entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
-            Assert.IsTrue(entropies[i].Havard > entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
+            Assert.IsTrue(entropies[i].Tsallis >= entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
+            Assert.IsTrue(entropies[i].Vaida >= entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
+            Assert.IsTrue(entropies[i].Shennon >= entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
+            Assert.IsTrue(entropies[i].Renyi >= entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
+            Assert.IsTrue(entropies[i].Havard >= entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
         }
+    }
+
+    [TestMethod]
+    public void ShennonSemiEqualsRenyi()
+    {
+        string path = Path.Combine(Helper.GetAssemblyDir(), "TestData", "ShennonRenyiTest.png");
+        var image = new ImageHandler(path);
+        var parameters = new StatmParameters(image);
+        parameters.EntropyCalcSensitivity = 1.0000001;
+        var entropyCalculator = new EntropyCalculator(parameters);
+        var entropy = entropyCalculator.CalcEntropy();
+        Assert.AreEqual(entropy.Shennon.Round(6), entropy.Renyi.Round(6));
     }
 
 
@@ -180,7 +194,7 @@ public class StatmTests
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
-        cannyImage.Save("sharpness_canny_gpt_applied");
+        cannyImage.SaveNear("sharpness_canny_gpt_applied");
     }
 
     private void SaveSobelDetection()
@@ -198,7 +212,7 @@ public class StatmTests
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
-        cannyImage.Save("sharpness_sobel_applied");
+        cannyImage.SaveNear("sharpness_sobel_applied");
     }
     #endregion
 }

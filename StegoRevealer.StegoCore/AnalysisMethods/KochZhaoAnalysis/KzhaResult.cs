@@ -31,7 +31,7 @@ public class KzhaResult : LoggedResult, ILoggedAnalysisResult
     public ScIndexPair Coefficients { get; set; }
 
     /// <summary>
-    /// Относительный объём сообщения
+    /// Битовый размер сообщения
     /// </summary>
     public int MessageBitsVolume { get; set; }
 

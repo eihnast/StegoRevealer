@@ -29,7 +29,7 @@ public class HidingExtractionTests
         // Либо нужно отдельно сконвертировать текст и посчитать длину, чтобы не брать из параметров Hider-а
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -44,7 +44,7 @@ public class HidingExtractionTests
         for (int i = 0; i < 1000; i++)
             data += $"Data for hiding {i}.\t";
 
-        var resultPath = lsbHider.Hide(data).GetResultPath();
+        var resultPath = lsbHider.Hide(data, "customNameLsb").GetResultPath();
         Assert.IsFalse(string.IsNullOrEmpty(resultPath));
 
         var lsbExtractor = new LsbExtractor(new ImageHandler(resultPath));
@@ -53,7 +53,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.Seed = seed;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -78,7 +78,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.StartPixels = customStartPixels;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -101,7 +101,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.InterlaceChannels = true;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -124,7 +124,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.TraverseType = CommonLib.TraverseType.Vertical;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.TraverseType = CommonLib.TraverseType.Vertical;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -175,7 +175,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.LsbNum = 3;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     [TestMethod]
@@ -206,7 +206,7 @@ public class HidingExtractionTests
         lsbExtractor.Params.LsbNum = 2;
 
         var extractedData = lsbExtractor.Extract().GetResultData();
-        Assert.AreEqual(extractedData, data);
+        Assert.AreEqual(data, extractedData);
     }
 
     #endregion
@@ -224,7 +224,7 @@ public class HidingExtractionTests
         kzHider.Params.TraverseType = TraverseType.Horizontal;
 
         string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
-        var hidingResult = kzHider.Hide(data);
+        var hidingResult = kzHider.Hide(data, "customNameKzh");
 
         var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new Exception("hidingResult.Path is null"));
 
@@ -350,4 +350,51 @@ public class HidingExtractionTests
     //}
 
     #endregion
+
+
+    [TestMethod]
+    public void HidingExtractionBoth_DefaultParamsBigImage()
+    {
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "imageBig.png");
+
+        // Скрываем по НЗБ
+        var lsbHandler = new ImageHandler(imagePath);
+        var lsbHider = new LsbHider(lsbHandler);
+
+        string lsbData = string.Empty;
+        for (int i = 0; i < 1000; i++)
+            lsbData += $"Data for hiding {i}.\t";
+
+        var lsbResultPath = lsbHider.Hide(lsbData).GetResultPath();
+        lsbHandler.CloseHandler();
+        Assert.IsFalse(string.IsNullOrEmpty(lsbResultPath));
+
+        // Извлекаем и проверяем извлечённое по НЗБ
+        var lsbHidedHandler = new ImageHandler(lsbResultPath);
+        var lsbExtractor = new LsbExtractor(lsbHidedHandler);
+        lsbExtractor.Params.ToExtractBitLength = lsbHider.Params.DataBitLength;
+
+        var lsbExtractedData = lsbExtractor.Extract().GetResultData();
+        lsbHidedHandler.CloseHandler();
+        Assert.AreEqual(lsbData, lsbExtractedData);
+
+        // Скрываем по Коха-Жао
+        var image = new ImageHandler(imagePath);
+        var kzHider = new KochZhaoHider(image);
+        kzHider.Params.Threshold = 120;
+        kzHider.Params.TraverseType = TraverseType.Horizontal;
+
+        string kzhData = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
+        var kzhResultPath = kzHider.Hide(kzhData).GetResultPath();
+        Assert.IsFalse(string.IsNullOrEmpty(kzhResultPath));
+
+        // Извлекаем и проверяем извлечённое по Коха-Жао
+        var kzhHidedHandler = new ImageHandler(kzhResultPath);
+
+        var kzExtractor = new KochZhaoExtractor(kzhHidedHandler);
+        kzExtractor.Params.Threshold = 20;
+
+        var kzhExtractedData = kzExtractor.Extract().GetResultData();
+        Assert.IsTrue(kzhExtractedData?.StartsWith(kzhData), $"extractedData = {kzhExtractedData}");
+    }
 }

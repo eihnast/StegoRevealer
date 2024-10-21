@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -55,7 +56,7 @@ public class StatmParameters
     public bool SharpnessCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale
 
     /// <summary>Размер окрестности, в которой ищутся экстремумы относительно краевого пикселя</summary>
-    public int SharpnessCalcExtremumsNeighborhoodSize { get; set; } = 4;
+    public int SharpnessCalcExtremumsNeighborhoodSize { get; set; } = 3;
 
     /// <summary>Верхний порог двойной пороговой фильтрации Канни</summary>
     public double SharpnessCalcCannyUpThreshold { get; set; } = 0.5;
@@ -86,6 +87,9 @@ public class StatmParameters
 
 
     // Параметры подсчёта энтропии
+
+    /// <summary>Методы, используемые для подсчёта энтропии</summary>
+    public EntropyMethods EntropyMethods { get; set; } = EntropyMethods.Shennon | EntropyMethods.Renyi;
 
     /// <summary>Параметр чувствительности, не стоит задавать >3</summary>
     public double EntropyCalcSensitivity { get; set; } = 2.5;

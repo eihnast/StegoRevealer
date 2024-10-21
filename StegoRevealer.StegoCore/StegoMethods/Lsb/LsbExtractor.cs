@@ -79,9 +79,9 @@ public class LsbExtractor : IExtractor
 
         // Осуществление извлечения
         result.Log("Запущен цикл извлечения");
-        foreach (var blockCoords in iterator(usedColorBytesNum, Params))
+        foreach (var colorByteCoords in iterator(usedColorBytesNum, Params))
         {
-            (int line, int column, int channel) = blockCoords.AsTuple();
+            (int line, int column, int channel) = colorByteCoords.AsTuple();
             byte colorByte = Params.Image.ImgArray[line, column, channel];
             int remaining = Params.ToExtractBitLength - dataBitArray.Count;
             BitArray extractedBits = ExtractBitsFromColorByte(colorByte, Params.LsbNum, remaining);

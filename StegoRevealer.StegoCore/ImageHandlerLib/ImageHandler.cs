@@ -5,7 +5,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// <summary>
 /// Обработчик изображения (StegoCore-класс представления изображения)
 /// </summary>
-public class ImageHandler
+public class ImageHandler : IDisposable
 {
     private ScImage _image;  // Изображение
 
@@ -102,21 +102,24 @@ public class ImageHandler
     /// <summary>
     /// Сохранение изображения
     /// </summary>
-    public string? Save(string fullPath, ImageFormat format)
+    /// <param name="fullPath">Полный путь к файлу изображения с расширением</param>
+    /// <param name="format">Формат изображения, если не указан - такой же, что у оригинального изображения</param>
+    public string? Save(string fullPath, ImageFormat? format = null)
     {
         return _image.Save(fullPath, format);
     }
 
     /// <summary>
-    /// Сохранение изображения
+    /// Сохранение изображения рядом с оригинальным
     /// </summary>
-    public string? Save(string newName)
+    /// <param name="newName">Имя файла изображения без пути и расширения</param>
+    public string? SaveNear(string newName)
     {
         var directory = Path.GetDirectoryName(ImgPath) ?? "";
         var name = newName;
         var ext = Path.GetExtension(ImgPath);
 
-        return Save(Path.Combine(directory, name + ext), _image.GetFormat());
+        return Save(Path.Combine(directory, name + ext));
     }
 
     /// <summary>
@@ -126,14 +129,34 @@ public class ImageHandler
     {
         return (_image.Width, _image.Height, _image.Depth);
     }
-    
+
+
+    // Деструктор
+    private bool _isDisposed = false;
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed)
+            return;
+
+        if (disposing)
+        {
+            CloseHandler();
+        }
+
+        _isDisposed = true;
+    }
+    ~ImageHandler() => Dispose(false);
+
     /// <summary>
     /// Закрывает обработчик и "отпускает" файл изображения
     /// </summary>
-    public void CloseHandler()
-    {
-        _image.Dispose();
-    }
+    public void CloseHandler() => _image.Dispose();
+
 
     /// <summary>
     /// Вывод массива пикселей

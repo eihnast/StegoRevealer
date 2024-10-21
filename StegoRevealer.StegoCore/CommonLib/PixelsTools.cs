@@ -216,7 +216,7 @@ public static class PixelsTools
     }
 
     // Переводит цветовой байт (RGB) в grayscale
-    private static byte ToGrayscaleByte(byte[] rgb, bool asAverage = true)
+    private static byte ToGrayscaleByte(byte[] rgb, bool asAverage = false)
     {
         if (rgb.Length != 3)
             throw new Exception("RGB array must contains only 3 byte values!");
@@ -226,11 +226,11 @@ public static class PixelsTools
         if (asAverage)
             result = MathMethods.Average(rgb);
         else
-            result = PixelsTools.ToLimitedByte(rgb[0] * .21f + rgb[1] * .71f + rgb[2] * .071f);
+            result = ToLimitedByte(rgb[0] * .21f + rgb[1] * .71f + rgb[2] * .071f);
         return result;
     }
 
-    public static byte[,] ToGrayscale(ImageArray imageArray, bool useAveragedGrayscale = true)
+    public static byte[,] ToGrayscale(ImageArray imageArray, bool useAveragedGrayscale = false)
     {
         int height = imageArray.Height;
         int width = imageArray.Width;

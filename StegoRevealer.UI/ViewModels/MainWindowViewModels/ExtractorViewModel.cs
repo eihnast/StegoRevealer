@@ -360,8 +360,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     {
         try
         {
-            CurrentImage?.CloseHandler();
             CurrentImage = new ImageHandler(path);
+            TempManager.Instance.RememberHandler(CurrentImage);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах или создат объекты параметров, если их нет
             Logger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
 
@@ -380,13 +380,22 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     {
         // Выбор файла
         string path = await SelectNewImageFile();
+        ResetImageAndResults();
         if (!string.IsNullOrEmpty(path))
+        {
             ImagePath = path;
-        else
-            ResetImageAndResults();
 
-        // Загрузка
-        return CreateCurrentImageHandler(path);
+            // Загрузка
+            var tempPath = CommonTools.CopyFileToTemp(path);
+
+            if (!string.IsNullOrEmpty(tempPath))
+            {
+                TempManager.Instance.RememberTempImage(tempPath);
+                return CreateCurrentImageHandler(tempPath);
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -462,7 +471,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             throw new Exception("Параметры не указаны");
 
         var results = new ExtractionResultsDto();
-        if (_lsbParameters is not null)  // Извлечение из НЗБ
+        if (MethodLsbSelected && _lsbParameters is not null)  // Извлечение из НЗБ
+        //if (_lsbParameters is not null)  // Извлечение из НЗБ
         {
             var extractor = new LsbExtractor(_lsbParameters.Image);
             extractor.Params.Seed = _lsbParameters.Seed;
@@ -473,7 +483,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             var lsbResult = extractor.Extract() as LsbExtractResult;
             results.ExtractedMessage = lsbResult?.ResultData ?? string.Empty;
         }
-        else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
+        //else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
+        else if (MethodKzSelected && _kzhParameters is not null)  // Извлечение по Коха-Жао
         {
             var extractor = new KochZhaoExtractor(_kzhParameters.Image);
             extractor.Params.Seed = _kzhParameters.Seed;
@@ -564,6 +575,14 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         ImagePath = ImageNotSelectedText;
         DrawedImage = null;
         ResetResults();
+
+        if (CurrentImage is not null)
+            TempManager.Instance.ForgetHandler(CurrentImage);
+        CurrentImage?.CloseHandler();
+
+        var pathToDelete = CurrentImage?.ImgPath;
+        if (!string.IsNullOrEmpty(pathToDelete))
+            CommonTools.TryDeleteTempFile(pathToDelete);
     }
 
     // Возвращает актуальные размеры окна

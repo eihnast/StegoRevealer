@@ -9,19 +9,9 @@ public class EntropyCalculator
 
     private double[] _pValues;
 
-    [Flags]
-    public enum EntropyMethods
+    public EntropyData CalcEntropy()
     {
-        Shennon = 1,
-        Vaida = 2,
-        Tsallis = 4,
-        Renyi = 8,
-        Havard = 16,
-        All = 32
-    }
-
-    public EntropyData CalcEntropy(EntropyMethods methods = EntropyMethods.All)
-    {
+        var methods = _params.EntropyMethods;
         return new EntropyData
         {
             Shennon = methods.HasFlag(EntropyMethods.All) || methods.HasFlag(EntropyMethods.Shennon) ? CalcShennonEntropy() : 0.0,
@@ -96,17 +86,19 @@ public class EntropyCalculator
     }
 
     // Энтропия Реньи
-    public double CalcRenyiEntropy()
+    public double CalcRenyiEntropy(double? alpha = null)
     {
+        alpha ??= _params.EntropyCalcSensitivity;
+
         double entropy = 0.0;
         double sum = 0.0;
         for (int i = 0; i < _pValues.Length; i++)
         {
             if (_pValues[i] > 0)
-                sum += Math.Pow(_pValues[i], _params.EntropyCalcSensitivity);
+                sum += Math.Pow(_pValues[i], alpha.Value);
         }
 
-        entropy = Math.Log2(sum) * (1 / (1 - _params.EntropyCalcSensitivity));
+        entropy = Math.Log2(sum) * (1 / (1 - alpha.Value));
         return entropy;
     }
 

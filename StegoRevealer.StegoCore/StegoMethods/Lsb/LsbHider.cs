@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.CommonLib;
+using System.Text.RegularExpressions;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using Accord;
 
 namespace StegoRevealer.StegoCore.StegoMethods.Lsb;
 
@@ -34,18 +37,18 @@ public class LsbHider : IHider
     /// <summary>
     /// Определение скрываемого объёма информации (учитывает допустимый объём контейнера)
     /// </summary>
-    private static int GetHidingVolume(int ContainerVolume, int DataVolume)
+    private static int GetHidingVolume(int containerVolume, int dataVolume)
     {
-        if (ContainerVolume > DataVolume)
-            return DataVolume;
-        return ContainerVolume;
+        if (containerVolume > dataVolume)
+            return dataVolume;
+        return containerVolume;
     }
 
     /// <inheritdoc/>
-    public IHideResult Hide(string? data) => HideAlgorithm(data);
+    public IHideResult Hide(string? data, string? newImagePath = null) => HideAlgorithm(data, newImagePath);
 
     /// <inheritdoc/>
-    public IHideResult Hide(IParams parameters, string? data)
+    public IHideResult Hide(IParams parameters, string? data, string? newImagePath = null)
     {
         LsbHideResult result = new();
 
@@ -60,13 +63,13 @@ public class LsbHider : IHider
         var oldLsbParams = Params;
         Params = lsbParams;
 
-        result = HideAlgorithm(data);
+        result = HideAlgorithm(data, newImagePath);
         Params = oldLsbParams;  // Возврат параметров
         return result;
     }
 
     // Логика метода с текущими параметрами
-    private LsbHideResult HideAlgorithm(string? data)
+    private LsbHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         LsbHideResult result = new();  // Результаты скрытия
         result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
@@ -87,7 +90,7 @@ public class LsbHider : IHider
         int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа НЗБ
         int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
         double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
-        int usingColorBytesNum = Params.GetNeededColorBytesNum();  // Количество цветовых байт, нужных для скрытия
+        int usingColorBytesNum = Math.Min(Params.CalcRealContainerVolume(), Params.GetNeededColorBytesNum());  // Количество цветовых байт, нужных для скрытия
         result.Log($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tcontainerVolume = {containerVolume}\n\t" +
             $"hidingVolume = {hidingVolume}\n\trelativeHidingVolume = {relativeHidingVolume}\n\t" +
@@ -98,28 +101,59 @@ public class LsbHider : IHider
             = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
         // Осуществление скрытия
-        result.Log("Запущен цикл скрытия");
-        int k = 0;  // Индекс бита данных
-        foreach (var blockCoords in iterator(usingColorBytesNum, Params))
-        {
-            (int line, int column, int channel) = blockCoords.AsTuple();
-            if (k >= Params.DataBitLength)
-                break;
+        result.Log("Запущена процедура скрытия");
 
-            // Если у нас больше 1 LSB используется, но осталось для сокрытия меньше бит (конец записи) - в конце будут дописаны нули
-            var bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит, длина фиксирована как LsbNum 
-            for (int i = 0; i < Params.LsbNum && (k + i) < Params.DataBitArray.Length; i++)
-                bitsToHide[i] = Params.DataBitArray[k + i];
-            HideDataBitToColorByte(new ScPointCoords(line, column, channel), bitsToHide);  // Скрытие в байте цвета
-            k += Params.LsbNum;
+        var colorBytesIndexes = new List<ScPointCoords>();
+        if (isRandomHiding)
+            foreach (var colorByteIndexes in iterator(usingColorBytesNum, Params))
+                colorBytesIndexes.Add(colorByteIndexes);
+        else
+            colorBytesIndexes = iterator(usingColorBytesNum, Params).Take(usingColorBytesNum).ToList();
+
+        int basketSize = 512;  // Цветовых байт в пачке
+        int basketsCount = colorBytesIndexes.Count() / basketSize;  // Оставшиеся будут добавлены в последнюю пачку
+        var basketsTasks = new Task[basketsCount];
+        for (int i = 0; i < basketsCount; i++)
+        {
+            int basketIndex = i;
+            basketsTasks[i] = new Task(() =>
+            {
+                int lastIndexInBasket = basketIndex < basketsCount - 1 ? basketSize * (basketIndex + 1) : colorBytesIndexes.Count();
+                var colorBytesIndexesForBasket = colorBytesIndexes.Take((basketSize * basketIndex)..lastIndexInBasket);
+                int k = (basketSize * basketIndex) * Params.LsbNum;
+
+                foreach (var colorByteIndexes in colorBytesIndexesForBasket)
+                {
+                    // Если у нас больше 1 LSB используется, но осталось для сокрытия меньше бит (конец записи) - в конце будут дописаны нули
+                    var bitsToHide = new BitArray(Params.LsbNum);  // Массив скрываемых в НЗБ бит, длина фиксирована как LsbNum 
+                    for (int i = 0; i < Params.LsbNum && (k + i) < Params.DataBitArray.Length; i++)
+                        bitsToHide[i] = Params.DataBitArray[k + i];
+                    HideDataBitToColorByte(colorByteIndexes, bitsToHide);  // Скрытие в байте цвета
+
+                    k += Params.LsbNum;
+                }
+            });
         }
+
+        foreach (var basketTask in basketsTasks)
+            basketTask.Start();
+        foreach (var basketTask in basketsTasks)
+            basketTask.Wait();
+
         result.Log("Завершён цикл скрытия");
 
         // Сохранение изображения со внедрённой информацией
-        string newImgName = Params.Image.ImgName + "_lsb"
-            + (isRandomHiding ? "_rnd" : "_lin");
-        result.Path = Params.Image.Save(newImgName);
-        result.Log($"Изображение сохранено как {newImgName}");
+        if (string.IsNullOrEmpty(newImagePath))
+        {
+            string newImageName = Params.Image.ImgName + "_lsb" + (isRandomHiding ? "_rnd" : "_lin");
+            result.Path = Params.Image.SaveNear(newImageName);
+        }
+        else
+        {
+            result.Path = Params.Image.Save(newImagePath);
+        }
+
+        result.Log($"Изображение сохранено как {result.Path}");
 
         result.Log($"Процесс скрытия завершён");
         return result;
@@ -132,9 +166,14 @@ public class LsbHider : IHider
     /// <param name="bits">Скрываемый бит</param>
     private void HideDataBitToColorByte(ScPointCoords inds, BitArray bits)
     {
-        var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
-        var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
-        colorByte = PixelsTools.SetLsbValues(colorByte, bits);  // Установка значений
-        imgArray[inds.Y, inds.X, inds.ChannelId] = colorByte;
+        lock (hidingLock)
+        {
+            var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
+            var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
+            colorByte = PixelsTools.SetLsbValues(colorByte, bits);  // Установка значений
+            imgArray[inds.Y, inds.X, inds.ChannelId] = colorByte;
+        }
     }
+
+    private object hidingLock = new object();
 }

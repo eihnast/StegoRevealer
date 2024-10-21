@@ -66,16 +66,16 @@ public class SharpnessCalculator
                         var secondPixel = new PixelInfo() { Y = y - pixelOffset.Y, X = x - pixelOffset.X };
 
                         if (firstPixel.Y > height - 1 || firstPixel.Y < 0 || firstPixel.X > width - 1 || firstPixel.X < 0)
-                            firstPixel = new PixelInfo { Y = 0, X = 0 };
+                            firstPixel = new PixelInfo { Y = y, X = x };
                         if (secondPixel.Y > height - 1 || secondPixel.Y < 0 || secondPixel.X > width - 1 || secondPixel.X < 0)
-                            secondPixel = new PixelInfo { Y = 0, X = 0 };
+                            secondPixel = new PixelInfo { Y = y, X = x };
 
                         // Применяем алгоритм Брезенхэма
                         pixelsOnLine = PixelsTools.GetPixelsOnLine(firstPixel.Y, firstPixel.X, secondPixel.Y, secondPixel.X);
                     }
 
                     // Убираем центральный краевой пиксель из последовательности
-                    pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
+                    // pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
 
                     // Обогащаем значениями пикселей
                     for (int i = 0; i < pixelsOnLine.Count; i++)
@@ -285,36 +285,40 @@ public class SharpnessCalculator
         {
             for (int x = 0; x < width; x++)
             {
-                try
+                int q = 255;
+                int r = 255;
+
+                if ((angles[y, x] is >= 0 and < 22.5) || (angles[y, x] is >= 157.5 and <= 180))  // Angle 0
                 {
-                    int q = 255;
-                    int r = 255;
-
-                    if ((angles[y, x] is >= 0 and < 22.5) || (angles[y, x] is >= 157.5 and <= 180))  // Angle 0
-                    {
-                        q = pixelsArray[y, x + 1];
-                        r = pixelsArray[y, x - 1];
-                    }
-                    else if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
-                    {
-                        q = pixelsArray[y + 1, x - 1];
-                        r = pixelsArray[y - 1, x + 1];
-                    }
-                    else if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
-                    {
-                        q = pixelsArray[y + 1, x];
-                        r = pixelsArray[y - 1, x];
-                    }
-                    else if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
-                    {
-                        q = pixelsArray[y - 1, x - 1];
-                        r = pixelsArray[y + 1, x + 1];
-                    }
-
-                    if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
-                        supressedArray[y, x] = pixelsArray[y, x];
+                    if (x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y, x + 1];
+                    r = pixelsArray[y, x - 1];
                 }
-                catch { }
+                else if (angles[y, x] is >= 22.5 and < 67.5)  // Angle 45
+                {
+                    if (y + 1 >= height || y - 1 < 0 || x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y + 1, x - 1];
+                    r = pixelsArray[y - 1, x + 1];
+                }
+                else if (angles[y, x] is >= 67.5 and < 112.5)  // Angle 90
+                {
+                    if (y + 1 >= height || y - 1 < 0)
+                        continue;
+                    q = pixelsArray[y + 1, x];
+                    r = pixelsArray[y - 1, x];
+                }
+                else if (angles[y, x] is >= 112.5 and < 157.5)  // Angle 135
+                {
+                    if (y + 1 >= height || y - 1 < 0 || x + 1 >= width || x - 1 < 0)
+                        continue;
+                    q = pixelsArray[y - 1, x - 1];
+                    r = pixelsArray[y + 1, x + 1];
+                }
+
+                if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
+                    supressedArray[y, x] = pixelsArray[y, x];
             }
         }
 
