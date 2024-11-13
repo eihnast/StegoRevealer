@@ -1,0 +1,464 @@
+﻿{
+  "Scenario": "Classification",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": false,
+    "Type": "TabularFile",
+    "FilePath": "D:\\Temp\\_StegoRevealer\\_DataSets\\.Samples\\CURRENT_LAST.csv",
+    "Delimiter": ",",
+    "DecimalMarker": ".",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "ChiSquareVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaMessageVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "NoiseValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SharpnessValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "BlurValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "ContrastValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyShennonValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyRenyiValue",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "DataWasHided",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Boolean",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.82879146919431279,
+        "RuntimeInSeconds": 1.249,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 6,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.023931238649487294,
+            "NumberOfTrees": 2772,
+            "SubsampleFraction": 0.54170377580973317,
+            "MaximumBinCountPerFeature": 298,
+            "FeatureFraction": 0.99999999,
+            "L1Regularization": 2.0140203022009936E-10,
+            "L2Regularization": 0.25989924000172809,
+            "LabelColumnName": "DataWasHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.82849526066350709,
+        "RuntimeInSeconds": 0.504,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 14,
+            "MinimumExampleCountPerLeaf": 38,
+            "NumberOfTrees": 570,
+            "MaximumBinCountPerFeature": 114,
+            "FeatureFraction": 0.68211307365736473,
+            "LearningRate": 0.031287098028683291,
+            "LabelColumnName": "DataWasHided",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.8281990521327014,
+        "RuntimeInSeconds": 0.461,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 13,
+            "MinimumExampleCountPerLeaf": 37,
+            "NumberOfTrees": 569,
+            "MaximumBinCountPerFeature": 113,
+            "FeatureFraction": 0.68245132968976485,
+            "LearningRate": 0.031212515490895158,
+            "LabelColumnName": "DataWasHided",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.82760663507109,
+        "RuntimeInSeconds": 0.451,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 13,
+            "MinimumExampleCountPerLeaf": 38,
+            "NumberOfTrees": 575,
+            "MaximumBinCountPerFeature": 114,
+            "FeatureFraction": 0.68300052364635111,
+            "LearningRate": 0.031523852080967335,
+            "LabelColumnName": "DataWasHided",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.8273104265402843,
+        "RuntimeInSeconds": 0.459,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSquareVolume",
+              "RsVolume",
+              "KzhaThreshold",
+              "KzhaMessageVolume",
+              "NoiseValue",
+              "SharpnessValue",
+              "BlurValue",
+              "ContrastValue",
+              "EntropyShennonValue",
+              "EntropyRenyiValue"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfLeaves": 14,
+            "MinimumExampleCountPerLeaf": 38,
+            "NumberOfTrees": 547,
+            "MaximumBinCountPerFeature": 113,
+            "FeatureFraction": 0.68447581679790537,
+            "LearningRate": 0.029342662240524519,
+            "LabelColumnName": "DataWasHided",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "Concatenate",
+      "e2": "FastTreeBinary",
+      "e3": "LightGbmBinary",
+      "e4": "LbfgsLogisticRegressionBinary",
+      "e5": "SdcaLogisticRegressionBinary",
+      "e6": "FastForestBinary",
+      "e7": "Naive"
+    },
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "D:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\DecisionModel.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Tuner": "eci-cfo",
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 1200,
+    "OptimizeMetric": "Accuracy",
+    "LabelColumn": "DataWasHided",
+    "AvailableTrainers": [
+      "SDCA",
+      "LBFGS",
+      "LGBM",
+      "FASTTREE",
+      "FASTFOREST"
+    ],
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}
