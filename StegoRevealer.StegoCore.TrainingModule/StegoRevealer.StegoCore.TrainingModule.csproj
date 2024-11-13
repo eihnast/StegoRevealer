@@ -17,4 +17,9 @@
   <ItemGroup>
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
   </ItemGroup>
+  <ItemGroup Label="DecisionModel">
+    <None Include="DecisionModel.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
