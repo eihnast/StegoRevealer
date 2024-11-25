@@ -199,7 +199,7 @@
                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 								<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
 										  Grid.Row="2" Grid.Column="3"
-										  IsChecked="{Binding Path=KzIndexesSelected}"
+										  IsChecked="{Binding Path=KzThresholdSelected}"
                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 							</Grid>
 							<!-- / Параметры для метода Коха-Жао -->

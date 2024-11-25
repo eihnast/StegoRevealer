@@ -198,7 +198,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool KzIndexesSelected
     {
         get => _kzIndexesSelected;
-        set => this.RaiseAndSetIfChanged(ref _kzRandomSeedSelected, value);
+        set => this.RaiseAndSetIfChanged(ref _kzIndexesSelected, value);
     }
     private bool _kzIndexesSelected = false;
 
