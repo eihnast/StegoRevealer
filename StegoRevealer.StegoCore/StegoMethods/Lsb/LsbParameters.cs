@@ -161,7 +161,7 @@ public class LsbParameters : StegoMethodParams, IParams
         LsbNum = 1;
 
         Channels.Clear();
-        Channels.Append(ImgChannel.Red).Append(ImgChannel.Green).Append(ImgChannel.Blue);
+        Channels.AddRange([ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue]);
         _startPixels = GetDefaultStartPixels();
 
         _toExtractBitLength = 0;

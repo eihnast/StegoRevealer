@@ -472,7 +472,6 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         var results = new ExtractionResultsDto();
         if (MethodLsbSelected && _lsbParameters is not null)  // Извлечение из НЗБ
-        //if (_lsbParameters is not null)  // Извлечение из НЗБ
         {
             var extractor = new LsbExtractor(_lsbParameters.Image);
             extractor.Params.Seed = _lsbParameters.Seed;
@@ -483,7 +482,6 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             var lsbResult = extractor.Extract() as LsbExtractResult;
             results.ExtractedMessage = lsbResult?.ResultData ?? string.Empty;
         }
-        //else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
         else if (MethodKzSelected && _kzhParameters is not null)  // Извлечение по Коха-Жао
         {
             var extractor = new KochZhaoExtractor(_kzhParameters.Image);
@@ -512,6 +510,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     {
         if (MethodLsbSelected && _lsbParameters is not null)
         {
+            _lsbParameters.Reset();
+
             if (RandomModeSelected)
                 _lsbParameters.Seed = LsbRandomSeedValue;
             _lsbParameters.ToExtractBitLength = (LsbByteLengthSelected ? LsbByteLengthValue : 0) * 8;  // По умолчанию (без указания) = 0
@@ -532,6 +532,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         if (MethodKzSelected && _kzhParameters is not null)
         {
+            _kzhParameters.Reset();
+
             if (RandomModeSelected)
                 _kzhParameters.Seed = KzRandomSeedValue;
             if (KzThresholdSelected)
@@ -539,9 +541,13 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
             if (KzIndexesSelected)
             {
+                if (KzIndexFirstValue < 0)
+                    KzIndexFirstValue = 0;
                 _kzhParameters.StartBlocks = new StartValues((ImgChannel.Blue, KzIndexFirstValue));
 
                 // Считаем, что скрытие производилось только в синий канал
+                if (KzIndexSecondValue < 0)
+                    KzIndexSecondValue = 0;
                 if (KzIndexSecondValue > 0)
                 {
                     int bitsNum = KzIndexSecondValue - KzIndexFirstValue + 1;
