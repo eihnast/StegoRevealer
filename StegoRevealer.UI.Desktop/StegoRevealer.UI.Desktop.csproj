@@ -20,6 +20,20 @@
 	<PackageTags>steganography; steganalysis; stego</PackageTags>
 	<NeutralLanguage>ru-RU</NeutralLanguage>
 	<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+	<FileVersion>2024.11.3.0751</FileVersion>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>False</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyVersionSettings>None.None.None.None</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
   </PropertyGroup>
 	
   <ItemGroup>
