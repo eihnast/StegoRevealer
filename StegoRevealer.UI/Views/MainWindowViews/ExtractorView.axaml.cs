@@ -112,7 +112,7 @@ public partial class ExtractorView : UserControl
 
     private void SetLinearMode(object? sender, RoutedEventArgs e)
     {
-        if (_vm is null)
+        if (_vm is null || CommonTools.IsActionWhileTabChanged())
             return;
 
         _vm.SelectLinearMode();
@@ -120,7 +120,7 @@ public partial class ExtractorView : UserControl
     }
     private void SetRandomMode(object? sender, RoutedEventArgs e)
     {
-        if (_vm is null)
+        if (_vm is null || CommonTools.IsActionWhileTabChanged())
             return;
 
         _vm.SelectRandomMode();

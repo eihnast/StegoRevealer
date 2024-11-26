@@ -58,7 +58,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool MethodLsbSelected
     {
         get => _methodLsbSelected;
-        set => this.RaiseAndSetIfChanged(ref _methodLsbSelected, value);
+        set
+        {
+            if (!CommonTools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _methodLsbSelected, value);
+        }
     }
     private bool _methodLsbSelected = true;
 
@@ -68,7 +72,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool MethodKzSelected
     {
         get => _methodKzSelected;
-        set => this.RaiseAndSetIfChanged(ref _methodKzSelected, value);
+        set
+        {
+            if (!CommonTools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _methodKzSelected, value);
+        }
     }
     private bool _methodKzSelected = false;
 
@@ -78,7 +86,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool LinearModeSelected
     {
         get => _linearModeSelected;
-        set => this.RaiseAndSetIfChanged(ref _linearModeSelected, value);
+        set
+        {
+            if (!CommonTools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _linearModeSelected, value);
+        }
     }
     private bool _linearModeSelected = true;
 
@@ -88,7 +100,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool RandomModeSelected
     {
         get => _randomModeSelected;
-        set => this.RaiseAndSetIfChanged(ref _randomModeSelected, value);
+        set
+        {
+            if (!CommonTools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _randomModeSelected, value);
+        }
     }
     private bool _randomModeSelected = false;
     

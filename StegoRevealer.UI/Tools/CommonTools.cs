@@ -298,4 +298,27 @@ public static class CommonTools
         string normalizedFolderPath = folderPath.Trim('/').Trim('\\').ToLower();
         return normalizedPath.StartsWith(normalizedFolderPath);
     }
+
+    private static List<string> _tabChangeMethods = ["TurnToAnalyzer", "TurnToHider", "TurnToExtractor", "TurnToInfoPage", "TurnToSettingsPage"];
+    public static bool IsActionWhileTabChanged()
+    {
+        // Костыль, который проверяет, что вызов действия пришёл изначально из-за изменения вкладки.
+        // Проблема в том, что при смене вкладки Avalonia почему-то вызывает метод свойства Unchecked на ToggleButton.
+        // (вероятно, баг, т.к. для CheckBox-ов Unchecked не вызывается при смене вкладки) - из-за этого выбор метода/способа сбрасывается
+
+        var stackTrace = new StackTrace();
+        bool isTabChanged = stackTrace.GetFrames().FirstOrDefault(
+            frame => StringContainsAnyOfSubstring(frame.GetMethod()?.Name ?? string.Empty, _tabChangeMethods)) is not null;
+        return isTabChanged;
+    }
+
+    public static bool StringContainsAnyOfSubstring(string str, IEnumerable<string> substrings)
+    {
+        foreach (var substring in substrings)
+        {
+            if (str.Contains(substring, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
 }
