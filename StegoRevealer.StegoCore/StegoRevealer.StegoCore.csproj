@@ -35,6 +35,10 @@
     <PackageReference Include="SkiaSharp" Version="2.88.9" />
   </ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.StegoCore.DecisionModule\StegoRevealer.StegoCore.DecisionModule.csproj" />
+	</ItemGroup>
+
   <ItemGroup>
     <Content Update="C:\Users\yaros\.nuget\packages\accord\3.8.0\build\Accord.dll.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

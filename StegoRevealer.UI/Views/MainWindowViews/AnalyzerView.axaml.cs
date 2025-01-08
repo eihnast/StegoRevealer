@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
@@ -49,12 +50,16 @@ public partial class AnalyzerView : UserControl
     // Запуск стегоанализа
     private async void StartAnalysis_Click(object sender, RoutedEventArgs e)
     {
+        StartAnalysis.IsEnabled = false;  // Блокириуем кнопку запуска СА
+
         _vm.ResetResults();  // Сбрасываем результаты
         ResetResultsExpander();  // Сбрасываем форму результатов
         await _vm.StartAnalysis();  // Запускаем стегоанализ
 
         UpdateResults();  // Обновляем форму результатов
         _vm.IsMethodsOpened = false;  // Переключение экспандера
+
+        StartAnalysis.IsEnabled = true;  // Снимаем блокировку кнопки запуска СА
     }
 
     // Обновление результатов
@@ -157,11 +162,11 @@ public partial class AnalyzerView : UserControl
 
     // Кнопки открытия параметров
     private async void MethodChiSqrParamsBtn_Click(object sender, RoutedEventArgs e) =>
-        await _vm.OpenParametersWindow(AnalyzerMethod.ChiSquare);
+        await _vm.OpenParametersWindow(AnalysisMethod.ChiSquare);
     private async void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
-        await _vm.OpenParametersWindow(AnalyzerMethod.RegularSingular);
+        await _vm.OpenParametersWindow(AnalysisMethod.RegularSingular);
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
-        await _vm.OpenParametersWindow(AnalyzerMethod.KochZhaoAnalysis);
+        await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
 
     // Настройки экспандеров (выбор методов и результатов)

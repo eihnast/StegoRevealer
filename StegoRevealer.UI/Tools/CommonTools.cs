@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib;
 using System;
@@ -139,10 +140,10 @@ public static class CommonTools
     /// <summary>
     /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
     /// </summary>
-    public static Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
+    public static Dictionary<AnalysisMethod, T?> CreateValuesByAnalysisMethodDictionary<T>()
     {
-        var dict = new Dictionary<AnalyzerMethod, T?>();
-        foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
+        var dict = new Dictionary<AnalysisMethod, T?>();
+        foreach (AnalysisMethod method in Enum.GetValues(typeof(AnalysisMethod)))
             dict.Add(method, default);
         return dict;
     }

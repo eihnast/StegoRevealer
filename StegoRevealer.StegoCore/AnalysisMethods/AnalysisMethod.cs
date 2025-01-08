@@ -1,9 +1,9 @@
-﻿namespace StegoRevealer.UI.Lib;
+﻿namespace StegoRevealer.StegoCore.AnalysisMethods;
 
 /// <summary>
 /// Метод стегоанализа
 /// </summary>
-public enum AnalyzerMethod
+public enum AnalysisMethod
 {
     ChiSquare,
     RegularSingular,

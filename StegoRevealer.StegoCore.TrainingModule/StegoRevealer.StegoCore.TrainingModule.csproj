@@ -14,9 +14,9 @@
     <PackageReference Include="Microsoft.ML.LightGbm" Version="4.0.0" />
     <PackageReference Include="Plotly.NET" Version="5.1.0" />
   </ItemGroup>
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup Label="DecisionModel">
     <None Include="DecisionModel.mlnet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\StegoRevealer.StegoCore.TrainingModule\StegoRevealer.StegoCore.TrainingModule.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.StegoCore.TrainingModule\StegoRevealer.StegoCore.TrainingModule.csproj" />
+	</ItemGroup>
 
 </Project>
