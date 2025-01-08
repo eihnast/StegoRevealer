@@ -22,4 +22,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
+  </ItemGroup>
 </Project>
