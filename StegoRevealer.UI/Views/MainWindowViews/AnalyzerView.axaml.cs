@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
@@ -14,6 +15,11 @@ public partial class AnalyzerView : UserControl
     private const string MessageUnknown = "Нет данных";
     private const string MessageNotFoundData = "Отсутствует";
     private const string MessageNullElapsedTime = "0 мс";
+    private const string IsHidingDecisionCannotBeCalculated = "невозможно определить";
+
+    private static SolidColorBrush BadTextBrush = CommonTools.GetBrush("SrDarkRed");
+    private static SolidColorBrush GoodTextBrush = CommonTools.GetBrush("SrDarkGreen");
+    private static SolidColorBrush DefaultTextBrush = CommonTools.GetBrush("SrDefaultWhite");
 
     private AnalyzerViewModel _vm = null!;
 
@@ -136,6 +142,15 @@ public partial class AnalyzerView : UserControl
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
+
+
+            // Вывод о наличии встраивания
+            string hidingDecisionText = results.IsHidingDeceted is null ? IsHidingDecisionCannotBeCalculated :
+                (results.IsHidingDeceted is true ? "обнаружено" : "не обнаружено");
+            var hidingDecisionTextBrush = results.IsHidingDeceted is null ? DefaultTextBrush :
+                (results.IsHidingDeceted is true ? BadTextBrush : GoodTextBrush);
+            AutoDetectionResult.Text = hidingDecisionText;
+            AutoDetectionResult.Foreground = hidingDecisionTextBrush;
         }
     }
 
@@ -206,5 +221,7 @@ public partial class AnalyzerView : UserControl
         // StatResultsEntropyHavardValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
+        AutoDetectionResult.Text = IsHidingDecisionCannotBeCalculated;
+        AutoDetectionResult.Foreground = DefaultTextBrush;
     }
 }

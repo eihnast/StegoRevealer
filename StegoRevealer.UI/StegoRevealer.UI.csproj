@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StegoRevealer.StegoCore.DecisionModule\StegoRevealer.StegoCore.DecisionModule.csproj" />
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
   </ItemGroup>
 

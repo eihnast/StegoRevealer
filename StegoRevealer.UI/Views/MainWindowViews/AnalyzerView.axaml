@@ -121,9 +121,19 @@
 					<ScrollViewer>
 						<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 								   LastChildFill="False">
+							
+							<DockPanel Name="AutoDetectionResultBlock" DockPanel.Dock="Top"
+									   LastChildFill="True">
+								<TextBlock Text="Стеганографическое встраивание: "
+										 TextAlignment="Left" Height="25" DockPanel.Dock="Left"
+										 HorizontalAlignment="Stretch"/>
+								<TextBlock Name="AutoDetectionResult" Text="невозможно определить"
+										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
 						
 							<DockPanel Name="ChiFullnessBlock" DockPanel.Dock="Top"
-									   LastChildFill="True">
+									   LastChildFill="True" Margin="0 10 0 0">
 								<TextBlock Text="Оценка заполненности по методу Хи-квадрат: "
 										 TextAlignment="Left" Height="25" DockPanel.Dock="Left"
 										 HorizontalAlignment="Stretch"/>

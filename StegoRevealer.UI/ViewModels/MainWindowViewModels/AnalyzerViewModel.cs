@@ -24,6 +24,7 @@ using StegoRevealer.UI.Lib.ParamsHelpers;
 using StegoRevealer.UI.Lib.MethodsHelper;
 using StegoRevealer.StegoCore.Logger;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+using StegoRevealer.StegoCore.DecisionModule;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -387,6 +388,23 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
 
 
+    private bool DecisionCanBeCalculated
+    {
+        get
+        {
+            if (CurrentImage is null)
+                return false;
+            if (!(ActiveMethods[AnalyzerMethod.ChiSquare] && _chiSquareParameters is not null))
+                return false;
+            if (!(ActiveMethods[AnalyzerMethod.RegularSingular] && _rsParameters is not null))
+                return false;
+            if (!((ActiveMethods[AnalyzerMethod.KochZhaoAnalysis] && _kzhaParameters is not null)))
+                return false;
+            return true;
+        }
+    }
+
+
     /// <summary>
     /// Запуск процесса стегоанализа для указанных выбранных методов
     /// </summary>
@@ -468,12 +486,33 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         var kzhaRes = results[AnalyzerMethod.KochZhaoAnalysis] as KzhaResult;
         var statmRes = results[AnalyzerMethod.Statm] as StatmResult;
 
+        // Формирование вывода
+        bool? isHidingDetected = null;
+        if (DecisionCanBeCalculated && chiRes is not null && rsRes is not null && kzhaRes is not null && statmRes is not null)
+        {
+            var saResult = new SteganalysisResults
+            {
+                ChiSquareVolume = chiRes.MessageRelativeVolume,
+                RsVolume = rsRes.MessageRelativeVolume,
+                KzhaThreshold = kzhaRes.Threshold,
+                KzhaMessageVolume = kzhaRes.MessageBitsVolume / CommonTools.GetContainerFrequencyVolume(CurrentImage!),
+                NoiseValue = statmRes.NoiseValue,
+                SharpnessValue = statmRes.SharpnessValue,
+                BlurValue = statmRes.BlurValue,
+                ContrastValue = statmRes.ContrastValue,
+                EntropyShennonValue = statmRes.EntropyValues.Shennon,
+                EntropyRenyiValue = statmRes.EntropyValues.Renyi
+            };
+
+            isHidingDetected = SteganalysisDecision.Calculate(saResult);
+        }
+
         // Вывод визуализированного изображения
         if (chiRes is not null && (_chiSquareParameters?.Visualize ?? false))
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, timer.ElapsedMilliseconds);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, timer.ElapsedMilliseconds, isHidingDetected);
         Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
             + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)

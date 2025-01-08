@@ -321,4 +321,6 @@ public static class CommonTools
         }
         return false;
     }
+
+    public static int GetContainerFrequencyVolume(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
 }

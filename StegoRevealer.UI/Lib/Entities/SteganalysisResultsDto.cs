@@ -52,6 +52,9 @@ public class SteganalysisResultsDto
     // public double StatmEntropyHavardValue { get; private set; } = 0.0;
 
 
+    public bool? IsHidingDeceted { get; private set; } = null;
+
+
     public long ElapsedTime { get; private set; } = 0;
 
 
@@ -60,7 +63,7 @@ public class SteganalysisResultsDto
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
     public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null, StatmResult? statmRes = null,
-        long? elapsedTime = null)
+        long? elapsedTime = null, bool? isHidingDeceted = null)
     {
         if (elapsedTime is not null)
             ElapsedTime = elapsedTime.Value;
@@ -100,5 +103,8 @@ public class SteganalysisResultsDto
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
             // StatmEntropyHavardValue = statmRes.EntropyValues.Havard;
         }
+
+        if (isHidingDeceted is not null)
+            IsHidingDeceted = isHidingDeceted;
     }
 }
