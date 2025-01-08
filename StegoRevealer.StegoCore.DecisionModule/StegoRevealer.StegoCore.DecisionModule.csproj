@@ -5,10 +5,34 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <DebugType>embedded</DebugType>
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="DecisionModel.training.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="DecisionModel.mlnet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DecisionModel.mlnet">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DecisionModel.training.cs" />
+  </ItemGroup>
+
 	<ItemGroup>
-		<ProjectReference Include="..\StegoRevealer.StegoCore.TrainingModule\StegoRevealer.StegoCore.TrainingModule.csproj" />
+		<PackageReference Include="Microsoft.ML" Version="4.0.0" />
+		<PackageReference Include="Microsoft.ML.FastTree" Version="4.0.0" />
+		<PackageReference Include="Microsoft.ML.LightGbm" Version="4.0.0" />
+		<PackageReference Include="Plotly.NET" Version="5.1.0" />
 	</ItemGroup>
+	<!--<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.StegoCore.TrainingModule\StegoRevealer.StegoCore.TrainingModule.csproj" />
+	</ItemGroup>-->
 
 </Project>

@@ -20,7 +20,7 @@
 	<PackageTags>steganography; steganalysis; stego</PackageTags>
 	<NeutralLanguage>ru-RU</NeutralLanguage>
 	<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-	<FileVersion>2024.11.3.0751</FileVersion>
+	<FileVersion>2025.1.6.1758</FileVersion>
   </PropertyGroup>
 	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
