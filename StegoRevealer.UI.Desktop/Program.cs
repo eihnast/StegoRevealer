@@ -2,6 +2,7 @@
 
 using Avalonia;
 using Avalonia.ReactiveUI;
+using StegoRevealer.UI.Desktop.ConsoleInterface;
 using StegoRevealer.UI.Tools;
 
 namespace StegoRevealer.UI.Desktop;
@@ -14,9 +15,18 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
         Logger.LogInfo("Starting Stego Revealer App");
 
-        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        // Запуск в режиме интерфейса командной строки
+        if (args.Length > 0)
+        {
+            Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
+            CommandLineParser.HandleCommand(args).Wait();
+            return;
+        }
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

@@ -12,11 +12,11 @@ namespace StegoRevealer.UI.Views.MainWindowViews;
 public partial class AnalyzerView : UserControl
 {
     // Стандартные сообщения и заглушки
-    private const string MessageNotAnalyzed = "Анализ не проводился";
-    private const string MessageUnknown = "Нет данных";
-    private const string MessageNotFoundData = "Отсутствует";
-    private const string MessageNullElapsedTime = "0 мс";
-    private const string IsHidingDecisionCannotBeCalculated = "невозможно определить";
+    private static string MessageNotAnalyzed = Constants.ResultsDefaults.NotAnalyzed;
+    private static string MessageUnknown = Constants.ResultsDefaults.NoData;
+    private static string MessageNotFoundData = Constants.ResultsDefaults.NotFoundData;
+    private static string MessageNullElapsedTime = Constants.ResultsDefaults.NullElapsedTime + " " + Constants.ResultsDefaults.ElapsedTimeMeasure;
+    private static string IsHidingDecisionCannotBeCalculated = Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated;
 
     private static SolidColorBrush BadTextBrush = CommonTools.GetBrush("SrDarkRed");
     private static SolidColorBrush GoodTextBrush = CommonTools.GetBrush("SrDarkGreen");
@@ -37,6 +37,25 @@ public partial class AnalyzerView : UserControl
         _vm = CommonTools.GetViewModel<AnalyzerViewModel>(this.DataContext);
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
         UpdateResults();
+
+        // Установка текста блоков результатов
+        AutoDetectionResultDesc.Text = CommonTools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
+        ChiFullnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.ChiSqrValue);
+        RsFullnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.RsValue);
+        KzhaIntervalFoundedDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaDetection);
+        KzhaBitsNumDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaBitsNum);
+        KzhaSuspiciousIntervalDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaIndexes);
+        KzhaThresholdDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaThreshold);
+        KzhaCoeffsDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaCoeffs);
+        KzhaExtractedDataLabel.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaExtractedInfo);
+        StatResultsTitleName.Text = CommonTools.AddColon(Constants.ResultsNames.StatmLabel);
+        StatResultsNoise2Desc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmNoise);
+        StatResultsSharpnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmSharpness);
+        StatResultsBlurDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmBlur);
+        StatResultsContrastDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmContrast);
+        StatResultsEntropyShennonDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmShennon);
+        StatResultsEntropyRenyiDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmRenyi);
+        ElapsedTimeLabel.Text = CommonTools.AddColon(Constants.ResultsNames.ElapsedTime);
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -76,16 +95,16 @@ public partial class AnalyzerView : UserControl
 
             // ChiSqr
             if (results.IsMethodChiSqrExecuted)
-                ChiFullnessValue.Text = string.Format("{0:P2}", results.ChiSqrMessageRelativeVolume);
+                ChiFullnessValue.Text = CommonTools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
 
             // RS
             if (results.IsMethodRsExecuted)
-                RsFullnessValue.Text = string.Format("{0:P2}", Math.Min(1.0, results.RsMessageRelativeVolume));
+                RsFullnessValue.Text = CommonTools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
 
             // Kzha
             if (results.IsMethodKzhaExecuted)
             {
-                KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? "Да" : "Нет";
+                KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? Constants.ResultsDefaults.Yes : Constants.ResultsDefaults.No;
 
                 if (results.KzhaSuspiciousIntervalIsFound)
                 {
@@ -104,7 +123,7 @@ public partial class AnalyzerView : UserControl
                     if (results.KzhaThreshold > 0.0)
                     {
                         KzhaThresholdBlock.IsEnabled = true;
-                        KzhaThresholdValue.Text = string.Format("{0:f2}", results.KzhaThreshold);
+                        KzhaThresholdValue.Text = CommonTools.GetFormattedDouble(results.KzhaThreshold);
                     }
 
                     // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
@@ -134,28 +153,28 @@ public partial class AnalyzerView : UserControl
             }
 
             // Statm
-            StatResultsNoise2Value.Text = string.Format("{0:F5}", results.StatmNoiseValue);
-            StatResultsSharpnessValue.Text = string.Format("{0:F5}", results.StatmSharpnessValue);
-            StatResultsBlurValue.Text = string.Format("{0:F5}", results.StatmBlurValue);
-            StatResultsContrastValue.Text = string.Format("{0:F5}", results.StatmContrastValue);
+            StatResultsNoise2Value.Text = CommonTools.GetLongFormattedDouble(results.StatmNoiseValue);
+            StatResultsSharpnessValue.Text = CommonTools.GetLongFormattedDouble(results.StatmSharpnessValue);
+            StatResultsBlurValue.Text = CommonTools.GetLongFormattedDouble(results.StatmBlurValue);
+            StatResultsContrastValue.Text = CommonTools.GetLongFormattedDouble(results.StatmContrastValue);
             // StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
             // StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
-            StatResultsEntropyShennonValue.Text = string.Format("{0:F5}", results.StatmEntropyShennonValue);
-            StatResultsEntropyRenyiValue.Text = string.Format("{0:F5}", results.StatmEntropyRenyiValue);
+            StatResultsEntropyShennonValue.Text = CommonTools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
+            StatResultsEntropyRenyiValue.Text = CommonTools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
             // StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
 
 
             // Затрачено времени
-            ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
+            ElapsedTimeValue.Text = CommonTools.GetElapsedTime(results.ElapsedTime);
 
 
             // Вывод о наличии встраивания
             string hidingDecisionText = results.IsHidingDeceted is null ? IsHidingDecisionCannotBeCalculated :
-                (results.IsHidingDeceted is true ? "обнаружено" : "не обнаружено");
+                (results.IsHidingDeceted is true ? Constants.ResultsDefaults.Deceted : Constants.ResultsDefaults.NotDetected);
             var hidingDecisionTextBrush = results.IsHidingDeceted is null ? DefaultTextBrush :
                 (results.IsHidingDeceted is true ? BadTextBrush : GoodTextBrush);
-            AutoDetectionResult.Text = hidingDecisionText;
-            AutoDetectionResult.Foreground = hidingDecisionTextBrush;
+            AutoDetectionResultValue.Text = hidingDecisionText;
+            AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
         }
     }
 
@@ -226,7 +245,7 @@ public partial class AnalyzerView : UserControl
         // StatResultsEntropyHavardValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
-        AutoDetectionResult.Text = IsHidingDecisionCannotBeCalculated;
-        AutoDetectionResult.Foreground = DefaultTextBrush;
+        AutoDetectionResultValue.Text = IsHidingDecisionCannotBeCalculated;
+        AutoDetectionResultValue.Foreground = DefaultTextBrush;
     }
 }

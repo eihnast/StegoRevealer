@@ -36,8 +36,9 @@ public class TempManager
     public void RememberHandler(ImageHandler imageHandler) => _openedHandlers.Add(imageHandler);
     public void ForgetHandler(ImageHandler imageHandler) => _openedHandlers.Remove(imageHandler);
 
-    public void DeleteTempImages()
+    public void DeleteTempImages(bool withRetry = true)
     {
+        var notDeleted = new List<string>();
         foreach (var imagePath in _tempImages)
         {
             if (File.Exists(imagePath))
@@ -49,11 +50,21 @@ public class TempManager
                 catch (Exception ex)
                 {
                     Logger.LogError("Error wile deleting temp image: " + ex.Message);
+                    notDeleted.Add(imagePath);
                 }
             }
         }
 
-        _tempImages.Clear();
+        if (withRetry && notDeleted.Count > 0)
+        {
+            Logger.LogWarning("Trying to retry deleting temp images");
+            DeleteTempImages(false);
+        }
+        else
+        {
+            Logger.LogInfo("Temp image files deleted");
+            _tempImages.Clear();
+        }
     }
 
     public void DeleteImageHandlers()
@@ -63,6 +74,7 @@ public class TempManager
             try
             {
                 imageHandler?.CloseHandler();
+                Logger.LogInfo("All saved image handlers closed");
             }
             catch (Exception ex)
             {

@@ -156,7 +156,7 @@ public static class CommonTools
         if (strategy is FilterInputStrategy.AllowAll)
             return;
 
-        if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble 
+        if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble
             or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
         {
             if (!AllowedDigitKeys.Contains(e.Key))
@@ -324,4 +324,12 @@ public static class CommonTools
     }
 
     public static int GetContainerFrequencyVolume(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
+
+    public static string AddColon(string str, bool withSpace = true) => str + ":" + (withSpace ? " " : "");
+
+    public static string GetElapsedTime(long elapsedTime) => elapsedTime.ToString() + " " + Constants.ResultsDefaults.ElapsedTimeMeasure;
+
+    public static string GetValueAsPercents(double? value) => value is null ? $"{null}" : string.Format("{0:P2}", value);
+    public static string GetFormattedDouble(double? value) => value is null ? $"{null}" : string.Format("{0:f2}", value);
+    public static string GetLongFormattedDouble(double? value) => value is null ? $"{null}" : string.Format("{0:F5}", value);
 }
