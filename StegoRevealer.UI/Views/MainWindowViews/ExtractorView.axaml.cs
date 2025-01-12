@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
@@ -112,7 +113,7 @@ public partial class ExtractorView : UserControl
 
     private void SetLinearMode(object? sender, RoutedEventArgs e)
     {
-        if (_vm is null || CommonTools.IsActionWhileTabChanged())
+        if (_vm is null || Common.Tools.IsActionWhileTabChanged())
             return;
 
         _vm.SelectLinearMode();
@@ -120,7 +121,7 @@ public partial class ExtractorView : UserControl
     }
     private void SetRandomMode(object? sender, RoutedEventArgs e)
     {
-        if (_vm is null || CommonTools.IsActionWhileTabChanged())
+        if (_vm is null || Common.Tools.IsActionWhileTabChanged())
             return;
 
         _vm.SelectRandomMode();

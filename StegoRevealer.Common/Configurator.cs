@@ -1,10 +1,7 @@
-﻿using StegoRevealer.UI.Lib.Entities.AppConfig;
-using System.IO;
-using System.Text.Json;
-using System;
-using System.Reflection.Metadata;
+﻿using System.Text.Json;
+using StegoRevealer.Common.Entities.AppConfig;
 
-namespace StegoRevealer.UI.Tools;
+namespace StegoRevealer.Common;
 
 public class Configurator
 {
@@ -61,7 +58,7 @@ public class Configurator
     {
         try
         {
-            string tempDir = CommonTools.GetOrCreateTempDirPath();
+            string tempDir = Tools.GetOrCreateTempDirPath();
             SettingsPath = Path.Combine(tempDir, SettingsFileName);
 
             if (File.Exists(SettingsPath))

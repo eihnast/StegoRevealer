@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PublishSingleFile>true</PublishSingleFile>
-    <DebugType>embedded</DebugType>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ML" Version="4.0.0" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.0" />
-    <PackageReference Include="Microsoft.ML.LightGbm" Version="4.0.0" />
-    <PackageReference Include="Plotly.NET" Version="5.1.0" />
-  </ItemGroup>
-  <!--<ItemGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PublishSingleFile>true</PublishSingleFile>
+		<DebugType>embedded</DebugType>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.ML" Version="4.0.0" />
+		<PackageReference Include="Microsoft.ML.FastTree" Version="4.0.0" />
+		<PackageReference Include="Microsoft.ML.LightGbm" Version="4.0.0" />
+		<PackageReference Include="Plotly.NET" Version="5.1.0" />
+	</ItemGroup>
+	<!--<ItemGroup>
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
   </ItemGroup>-->
-  <ItemGroup Label="DecisionModel">
-    <None Include="DecisionModel.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
-  </ItemGroup>
+	<ItemGroup Label="DecisionModel">
+		<None Include="DecisionModel.mlnet">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
+	</ItemGroup>
 </Project>

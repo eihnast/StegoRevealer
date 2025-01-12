@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using ReactiveUI;
+using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;

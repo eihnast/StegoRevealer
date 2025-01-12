@@ -1,16 +1,12 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+﻿using StegoRevealer.Common.ConsoleInterface.Tools;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.UI.Tools;
 using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.IO;
-using StegoRevealer.UI.Lib;
 
-namespace StegoRevealer.UI.Desktop.ConsoleInterface.CommandHandlers;
+namespace StegoRevealer.Common.ConsoleInterface.Processors;
 
 public class SteganalysisProcessor
 {
@@ -72,14 +68,14 @@ public class SteganalysisProcessor
         var rsRes = result.RsResult;
         var kzhaRes = result.KzhaResult;
         var statmRes = result.StatmResult;
-
+        
         // Запись в лог результатов
         _logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
-            + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
+            + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
-            + "\n\nRegular-Singular = " + CommonTools.GetFormattedJson(rsRes)
+            + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
             + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
-            + "\n\nKoch-Zhao Analysis = " + CommonTools.GetFormattedJson(kzhaRes)
+            + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
             + $"\n\nElapsed time = {result.ElapsedTime}\n" + Logger.Separator);
 
@@ -140,43 +136,43 @@ public class SteganalysisProcessor
             : (result.IsHidingDetected.Value ? Constants.ResultsDefaults.Deceted.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
         //outputStr.AppendLine();
 
-        outputStr.AppendLine(CommonTools.AddColon(Constants.ResultsNames.ChiSqrValue) + CommonTools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
-        outputStr.AppendLine(CommonTools.AddColon(Constants.ResultsNames.RsValue + CommonTools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0)));
-        outputStr.AppendLine(CommonTools.AddColon(Constants.ResultsNames.KzhaDetection) +
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + Common.Tools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0)));
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection) +
             (!kzhaRes?.SuspiciousIntervalIsFound ?? false ? Constants.ResultsDefaults.No : Constants.ResultsDefaults.Yes));
         if (kzhaRes is not null && kzhaRes.SuspiciousIntervalIsFound)
         {
-            outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.KzhaBitsNum) + kzhaRes.MessageBitsVolume);
-            outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.KzhaThreshold) + CommonTools.GetFormattedDouble(kzhaRes.Threshold));
+            outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum) + kzhaRes.MessageBitsVolume);
+            outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.KzhaThreshold) + Common.Tools.GetFormattedDouble(kzhaRes.Threshold));
 
             // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
             bool kzhaHasRealData = kzhaRes.MessageBitsVolume > 0.0 && kzhaRes.Threshold > 0.0;
 
             if (kzhaHasRealData)
             {
-                outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.KzhaIndexes) + kzhaRes.Coefficients.ToString());
-                outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.KzhaCoeffs) +
+                outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes) + kzhaRes.Coefficients.ToString());
+                outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.KzhaCoeffs) +
                     $"[{kzhaRes.SuspiciousInterval?.leftInd}, {kzhaRes.SuspiciousInterval?.rightInd}]");
             }
 
             if (kzhaRes.ExtractedData is not null)
             {
-                outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.KzhaExtractedInfo, false));
+                outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.KzhaExtractedInfo, false));
                 outputStr.AppendLine(kzhaRes.ExtractedData);
             }
         }
 
         //outputStr.AppendLine();
-        outputStr.AppendLine(CommonTools.AddColon(Constants.ResultsNames.StatmLabel, false));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmNoise) + CommonTools.GetLongFormattedDouble(statmRes?.NoiseValue));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmSharpness) + CommonTools.GetLongFormattedDouble(statmRes?.SharpnessValue));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmBlur) + CommonTools.GetLongFormattedDouble(statmRes?.BlurValue));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmContrast) + CommonTools.GetLongFormattedDouble(statmRes?.ContrastValue));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmShennon) + CommonTools.GetLongFormattedDouble(statmRes?.EntropyValues.Shennon));
-        outputStr.AppendLine("\t" + CommonTools.AddColon(Constants.ResultsNames.StatmRenyi) + CommonTools.GetLongFormattedDouble(statmRes?.EntropyValues.Renyi));
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmLabel, false));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmNoise) + Common.Tools.GetLongFormattedDouble(statmRes?.NoiseValue));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmSharpness) + Common.Tools.GetLongFormattedDouble(statmRes?.SharpnessValue));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmBlur) + Common.Tools.GetLongFormattedDouble(statmRes?.BlurValue));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmContrast) + Common.Tools.GetLongFormattedDouble(statmRes?.ContrastValue));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmShennon) + Common.Tools.GetLongFormattedDouble(statmRes?.EntropyValues.Shennon));
+        outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmRenyi) + Common.Tools.GetLongFormattedDouble(statmRes?.EntropyValues.Renyi));
 
         //outputStr.AppendLine();
-        outputStr.AppendLine(CommonTools.AddColon(Constants.ResultsNames.ElapsedTime) + CommonTools.GetElapsedTime(result.ElapsedTime));
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime) + Common.Tools.GetElapsedTime(result.ElapsedTime));
 
         Console.WriteLine(outputStr.ToString());
     }
@@ -205,7 +201,7 @@ public class SteganalysisProcessor
     private ImageHandler? LoadImage(string path)
     {
         // Загрузка
-        var tempPath = CommonTools.CopyFileToTemp(path);
+        var tempPath = Common.Tools.CopyFileToTemp(path);
 
         if (!string.IsNullOrEmpty(tempPath))
         {
@@ -223,3 +219,4 @@ public class SteganalysisProcessor
             TempManager.Instance.ForgetHandler(_currentImage);
     }
 }
+

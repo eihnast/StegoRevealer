@@ -1,10 +1,8 @@
 ﻿using StegoRevealer.StegoCore.Logger;
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace StegoRevealer.UI.Tools;
+namespace StegoRevealer.Common;
 
 public class LogMessageListConverter : JsonConverter<List<LogMessage>>
 {

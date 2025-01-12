@@ -1,8 +1,6 @@
-﻿using StegoRevealer.UI.Tools;
-using System;
-using System.Collections.Generic;
+﻿using StegoRevealer.Common;
 
-namespace StegoRevealer.UI.Desktop.ConsoleInterface;
+namespace StegoRevealer.Common.ConsoleInterface.Tools;
 
 public class LoggerHandler
 {

@@ -1,10 +1,6 @@
-﻿using DynamicData;
-using StegoRevealer.StegoCore.ImageHandlerLib;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using StegoRevealer.StegoCore.ImageHandlerLib;
 
-namespace StegoRevealer.UI.Tools;
+namespace StegoRevealer.Common;
 
 public class TempManager
 {

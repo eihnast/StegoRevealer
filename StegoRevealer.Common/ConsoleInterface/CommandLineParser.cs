@@ -1,10 +1,7 @@
-﻿using StegoRevealer.UI.Desktop.ConsoleInterface.CommandHandlers;
-using StegoRevealer.UI.Tools;
-using System.Collections.Generic;
+﻿using StegoRevealer.Common.ConsoleInterface.Processors;
 using System.CommandLine;
-using System.Threading.Tasks;
 
-namespace StegoRevealer.UI.Desktop.ConsoleInterface;
+namespace StegoRevealer.Common.ConsoleInterface;
 
 public static class CommandLineParser
 {

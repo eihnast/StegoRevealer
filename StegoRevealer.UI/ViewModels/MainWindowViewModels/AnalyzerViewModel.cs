@@ -26,6 +26,7 @@ using StegoRevealer.StegoCore.Logger;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.DecisionModule;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
+using StegoRevealer.Common;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -295,7 +296,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var chiParamsDto = receivedParameters.Parameters as BaseParamsDto<ChiSquareParameters>;
                     chiParamsDto?.FillParameters(ref _chiSquareParameters);
-                    Logger.LogInfo("Received ChiSquare method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
+                    Logger.LogInfo("Received ChiSquare method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
                 }
                 break;
             case AnalysisMethod.RegularSingular:
@@ -303,7 +304,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var rsParamsDto = receivedParameters.Parameters as BaseParamsDto<RsParameters>;
                     rsParamsDto?.FillParameters(ref _rsParameters);
-                    Logger.LogInfo("Received Regular-Singular method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
+                    Logger.LogInfo("Received Regular-Singular method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
                 }
                 break;
             case AnalysisMethod.KochZhaoAnalysis:
@@ -311,7 +312,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var kzhaParamsDto = receivedParameters.Parameters as BaseParamsDto<KzhaParameters>;
                     kzhaParamsDto?.FillParameters(ref _kzhaParameters);
-                    Logger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + CommonTools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
+                    Logger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
                 }
                 break;
         }
@@ -351,7 +352,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ImagePath = path;
 
             // Загрузка
-            var tempPath = CommonTools.CopyFileToTemp(path);
+            var tempPath = Common.Tools.CopyFileToTemp(path);
 
             if (!string.IsNullOrEmpty(tempPath))
             {
@@ -471,7 +472,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 ChiSquareVolume = chiRes.MessageRelativeVolume,
                 RsVolume = rsRes.MessageRelativeVolume,
                 KzhaThreshold = kzhaRes.Threshold,
-                KzhaMessageVolume = kzhaRes.MessageBitsVolume / CommonTools.GetContainerFrequencyVolume(CurrentImage!),
+                KzhaMessageVolume = kzhaRes.MessageBitsVolume / Common.Tools.GetContainerFrequencyVolume(CurrentImage!),
                 NoiseValue = statmRes.NoiseValue,
                 SharpnessValue = statmRes.SharpnessValue,
                 BlurValue = statmRes.BlurValue,
@@ -490,11 +491,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         // Обновление текущих сохранённых результатов
         CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, timer.ElapsedMilliseconds, isHidingDetected);
         Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
-            + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
+            + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
-            + "\n\nRegular-Singular = " + CommonTools.GetFormattedJson(rsRes)
+            + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
             + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
-            + "\n\nKoch-Zhao Analysis = " + CommonTools.GetFormattedJson(kzhaRes)
+            + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
             + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
     }
@@ -523,11 +524,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         // Обновление текущих сохранённых результатов
         CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, results.ElapsedTime, results.IsHidingDetected);
         Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
-            + "\nChiSquare = " + CommonTools.GetFormattedJson(chiRes)
+            + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
-            + "\n\nRegular-Singular = " + CommonTools.GetFormattedJson(rsRes)
+            + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
             + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
-            + "\n\nKoch-Zhao Analysis = " + CommonTools.GetFormattedJson(kzhaRes)
+            + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
             + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
     }
@@ -561,7 +562,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         var pathToDelete = CurrentImage?.ImgPath;
         if (!string.IsNullOrEmpty(pathToDelete))
-            CommonTools.TryDeleteTempFile(pathToDelete);
+            Common.Tools.TryDeleteTempFile(pathToDelete);
     }
 
     // Возвращает актуальные размеры окна

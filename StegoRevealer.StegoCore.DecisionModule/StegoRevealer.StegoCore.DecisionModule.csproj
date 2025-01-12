@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <PublishSingleFile>true</PublishSingleFile>
-	  <DebugType>embedded</DebugType>
-	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PublishSingleFile>true</PublishSingleFile>
+		<DebugType>embedded</DebugType>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="DecisionModel.training.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="DecisionModel.training.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="DecisionModel.mlnet" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="DecisionModel.mlnet" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="DecisionModel.mlnet">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DecisionModel.training.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="DecisionModel.mlnet">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="DecisionModel.training.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.ML" Version="4.0.0" />

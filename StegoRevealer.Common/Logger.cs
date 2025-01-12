@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-
-namespace StegoRevealer.UI.Tools;
+﻿namespace StegoRevealer.Common;
 
 public class Logger : IDisposable
 {
@@ -89,7 +84,7 @@ public class Logger : IDisposable
 
         try
         {
-            string tempDir = CommonTools.GetOrCreateTempDirPath();
+            string tempDir = Tools.GetOrCreateTempDirPath();
 
             string logName = $"sr_log_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
             string logPath = Path.Combine(tempDir, logName);

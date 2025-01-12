@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.UI.Lib.Entities.AppConfig;
+﻿namespace StegoRevealer.Common.Entities.AppConfig;
 
 public class AppConfig
 {

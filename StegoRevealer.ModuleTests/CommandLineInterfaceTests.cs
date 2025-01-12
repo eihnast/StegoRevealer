@@ -1,6 +1,4 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
-using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
-using StegoRevealer.UI.Desktop.ConsoleInterface;
+﻿using StegoRevealer.Common.ConsoleInterface;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 

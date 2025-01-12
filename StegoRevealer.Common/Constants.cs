@@ -1,4 +1,4 @@
-﻿namespace StegoRevealer.UI.Lib;
+﻿namespace StegoRevealer.Common;
 
 public static class Constants
 {

@@ -15,6 +15,7 @@ using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using System.Diagnostics;
 using StegoRevealer.StegoCore.StegoMethods;
 using System.IO;
+using StegoRevealer.Common;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -60,7 +61,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _methodLsbSelected;
         set
         {
-            if (!CommonTools.IsActionWhileTabChanged())
+            if (!Common.Tools.IsActionWhileTabChanged())
                 this.RaiseAndSetIfChanged(ref _methodLsbSelected, value);
         }
     }
@@ -74,7 +75,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _methodKzSelected;
         set
         {
-            if (!CommonTools.IsActionWhileTabChanged())
+            if (!Common.Tools.IsActionWhileTabChanged())
                 this.RaiseAndSetIfChanged(ref _methodKzSelected, value);
         }
     }
@@ -88,7 +89,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _linearModeSelected;
         set
         {
-            if (!CommonTools.IsActionWhileTabChanged())
+            if (!Common.Tools.IsActionWhileTabChanged())
                 this.RaiseAndSetIfChanged(ref _linearModeSelected, value);
         }
     }
@@ -102,7 +103,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _randomModeSelected;
         set
         {
-            if (!CommonTools.IsActionWhileTabChanged())
+            if (!Common.Tools.IsActionWhileTabChanged())
                 this.RaiseAndSetIfChanged(ref _randomModeSelected, value);
         }
     }
@@ -402,7 +403,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             ImagePath = path;
 
             // Загрузка
-            var tempPath = CommonTools.CopyFileToTemp(path);
+            var tempPath = Common.Tools.CopyFileToTemp(path);
 
             if (!string.IsNullOrEmpty(tempPath))
             {
@@ -604,7 +605,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         var pathToDelete = CurrentImage?.ImgPath;
         if (!string.IsNullOrEmpty(pathToDelete))
-            CommonTools.TryDeleteTempFile(pathToDelete);
+            Common.Tools.TryDeleteTempFile(pathToDelete);
     }
 
     // Возвращает актуальные размеры окна

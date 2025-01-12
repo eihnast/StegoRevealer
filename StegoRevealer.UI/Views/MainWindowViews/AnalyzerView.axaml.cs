@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
@@ -39,23 +40,23 @@ public partial class AnalyzerView : UserControl
         UpdateResults();
 
         // Установка текста блоков результатов
-        AutoDetectionResultDesc.Text = CommonTools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
-        ChiFullnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.ChiSqrValue);
-        RsFullnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.RsValue);
-        KzhaIntervalFoundedDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaDetection);
-        KzhaBitsNumDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaBitsNum);
-        KzhaSuspiciousIntervalDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaIndexes);
-        KzhaThresholdDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaThreshold);
-        KzhaCoeffsDesc.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaCoeffs);
-        KzhaExtractedDataLabel.Text = CommonTools.AddColon(Constants.ResultsNames.KzhaExtractedInfo);
-        StatResultsTitleName.Text = CommonTools.AddColon(Constants.ResultsNames.StatmLabel);
-        StatResultsNoise2Desc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmNoise);
-        StatResultsSharpnessDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmSharpness);
-        StatResultsBlurDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmBlur);
-        StatResultsContrastDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmContrast);
-        StatResultsEntropyShennonDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmShennon);
-        StatResultsEntropyRenyiDesc.Text = CommonTools.AddColon(Constants.ResultsNames.StatmRenyi);
-        ElapsedTimeLabel.Text = CommonTools.AddColon(Constants.ResultsNames.ElapsedTime);
+        AutoDetectionResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
+        ChiFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue);
+        RsFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.RsValue);
+        KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection);
+        KzhaBitsNumDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum);
+        KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes);
+        KzhaThresholdDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaThreshold);
+        KzhaCoeffsDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaCoeffs);
+        KzhaExtractedDataLabel.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaExtractedInfo);
+        StatResultsTitleName.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmLabel);
+        StatResultsNoise2Desc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmNoise);
+        StatResultsSharpnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmSharpness);
+        StatResultsBlurDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmBlur);
+        StatResultsContrastDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmContrast);
+        StatResultsEntropyShennonDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmShennon);
+        StatResultsEntropyRenyiDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmRenyi);
+        ElapsedTimeLabel.Text = Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime);
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -95,11 +96,11 @@ public partial class AnalyzerView : UserControl
 
             // ChiSqr
             if (results.IsMethodChiSqrExecuted)
-                ChiFullnessValue.Text = CommonTools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
+                ChiFullnessValue.Text = Common.Tools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
 
             // RS
             if (results.IsMethodRsExecuted)
-                RsFullnessValue.Text = CommonTools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
+                RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
 
             // Kzha
             if (results.IsMethodKzhaExecuted)
@@ -123,7 +124,7 @@ public partial class AnalyzerView : UserControl
                     if (results.KzhaThreshold > 0.0)
                     {
                         KzhaThresholdBlock.IsEnabled = true;
-                        KzhaThresholdValue.Text = CommonTools.GetFormattedDouble(results.KzhaThreshold);
+                        KzhaThresholdValue.Text = Common.Tools.GetFormattedDouble(results.KzhaThreshold);
                     }
 
                     // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
@@ -153,19 +154,19 @@ public partial class AnalyzerView : UserControl
             }
 
             // Statm
-            StatResultsNoise2Value.Text = CommonTools.GetLongFormattedDouble(results.StatmNoiseValue);
-            StatResultsSharpnessValue.Text = CommonTools.GetLongFormattedDouble(results.StatmSharpnessValue);
-            StatResultsBlurValue.Text = CommonTools.GetLongFormattedDouble(results.StatmBlurValue);
-            StatResultsContrastValue.Text = CommonTools.GetLongFormattedDouble(results.StatmContrastValue);
+            StatResultsNoise2Value.Text = Common.Tools.GetLongFormattedDouble(results.StatmNoiseValue);
+            StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
+            StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
+            StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
             // StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
             // StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
-            StatResultsEntropyShennonValue.Text = CommonTools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
-            StatResultsEntropyRenyiValue.Text = CommonTools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
+            StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
+            StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
             // StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
 
 
             // Затрачено времени
-            ElapsedTimeValue.Text = CommonTools.GetElapsedTime(results.ElapsedTime);
+            ElapsedTimeValue.Text = Common.Tools.GetElapsedTime(results.ElapsedTime);
 
 
             // Вывод о наличии встраивания

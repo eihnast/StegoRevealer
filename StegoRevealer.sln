@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore", "StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj", "{2425709C-1913-4325-A4DB-634A1AAE1F91}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore.ModuleTests", "StegoRevealer.StegoCore.ModuleTests\StegoRevealer.StegoCore.ModuleTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.ModuleTests", "StegoRevealer.ModuleTests\StegoRevealer.ModuleTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI", "StegoRevealer.UI\StegoRevealer.UI.csproj", "{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}"
 EndProject
@@ -25,6 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{21DB7700-075
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet-desktop.yml = .github\workflows\dotnet-desktop.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.Common", "StegoRevealer.Common\StegoRevealer.Common.csproj", "{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.CLI", "StegoRevealer.CLI\StegoRevealer.CLI.csproj", "{020EC3F0-3262-467C-9511-B034499F4446}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +72,14 @@ Global
 		{EC6F504F-0E50-42BA-93D5-319F19D31908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6F504F-0E50-42BA-93D5-319F19D31908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6F504F-0E50-42BA-93D5-319F19D31908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020EC3F0-3262-467C-9511-B034499F4446}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020EC3F0-3262-467C-9511-B034499F4446}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020EC3F0-3262-467C-9511-B034499F4446}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020EC3F0-3262-467C-9511-B034499F4446}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

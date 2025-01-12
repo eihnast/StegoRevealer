@@ -1,54 +1,57 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
-    One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
+		    One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<!--<DisableWinExeOutputInference>true</DisableWinExeOutputInference>-->
+		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
 
-	<PublishSingleFile>true</PublishSingleFile>
-	<DebugType>embedded</DebugType>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	  
-	<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
-	<Title>Stego Revealer</Title>
-	<Version>2024.11.1</Version>
-	<Authors>Iaroslav Grachev</Authors>
-	<Description>Stego Revealer - steganalysis complex</Description>
-	<PackageTags>steganography; steganalysis; stego</PackageTags>
-	<NeutralLanguage>ru-RU</NeutralLanguage>
-	<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-	<FileVersion>2025.1.6.1758</FileVersion>
-  </PropertyGroup>
-	
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <ShouldCreateLogs>True</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
-    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
-    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-    <UpdatePackageVersion>False</UpdatePackageVersion>
-    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
-    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-    <AssemblyVersionSettings>None.None.None.None</AssemblyVersionSettings>
-    <AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
-  </PropertyGroup>
-	
-  <ItemGroup>
-    <None Remove="Assets\AppIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\AppIcon.ico" />
-  </ItemGroup>
+		<PublishSingleFile>true</PublishSingleFile>
+		<DebugType>embedded</DebugType>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-  </ItemGroup>
+		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
+		<Title>Stego Revealer</Title>
+		<Version>2024.11.1</Version>
+		<Authors>Iaroslav Grachev</Authors>
+		<Description>Stego Revealer - steganalysis complex</Description>
+		<PackageTags>steganography; steganalysis; stego</PackageTags>
+		<NeutralLanguage>ru-RU</NeutralLanguage>
+		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+		<FileVersion>2025.1.9.1328</FileVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\StegoRevealer.UI\StegoRevealer.UI.csproj" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<ShouldCreateLogs>True</ShouldCreateLogs>
+		<AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
+		<UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+		<UpdatePackageVersion>True</UpdatePackageVersion>
+		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+		<AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
+		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\AppIcon.ico" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\AppIcon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
+		<ProjectReference Include="..\StegoRevealer.UI\StegoRevealer.UI.csproj" />
+	</ItemGroup>
 </Project>
