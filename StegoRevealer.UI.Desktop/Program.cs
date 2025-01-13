@@ -28,7 +28,6 @@ public class Program
             if (isWindows)
                 WinConsole.ConnectConsole();
             
-            WinConsole.WriteLine("TestLine");
             Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
             CommandLineParser.HandleCommand(args).Wait();
 

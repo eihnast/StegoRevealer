@@ -16,13 +16,13 @@
 
 		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
 		<Title>Stego Revealer</Title>
-		<Version>2024.11.3</Version>
+		<Version>2024.11.6</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>2025.1.11.1025</FileVersion>
+		<FileVersion>2025.1.14.1029</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
