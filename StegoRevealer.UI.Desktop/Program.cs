@@ -24,8 +24,22 @@ public class Program
         // Запуск в режиме интерфейса командной строки
         if (args.Length > 0)
         {
+            bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
+            if (isWindows)
+                WinConsole.ConnectConsole();
+            
+            WinConsole.WriteLine("TestLine");
             Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
             CommandLineParser.HandleCommand(args).Wait();
+
+            if (isWindows)
+            {
+                WinConsole.RestorePrompt();
+
+                // Освобождаем консоль, если она была создана
+                WinConsole.StopConsole();
+            }
+
             return;
         }
 

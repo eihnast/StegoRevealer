@@ -111,7 +111,7 @@ public class SteganalysisProcessor
         if (_currentImage is null)
         {
             _logger.LogError($"Unsuccess while loading image '{fullPath}'");
-            Console.Error.WriteLine($"Не удалось загрузить файл изображения '{fullPath}'");
+            WinConsole.WriteLine($"Не удалось загрузить файл изображения '{fullPath}'");
             return false;
         }
 
@@ -174,7 +174,7 @@ public class SteganalysisProcessor
         //outputStr.AppendLine();
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime) + Common.Tools.GetElapsedTime(result.ElapsedTime));
 
-        Console.WriteLine(outputStr.ToString());
+        WinConsole.WriteLine(outputStr.ToString());
     }
 
     /// <summary>Создаёт обработчик изображения</summary>
@@ -191,7 +191,7 @@ public class SteganalysisProcessor
         catch (Exception ex)
         {
             _logger.LogError($"Error while loading image '{path}':\n" + ex.Message);
-            Console.Error.WriteLine($"Возникла ошибка при загрузке файла изображения '{path}'\n" + ex.Message);
+            WinConsole.WriteLine($"Возникла ошибка при загрузке файла изображения '{path}'\n" + ex.Message);
         }
 
         return null;
