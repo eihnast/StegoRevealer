@@ -10,7 +10,7 @@ namespace StegoRevealer.Common.ConsoleInterface.Processors;
 
 public class SteganalysisProcessor
 {
-    private static ImageHandler? _currentImage;
+    private ImageHandler? _currentImage;
     private LoggerHandler _logger;
 
     private string? _fileName;
@@ -137,7 +137,7 @@ public class SteganalysisProcessor
         //outputStr.AppendLine();
 
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + Common.Tools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
-        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0)));
+        outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0));
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection) +
             (!kzhaRes?.SuspiciousIntervalIsFound ?? false ? Constants.ResultsDefaults.No : Constants.ResultsDefaults.Yes));
         if (kzhaRes is not null && kzhaRes.SuspiciousIntervalIsFound)

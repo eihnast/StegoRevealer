@@ -43,7 +43,7 @@ internal class Program
         if (!StartParametersHelper.IsParametersValid(args, InputParameters.ToArray()))
             return;
         var alphaParameterName = StartParametersHelper.GetSpecifiedParameter(args, InputParameters[0].AvailableNames);
-        Alpha = StartParametersHelper.TryGetDoubleParameter(args, alphaParameterName ?? "") ?? 0.05;
+        Alpha = StartParametersHelper.TryGetDoubleParameter(args, alphaParameterName ?? "") ?? 0.01;
 
         var startTime = DateTime.Now;
         ClearOutputDirectory();
@@ -123,10 +123,10 @@ internal class Program
             BlurValue = statmResult.BlurValue,
             ContrastValue = statmResult.ContrastValue,
             EntropyShennonValue = statmResult.EntropyValues.Shennon,
-            //EntropyVaidaValue = statmResult.EntropyValues.Vaida,
-            //EntropyTsallisValue = statmResult.EntropyValues.Tsallis,
+            EntropyVaidaValue = statmResult.EntropyValues.Vaida,
+            EntropyTsallisValue = statmResult.EntropyValues.Tsallis,
             EntropyRenyiValue = statmResult.EntropyValues.Renyi,
-            //EntropyHavardValue = statmResult.EntropyValues.Havard,
+            EntropyHavardValue = statmResult.EntropyValues.Havard,
             EntropyRenyiTestValues = renyiTestTask.Result
         };
 
@@ -182,10 +182,10 @@ internal class Program
                 FormattedValue("Blur", result.BlurValue),
                 FormattedValue("Contrast", result.ContrastValue),
                 FormattedValue("Shennon", result.EntropyShennonValue),
-                //FormattedValue("Vaida", result.EntropyVaidaValue),
-                //FormattedValue("Tsallis", result.EntropyTsallisValue),
+                FormattedValue("Vaida", result.EntropyVaidaValue),
+                FormattedValue("Tsallis", result.EntropyTsallisValue),
                 FormattedValue("Renyi", result.EntropyRenyiValue),
-                //FormattedValue("Havard", result.EntropyHavardValue)
+                FormattedValue("Havard", result.EntropyHavardValue)
             };
 
             Console.WriteLine($"\t" + string.Format("{0," + maxImgNameLength.ToString() + "}", result.Filename) + "." + string.Join(" ", formattedValues));
@@ -250,10 +250,10 @@ internal class Program
         var blurArray = analysisResults.Select(r => r.BlurValue).ToArray();
         var contrastArray = analysisResults.Select(r => r.ContrastValue).ToArray();
         var shennonArray = analysisResults.Select(r => r.EntropyShennonValue).ToArray();
-        //var vaidaArray = analysisResults.Select(r => r.EntropyVaidaValue).ToArray();
-        //var tsallisArray = analysisResults.Select(r => r.EntropyTsallisValue).ToArray();
+        var vaidaArray = analysisResults.Select(r => r.EntropyVaidaValue).ToArray();
+        var tsallisArray = analysisResults.Select(r => r.EntropyTsallisValue).ToArray();
         var renyiArray = analysisResults.Select(r => r.EntropyRenyiValue).ToArray();
-        //var havardArray = analysisResults.Select(r => r.EntropyHavardValue).ToArray();
+        var havardArray = analysisResults.Select(r => r.EntropyHavardValue).ToArray();
 
         var toWriteString = new StringBuilder();
 
@@ -262,25 +262,25 @@ internal class Program
         toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "уровень размытости", rsArray, blurArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "уровень контраста", rsArray, contrastArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Шеннона", rsArray, shennonArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Вайда", rsArray, vaidaArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Цаллиса", rsArray, tsallisArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Вайда", rsArray, vaidaArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Цаллиса", rsArray, tsallisArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Реньи", rsArray, renyiArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Хаварда", rsArray, havardArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу RS", "энтропия Хаварда", rsArray, havardArray));
 
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "уровень шума", chiSqrArray, noiseArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "уровень резкости", chiSqrArray, sharpnessArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "уровень размытости", chiSqrArray, blurArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "уровень контраста", chiSqrArray, contrastArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Шеннона", chiSqrArray, shennonArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Вайда", chiSqrArray, vaidaArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Цаллиса", chiSqrArray, tsallisArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Вайда", chiSqrArray, vaidaArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Цаллиса", chiSqrArray, tsallisArray));
         toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Реньи", chiSqrArray, renyiArray));
-        //toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Хаварда", chiSqrArray, havardArray));
+        toWriteString.Append(EvaluateCorrelation("оценка по методу Хи-квадрат", "энтропия Хаварда", chiSqrArray, havardArray));
 
         toWriteString.Append(EvaluateCorrelation("уровень резкости", "уровень размытости", sharpnessArray, blurArray));
-        //toWriteString.Append(EvaluateCorrelation("энтропия Вайда", "энтропия Цаллиса", vaidaArray, tsallisArray));
-        //toWriteString.Append(EvaluateCorrelation("энтропия Цаллиса", "энтропия Реньи", tsallisArray, renyiArray));
-        //toWriteString.Append(EvaluateCorrelation("энтропия Реньи", "энтропия Хаварда", renyiArray, havardArray));
+        toWriteString.Append(EvaluateCorrelation("энтропия Вайда", "энтропия Цаллиса", vaidaArray, tsallisArray));
+        toWriteString.Append(EvaluateCorrelation("энтропия Цаллиса", "энтропия Реньи", tsallisArray, renyiArray));
+        toWriteString.Append(EvaluateCorrelation("энтропия Реньи", "энтропия Хаварда", renyiArray, havardArray));
 
         toWriteString.Append(CalcRenyiTestCorrelations(analysisResults));
 

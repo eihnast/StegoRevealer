@@ -140,6 +140,7 @@ public class StatmTests
             var image = new ImageHandler(imagePath);
 
             var parameters = new StatmParameters(image);
+            parameters.EntropyMethods = EntropyMethods.All;
 
             var entropyCalculator = new EntropyCalculator(parameters);
             var entropy = entropyCalculator.CalcEntropy();

@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
-    <ProjectReference Include="..\StegoRevealer.Utils.Common\StegoRevealer.Utils.Common.csproj" />
   </ItemGroup>
 
 </Project>

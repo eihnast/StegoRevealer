@@ -92,7 +92,7 @@ public class StatmParameters
     public EntropyMethods EntropyMethods { get; set; } = EntropyMethods.Shennon | EntropyMethods.Renyi;
 
     /// <summary>Параметр чувствительности, не стоит задавать >3</summary>
-    public double EntropyCalcSensitivity { get; set; } = 2.5;
+    public double EntropyCalcSensitivity { get; set; } = 1.1;  // 2.5
 
     /// <summary>Использовать ли усреднение для вычисления grayscale байта (если false, будет использован BT-709 (HDTV))</summary>
     public bool EntropyCalcUseAveragedGrayscale { get; set; } = false;  // https://onlinejpgtools.com/convert-jpg-to-grayscale

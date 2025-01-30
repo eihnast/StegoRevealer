@@ -15,13 +15,13 @@ public static class CommandLineParser
         var filenamesArgument = new Argument<string[]>(name: "filenames", description: "Анализируемое изображение", getDefaultValue: () => []);
         saCommand.AddArgument(filenamesArgument);
 
-        var chiMethodOption = new Option<bool>(name: "--chi", description: "Выполнить стегоанализ методом оценки по критерию Хи-квадрат", getDefaultValue: () => true);
+        var chiMethodOption = new Option<bool>(name: "--chi", description: "Выполнить стегоанализ методом оценки по критерию Хи-квадрат", getDefaultValue: () => false);
         chiMethodOption.AddAlias("-c");
         saCommand.AddOption(chiMethodOption);
-        var rsMethodOption = new Option<bool>(name: "--rs", description: "Выполнить стегоанализ методом Regular-Singular", getDefaultValue: () => true);
+        var rsMethodOption = new Option<bool>(name: "--rs", description: "Выполнить стегоанализ методом Regular-Singular", getDefaultValue: () => false);
         rsMethodOption.AddAlias("-r");
         saCommand.AddOption(rsMethodOption);
-        var kzhaMethodOption = new Option<bool>(name: "--kzha", description: "Выполнить стегоанализ реверсивным методом анализа скрытия по Коха-Жао", getDefaultValue: () => true);
+        var kzhaMethodOption = new Option<bool>(name: "--kzha", description: "Выполнить стегоанализ реверсивным методом анализа скрытия по Коха-Жао", getDefaultValue: () => false);
         kzhaMethodOption.AddAlias("-k");
         saCommand.AddOption(kzhaMethodOption);
         var allMethodsOption = new Option<bool>(name: "--all", description: "Выполнить стегоанализ всеми доступными методами", getDefaultValue: () => true);
@@ -29,7 +29,14 @@ public static class CommandLineParser
 
         saCommand.SetHandler(ExecuteSaCommandAsync, filenamesArgument, chiMethodOption, rsMethodOption, kzhaMethodOption, allMethodsOption);
 
-        await rootCommand.InvokeAsync(args);
+        try
+        {
+            await rootCommand.InvokeAsync(args);
+        }
+        catch (Exception ex)
+        {
+            WinConsole.WriteLine("При выполнении команды возникла ошибка: " + ex.ToString());
+        }
     }
 
     private static async Task ExecuteSaCommandAsync(string[] filenames, bool chiMethodOptionValue, bool rsMethodOptionValue, bool kzhaMethodOptionValue, bool allMethodsOptionValue)
