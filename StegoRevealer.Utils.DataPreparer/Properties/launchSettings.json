@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "StegoRevealer.Utils.DataPreparer": {
-      "commandName": "Project",
-      "commandLineArgs": "-nh -b"
-    }
-  }
-}
