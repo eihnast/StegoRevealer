@@ -1,217 +1,219 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
-using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
-using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
-using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
-using StegoRevealer.StegoCore.CommonLib;
-using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using CsvHelper.Configuration;
+using CsvHelper;
+using Microsoft.ML;
 using StegoRevealer_StegoCore_TrainingModule;
-using System.Diagnostics;
+using System.Globalization;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
 
 internal class Program
 {
-    //static async Task Main(string[] args)
-    //{
-    //    var inputImages = Directory.GetFiles("d:\\Temp\\_training\\_Test600Plus");
-    //    var realImages = new List<string>();
-    //    var analysedData = new List<StegoModelTest1.ModelInput>();
-    //    foreach (var imgPath in inputImages)
-    //    {
-    //        var img = new ImageHandler(imgPath);
-
-    //        var horizonalChiSqr = new ChiSquareAnalyser(img);
-    //        horizonalChiSqr.Params.TraverseType = TraverseType.Horizontal;
-
-    //        var verticalChiSqr = new ChiSquareAnalyser(img);
-    //        verticalChiSqr.Params.TraverseType = TraverseType.Vertical;
-    //        verticalChiSqr.Params.BlockWidth = 1;
-    //        verticalChiSqr.Params.BlockHeight = img.Height;
-
-    //        var horizonotalKzha = new KzhaAnalyser(img);
-    //        horizonotalKzha.Params.TraverseType = TraverseType.Horizontal;
-
-    //        var verticalKzha = new KzhaAnalyser(img);
-    //        verticalKzha.Params.TraverseType = TraverseType.Vertical;
-
-    //        var rs = new RsAnalyser(img);
-    //        var statm = new StatmAnalyser(img);
-
-
-    //        ChiSquareResult? horizonalChiSqrResult = null;
-    //        ChiSquareResult? verticalChiSqrResult = null;
-    //        KzhaResult? horizonotalKzhaResult = null;
-    //        KzhaResult? verticalKzhaResult = null;
-    //        RsResult? rsResult = null;
-    //        StatmResult? statmResult = null;
-    //        var analysisTasks = new List<Task>
-    //        {
-    //            Task.Run(() => horizonalChiSqrResult = horizonalChiSqr.Analyse()),
-    //            Task.Run(() => verticalChiSqrResult = verticalChiSqr.Analyse()),
-    //            Task.Run(() => horizonotalKzhaResult = horizonotalKzha.Analyse()),
-    //            Task.Run(() => verticalKzhaResult = verticalKzha.Analyse()),
-    //            Task.Run(() => rsResult = rs.Analyse()),
-    //            Task.Run(() => statmResult = statm.Analyse())
-    //        };
-
-    //        foreach (var task in analysisTasks)
-    //            await task;
-
-    //        if (horizonalChiSqrResult is null || verticalChiSqrResult is null || horizonotalKzhaResult is null || verticalKzhaResult is null ||
-    //            rsResult is null || statmResult is null)
-    //            continue;
-
-    //        var kzhVolume = ContainerVolumeForKzh(img);
-    //        realImages.Add(imgPath);
-    //        analysedData.Add(new StegoModelTest1.ModelInput
-    //        {
-    //            ChiSquareVolume = (float)horizonalChiSqrResult.MessageRelativeVolume,
-    //            RsVolume = (float)rsResult.MessageRelativeVolume,
-    //            KzhaThreshold = (float)horizonotalKzhaResult.Threshold,
-    //            KzhaMessageVolume = horizonotalKzhaResult.MessageBitsVolume / kzhVolume,
-    //            ChiSquareVolume_Vertical = (float)verticalChiSqrResult.MessageRelativeVolume,
-    //            KzhaThreshold_Vertical = (float)verticalKzhaResult.Threshold,
-    //            KzhaMessageVolume_Vertical = verticalKzhaResult.MessageBitsVolume / kzhVolume,
-    //            NoiseValue = (float)statmResult.NoiseValue,
-    //            SharpnessValue = (float)statmResult.SharpnessValue,
-    //            BlurValue = (float)statmResult.BlurValue,
-    //            ContrastValue = (float)statmResult.ContrastValue,
-    //            EntropyShennonValue = (float)statmResult.EntropyValues.Shennon,
-    //            EntropyRenyiValue = (float)statmResult.EntropyValues.Renyi
-    //        });
-
-    //        Console.WriteLine($"Завершён анализ для {imgPath}");
-    //    }
-
-    //    //var results = new float[] { 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f };
-    //    var results = new float[] { 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
-    //    //var resultsList = Enumerable.Repeat(0f, 4316).ToList();
-    //    //resultsList.AddRange(Enumerable.Repeat(1f, 4316).ToList());
-    //    //var results = resultsList.ToArray();
-
-    //    var boolResults = results.Select(r => r == 1f).ToArray();
-    //    if (results.Length != analysedData.Count)
-    //    {
-    //        Console.WriteLine($"Размеры не совпадают: results.Count == {results.Length}, analysedData.Count == {analysedData.Count}");
-    //        return;
-    //    }
-
-    //    for (int i = 0; i < analysedData.Count; i++)
-    //    {
-    //        var hided = StegoModelTest1.Predict(analysedData[i]);
-    //        bool isHidedPredicted = hided.PredictedLabel;
-    //        bool isHidedReal = boolResults[i];
-    //        if (isHidedPredicted != isHidedReal)
-    //            Console.WriteLine($"Не совпало для {Path.GetFileNameWithoutExtension(realImages[i])}. Получено: {isHidedPredicted}, Ожидалось: {isHidedReal}. Изображение: {realImages[i]}");
-    //    }
-    //}
-
-    static async Task Main(string[] args)
+    static void Main(string[] args)
     {
-        var inputImages = Directory.GetFiles("d:\\Temp\\_StegoRevealer\\_training\\_Test600Plus");
-        var realImages = new List<string>();
-        var analysedData = new List<DecisionModel.ModelInput>();
+        Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
+        CheckMlModels();
 
-        var elapsed1920 = new List<long>();
-        var elapsed1280 = new List<long>();
-        var timer = new Stopwatch();
+        Console.WriteLine("Проверка моделей на специальном тестовом датасете");
+        TestMlModels();
 
-        foreach (var imgPath in inputImages)
-        {
-            timer.Start();
+        Console.WriteLine("Ручной подсчёт значений матрицы ошибок на тестовом датасете");
+        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting_ForComplexSa.csv");
 
-            var img = new ImageHandler(imgPath);
-
-            var horizonalChiSqr = new ChiSquareAnalyser(img);
-            horizonalChiSqr.Params.TraverseType = TraverseType.Horizontal;
-
-            var verticalChiSqr = new ChiSquareAnalyser(img);
-            verticalChiSqr.Params.TraverseType = TraverseType.Vertical;
-            verticalChiSqr.Params.BlockWidth = 1;
-            verticalChiSqr.Params.BlockHeight = img.Height;
-
-            var horizonotalKzha = new KzhaAnalyser(img);
-            horizonotalKzha.Params.TraverseType = TraverseType.Horizontal;
-
-            var verticalKzha = new KzhaAnalyser(img);
-            verticalKzha.Params.TraverseType = TraverseType.Vertical;
-
-            var rs = new RsAnalyser(img);
-            var statm = new StatmAnalyser(img);
-
-
-            ChiSquareResult? horizonalChiSqrResult = null;
-            KzhaResult? horizonotalKzhaResult = null;
-            RsResult? rsResult = null;
-            StatmResult? statmResult = null;
-            var analysisTasks = new List<Task>
-            {
-                Task.Run(() => horizonalChiSqrResult = horizonalChiSqr.Analyse()),
-                Task.Run(() => horizonotalKzhaResult = horizonotalKzha.Analyse()),
-                Task.Run(() => rsResult = rs.Analyse()),
-                Task.Run(() => statmResult = statm.Analyse())
-            };
-
-            foreach (var task in analysisTasks)
-                await task;
-
-            if (horizonalChiSqrResult is null || horizonotalKzhaResult is null || rsResult is null || statmResult is null)
-                continue;
-
-            var kzhVolume = ContainerVolumeForKzh(img);
-            realImages.Add(imgPath);
-            analysedData.Add(new DecisionModel.ModelInput
-            {
-                ChiSquareVolume = (float)horizonalChiSqrResult.MessageRelativeVolume,
-                RsVolume = (float)rsResult.MessageRelativeVolume,
-                KzhaThreshold = (float)horizonotalKzhaResult.Threshold,
-                KzhaMessageVolume = horizonotalKzhaResult.MessageBitsVolume / kzhVolume,
-                NoiseValue = (float)statmResult.NoiseValue,
-                SharpnessValue = (float)statmResult.SharpnessValue,
-                BlurValue = (float)statmResult.BlurValue,
-                ContrastValue = (float)statmResult.ContrastValue,
-                EntropyShennonValue = (float)statmResult.EntropyValues.Shennon,
-                EntropyRenyiValue = (float)statmResult.EntropyValues.Renyi
-            });
-
-            Console.WriteLine($"Завершён анализ для {imgPath}");
-
-            timer.Stop();
-            if (img.Width == 1920 && img.Height == 1080)
-                elapsed1920.Add(timer.ElapsedMilliseconds);
-            else if (img.Width == 1280 && img.Height == 720)
-                elapsed1280.Add(timer.ElapsedMilliseconds);
-            timer.Reset();
-        }
-
-        var results = new float[] { 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
-        //var resultsList = Enumerable.Repeat(0f, 4316).ToList();
-        //resultsList.AddRange(Enumerable.Repeat(1f, 4316).ToList());
-        //var results = resultsList.ToArray();
-
-        if (results.Length != analysedData.Count)
-        {
-            Console.WriteLine($"Размеры не совпадают: results.Count == {results.Length}, analysedData.Count == {analysedData.Count}");
-            return;
-        }
-
-        var boolResults = results.Select(r => r == 1f).ToArray();
-        for (int i = 0; i < analysedData.Count; i++)
-        {
-            var hided = DecisionModel.Predict(analysedData[i]);
-            bool isHidedPredicted = hided.PredictedLabel;
-            bool isHidedReal = boolResults[i];
-            if (isHidedPredicted != isHidedReal)
-                Console.WriteLine($"Не совпало для {i}. Получено: {isHidedPredicted}, Ожидалось: {isHidedReal}. Изображение: {realImages[i]}");
-        }
-
-        double averageelapsed1920Elapsed = elapsed1920.Average();
-        double averageelapsed1280Elapsed = elapsed1280.Average();
-        Console.WriteLine($"1920. Среднее время: {averageelapsed1920Elapsed}. Максимальное: {elapsed1920.Max()}. Минимальное: {elapsed1920.Min()}.");
-        Console.WriteLine($"1280. Среднее время: {averageelapsed1280Elapsed}. Максимальное: {elapsed1280.Max()}. Минимальное: {elapsed1280.Min()}.");
+        Console.WriteLine("Проверка модели на тестовом датасете в 2 НЗБ");
+        TestMlModel2Lsb();
+        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
     }
 
-    private static int ContainerVolumeForKzh(ImageHandler img) => (img.Height / 8) * (img.Width / 8);
+    private static void TestMlModel2Lsb()
+    {
+        TestModel<DecisionModel_ComplexSa.ModelInput>(
+            "TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv", "DecisionModel_ComplexSa", firstTwenty: null);
+    }
 
-    //static void Main(string[] args) { }
+    private static void CalcValuesForTestDataSet(string dataPath)
+    {
+        // Загружаем CSV и обрабатываем строки
+        var processedData = File.ReadLines(dataPath)
+            .Select(line => line.Replace(',', '.')) // Меняем запятые на точки
+            .ToList();
+
+        // Записываем исправленный файл
+        var processedDataFileName =
+            Path.Combine(Path.GetDirectoryName(dataPath) ?? "", Path.GetFileNameWithoutExtension(dataPath) + "_DotDecimalSeparator" + Path.GetExtension(dataPath));
+        File.WriteAllLines(processedDataFileName, processedData);
+
+        var testData = LoadData<DecisionModel_ComplexSa.ModelInput>(processedDataFileName);
+        var results = new Dictionary<DecisionModel_ComplexSa.ModelInput, bool>();
+        var resultsProbabilities = new Dictionary<DecisionModel_ComplexSa.ModelInput, double>();
+
+        foreach (var imgData in testData)
+        {
+            var clearImgData = new DecisionModel_ComplexSa.ModelInput
+            {
+                ChiSqrHorizontalRelativeVolume = imgData.ChiSqrHorizontalRelativeVolume,
+                ChiSqrVerticalRelativeVolume = imgData.ChiSqrVerticalRelativeVolume,
+                RsRelativeVolume = imgData.RsRelativeVolume,
+                KzhaHorizontalBitsVolume = imgData.KzhaHorizontalBitsVolume,
+                KzhaHorizontalThreshold = imgData.KzhaHorizontalThreshold,
+                KzhaVerticalBitsVolume = imgData.KzhaVerticalThreshold,
+                KzhaVerticalThreshold = imgData.KzhaVerticalThreshold,
+                Noise = imgData.Noise,
+                Sharpness = imgData.Sharpness,
+                Blur = imgData.Blur,
+                Contrast = imgData.Contrast,
+                EntropyShennon = imgData.EntropyShennon,
+                EntropyRenyi11 = imgData.EntropyRenyi11,
+                PixelsNum = imgData.PixelsNum
+            };
+            var predictResult = DecisionModel_ComplexSa.Predict(clearImgData);
+
+            results.Add(imgData, predictResult.PredictedLabel);  // IsDataHided ?
+            resultsProbabilities.Add(imgData, predictResult.Probability);
+        }
+
+        int truePositive = results.Where(r => r.Key.IsDataHided && r.Value).Count();
+        int trueNegative = results.Where(r => !r.Key.IsDataHided && !r.Value).Count();
+        int falsePositive = results.Where(r => !r.Key.IsDataHided && r.Value).Count();
+        int falseNegative = results.Where(r => r.Key.IsDataHided && !r.Value).Count();
+
+        Console.WriteLine("Матрциа ошибок:");
+        Console.WriteLine($"\tПравильноположительных: TP (True Positive) = {truePositive}");
+        Console.WriteLine($"\tПравильноотрицательных: TN (True Negative) = {trueNegative}");
+        Console.WriteLine($"\tЛожноположительных: FP (False Positive) = {falsePositive}");
+        Console.WriteLine($"\tЛожноотрицательных: FN (False Negative) = {falseNegative}");
+
+        double accuracy = CalcAccuracy(truePositive, trueNegative, falsePositive, falseNegative);
+        double precision = CalcPrecision(truePositive, falsePositive);
+        double recall = CalcRecall(truePositive, falseNegative);
+        double f1Score = CalcF1Score(precision, recall);
+
+        //double rocAuc = CalculateRocAuc(results.Select(r => r.Key.IsDataHided).ToArray(), resultsProbabilities.Select(rp => rp.Value).ToArray());
+        //double aucPr = CalculateAucPr(results.Select(r => r.Key.IsDataHided).ToArray(), resultsProbabilities.Select(rp => rp.Value).ToArray());
+
+        Console.WriteLine("Значения метрик:");
+        Console.WriteLine($"\tAccuracy: {accuracy}");  // точность классификации.
+        Console.WriteLine($"\tPrecision: {precision}");  // точность предсказания положительных примеров.
+        Console.WriteLine($"\tRecall: {recall}");  // полнота предсказания положительных примеров.
+        Console.WriteLine($"\tF1 Score: {f1Score}");  // гармоническое среднее между Precision и Recall.
+        //Console.WriteLine($"\tAUC: {rocAuc}");  // площадь под ROC-кривой.
+        //Console.WriteLine($"\tAUCPR: {aucPr}");  // площадь под кривой Precision-Recall.
+        Console.WriteLine();
+
+        var dataForAucs = testData.Select(td => new { realNum = td.IsDataHided ? 1 : 0, probability = resultsProbabilities[td] });
+        Console.WriteLine("Вывод данных:");
+        Console.WriteLine("realNum:");
+        Console.WriteLine(string.Join("; ", dataForAucs.Select(dfa => dfa.realNum.ToString())));
+        Console.WriteLine("probability:");
+        Console.WriteLine(string.Join("; ", dataForAucs.Select(dfa => dfa.probability.ToString())));
+        Console.WriteLine();
+    }
+
+    private static double CalcAccuracy(int tp, int tn, int fp, int fn)
+        => (double)(tp + tn) / (double)(tp + tn + fp + fn);
+    private static double CalcPrecision(int tp, int fp)
+        => (double)tp / (double)(tp + fp);
+    private static double CalcRecall(int tp, int fn)
+        => (double)tp / (double)(tp + fn);
+    private static double CalcF1Score(double precision, double recall)
+        => 2 * ((precision * recall) / (precision + recall));
+
+    private static List<T> LoadData<T>(string path)
+    {
+        var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            PrepareHeaderForMatch = args => args.Header.ToLower(),
+            Delimiter = ";"
+        };
+
+        List<T> records = new List<T>();
+        using (var reader = new StreamReader(path))
+        using (var csv = new CsvReader(reader, csvConfig))
+        {
+            var rawRecords = csv.GetRecords<T>();
+            records = rawRecords.ToList();
+        }
+
+        return records;
+    }
+
+    private static void TestMlModels()
+    {
+        bool? firstTwenty = null;
+
+        TestModel<DecisionModel_ComplexSa.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSa.csv", "DecisionModel_ComplexSa", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoQuality.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSaNoQuality.csv", "DecisionModel_ComplexSaNoQuality", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoVertical.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSaNoVertical.csv", "DecisionModel_ComplexSaNoVertical", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoPixelsNum.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSaNoPixelsNum.csv", "DecisionModel_ComplexSaNoPixelsNum", firstTwenty: firstTwenty);
+        //TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
+        //    "TestData\\MlAnalysisDataTesting_ForComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaOnlySaMethods.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSaOnlySaMethods.csv", "DecisionModel_ComplexSaOnlySaMethods", firstTwenty: firstTwenty);
+    }
+
+    private static void CheckMlModels()
+    {
+        bool firstTwenty = false;
+
+        TestModel<DecisionModel_ComplexSa.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSa.csv", "DecisionModel_ComplexSa", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoQuality.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSaNoQuality.csv", "DecisionModel_ComplexSaNoQuality", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoVertical.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSaNoVertical.csv", "DecisionModel_ComplexSaNoVertical", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoPixelsNum.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSaNoPixelsNum.csv", "DecisionModel_ComplexSaNoPixelsNum", firstTwenty: firstTwenty);
+        //TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
+        //    "TrainingData\\MlAnalysisData_ComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaOnlySaMethods.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSaOnlySaMethods.csv", "DecisionModel_ComplexSaOnlySaMethods", firstTwenty: firstTwenty);
+    }
+
+    private static void TestModel<T>(string dataPath, string modelName, bool? firstTwenty = false)
+    {
+        // Загружаем CSV и обрабатываем строки
+        var processedData = File.ReadLines(dataPath)
+            .Select(line => line.Replace(',', '.')) // Меняем запятые на точки
+            .ToList();
+
+        // Удаляем первые 80% или берём первые 20%
+        int len = processedData.Count;
+        int trainingDataLen = len / 5;
+        int learningDataLen = len - trainingDataLen;
+
+        if (firstTwenty is not null && firstTwenty.Value)
+            processedData = processedData.Take(trainingDataLen).ToList();
+        else if (firstTwenty is not null && !firstTwenty.Value)
+            processedData = processedData.Skip(learningDataLen).ToList();
+
+        // Записываем исправленный файл
+        var processedDataFileName = 
+            Path.Combine(Path.GetDirectoryName(dataPath) ?? "", Path.GetFileNameWithoutExtension(dataPath) + "_DotDecimalSeparator" + Path.GetExtension(dataPath));
+        File.WriteAllLines(processedDataFileName, processedData);
+
+        // Создаем ML-контекст
+        MLContext mlContext = new MLContext();
+
+        // Загружаем модель
+        ITransformer trainedModel = mlContext.Model.Load($"{modelName}.mlnet", out var modelInputSchema);
+
+        IDataView testData = mlContext.Data.LoadFromTextFile<T>(
+            path: processedDataFileName, separatorChar: ';', hasHeader: true);
+
+        var predictions = trainedModel.Transform(testData);
+        var metrics = mlContext.BinaryClassification.Evaluate(predictions, labelColumnName: "IsDataHided");
+
+        // Выводим метрики
+        Console.WriteLine(modelName);
+        Console.WriteLine($"\tAccuracy: {metrics.Accuracy}");  // точность классификации.
+        Console.WriteLine($"\tPrecision: {metrics.PositivePrecision}");  // точность предсказания положительных примеров.
+        Console.WriteLine($"\tRecall: {metrics.PositiveRecall}");  // полнота предсказания положительных примеров.
+        Console.WriteLine($"\tF1 Score: {metrics.F1Score}");  // гармоническое среднее между Precision и Recall.
+        Console.WriteLine($"\tAUC: {metrics.AreaUnderRocCurve}");  // площадь под ROC-кривой.
+        Console.WriteLine($"\tAUCPR: {metrics.AreaUnderPrecisionRecallCurve}");  // площадь под кривой Precision-Recall.
+        Console.WriteLine();
+    }
 }

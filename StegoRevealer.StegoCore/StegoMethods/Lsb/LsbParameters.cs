@@ -174,7 +174,7 @@ public class LsbParameters : StegoMethodParams, IParams
     public int CalcRealContainerVolume()
     {
         var (w, h ,d) = Image.GetImgSizes();
-        return w * h * Channels.Count;  // Возвращает количество пикселей
+        return w * h * Channels.Count * LsbNum;  // Возвращает количество пикселей
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public class LsbParameters : StegoMethodParams, IParams
     {
         var usedVolumes = new int[Channels.Count];
         for (int i = 0; i < Channels.Count; i++)
-            usedVolumes[i] = oneChannelVolume - (_startPixels[i] + 1);
+            usedVolumes[i] = oneChannelVolume - (_startPixels[i] + 1) * LsbNum;
         return usedVolumes;  // Возвращает количества пикселей
     }
 

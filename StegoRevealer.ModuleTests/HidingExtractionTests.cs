@@ -1,8 +1,11 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
+using System.Collections;
+using System.CommandLine;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 

@@ -1,0 +1,384 @@
+﻿{
+  "Scenario": "Classification",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": false,
+    "Type": "TabularFile",
+    "FilePath": "E:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\TrainingData\\MlAnalysisData_ComplexSaOnlySaMethods.csv",
+    "Delimiter": ";",
+    "DecimalMarker": ",",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "ChiSqrHorizontalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "ChiSqrVerticalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RsRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "IsDataHided",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Boolean",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.88259783513738554,
+        "RuntimeInSeconds": 0.373,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 17,
+            "NumberOfLeaves": 1837,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.88259783513738554,
+        "RuntimeInSeconds": 0.4,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 17,
+            "NumberOfLeaves": 2176,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.88259783513738554,
+        "RuntimeInSeconds": 0.355,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 17,
+            "NumberOfLeaves": 1793,
+            "FeatureFraction": 0.9916887,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.88259783513738554,
+        "RuntimeInSeconds": 0.379,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 17,
+            "NumberOfLeaves": 1841,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.88259783513738554,
+        "RuntimeInSeconds": 0.363,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 17,
+            "NumberOfLeaves": 1856,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "Concatenate",
+      "e2": "FastTreeBinary",
+      "e3": "LightGbmBinary",
+      "e4": "LbfgsLogisticRegressionBinary",
+      "e5": "SdcaLogisticRegressionBinary",
+      "e6": "FastForestBinary",
+      "e7": "Naive"
+    },
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "E:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\DecisionModel_ComplexSaOnlySaMethods.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 300,
+    "LabelColumn": "IsDataHided",
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}

@@ -1,0 +1,532 @@
+﻿{
+  "Scenario": "Classification",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": false,
+    "Type": "TabularFile",
+    "FilePath": "E:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\TrainingData\\MlAnalysisData_ComplexSaNoPixelsNum.csv",
+    "Delimiter": ";",
+    "DecimalMarker": ",",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "ChiSqrHorizontalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "ChiSqrVerticalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RsRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Noise",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Sharpness",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Blur",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Contrast",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyShennon",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyRenyi11",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "IsDataHided",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Boolean",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.91656952539550374,
+        "RuntimeInSeconds": 0.554,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.40274869947194003,
+            "NumberOfTrees": 370,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 359,
+            "FeatureFraction": 0.97554600488102006,
+            "L1Regularization": 2.188951359696167E-10,
+            "L2Regularization": 0.99999977667298645,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.91590341382181517,
+        "RuntimeInSeconds": 0.654,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.39995871648828396,
+            "NumberOfTrees": 385,
+            "SubsampleFraction": 0.993516283064872,
+            "MaximumBinCountPerFeature": 359,
+            "FeatureFraction": 0.97542094765275777,
+            "L1Regularization": 2.2001355152796127E-10,
+            "L2Regularization": 0.99759156057821063,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.91457119067443793,
+        "RuntimeInSeconds": 0.655,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.40555814447687039,
+            "NumberOfTrees": 354,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 358,
+            "FeatureFraction": 0.97567106210928245,
+            "L1Regularization": 2.1778240575816152E-10,
+            "L2Regularization": 0.99999977667298645,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.91440466278101584,
+        "RuntimeInSeconds": 0.427,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.41913515119554207,
+            "NumberOfTrees": 382,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 361,
+            "FeatureFraction": 0.97394155723357245,
+            "L1Regularization": 2.1964029904529052E-10,
+            "L2Regularization": 0.99999977667298645,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.91423813488759365,
+        "RuntimeInSeconds": 0.65,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi11"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 0.39141884110428604,
+            "NumberOfTrees": 354,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 358,
+            "FeatureFraction": 0.97549899113344885,
+            "L1Regularization": 2.208876170808388E-10,
+            "L2Regularization": 0.99999977667298645,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "Concatenate",
+      "e2": "FastTreeBinary",
+      "e3": "LightGbmBinary",
+      "e4": "LbfgsLogisticRegressionBinary",
+      "e5": "SdcaLogisticRegressionBinary",
+      "e6": "FastForestBinary",
+      "e7": "Naive"
+    },
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "E:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\DecisionModel_ComplexSaNoPixelsNum.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 300,
+    "LabelColumn": "IsDataHided",
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}

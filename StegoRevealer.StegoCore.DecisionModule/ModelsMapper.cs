@@ -8,10 +8,10 @@ public static class ModelsMapper
     {
         return new DecisionModel.ModelInput
         {
-            ChiSquareVolume = (float)saResult.ChiSquareVolume,
+            ChiSquareVolume = (float)saResult.ChiSquareHorizontalVolume,
             RsVolume = (float)saResult.RsVolume,
-            KzhaThreshold = (float)saResult.KzhaThreshold,
-            KzhaMessageVolume = (float)saResult.KzhaMessageVolume,
+            KzhaThreshold = (float)saResult.KzhaHorizontalThreshold,
+            KzhaMessageVolume = (float)saResult.KzhaHorizontalMessageBitVolume,
             NoiseValue = (float)saResult.NoiseValue,
             SharpnessValue = (float)saResult.SharpnessValue,
             BlurValue = (float)saResult.BlurValue,

@@ -10,13 +10,13 @@
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-		<Version>2025.1.5</Version>
+		<Version>2025.1.8</Version>
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
 		<PackageIcon>AppIconBigCore.png</PackageIcon>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
-		<FileVersion>2025.1.8.1921</FileVersion>
+		<FileVersion>2025.1.11.1814</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

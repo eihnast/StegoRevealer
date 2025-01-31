@@ -148,6 +148,20 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private bool _isMethodsOpened = true;
 
     /// <summary>
+    /// Выбран ли комплексный стегоанализ
+    /// </summary>
+    public bool ComplexMethodSelected
+    {
+        get => _complexMethodSelected;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _complexMethodSelected, value);
+            ActiveMethods[AnalysisMethod.RegularSingular] = value;
+        }
+    }
+    private bool _complexMethodSelected = true;
+
+    /// <summary>
     /// Словарь активных методов (отмеченных к выполнению)
     /// </summary>
     public Dictionary<AnalysisMethod, bool> ActiveMethods { get; private set; } = new();
@@ -420,7 +434,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
         }
 
-        var complexAnalysisParams = new ComplexAnalysisParameters();
+        var complexAnalysisParams = new JointAnalysisParameters();
 
         // Создание задач
         if (ActiveMethods[AnalysisMethod.ChiSquare] && _chiSquareParameters is not null)  // Хи-квадрат
@@ -431,10 +445,12 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             complexAnalysisParams.KzhaParameters = _kzhaParameters;
         if (CurrentImage is not null)
             complexAnalysisParams.Image = CurrentImage;
+        if (ComplexMethodSelected)
+            complexAnalysisParams.UseComplexMethod = true;
 
         Logger.LogInfo("Starting steganalysis operations");
 
-        var result = await ComplexAnalysisStarter.Start(complexAnalysisParams);
+        var result = await JointAnalysisStarter.Start(complexAnalysisParams);
 
         Logger.LogInfo("Steganalysis operations completed");
 
@@ -449,6 +465,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработка результатов стегоанализа
     /// </summary>
+    [Obsolete]
     private void ProcessAnalysisResults(Dictionary<AnalysisMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
     {
         if (results is null)
@@ -469,10 +486,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         {
             var saResult = new SteganalysisResults
             {
-                ChiSquareVolume = chiRes.MessageRelativeVolume,
+                ChiSquareHorizontalVolume = chiRes.MessageRelativeVolume,
                 RsVolume = rsRes.MessageRelativeVolume,
-                KzhaThreshold = kzhaRes.Threshold,
-                KzhaMessageVolume = kzhaRes.MessageBitsVolume / Common.Tools.GetContainerFrequencyVolume(CurrentImage!),
+                KzhaHorizontalThreshold = kzhaRes.Threshold,
+                KzhaHorizontalMessageBitVolume = kzhaRes.MessageBitsVolume / Common.Tools.GetContainerFrequencyVolume(CurrentImage!),
                 NoiseValue = statmRes.NoiseValue,
                 SharpnessValue = statmRes.SharpnessValue,
                 BlurValue = statmRes.BlurValue,
@@ -503,7 +520,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработка результатов стегоанализа
     /// </summary>
-    private void ProcessAnalysisResults(ComplexAnalysisResults? results)
+    private void ProcessAnalysisResults(JointAnalysisResults? results)
     {
         if (results is null)
         {

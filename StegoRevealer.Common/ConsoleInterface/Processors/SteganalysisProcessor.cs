@@ -37,7 +37,7 @@ public class SteganalysisProcessor
             return;
 
         _logger.LogInfo($"Starting steganalysis for file '{_fileName}'");
-        var complexAnalysisParams = new ComplexAnalysisParameters();
+        var complexAnalysisParams = new JointAnalysisParameters();
 
         if (_currentImage is null)
             return;
@@ -53,7 +53,7 @@ public class SteganalysisProcessor
 
         _logger.LogInfo("Starting steganalysis operations");
 
-        var result = await ComplexAnalysisStarter.Start(complexAnalysisParams);
+        var result = await JointAnalysisStarter.Start(complexAnalysisParams);
 
         _logger.LogInfo("Steganalysis operations completed");
 
@@ -118,7 +118,7 @@ public class SteganalysisProcessor
         return true;
     }
 
-    private void PrintResults(ComplexAnalysisResults result, string imgName)
+    private void PrintResults(JointAnalysisResults result, string imgName)
     {
         // Приведение к известным типам результатов
         var chiRes = result.ChiSquareResult;

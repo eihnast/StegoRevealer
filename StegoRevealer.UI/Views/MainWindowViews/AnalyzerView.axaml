@@ -70,31 +70,35 @@
 						<Grid Name="MethodsSelectGrid" IsEnabled="{Binding Path=HasLoadedImage}"
 							  Grid.Column="0" Grid.Row="1"
 							  Margin="20 10 20 10"
-							  ColumnDefinitions="*,100" RowDefinitions="30,30,30">
+							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30">
 
-							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат"
+							<CheckBox Name="IsComplexMethodChecked" Content="Метод комплексного стегоанализа"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="0"
+									  IsChecked="{Binding Path=ComplexMethodSelected}"/>
+							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат"
+									  Classes="MethodTurnCheckbox"
+									  Grid.Column="0" Grid.Row="1"
 									  IsChecked="{Binding Path=MethodChiSqrSelected}"/>
 							<Button Name="MethodChiSqrParamsBtn" Content="Параметры"
 									Classes="MethodParametersBtn"
-									Grid.Column="1" Grid.Row="0"
+									Grid.Column="1" Grid.Row="1"
 									Click="MethodChiSqrParamsBtn_Click"/>
 							<CheckBox Name="IsMethodRsChecked" Content="Метод Regular-Singular"
 									  Classes="MethodTurnCheckbox"
-									  Grid.Column="0" Grid.Row="1"
+									  Grid.Column="0" Grid.Row="2"
 									  IsChecked="{Binding Path=MethodRsSelected}"/>
 							<Button Name="MethodRsParamsBtn" Content="Параметры"
 									Classes="MethodParametersBtn"
-									Grid.Column="1" Grid.Row="1"
+									Grid.Column="1" Grid.Row="2"
 									Click="MethodRsParamsBtn_Click"/>
 							<CheckBox Name="IsMethodKzaChecked" Content="Стегоанализ метода Коха-Жао"
 									  Classes="MethodTurnCheckbox"
-									  Grid.Column="0" Grid.Row="2"
+									  Grid.Column="0" Grid.Row="3"
 									  IsChecked="{Binding Path=MethodKzhaSelected}"/>
 							<Button Name="MethodKzaParamsBtn" Content="Параметры"
 									Classes="MethodParametersBtn"
-									Grid.Column="1" Grid.Row="2"
+									Grid.Column="1" Grid.Row="3"
 									Click="MethodKzaParamsBtn_Click"/>
 						</Grid>
 						<!-- / Сетка методов для выбора -->
