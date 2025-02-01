@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
-using Microsoft.ML.Trainers.LightGbm;
+using Microsoft.ML.Trainers.FastTree;
 
 namespace StegoRevealer_StegoCore_TrainingModule
 {
-    public partial class DecisionModel
+    public partial class DecisionModel_ComplexSa
     {
-        public const string RetrainFilePath =  @"D:\Temp\_StegoRevealer\_DataSets\.Samples\CURRENT_LAST.csv";
-        public const char RetrainSeparatorChar = ',';
+        public const string RetrainFilePath =  @"E:\Development\StegoRevealer\StegoRevealer\StegoRevealer.StegoCore.TrainingModule\TrainingData\MlAnalysisData_ComplexSa.csv";
+        public const char RetrainSeparatorChar = ';';
         public const bool RetrainHasHeader =  true;
         public const bool RetrainAllowQuoting =  false;
 
@@ -90,9 +90,10 @@ namespace StegoRevealer_StegoCore_TrainingModule
         public static IEstimator<ITransformer> BuildPipeline(MLContext mlContext)
         {
             // Data process configuration with pipeline data transformations
-            var pipeline = mlContext.Transforms.ReplaceMissingValues(new []{new InputOutputColumnPair(@"ChiSquareVolume", @"ChiSquareVolume"),new InputOutputColumnPair(@"RsVolume", @"RsVolume"),new InputOutputColumnPair(@"KzhaThreshold", @"KzhaThreshold"),new InputOutputColumnPair(@"KzhaMessageVolume", @"KzhaMessageVolume"),new InputOutputColumnPair(@"NoiseValue", @"NoiseValue"),new InputOutputColumnPair(@"SharpnessValue", @"SharpnessValue"),new InputOutputColumnPair(@"BlurValue", @"BlurValue"),new InputOutputColumnPair(@"ContrastValue", @"ContrastValue"),new InputOutputColumnPair(@"EntropyShennonValue", @"EntropyShennonValue"),new InputOutputColumnPair(@"EntropyRenyiValue", @"EntropyRenyiValue")})      
-                                    .Append(mlContext.Transforms.Concatenate(@"Features", new []{@"ChiSquareVolume",@"RsVolume",@"KzhaThreshold",@"KzhaMessageVolume",@"NoiseValue",@"SharpnessValue",@"BlurValue",@"ContrastValue",@"EntropyShennonValue",@"EntropyRenyiValue"}))      
-                                    .Append(mlContext.BinaryClassification.Trainers.LightGbm(new LightGbmBinaryTrainer.Options(){NumberOfLeaves=4,NumberOfIterations=3519,MinimumExampleCountPerLeaf=42,LearningRate=0.016780699141828427,LabelColumnName=@"DataWasHided",FeatureColumnName=@"Features",Booster=new GradientBooster.Options(){SubsampleFraction=0.9999997766729865,FeatureFraction=0.8563801011107314,L1Regularization=2.0527786291140867E-10,L2Regularization=0.15341019580341383},MaximumBinCountPerFeature=326}));
+            var pipeline = mlContext.Transforms.ReplaceMissingValues(new []{new InputOutputColumnPair(@"ChiSqrHorizontalRelativeVolume", @"ChiSqrHorizontalRelativeVolume"),new InputOutputColumnPair(@"ChiSqrVerticalRelativeVolume", @"ChiSqrVerticalRelativeVolume"),new InputOutputColumnPair(@"RsRelativeVolume", @"RsRelativeVolume"),new InputOutputColumnPair(@"KzhaHorizontalThreshold", @"KzhaHorizontalThreshold"),new InputOutputColumnPair(@"KzhaHorizontalBitsVolume", @"KzhaHorizontalBitsVolume"),new InputOutputColumnPair(@"KzhaVerticalThreshold", @"KzhaVerticalThreshold"),new InputOutputColumnPair(@"KzhaVerticalBitsVolume", @"KzhaVerticalBitsVolume"),new InputOutputColumnPair(@"Noise", @"Noise"),new InputOutputColumnPair(@"Sharpness", @"Sharpness"),new InputOutputColumnPair(@"Blur", @"Blur"),new InputOutputColumnPair(@"Contrast", @"Contrast"),new InputOutputColumnPair(@"EntropyShennon", @"EntropyShennon"),new InputOutputColumnPair(@"EntropyRenyi11", @"EntropyRenyi11"),new InputOutputColumnPair(@"PixelsNum", @"PixelsNum")})      
+                                    .Append(mlContext.Transforms.Concatenate(@"Features", new []{@"ChiSqrHorizontalRelativeVolume",@"ChiSqrVerticalRelativeVolume",@"RsRelativeVolume",@"KzhaHorizontalThreshold",@"KzhaHorizontalBitsVolume",@"KzhaVerticalThreshold",@"KzhaVerticalBitsVolume",@"Noise",@"Sharpness",@"Blur",@"Contrast",@"EntropyShennon",@"EntropyRenyi11",@"PixelsNum"}))      
+                                    .Append(mlContext.BinaryClassification.Trainers.FastForest(new FastForestBinaryTrainer.Options(){NumberOfTrees=137,NumberOfLeaves=356,FeatureFraction=0.8046035F,LabelColumnName=@"IsDataHided",FeatureColumnName=@"Features"}))      
+                                    .Append(mlContext.BinaryClassification.Calibrators.Naive(labelColumnName:@"IsDataHided",scoreColumnName:@"Score"));
 
             return pipeline;
         }

@@ -6,7 +6,7 @@ public static class SteganalysisDecision
 {
     public static bool Calculate(SteganalysisResults saResult)
     {
-        bool isHided = DecisionModel.Predict(ModelsMapper.SaResultToDeicisionInputModel(saResult)).PredictedLabel;
+        bool isHided = DecisionModel_ComplexSa.Predict(ModelsMapper.SaResultToDeicisionInputModel(saResult)).PredictedLabel;
         return isHided;
     }
 }

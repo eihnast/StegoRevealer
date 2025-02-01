@@ -13,18 +13,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="DecisionModel.training.cs" />
+		<Compile Remove="DecisionModel_ComplexSa.training.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="DecisionModel.mlnet" />
+		<None Remove="DecisionModel_ComplexSa.mlnet" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="DecisionModel.mlnet">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="DecisionModel.training.cs" />
+		<EmbeddedResource Include="DecisionModel_ComplexSa.mlnet" />
+		<EmbeddedResource Include="DecisionModel_ComplexSa.training.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

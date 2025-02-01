@@ -109,16 +109,20 @@ public class JointAnalysisStarter
         {
             var saResult = new SteganalysisResults
             {
-                ChiSquareHorizontalVolume = chiRes.MessageRelativeVolume,
-                RsVolume = rsRes.MessageRelativeVolume,
-                KzhaHorizontalThreshold = kzhaRes.Threshold,
-                KzhaHorizontalMessageBitVolume = kzhaRes.MessageBitsVolume / CoreHelper.GetContainerFrequencyVolume(image!),
-                NoiseValue = statmRes.NoiseValue,
-                SharpnessValue = statmRes.SharpnessValue,
-                BlurValue = statmRes.BlurValue,
-                ContrastValue = statmRes.ContrastValue,
-                EntropyShennonValue = statmRes.EntropyValues.Shennon,
-                EntropyRenyiValue = statmRes.EntropyValues.Renyi
+                ChiSquareHorizontalVolume = complexSaMethodResults.ChiSquareHorizontalResult.MessageRelativeVolume,
+                ChiSquareVerticalVolume = complexSaMethodResults.ChiSquareVerticalResult.MessageRelativeVolume,
+                RsVolume = complexSaMethodResults.RsResult.MessageRelativeVolume,
+                KzhaHorizontalThreshold = complexSaMethodResults.KzhaHorizontalResult.Threshold,
+                KzhaHorizontalMessageBitVolume = complexSaMethodResults.KzhaHorizontalResult.MessageBitsVolume,
+                KzhaVerticalThreshold = complexSaMethodResults.KzhaVerticalResult.Threshold,
+                KzhaVerticalMessageBitVolume = complexSaMethodResults.KzhaVerticalResult.MessageBitsVolume,
+                NoiseValue = complexSaMethodResults.StatmResult.NoiseValue,
+                SharpnessValue = complexSaMethodResults.StatmResult.SharpnessValue,
+                BlurValue = complexSaMethodResults.StatmResult.BlurValue,
+                ContrastValue = complexSaMethodResults.StatmResult.ContrastValue,
+                EntropyShennonValue = complexSaMethodResults.StatmResult.EntropyValues.Shennon,
+                EntropyRenyiValue = complexSaMethodResults.StatmResult.EntropyValues.Renyi,
+                PixelsNumber = (image?.Width ?? 0) * (image?.Height ?? 0)
             };
 
             isHidingDetected = SteganalysisDecision.Calculate(saResult);
