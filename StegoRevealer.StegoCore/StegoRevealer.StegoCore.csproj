@@ -10,26 +10,26 @@
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-		<Version>2025.1.8</Version>
+		<Version>2025.1.9</Version>
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
 		<PackageIcon>AppIconBigCore.png</PackageIcon>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
-		<FileVersion>2025.1.11.1814</FileVersion>
+		<FileVersion>2025.2.12.1604</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <ShouldCreateLogs>True</ShouldCreateLogs>
-	  <AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
-	  <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
-	  <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
-	  <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-	  <AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
-	  <UpdatePackageVersion>True</UpdatePackageVersion>
-	  <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
-	  <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-	  <PackageVersionSettings>AssemblyFileVersion.Increment.None</PackageVersionSettings>
+		<ShouldCreateLogs>True</ShouldCreateLogs>
+		<AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
+		<UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+		<AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
+		<UpdatePackageVersion>True</UpdatePackageVersion>
+		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
 	</PropertyGroup>
 
 	<ItemGroup>
