@@ -69,7 +69,7 @@ jobs:
     - name: Publish
       run: dotnet publish StegoRevealer.UI.Desktop\StegoRevealer.UI.Desktop.csproj --configuration Release --output bin\Publish\win --runtime win-x64 -f net9.0 --self-contained true
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: StegoRevealer
         path: bin\Publish\win\StegoRevealer.exe
