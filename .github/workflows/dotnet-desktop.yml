@@ -71,7 +71,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: StegoRevealer
+        name: StegoRevealerWin
         path: bin\Publish\win\StegoRevealer.exe
         if-no-files-found: error
 
@@ -97,6 +97,6 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: StegoRevealer
+        name: StegoRevealerLin
         path: bin/Publish/lin/StegoRevealer
         if-no-files-found: error
