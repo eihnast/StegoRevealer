@@ -228,7 +228,12 @@ public class RsAnalyser
             {
                 var group = new int[Params.PixelsGroupLength];
                 for (int i = 0; i < Params.PixelsGroupLength; i++)
-                    group[i] = channelArray[y, xGroup * Params.PixelsGroupLength + i];
+                {
+                    int x = xGroup * Params.PixelsGroupLength + i;
+                    if (x >= channelArray.Width)
+                        throw new IndexOutOfRangeException("Index out of bounds in channelArray.");
+                    group[i] = channelArray[y, x];
+                }
                 groups.Add(group);
             }
 

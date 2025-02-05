@@ -15,6 +15,7 @@ using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using System.Diagnostics;
 using StegoRevealer.StegoCore.StegoMethods;
 using System.IO;
+using StegoRevealer.Common;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -58,7 +59,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool MethodLsbSelected
     {
         get => _methodLsbSelected;
-        set => this.RaiseAndSetIfChanged(ref _methodLsbSelected, value);
+        set
+        {
+            if (!Common.Tools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _methodLsbSelected, value);
+        }
     }
     private bool _methodLsbSelected = true;
 
@@ -68,7 +73,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool MethodKzSelected
     {
         get => _methodKzSelected;
-        set => this.RaiseAndSetIfChanged(ref _methodKzSelected, value);
+        set
+        {
+            if (!Common.Tools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _methodKzSelected, value);
+        }
     }
     private bool _methodKzSelected = false;
 
@@ -78,7 +87,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool LinearModeSelected
     {
         get => _linearModeSelected;
-        set => this.RaiseAndSetIfChanged(ref _linearModeSelected, value);
+        set
+        {
+            if (!Common.Tools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _linearModeSelected, value);
+        }
     }
     private bool _linearModeSelected = true;
 
@@ -88,7 +101,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool RandomModeSelected
     {
         get => _randomModeSelected;
-        set => this.RaiseAndSetIfChanged(ref _randomModeSelected, value);
+        set
+        {
+            if (!Common.Tools.IsActionWhileTabChanged())
+                this.RaiseAndSetIfChanged(ref _randomModeSelected, value);
+        }
     }
     private bool _randomModeSelected = false;
     
@@ -198,7 +215,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public bool KzIndexesSelected
     {
         get => _kzIndexesSelected;
-        set => this.RaiseAndSetIfChanged(ref _kzRandomSeedSelected, value);
+        set => this.RaiseAndSetIfChanged(ref _kzIndexesSelected, value);
     }
     private bool _kzIndexesSelected = false;
 
@@ -386,7 +403,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             ImagePath = path;
 
             // Загрузка
-            var tempPath = CommonTools.CopyFileToTemp(path);
+            var tempPath = Common.Tools.CopyFileToTemp(path);
 
             if (!string.IsNullOrEmpty(tempPath))
             {
@@ -472,7 +489,6 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         var results = new ExtractionResultsDto();
         if (MethodLsbSelected && _lsbParameters is not null)  // Извлечение из НЗБ
-        //if (_lsbParameters is not null)  // Извлечение из НЗБ
         {
             var extractor = new LsbExtractor(_lsbParameters.Image);
             extractor.Params.Seed = _lsbParameters.Seed;
@@ -483,7 +499,6 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             var lsbResult = extractor.Extract() as LsbExtractResult;
             results.ExtractedMessage = lsbResult?.ResultData ?? string.Empty;
         }
-        //else if (_kzhParameters is not null)  // Извлечение по Коха-Жао
         else if (MethodKzSelected && _kzhParameters is not null)  // Извлечение по Коха-Жао
         {
             var extractor = new KochZhaoExtractor(_kzhParameters.Image);
@@ -512,6 +527,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     {
         if (MethodLsbSelected && _lsbParameters is not null)
         {
+            _lsbParameters.Reset();
+
             if (RandomModeSelected)
                 _lsbParameters.Seed = LsbRandomSeedValue;
             _lsbParameters.ToExtractBitLength = (LsbByteLengthSelected ? LsbByteLengthValue : 0) * 8;  // По умолчанию (без указания) = 0
@@ -532,6 +549,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         if (MethodKzSelected && _kzhParameters is not null)
         {
+            _kzhParameters.Reset();
+
             if (RandomModeSelected)
                 _kzhParameters.Seed = KzRandomSeedValue;
             if (KzThresholdSelected)
@@ -539,9 +558,13 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
             if (KzIndexesSelected)
             {
+                if (KzIndexFirstValue < 0)
+                    KzIndexFirstValue = 0;
                 _kzhParameters.StartBlocks = new StartValues((ImgChannel.Blue, KzIndexFirstValue));
 
                 // Считаем, что скрытие производилось только в синий канал
+                if (KzIndexSecondValue < 0)
+                    KzIndexSecondValue = 0;
                 if (KzIndexSecondValue > 0)
                 {
                     int bitsNum = KzIndexSecondValue - KzIndexFirstValue + 1;
@@ -582,7 +605,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         var pathToDelete = CurrentImage?.ImgPath;
         if (!string.IsNullOrEmpty(pathToDelete))
-            CommonTools.TryDeleteTempFile(pathToDelete);
+            Common.Tools.TryDeleteTempFile(pathToDelete);
     }
 
     // Возвращает актуальные размеры окна

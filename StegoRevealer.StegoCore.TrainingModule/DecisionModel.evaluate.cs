@@ -41,13 +41,13 @@ namespace StegoRevealer_StegoCore_TrainingModule
 
             var featureImportanceMetrics =
                  permutationFeatureImportance
-                 .Select((kvp) => new { kvp.Key, kvp.Value.Accuracy })
-                 .OrderByDescending(myFeatures => Math.Abs(myFeatures.Accuracy.Mean));
+                 .Select((kvp) => new { kvp.Key, kvp.Value.F1Score })
+                 .OrderByDescending(myFeatures => Math.Abs(myFeatures.F1Score.Mean));
 
             var featurePFI = new List<Tuple<string, double>>();
             foreach (var feature in featureImportanceMetrics)
             {
-                var pfiValue = Math.Abs(feature.Accuracy.Mean);
+                var pfiValue = Math.Abs(feature.F1Score.Mean);
                 featurePFI.Add(new Tuple<string, double>(feature.Key, pfiValue));
             }
 

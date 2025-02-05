@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib;
 using System;
@@ -139,10 +140,10 @@ public static class CommonTools
     /// <summary>
     /// Создаёт словарь с null-(default-)значениями указанного типа по методам стегоанализа
     /// </summary>
-    public static Dictionary<AnalyzerMethod, T?> CreateValuesByAnalyzerMethodDictionary<T>()
+    public static Dictionary<AnalysisMethod, T?> CreateValuesByAnalysisMethodDictionary<T>()
     {
-        var dict = new Dictionary<AnalyzerMethod, T?>();
-        foreach (AnalyzerMethod method in Enum.GetValues(typeof(AnalyzerMethod)))
+        var dict = new Dictionary<AnalysisMethod, T?>();
+        foreach (AnalysisMethod method in Enum.GetValues(typeof(AnalysisMethod)))
             dict.Add(method, default);
         return dict;
     }
@@ -155,7 +156,7 @@ public static class CommonTools
         if (strategy is FilterInputStrategy.AllowAll)
             return;
 
-        if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble 
+        if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble
             or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
         {
             if (!AllowedDigitKeys.Contains(e.Key))
@@ -184,118 +185,5 @@ public static class CommonTools
         if (tb is null)
             return;
         FilterInput(tb, e, strategy);
-    }
-
-    public static string GetFormattedJson<T>(T obj, bool notIndented = false)
-    {
-        return JsonSerializer.Serialize(obj, new JsonSerializerOptions
-        {
-            WriteIndented = !notIndented,
-            PropertyNamingPolicy = null,
-            Converters =
-            {
-                new JsonStringEnumConverter(),
-                new LogMessageListConverter()
-            }
-        });
-    }
-
-    private static string SavedTempPath = string.Empty;
-    public static string GetOrCreateTempDirPath()
-    {
-        if (!string.IsNullOrEmpty(SavedTempPath))
-        {
-            if (!Path.Exists(SavedTempPath))
-                Directory.CreateDirectory(SavedTempPath);
-            return SavedTempPath;
-        }
-
-        string tempDir = Path.GetTempPath();
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            string? localDirPath = Directory.GetParent(tempDir)?.Parent?.FullName;
-            if (!string.IsNullOrEmpty(localDirPath))
-                tempDir = localDirPath;
-        }
-
-        var srTempPath = Path.Combine(tempDir, "StegoRevealer");
-        if (!Path.Exists(srTempPath))
-            Directory.CreateDirectory(srTempPath);
-        tempDir = srTempPath;
-
-        SavedTempPath = tempDir;
-        return tempDir;
-    }
-
-    public static string? CopyFileToTemp(string filePath, bool useGuid = false)
-    {
-        if (File.Exists(filePath))
-        {
-            string tempFileName = useGuid ? Guid.NewGuid().ToString() : Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
-            string newPath = Path.Combine(GetOrCreateTempDirPath(), tempFileName + Path.GetExtension(filePath));
-
-            try
-            {
-                File.Copy(filePath, newPath);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return null;
-            }
-
-            return newPath;
-        }
-
-        return null;
-    }
-
-    public static bool TryDeleteTempFile(string filePath)
-    {
-        if (File.Exists(filePath))
-        {
-            var dirName = Path.GetDirectoryName(filePath);
-            var tempPath = GetOrCreateTempDirPath();
-
-            if (IsPathsEquals(dirName, tempPath) || IsInFolder(dirName, tempPath))
-            {
-                try
-                {
-                    File.Delete(filePath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex.Message);
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static bool IsPathsEquals(string? path1, string? path2)
-    {
-        if (path1 == path2)
-            return true;
-
-        if (!string.IsNullOrEmpty(path1) && !string.IsNullOrEmpty(path2))
-        {
-            return path1.Trim('/').Trim('\\').ToLower().Equals(path2.Trim('/').Trim('\\').ToLower());
-        }
-
-        return false;
-    }
-
-    public static bool IsInFolder(string? path, string? folderPath)
-    {
-        if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(folderPath))
-            return false;
-
-        string normalizedPath = path.Trim('/').Trim('\\').ToLower();
-        string normalizedFolderPath = folderPath.Trim('/').Trim('\\').ToLower();
-        return normalizedPath.StartsWith(normalizedFolderPath);
     }
 }

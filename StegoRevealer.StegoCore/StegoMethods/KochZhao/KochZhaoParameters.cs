@@ -153,8 +153,10 @@ public class KochZhaoParameters : StegoMethodParams, IParams
         Seed = null;
         InterlaceChannels = true;
 
+        Threshold = 120;
+
         Channels.Clear();
-        Channels.Append(ImgChannel.Blue);
+        Channels.Add(ImgChannel.Blue);
 
         _toExtractBitLength = 0;
         Data = "";

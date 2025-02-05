@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels;
 using StegoRevealer.UI.Windows;

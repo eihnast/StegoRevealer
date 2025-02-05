@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Media;
+using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels;
 

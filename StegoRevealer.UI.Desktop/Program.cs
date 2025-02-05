@@ -1,12 +1,15 @@
 ﻿using System;
 
 using Avalonia;
+using ALogger = Avalonia.Logging;
 using Avalonia.ReactiveUI;
-using StegoRevealer.UI.Tools;
+
+using StegoRevealer.Common;
+using StegoRevealer.Common.ConsoleInterface;
 
 namespace StegoRevealer.UI.Desktop;
 
-class Program
+public class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -14,9 +17,31 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
         Logger.LogInfo("Starting Stego Revealer App");
 
-        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        // Запуск в режиме интерфейса командной строки
+        if (args.Length > 0)
+        {
+            bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
+            if (isWindows)
+                WinConsole.ConnectConsole();
+            
+            Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
+            CommandLineParser.HandleCommand(args).Wait();
+
+            if (isWindows)
+            {
+                WinConsole.RestorePrompt();
+
+                // Освобождаем консоль, если она была создана
+                WinConsole.StopConsole();
+            }
+
+            return;
+        }
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
@@ -40,6 +65,6 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
+            .LogToTrace(ALogger.LogEventLevel.Debug)
             .UseReactiveUI();
 }

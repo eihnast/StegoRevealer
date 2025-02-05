@@ -115,8 +115,8 @@
         "Version": 1,
         "Type": "Trial",
         "TrainerName": "LightGbmBinary",
-        "Score": 0.82879146919431279,
-        "RuntimeInSeconds": 1.249,
+        "Score": 0.81932245922208269,
+        "RuntimeInSeconds": 3.047,
         "Parameter": {
           "_SCHEMA_": "e0 * e1 * e3",
           "e0": {
@@ -161,15 +161,15 @@
             "OutputColumnName": "Features"
           },
           "e3": {
-            "NumberOfLeaves": 6,
-            "MinimumExampleCountPerLeaf": 20,
-            "LearningRate": 0.023931238649487294,
-            "NumberOfTrees": 2772,
-            "SubsampleFraction": 0.54170377580973317,
-            "MaximumBinCountPerFeature": 298,
-            "FeatureFraction": 0.99999999,
-            "L1Regularization": 2.0140203022009936E-10,
-            "L2Regularization": 0.25989924000172809,
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 42,
+            "LearningRate": 0.016780699141828427,
+            "NumberOfTrees": 3519,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 326,
+            "FeatureFraction": 0.85638010111073137,
+            "L1Regularization": 2.0527786291140867E-10,
+            "L2Regularization": 0.15341019580341383,
             "LabelColumnName": "DataWasHided",
             "FeatureColumnName": "Features"
           }
@@ -179,8 +179,8 @@
         "Version": 1,
         "Type": "Trial",
         "TrainerName": "FastTreeBinary",
-        "Score": 0.82849526066350709,
-        "RuntimeInSeconds": 0.504,
+        "Score": 0.81877525645010873,
+        "RuntimeInSeconds": 0.279,
         "Parameter": {
           "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
@@ -225,12 +225,12 @@
             "OutputColumnName": "Features"
           },
           "e2": {
-            "NumberOfLeaves": 14,
-            "MinimumExampleCountPerLeaf": 38,
-            "NumberOfTrees": 570,
-            "MaximumBinCountPerFeature": 114,
-            "FeatureFraction": 0.68211307365736473,
-            "LearningRate": 0.031287098028683291,
+            "NumberOfLeaves": 7,
+            "MinimumExampleCountPerLeaf": 52,
+            "NumberOfTrees": 43,
+            "MaximumBinCountPerFeature": 413,
+            "FeatureFraction": 0.82870024199038683,
+            "LearningRate": 0.34954926644299622,
             "LabelColumnName": "DataWasHided",
             "FeatureColumnName": "Features",
             "DiskTranspose": false
@@ -240,11 +240,11 @@
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastTreeBinary",
-        "Score": 0.8281990521327014,
-        "RuntimeInSeconds": 0.461,
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.81855217800062674,
+        "RuntimeInSeconds": 3.336,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e2",
+          "_SCHEMA_": "e0 * e1 * e3",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -286,27 +286,29 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e2": {
-            "NumberOfLeaves": 13,
-            "MinimumExampleCountPerLeaf": 37,
-            "NumberOfTrees": 569,
-            "MaximumBinCountPerFeature": 113,
-            "FeatureFraction": 0.68245132968976485,
-            "LearningRate": 0.031212515490895158,
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 43,
+            "LearningRate": 0.015811690672534164,
+            "NumberOfTrees": 3487,
+            "SubsampleFraction": 0.99780831634672262,
+            "MaximumBinCountPerFeature": 330,
+            "FeatureFraction": 0.85701008788642274,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 0.15367798523288634,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features",
-            "DiskTranspose": false
+            "FeatureColumnName": "Features"
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastTreeBinary",
-        "Score": 0.82760663507109,
-        "RuntimeInSeconds": 0.451,
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.81846733668341709,
+        "RuntimeInSeconds": 2.917,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e2",
+          "_SCHEMA_": "e0 * e1 * e3",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -348,27 +350,29 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e2": {
-            "NumberOfLeaves": 13,
-            "MinimumExampleCountPerLeaf": 38,
-            "NumberOfTrees": 575,
-            "MaximumBinCountPerFeature": 114,
-            "FeatureFraction": 0.68300052364635111,
-            "LearningRate": 0.031523852080967335,
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 42,
+            "LearningRate": 0.015549371592489222,
+            "NumberOfTrees": 3522,
+            "SubsampleFraction": 0.8798319953012369,
+            "MaximumBinCountPerFeature": 339,
+            "FeatureFraction": 0.85739390399755078,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 0.16262106686370936,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features",
-            "DiskTranspose": false
+            "FeatureColumnName": "Features"
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastTreeBinary",
-        "Score": 0.8273104265402843,
-        "RuntimeInSeconds": 0.459,
+        "TrainerName": "LightGbmBinary",
+        "Score": 0.81843838193791152,
+        "RuntimeInSeconds": 3.648,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e2",
+          "_SCHEMA_": "e0 * e1 * e3",
           "e0": {
             "OutputColumnNames": [
               "ChiSquareVolume",
@@ -410,16 +414,18 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e2": {
-            "NumberOfLeaves": 14,
-            "MinimumExampleCountPerLeaf": 38,
-            "NumberOfTrees": 547,
-            "MaximumBinCountPerFeature": 113,
-            "FeatureFraction": 0.68447581679790537,
-            "LearningRate": 0.029342662240524519,
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 43,
+            "LearningRate": 0.012546544409768169,
+            "NumberOfTrees": 4560,
+            "SubsampleFraction": 0.99999977667298645,
+            "MaximumBinCountPerFeature": 266,
+            "FeatureFraction": 0.85805982719515728,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 0.18022176802750139,
             "LabelColumnName": "DataWasHided",
-            "FeatureColumnName": "Features",
-            "DiskTranspose": false
+            "FeatureColumnName": "Features"
           }
         }
       }
@@ -435,7 +441,7 @@
       "e7": "Naive"
     },
     "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
-    "MetricName": "Accuracy",
+    "MetricName": "F1",
     "ModelFilePath": "D:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\DecisionModel.mlnet"
   },
   "Type": "TrainingConfig",
@@ -446,7 +452,7 @@
     "Tuner": "eci-cfo",
     "Type": "ClassificationTrainingOption",
     "TrainingTime": 1200,
-    "OptimizeMetric": "Accuracy",
+    "OptimizeMetric": "F1",
     "LabelColumn": "DataWasHided",
     "AvailableTrainers": [
       "SDCA",

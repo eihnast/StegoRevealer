@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+﻿using StegoRevealer.StegoCore.AnalysisMethods;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.UI.Lib.MethodsHelper;
@@ -16,21 +17,21 @@ public static class Dictionaries
     /// <summary>
     /// Класс представления параметров (View) по методу стегоанализа
     /// </summary>
-    public static Dictionary<AnalyzerMethod, Type> ParamsViewForAnalyzerMethod = new()
+    public static Dictionary<AnalysisMethod, Type> ParamsViewForAnalysisMethod = new()
     {
-        { AnalyzerMethod.ChiSquare, typeof(ChiSqrMethodParametersView) },
-        { AnalyzerMethod.RegularSingular, typeof(RsMethodParametersView) },
-        { AnalyzerMethod.KochZhaoAnalysis, typeof(KzhaMethodParametersView) }
+        { AnalysisMethod.ChiSquare, typeof(ChiSqrMethodParametersView) },
+        { AnalysisMethod.RegularSingular, typeof(RsMethodParametersView) },
+        { AnalysisMethod.KochZhaoAnalysis, typeof(KzhaMethodParametersView) }
     };
 
     /// <summary>
     /// Класс параметров по методу стегоанализа
     /// </summary>
-    public static Dictionary<AnalyzerMethod, Type> ParamsTypeForAnalyzerMethod = new()
+    public static Dictionary<AnalysisMethod, Type> ParamsTypeForAnalysisMethod = new()
     {
-        { AnalyzerMethod.ChiSquare, typeof(ChiSquareParameters) },
-        { AnalyzerMethod.RegularSingular, typeof(RsParameters) },
-        { AnalyzerMethod.KochZhaoAnalysis, typeof(KzhaParameters) }
+        { AnalysisMethod.ChiSquare, typeof(ChiSquareParameters) },
+        { AnalysisMethod.RegularSingular, typeof(RsParameters) },
+        { AnalysisMethod.KochZhaoAnalysis, typeof(KzhaParameters) }
     };
 
     /// <summary>
