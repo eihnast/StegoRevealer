@@ -10,7 +10,7 @@
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
+		<AssemblyName>StegoRevealerAPI</AssemblyName>
 		<Title>Stego Revealer API Server</Title>
 		<Version>2025.1.2</Version>
 		<Authors>Iaroslav Grachev</Authors>
