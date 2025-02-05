@@ -95,7 +95,7 @@ jobs:
     - name: Publish
       run: dotnet publish StegoRevealer.UI.Desktop/StegoRevealer.UI.Desktop.csproj --configuration Release --output bin/Publish/lin --runtime linux-x64 -f net9.0 --self-contained true
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: StegoRevealer
         path: bin/Publish/lin/StegoRevealer
