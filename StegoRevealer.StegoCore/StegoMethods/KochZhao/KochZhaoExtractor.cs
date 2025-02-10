@@ -3,7 +3,6 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StegoRevealer.StegoCore.StegoMethods.KochZhao;
 

@@ -387,29 +387,4 @@ public class SharpnessCalculator
 
         return result;
     }
-
-    #region Helper
-
-    [Obsolete("Рекурсивный метод поиска соединённых с центром пикселей, не используется")]
-    private bool HasEdgeLineConnectionWithCenter(List<PixelInfo> pixels, PixelInfo pixel, int centerY, int centerX, byte[,] edges, List<PixelInfo>? pixelsFrom = null)
-    {
-        var neib = pixels.Where(np => Math.Abs(np.X - pixel.X) <= 1 && Math.Abs(np.Y - pixel.Y) <= 1 && np != pixel && (pixelsFrom is null || !pixelsFrom.Contains(np)))
-            .Where(p => edges[p.Y, p.X] == _params.SharpnessCalcStrongPixel || edges[p.Y, p.X] == _params.SharpnessCalcWeakPixel).ToList();
-
-        if (neib.Any(p => p.Y == centerY && p.X == centerX))
-            return true;
-
-        if (pixelsFrom is null)
-            pixelsFrom = new List<PixelInfo>() { pixel };
-        else
-            pixelsFrom.Add(pixel);
-
-        bool result = false;
-        foreach (var npixel in neib)
-            result |= HasEdgeLineConnectionWithCenter(pixels, npixel, centerY, centerX, edges, pixelsFrom);
-
-        return result;
-    }
-
-    #endregion
 }
