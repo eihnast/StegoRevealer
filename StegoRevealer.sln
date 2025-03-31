@@ -18,6 +18,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{21DB7700-0752-4C90-95EC-2F2EF91B1035}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet-desktop.yml = .github\workflows\dotnet-desktop.yml
+		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StegoRevealer.Common", "StegoRevealer.Common\StegoRevealer.Common.csproj", "{2FBA7192-BC00-431A-9D31-BF96C84D4EC9}"
