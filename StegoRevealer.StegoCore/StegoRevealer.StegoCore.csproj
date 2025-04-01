@@ -5,7 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<SignAssembly>False</SignAssembly>
-		<ApplicationIcon>AppIconCore.ico</ApplicationIcon>
+		<ApplicationIcon>Assets\AppCoreIcon.ico</ApplicationIcon>
 
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -14,7 +14,7 @@
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
-		<PackageIcon>AppIconBigCore.png</PackageIcon>
+		<PackageIcon>Assets\AppCoreIconPackage.png</PackageIcon>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<FileVersion>2025.2.13.1155</FileVersion>
 	</PropertyGroup>
@@ -33,7 +33,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="AppIconCore.ico" />
+	  <None Remove="Assets\AppCoreIcon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\AppCoreIcon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>

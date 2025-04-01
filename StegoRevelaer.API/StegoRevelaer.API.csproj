@@ -17,6 +17,7 @@
 		<Description>Stego Revealer API</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
+		<ApplicationIcon>Assets\AppApiIcon.ico</ApplicationIcon>
 		<FileVersion>2025.2.3</FileVersion>
 	</PropertyGroup>
 
@@ -32,6 +33,14 @@
 		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
 		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\AppApiIcon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Assets\AppApiIcon.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
