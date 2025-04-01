@@ -44,20 +44,17 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
 
         result.PixelsGroupLength = PixelsGroupLengthValue;
 
-        var currentNum = new StringBuilder();
+        string currentNum = string.Empty;
         var mask = new List<int>();
         for (int i = 0; i < FlippingMaskValue.Length; i++)
         {
-            currentNum.Append(FlippingMaskValue[i]);
-            if (currentNum[0] == '-')
+            currentNum += FlippingMaskValue[i];
+            if (currentNum == "-")
                 continue;
-            if (currentNum[^0] == '0' || currentNum[^0] == '1')
-            {
-                // Преобразуем 0 или 1 в число для маски
-                if (int.TryParse(currentNum.ToString(), out int value))
+            if (currentNum[..^0] == "0" || currentNum[..^0] == "1")
+                if (int.TryParse(currentNum, out int value))
                     mask.Add(value);
-            }
-            currentNum.Clear();
+            currentNum = string.Empty;
         }
         result.FlippingMask = mask.ToArray();
 
