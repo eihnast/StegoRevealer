@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.CommonLib.Exceptions;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
@@ -90,7 +91,7 @@ public class RsAnalyser
         var result = new RsGroupsCalcResult();
         var channelArray = invertedImage ? Params.Image.Inverted.ChannelsArray.GetChannelArray(channel) : Params.Image.ChannelsArray.GetChannelArray(channel);
         if (channelArray is null)
-            throw new Exception($"Error while getting OneChannelArray for channel '{channel}'");
+            throw new ArgumentException($"Error while getting OneChannelArray for channel '{channel}'");
 
         var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
         result.GroupsNumber = groups.Count;
@@ -143,12 +144,12 @@ public class RsAnalyser
         foreach (var basketTask in basketTasks)
             basketTask.Wait();
 
-        foreach (var basketTask in basketTasks)
+        foreach (var basketTaskResult in basketTasks.Select(task => task.Result))
         {
-            result.Singulars += basketTask.Result.Singulars;
-            result.Regulars += basketTask.Result.Regulars;
-            result.SingularsWithInvertedMask += basketTask.Result.SingularsWithInvertedMask;
-            result.RegularsWithInvertedMask += basketTask.Result.RegularsWithInvertedMask;
+            result.Singulars += basketTaskResult.Singulars;
+            result.Regulars += basketTaskResult.Regulars;
+            result.SingularsWithInvertedMask += basketTaskResult.SingularsWithInvertedMask;
+            result.RegularsWithInvertedMask += basketTaskResult.RegularsWithInvertedMask;
         }
 
         return result;
@@ -163,7 +164,7 @@ public class RsAnalyser
     private double CalculatePValue(RsGroupsCalcResult unturnedValues, RsGroupsCalcResult invertedValues)
     {
         if (unturnedValues.GroupsNumber != invertedValues.GroupsNumber)
-            throw new Exception("Error while RS groups calculating");
+            throw new CalculationException("Error while RS groups calculating: unturnedValues and invertedValues is not equals");
 
         double Rm = (double)unturnedValues.Regulars / unturnedValues.GroupsNumber;
         double Sm = (double)unturnedValues.Singulars / unturnedValues.GroupsNumber;
@@ -195,7 +196,7 @@ public class RsAnalyser
         _writeToLog?.Invoke($"Вычислен дискриминант: D = {D:0.####}.");
 
         double x1 = 0, x2 = 0, minX = 0;
-        if (D == 0.0)
+        if (D.Equals(0.0))
             x1 = x2 = minX = -(b / 2 * a);
         if (D > 0.0)
         {
@@ -211,7 +212,6 @@ public class RsAnalyser
 
         double p = minX / (minX - 0.5);
         return Math.Max(p, 0.0);
-        // return Math.Min(1.0, Math.Max(p, 0.0));
     }
 
 
@@ -231,7 +231,7 @@ public class RsAnalyser
                 {
                     int x = xGroup * Params.PixelsGroupLength + i;
                     if (x >= channelArray.Width)
-                        throw new IndexOutOfRangeException("Index out of bounds in channelArray.");
+                        throw new CalculationException("Index out of bounds in channelArray.");
                     group[i] = channelArray[y, x];
                 }
                 groups.Add(group);

@@ -16,6 +16,7 @@ using System.Diagnostics;
 using StegoRevealer.StegoCore.StegoMethods;
 using System.IO;
 using StegoRevealer.Common;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -385,7 +386,10 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
-        catch { }
+        catch 
+        {
+            Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+        }
 
         return false;
     }
@@ -485,7 +489,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
         // Запуск
         if (_lsbParameters is null && _kzhParameters is null)
-            throw new Exception("Параметры не указаны");
+            throw new IncorrectValueException("Параметры не указаны");
 
         var results = new ExtractionResultsDto();
         if (MethodLsbSelected && _lsbParameters is not null)  // Извлечение из НЗБ
@@ -539,8 +543,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             //    нет варианта сокрытия начиная с зелёного или синего канала, могут только отличаться индексы между собой по каналам.
             if (LsbStartIndexSelected)
             {
-                int commonSkip = LsbStartIndexValue;  // Считаем, что указан индекс всего пикселя (убрал "/ 3");
-                var startPixels = new StartValues(
+                int commonSkip = LsbStartIndexValue;  // Считаем, что указан индекс всего пикселя (убрал "/ 3")
+                _lsbParameters.StartPixels = new StartValues(
                     (ImgChannel.Red, commonSkip), (ImgChannel.Green, commonSkip), (ImgChannel.Blue, commonSkip));
             }
 

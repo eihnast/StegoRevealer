@@ -87,7 +87,7 @@ public class KochZhaoHider : IHider
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
         int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа блоков
         int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
-        double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
+        double relativeHidingVolume = (double)hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
         int usingBlocksNum = Params.GetNeededBlocksNum();  // Количество блоков, нужных для скрытия
         int blockSize = Params.BlockSize;  // Используемый размер блока
 

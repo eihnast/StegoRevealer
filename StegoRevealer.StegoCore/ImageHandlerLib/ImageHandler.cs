@@ -7,9 +7,9 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// </summary>
 public class ImageHandler : IDisposable
 {
-    private ScImage _image;  // Изображение
+    private readonly ScImage _image;  // Изображение
 
-    private string _imgPath;  // Путь к изображению
+    private readonly string _imgPath;  // Путь к изображению
 
     private ChannelsArray _channelsArray;  // Массив пикселей по каналам
     private ImageArray _imgArray;  // Массив пикселей
@@ -41,7 +41,7 @@ public class ImageHandler : IDisposable
     public string ImgName { get { return Path.GetFileNameWithoutExtension(ImgPath); } }
 
 
-    private ImageHandler? _invertedHandler = null;  // Обработчик получения пикселей с "инвертированными" НЗБ
+    private readonly ImageHandler? _invertedHandler = null;  // Обработчик получения пикселей с "инвертированными" НЗБ
 
     /// <summary>
     /// Получение "инвертированного" обработчика - возвращает пиксели с "инвертированными" НЗБ<br/>

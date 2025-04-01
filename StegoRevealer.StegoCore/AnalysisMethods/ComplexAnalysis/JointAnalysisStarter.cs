@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 
-public class JointAnalysisStarter
+public static class JointAnalysisStarter
 {
     public async static Task<JointAnalysisResults> Start(JointAnalysisParameters parameters)
     {
@@ -43,7 +43,7 @@ public class JointAnalysisStarter
         // Запуск комплексного стегоанализа
         var complexMethodTasks = new List<Task>();
         ComplexSaMethodResults? complexSaMethodResults = null;
-        if (parameters.Image is not null && parameters.UseComplexMethod is not null and true)
+        if (parameters.Image is not null && parameters.UseComplexMethod is true)
         {
             complexSaMethodResults = new ComplexSaMethodResults();
 
@@ -67,17 +67,29 @@ public class JointAnalysisStarter
             complexSaMethodResults.PixelsNum = parameters.Image.Width * parameters.Image.Height;
 
             // Задачи
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.ChiSquareHorizontalResult = complexChiSqrMethodHorizontalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.ChiSquareVerticalResult = complexChiSqrMethodVerticalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.RsResult = complexRsMethodAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.KzhaHorizontalResult = complexKzhaMethodHorizontalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.KzhaVerticalResult = complexKzhaMethodVerticalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.StatmResult = statmAnalyzer.Analyse(); } catch { } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.ChiSquareHorizontalResult = complexChiSqrMethodHorizontalAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.ChiSquareVerticalResult = complexChiSqrMethodVerticalAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.RsResult = complexRsMethodAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.KzhaHorizontalResult = complexKzhaMethodHorizontalAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.KzhaVerticalResult = complexKzhaMethodVerticalAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
+            complexMethodTasks.Add(Task.Run(() => { 
+                try { complexSaMethodResults.StatmResult = statmAnalyzer.Analyse(); } 
+                catch { /* Не обрабатываем, т.к. позже проверим результат на null */ } }));
         }
 
         // Ожидание
         foreach (var methodTask in methodTasks)
-            if (methodTask.Value is not null)  // methodTask.Value?.Wait();
+            if (methodTask.Value is not null)
                 await methodTask.Value;
         foreach (var complesMethodTask in complexMethodTasks)
             await complesMethodTask;
@@ -88,8 +100,6 @@ public class JointAnalysisStarter
 
         timer.Stop();  // Остановка таймера
 
-        //bool decisionCanBeCalculated = parameters.Image is not null && parameters.ChiSquareParameters is not null && 
-        //    parameters.RsParameters is not null && parameters.KzhaParameters is not null;
         return ProcessResults(parameters.Image, results, timer, complexSaMethodResults);
     }
 
@@ -105,7 +115,7 @@ public class JointAnalysisStarter
 
         // Формирование вывода
         bool? isHidingDetected = null;
-        if (complexSaMethodResults is not null)  // && chiRes is not null && rsRes is not null && kzhaRes is not null && statmRes is not null)
+        if (complexSaMethodResults is not null)
         {
             var saResult = new SteganalysisResults
             {

@@ -5,7 +5,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 public class ImageBlocks
 {
-    private ImageBlocksParameters _parameters;  // Параметры для разбиения на блоки
+    private readonly ImageBlocksParameters _parameters;  // Параметры для разбиения на блоки
     private ImageHandler _img;  // Изображение
 
     // Матрица блоков: хранятся индексы левого верхнего и правого нижнего пикселя каждого блока

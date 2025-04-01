@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
@@ -37,7 +38,7 @@ public static class FrequencyViewTools
         int yLength = blockCoords.Rd.Y - blockCoords.Lt.Y + 1;
         int xLength = blockCoords.Rd.X - blockCoords.Lt.X + 1;
         if (xLength != yLength)
-            throw new Exception($"Block must be square. But yLength = {yLength}, xLength = {xLength}");
+            throw new IncorrectValueException($"Block must be square. But yLength = {yLength}, xLength = {xLength}");
 
         if (blockSize is null)
             blockSize = yLength;
@@ -114,9 +115,6 @@ public static class FrequencyViewTools
         return (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
     }
 
-    public static ScIndexPair GetCoefIndexesInImgArray(ScPointCoords coords, ScIndexPair coeffs) =>
-        new ScIndexPair(coords.Y + coeffs.FirstIndex, coords.X + coeffs.SecondIndex);
-
     /// <summary>
     /// Возвращает значения коэффициентов блока по переданным координатам и массиву пикселей
     /// </summary>
@@ -127,6 +125,9 @@ public static class FrequencyViewTools
         return (imar[realCoeffs.FirstIndex, realCoeffs.SecondIndex, coords.ChannelId],
             imar[realCoeffs.SecondIndex, realCoeffs.FirstIndex, coords.ChannelId]);
     }
+
+    public static ScIndexPair GetCoefIndexesInImgArray(ScPointCoords coords, ScIndexPair coeffs) =>
+        new ScIndexPair(coords.Y + coeffs.FirstIndex, coords.X + coeffs.SecondIndex);
 
     /// <summary>
     /// Возвращает модифицированные коэффициенты, скрывая в них бит (согласно порогу)<br/>

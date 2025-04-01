@@ -7,8 +7,8 @@ namespace StegoRevealer.StegoCore.StegoMethods;
 /// </summary>
 public class StartValues
 {
-    private Dictionary<ImgChannel, int> _values;  // Стартовые индексы для каналов
-    private Dictionary<int, ImgChannel> _keysOrder = new();  // Порядок каналов
+    private readonly Dictionary<ImgChannel, int> _values;  // Стартовые индексы для каналов
+    private readonly Dictionary<int, ImgChannel> _keysOrder = new();  // Порядок каналов
     
     private int _lastKey = -1;
 

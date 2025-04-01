@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using StegoRevealer.StegoCore.AnalysisMethods;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib;
 using System;
@@ -38,7 +39,7 @@ public static class CommonTools
     {
         var skBitmap = image.GetScImage().GetBitmap();
         if (skBitmap is null)
-            throw new Exception("Error while loading image");
+            throw new OperationException("Error while loading image");
 
         var bitmap = new Bitmap(
             PixelFormat.Bgra8888,
@@ -126,7 +127,7 @@ public static class CommonTools
         if (viewModel is null)
         {
             StackFrame frame = new StackFrame(1);
-            throw new Exception($"Failed getting ViewModel '{typeof(T).Name}' for window/view '{frame.GetMethod()?.DeclaringType?.Name}'");
+            throw new OperationException($"Failed getting ViewModel '{typeof(T).Name}' for window/view '{frame.GetMethod()?.DeclaringType?.Name}'");
         }
         return viewModel;
     }
@@ -159,8 +160,10 @@ public static class CommonTools
         if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble
             or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
         {
+            // Проверяем ввод числа
             if (!AllowedDigitKeys.Contains(e.Key))
             {
+                // При вводе числа разрешён минус
                 if (e.Key == MinusKey)
                 {
                     if ((strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble)
@@ -168,6 +171,7 @@ public static class CommonTools
                         return;
                 }
 
+                // При вводе числа разрешён ввод разделителя дробной части
                 if (e.Key == DoubleSeparatorKey)
                 {
                     if ((strategy is FilterInputStrategy.AllowDouble or FilterInputStrategy.AllowPositiveDouble)

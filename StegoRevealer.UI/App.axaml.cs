@@ -22,7 +22,6 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // desktop.Exit += (object? sender, ControlledApplicationLifetimeExitEventArgs e) => // exit app actions;
             Logger.LogInfo("Creating main window");
 
             var mainWindow = new MainWindow { DataContext = mainWindowVm };

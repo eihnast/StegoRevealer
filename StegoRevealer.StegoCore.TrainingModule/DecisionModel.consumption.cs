@@ -103,7 +103,7 @@ namespace StegoRevealer_StegoCore_TrainingModule
             public bool DataWasHided { get; set; }
 
             [ColumnName(@"Features")]
-            public float[] Features { get; set; }
+            public float[] Features { get; set; } = null!;
 
             [ColumnName(@"PredictedLabel")]
             public bool PredictedLabel { get; set; }

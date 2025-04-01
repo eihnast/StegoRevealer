@@ -48,10 +48,21 @@ public class ImageHandlerTests
             }));
         }
 
-        foreach (var imgTask in imgTasks)
-            imgTask.Start();
-        foreach (var imgTask in imgTasks)
-            imgTask.Wait();
+        string error = string.Empty;
+
+        try
+        {
+            foreach (var imgTask in imgTasks)
+                imgTask.Start();
+            foreach (var imgTask in imgTasks)
+                imgTask.Wait();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        Assert.IsTrue(string.IsNullOrEmpty(error));
     }
 
     [TestMethod]

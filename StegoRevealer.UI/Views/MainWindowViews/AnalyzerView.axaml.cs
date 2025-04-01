@@ -158,11 +158,8 @@ public partial class AnalyzerView : UserControl
             StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
             StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
             StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
-            // StatResultsEntropyTsallisValue.Text = string.Format("{0:F5}", results.StatmEntropyTsallisValue);
-            // StatResultsEntropyVaidaValue.Text = string.Format("{0:F5}", results.StatmEntropyVaidaValue);
             StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
             StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
-            // StatResultsEntropyHavardValue.Text = string.Format("{0:F5}", results.StatmEntropyHavardValue);
 
 
             // Затрачено времени
@@ -209,7 +206,10 @@ public partial class AnalyzerView : UserControl
         if (!_vm.HasResults)
             _vm.IsMethodsOpened = true;
     }
-    private void ResultsExpander_Collapsed(object sender, RoutedEventArgs e) { }
+    private void ResultsExpander_Collapsed(object sender, RoutedEventArgs e)
+    { 
+        // При текущей реализации действий на этот экшен не требуется
+    }
 
 
     // Сброс результатов
@@ -239,11 +239,8 @@ public partial class AnalyzerView : UserControl
         StatResultsSharpnessValue.Text = MessageUnknown;
         StatResultsBlurValue.Text = MessageUnknown;
         StatResultsContrastValue.Text = MessageUnknown;
-        // StatResultsEntropyTsallisValue.Text = MessageUnknown;
-        // StatResultsEntropyVaidaValue.Text = MessageUnknown;
         StatResultsEntropyShennonValue.Text = MessageUnknown;
         StatResultsEntropyRenyiValue.Text = MessageUnknown;
-        // StatResultsEntropyHavardValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
         AutoDetectionResultValue.Text = IsHidingDecisionCannotBeCalculated;

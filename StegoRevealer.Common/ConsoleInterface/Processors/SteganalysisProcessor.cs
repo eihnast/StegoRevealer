@@ -11,13 +11,13 @@ namespace StegoRevealer.Common.ConsoleInterface.Processors;
 public class SteganalysisProcessor
 {
     private ImageHandler? _currentImage;
-    private LoggerHandler _logger;
+    private readonly LoggerHandler _logger;
 
-    private string? _fileName;
-    private bool _useChiSqr;
-    private bool _userRs;
-    private bool _useKzha;
-    private bool _useAllMethods;
+    private readonly string? _fileName;
+    private readonly bool _useChiSqr;
+    private readonly bool _userRs;
+    private readonly bool _useKzha;
+    private readonly bool _useAllMethods;
 
     public SteganalysisProcessor(string? filename, bool chiMethodOptionValue, bool rsMethodOptionValue, bool kzhaMethodOptionValue, bool allMethodsOptionValue)
     {
@@ -77,6 +77,8 @@ public class SteganalysisProcessor
             + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
             + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
+            + "\n\nStatistical metrics = " + Common.Tools.GetFormattedJson(statmRes)
+            + "\nLogs statistical metrics calculation = \n" + statmRes?.ToString(indent: 1)
             + $"\n\nElapsed time = {result.ElapsedTime}\n" + Logger.Separator);
 
         PrintResults(result, Path.GetFileNameWithoutExtension(_fileName ?? string.Empty));
@@ -118,7 +120,7 @@ public class SteganalysisProcessor
         return true;
     }
 
-    private void PrintResults(JointAnalysisResults result, string imgName)
+    private static void PrintResults(JointAnalysisResults result, string imgName)
     {
         // Приведение к известным типам результатов
         var chiRes = result.ChiSquareResult;
@@ -134,7 +136,6 @@ public class SteganalysisProcessor
             (result.IsHidingDetected is null
             ? Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated
             : (result.IsHidingDetected.Value ? Constants.ResultsDefaults.Deceted.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
-        //outputStr.AppendLine();
 
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + Common.Tools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0));
@@ -162,7 +163,6 @@ public class SteganalysisProcessor
             }
         }
 
-        //outputStr.AppendLine();
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmLabel, false));
         outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmNoise) + Common.Tools.GetLongFormattedDouble(statmRes?.NoiseValue));
         outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmSharpness) + Common.Tools.GetLongFormattedDouble(statmRes?.SharpnessValue));
@@ -171,7 +171,6 @@ public class SteganalysisProcessor
         outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmShennon) + Common.Tools.GetLongFormattedDouble(statmRes?.EntropyValues.Shennon));
         outputStr.AppendLine("\t" + Common.Tools.AddColon(Constants.ResultsNames.StatmRenyi) + Common.Tools.GetLongFormattedDouble(statmRes?.EntropyValues.Renyi));
 
-        //outputStr.AppendLine();
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime) + Common.Tools.GetElapsedTime(result.ElapsedTime));
 
         WinConsole.WriteLine(outputStr.ToString());

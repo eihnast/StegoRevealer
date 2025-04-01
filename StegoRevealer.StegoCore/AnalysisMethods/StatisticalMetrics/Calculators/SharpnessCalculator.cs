@@ -1,12 +1,13 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ScMath;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 
 public class SharpnessCalculator
 {
-    private StatmParameters _params;
+    private readonly StatmParameters _params;
 
     public SharpnessCalculator(StatmParameters parameters)
     {
@@ -42,7 +43,7 @@ public class SharpnessCalculator
                     double k = Math.Tan(anglesImar[y, x]);  // y = kx, условно, с центром в центре текущего пикселя, k = тангенс угла из матрицы углов
 
                     // Вырожденный случай горизонтали
-                    if (k == 0)
+                    if (k.Equals(0))
                     {
                         for (int localX = Math.Max(x - maxOffset, 0); localX < Math.Min(x + maxOffset, width - 1); localX++)
                             pixelsOnLine.Add(new PixelInfo { Y = y, X = localX });
@@ -60,7 +61,7 @@ public class SharpnessCalculator
                         else if ((xForMaxY > 0 && xForMaxY <= maxX) || (xForMaxY < 0 && xForMaxY >= -maxX))
                             pixelOffset = new PixelInfo() { Y = maxOffset, X = (int)Math.Ceiling(xForMaxY + 0.5) - 1 };
                         else
-                            throw new Exception($"Line coordinates error with: k = {k}, yForMaxX = {yForMaxX}, xForMaxY = {xForMaxY}");
+                            throw new CalculationException($"Line coordinates error with: k = {k}, yForMaxX = {yForMaxX}, xForMaxY = {xForMaxY}");
 
                         var firstPixel = new PixelInfo() { Y = y + pixelOffset.Y, X = x + pixelOffset.X };
                         var secondPixel = new PixelInfo() { Y = y - pixelOffset.Y, X = x - pixelOffset.X };
@@ -73,9 +74,6 @@ public class SharpnessCalculator
                         // Применяем алгоритм Брезенхэма
                         pixelsOnLine = PixelsTools.GetPixelsOnLine(firstPixel.Y, firstPixel.X, secondPixel.Y, secondPixel.X);
                     }
-
-                    // Убираем центральный краевой пиксель из последовательности
-                    // pixelsOnLine = pixelsOnLine.Where(p => !(p.Y == y && p.X == x)).ToList();
 
                     // Обогащаем значениями пикселей
                     for (int i = 0; i < pixelsOnLine.Count; i++)
@@ -241,7 +239,7 @@ public class SharpnessCalculator
     }
 
     // Формирует матрицу углов в градусов из матрицы значений углов в радиантах
-    private double[,] GetAngles(double[,] directions, bool repairNegativeAngles = true)
+    private static double[,] GetAngles(double[,] directions, bool repairNegativeAngles = true)
     {
         const double angleConst = 180 / Math.PI;
 
@@ -262,7 +260,7 @@ public class SharpnessCalculator
     }
 
     // "Сжатие границ": оставляем минимум значимых для границы перепада пикселей
-    private byte[,] NonMaximumSuppression(byte[,] pixelsArray, double[,] directionsArray)
+    private static byte[,] NonMaximumSuppression(byte[,] pixelsArray, double[,] directionsArray)
     {
         int height = pixelsArray.GetLength(0);
         int width = pixelsArray.GetLength(1);

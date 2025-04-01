@@ -4,7 +4,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators
 
 public class BlurCalculator
 {
-    private StatmParameters _params;
+    private readonly StatmParameters _params;
 
     public BlurCalculator(StatmParameters parameters)
     {

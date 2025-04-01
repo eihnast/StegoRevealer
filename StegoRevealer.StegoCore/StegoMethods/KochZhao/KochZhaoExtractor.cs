@@ -17,11 +17,6 @@ public class KochZhaoExtractor : IExtractor
     public KochZhaoParameters Params { get; set; }
 
 
-    public KochZhaoExtractor(ImageHandler img)
-    {
-        Params = new KochZhaoParameters(img);
-        Params.StegoOperation = StegoOperationType.Extracting;
-    }
 
     public KochZhaoExtractor(KochZhaoParameters kzParams)
     {
@@ -30,8 +25,9 @@ public class KochZhaoExtractor : IExtractor
     }
 
     public KochZhaoExtractor(ImageHandler img, int? seed = null, TraverseType traverseType = TraverseType.Horizontal, int threshold = 120)
-        : this(img)
     {
+        Params = new KochZhaoParameters(img);
+        Params.StegoOperation = StegoOperationType.Extracting;
         Params.Seed = seed;
         Params.TraverseType = traverseType;
         Params.Threshold = threshold;

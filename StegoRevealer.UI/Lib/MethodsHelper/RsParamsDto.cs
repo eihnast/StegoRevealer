@@ -9,7 +9,7 @@ namespace StegoRevealer.UI.Lib.MethodsHelper;
 /// DTO для параметров стегоаналитического метода Regular-Singular: 
 /// <see cref="RsParameters"/>
 /// </summary>
-public class RsParamsDto : BaseParamsDto<RsParameters>
+public class RsParamsDto : IParamsDto<RsParameters>
 {
     public UniqueList<ImgChannel> Channels { get; set; }
         = new UniqueList<ImgChannel> { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
@@ -32,7 +32,7 @@ public class RsParamsDto : BaseParamsDto<RsParameters>
     }
 
     /// <inheritdoc/>
-    public override void FillParameters(ref RsParameters parameters)
+    public void FillParameters(ref RsParameters parameters)
     {
         if (parameters is null)
             return;

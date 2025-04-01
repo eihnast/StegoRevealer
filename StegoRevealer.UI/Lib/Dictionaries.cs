@@ -17,7 +17,7 @@ public static class Dictionaries
     /// <summary>
     /// Класс представления параметров (View) по методу стегоанализа
     /// </summary>
-    public static Dictionary<AnalysisMethod, Type> ParamsViewForAnalysisMethod = new()
+    public static readonly Dictionary<AnalysisMethod, Type> ParamsViewForAnalysisMethod = new()
     {
         { AnalysisMethod.ChiSquare, typeof(ChiSqrMethodParametersView) },
         { AnalysisMethod.RegularSingular, typeof(RsMethodParametersView) },
@@ -27,7 +27,7 @@ public static class Dictionaries
     /// <summary>
     /// Класс параметров по методу стегоанализа
     /// </summary>
-    public static Dictionary<AnalysisMethod, Type> ParamsTypeForAnalysisMethod = new()
+    public static readonly Dictionary<AnalysisMethod, Type> ParamsTypeForAnalysisMethod = new()
     {
         { AnalysisMethod.ChiSquare, typeof(ChiSquareParameters) },
         { AnalysisMethod.RegularSingular, typeof(RsParameters) },
@@ -37,7 +37,7 @@ public static class Dictionaries
     /// <summary>
     /// Класс DTO параметров по методу стегоанализа
     /// </summary>
-    public static Dictionary<Type, Type> MethodParametersToDtoMap = new()
+    public static readonly Dictionary<Type, Type> MethodParametersToDtoMap = new()
     {
         { typeof(ChiSquareParameters), typeof(ChiSqrParamsDto) },
         { typeof(RsParameters), typeof(RsParamsDto) },

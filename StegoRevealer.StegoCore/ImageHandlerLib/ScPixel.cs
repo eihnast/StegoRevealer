@@ -8,7 +8,7 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 public struct ScPixel
 {
     // Значения цветов по каналам
-    private byte[] _pixelArray = new byte[] { 0, 0, 0, 0 };
+    private readonly byte[] _pixelArray = new byte[] { 0, 0, 0, 0 };
 
     /// <summary>
     /// Размер массива значений пикселя (число каналов)

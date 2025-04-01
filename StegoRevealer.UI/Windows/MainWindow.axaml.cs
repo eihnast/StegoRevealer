@@ -34,7 +34,7 @@ public partial class MainWindow : Window
         _vm.TurnToAnalyzer();
     }
 
-    private void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
+    private static void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
     {
         Configurator.SaveConfig();
         TempManager.Instance.DeleteImageHandlers();

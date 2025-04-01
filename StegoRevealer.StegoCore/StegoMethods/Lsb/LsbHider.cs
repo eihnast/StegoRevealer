@@ -29,7 +29,7 @@ public class LsbHider : IHider
     /// </summary>
     private int GetContainerVolume()
     {
-        var (w, h, d) = Params.Image.GetImgSizes();
+        var (w, h, _) = Params.Image.GetImgSizes();
         int pixelsToHideNum = w * h * Params.Channels.Count;
         return pixelsToHideNum * Params.LsbNum;
     }
@@ -89,7 +89,7 @@ public class LsbHider : IHider
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
         int containerVolume = GetContainerVolume();  // Объём контейнера с учётом числа НЗБ
         int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
-        double relativeHidingVolume = hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
+        double relativeHidingVolume = (double)hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
         int usingColorBytesNum = Math.Min(Params.CalcRealContainerVolume(), Params.GetNeededColorBytesNum());  // Количество цветовых байт, нужных для скрытия
         result.Log($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tcontainerVolume = {containerVolume}\n\t" +
@@ -111,14 +111,14 @@ public class LsbHider : IHider
             colorBytesIndexes = iterator(usingColorBytesNum, Params).Take(usingColorBytesNum).ToList();
 
         int basketSize = 512;  // Цветовых байт в пачке
-        int basketsCount = colorBytesIndexes.Count() / basketSize;  // Оставшиеся будут добавлены в последнюю пачку
+        int basketsCount = colorBytesIndexes.Count / basketSize;  // Оставшиеся будут добавлены в последнюю пачку
         var basketsTasks = new Task[basketsCount];
         for (int i = 0; i < basketsCount; i++)
         {
             int basketIndex = i;
             basketsTasks[i] = new Task(() =>
             {
-                int lastIndexInBasket = basketIndex < basketsCount - 1 ? basketSize * (basketIndex + 1) : colorBytesIndexes.Count();
+                int lastIndexInBasket = basketIndex < basketsCount - 1 ? basketSize * (basketIndex + 1) : colorBytesIndexes.Count;
                 var colorBytesIndexesForBasket = colorBytesIndexes.Take((basketSize * basketIndex)..lastIndexInBasket);
                 int k = (basketSize * basketIndex) * Params.LsbNum;
 
@@ -166,7 +166,7 @@ public class LsbHider : IHider
     /// <param name="bits">Скрываемый бит</param>
     private void HideDataBitToColorByte(ScPointCoords inds, BitArray bits)
     {
-        lock (hidingLock)
+        lock (_hidingLock)
         {
             var imgArray = Params.Image.ImgArray;  // Рабочий массив пикселей изображения
             var colorByte = imgArray[inds.Y, inds.X, inds.ChannelId];
@@ -175,5 +175,5 @@ public class LsbHider : IHider
         }
     }
 
-    private object hidingLock = new object();
+    private readonly object _hidingLock = new object();
 }

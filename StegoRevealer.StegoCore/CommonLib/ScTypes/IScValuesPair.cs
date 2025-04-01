@@ -3,7 +3,7 @@
 /// <summary>
 /// Базовое представление пары значений
 /// </summary>
-public interface ScValuesPair<T>
+public interface IScValuesPair<T>
 {
     /// <summary>
     /// Первое значение

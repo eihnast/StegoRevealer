@@ -1,12 +1,13 @@
 ﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 /*
  * Предлагаются два вида итераторов для последовательного и псевдослучайного доступа:
- * - первый возвращает координаты блока в матрице блоков (и индекс цветового канала) - структуру ScPointCoords;
- * - второй возвращает непосредственно байтовые значения одноканального блока в нужном канале - массив byte[,].
+ * - первый возвращает координаты блока в матрице блоков (и индекс цветового канала) - структуру ScPointCoords
+ * - второй возвращает непосредственно байтовые значения одноканального блока в нужном канале - массив byte[,]
  * Для получения координат пикселей блока (левого верхнего и правого нижнего) достаточно использовать первый из описанных итераторов
  *   для получения индексов ScPointCoords indexes, после чего получить координаты пикселей как blocks[indexes.Y, indexes.X]
  * 
@@ -93,7 +94,6 @@ public static class BlocksTraverseHelper
     {
         foreach (var blockCoords in iterator(blocks, options, blocksNum))
             yield return GetOneChannelBlockByIndexes(blockCoords, blocks);
-        yield break;
     }
 
     /// <summary>
@@ -105,7 +105,6 @@ public static class BlocksTraverseHelper
     {
         foreach (var blockCoords in iterator(blocks, options, blocksNum))
             yield return GetBlockByIndexes(blockCoords, blocks, options.Channels);
-        yield break;
     }
 
     /// <summary>
@@ -182,8 +181,6 @@ public static class BlocksTraverseHelper
                 if (line == blocks.BlocksInColumn - 1 && column == blocks.BlocksInRow - 1)
                     channelIndex++;  // Придостижении последнего блока в 2D матрице переходим к следующему каналу
             }
-
-            yield break;
         }
         else  // Чересканально
         {
@@ -197,8 +194,6 @@ public static class BlocksTraverseHelper
                     indexes[k]++;
                 }
             }
-
-            yield break;
         }
     }
 
@@ -227,8 +222,6 @@ public static class BlocksTraverseHelper
             yield return new Sc2DPoint(line, column);
             currentIndex++;
         }
-
-        yield break;
     }
 
     /// <summary>
@@ -262,8 +255,6 @@ public static class BlocksTraverseHelper
             var (y, x, channelId) = GetBlockIndexesByFullLinearIndex(allLinearIndexes[i], blocks, options).AsTuple();
             yield return new ScPointCoords(y, x, channelId);
         }
-
-        yield break;
     }
 
     /// <summary>
@@ -286,7 +277,7 @@ public static class BlocksTraverseHelper
         CorrectBlocksNum(ref blocksNum, blocks);
 
         if (blocksNum is null)
-            throw new Exception("Число блоков не может быть null");
+            throw new IncorrectValueException("Число блоков не может быть null");
 
         // Массив общих линейных индексов блоков
         var allLinearIndexes = Enumerable.Range(0, blocksLinearLength);  // Формирование
@@ -297,8 +288,6 @@ public static class BlocksTraverseHelper
             var (y, x) = GetBlockIndexesBy2DLinearIndex(index, blocks, options.TraverseType).AsTuple();
             yield return new Sc2DPoint(y, x);
         }
-
-        yield break;
     }
 
     /// <summary>

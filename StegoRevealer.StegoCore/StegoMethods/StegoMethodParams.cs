@@ -75,7 +75,7 @@ public abstract class StegoMethodParams
     public abstract StartValues StartPoints { get; set; }
 
 
-    public StegoMethodParams(ImageHandler imgHandler)
+    protected StegoMethodParams(ImageHandler imgHandler)
     {
         Image = imgHandler;
     }

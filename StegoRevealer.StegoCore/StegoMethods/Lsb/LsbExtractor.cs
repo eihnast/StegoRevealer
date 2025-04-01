@@ -18,16 +18,11 @@ public class LsbExtractor : IExtractor
     public LsbParameters Params { get; set; }
 
 
-    public LsbExtractor(ImageHandler img)
+    public LsbExtractor(ImageHandler img, 
+        int? seed = null, bool interlaceChannels = true, TraverseType traverseType = TraverseType.Horizontal, int lsbNum = 1)
     {
         Params = new LsbParameters(img);
         Params.StegoOperation = StegoOperationType.Extracting;
-    }
-
-    public LsbExtractor(ImageHandler img, 
-        int? seed = null, bool interlaceChannels = true, TraverseType traverseType = TraverseType.Horizontal, int lsbNum = 1)
-        : this(img)
-    {
         Params.Seed = seed;
         Params.InterlaceChannels = interlaceChannels;
         Params.TraverseType = traverseType;
@@ -101,7 +96,7 @@ public class LsbExtractor : IExtractor
     /// <summary>
     /// Метод извлечения бита из цветового байта
     /// </summary>
-    private BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum, int remainingBits)
+    private static BitArray ExtractBitsFromColorByte(byte colorByte, int lsbNum, int remainingBits)
     {
         var bits = new BitArray(Math.Min(lsbNum, remainingBits));
         var colorByteAsBits = BitArrayExtensions.NewFromByte(colorByte, linearOrder: true);

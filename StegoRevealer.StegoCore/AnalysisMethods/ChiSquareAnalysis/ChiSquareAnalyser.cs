@@ -17,9 +17,6 @@ public class ChiSquareAnalyser
     /// </summary>
     public ChiSquareParameters Params { get; set; }
 
-    // Список координат блоков (кортежи: левые верхние и правые нижние координаты), заполняется при первом проходе по массиву пикселей
-    // private List<(Sc2DPoint lt, Sc2DPoint rd)>? _lazyBlocksCoordsList = null;
-
 
     public ChiSquareAnalyser(ImageHandler image)
     {
@@ -196,8 +193,8 @@ public class ChiSquareAnalyser
                 }
 
             // Удаляем из массивов объединений удалённые и перенесённые элементы
-            toUnifyExpected.RemoveAll(val => val == -1);
-            toUnifyObserved.RemoveAll(val => val == -1);
+            toUnifyExpected.RemoveAll(val => val.Equals(-1));
+            toUnifyObserved.RemoveAll(val => val.Equals(-1));
 
             // Решаем проблему последней категории
             if (toUnifyExpected.Count == 1)

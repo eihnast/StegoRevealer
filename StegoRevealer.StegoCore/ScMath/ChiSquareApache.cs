@@ -52,7 +52,7 @@ public static class ChiSquareApache
     {
         if (a <= 0.0 || x < 0)
             return null;
-        if (x == 0.0)
+        if (x.Equals(0.0))
             return 0.0;
         if (x >= a + 1)
             return 1.0 - RegularizedGammaQ(a, x, epsilon, maxIterations);
@@ -79,22 +79,21 @@ public static class ChiSquareApache
         return res;
     }
 
-    private static bool Isfinite(double val)
-    {
-        // return val == double.PositiveInfinity || val == double.NegativeInfinity;
-        return double.IsFinite(val);
-    }
-
     private static double? RegularizedGammaP(double a, double x)
     {
         return RegularizedGammaP(a, x, _defaultEpsilon, (long)Math.Pow(2, 32) - 1);
+    }
+
+    private static bool Isfinite(double val)
+    {
+        return double.IsFinite(val);
     }
 
     private static double? RegularizedGammaQ(double a, double x, double epsilon, long maxIterations)
     {
         if (a <= 0.0 || x < 0)
             return null;
-        if (x == 0.0)
+        if (x.Equals(0.0))
             return 1;
         if (x < a + 1.0)
             return 1 - RegularizedGammaP(a, x, epsilon, maxIterations);
@@ -169,12 +168,12 @@ public static class ChiSquareApache
                 {
                     lastScaleFactor = scaleFactor;
                     scaleFactor *= scale;
-                    if (a != 0.0 && a > b)
+                    if (!a.Equals(0.0) && a > b)
                     {
                         p2 = p1 / lastScaleFactor + (b / scaleFactor * p0);
                         q2 = q1 / lastScaleFactor + (b / scaleFactor * q0);
                     }
-                    else if (b != 0.0)
+                    else if (!b.Equals(0.0))
                     {
                         p2 = (a / scaleFactor * p1) + p0 / lastScaleFactor;
                         q2 = (a / scaleFactor * q1) + q0 / lastScaleFactor;
@@ -188,7 +187,7 @@ public static class ChiSquareApache
 
             if (infinite)
                 throw new ArithmeticException("Can't scale");
-            if (q2 == 0.0)
+            if (q2.Equals(0.0))
                 throw new ArithmeticException("q2 is zero, can't divide");
 
             var r = p2 / q2;
@@ -210,9 +209,9 @@ public static class ChiSquareApache
 
     private static double? ChiSquare(List<double> expected, List<double> observed)
     {
-        if (expected.Count() < 2)
+        if (expected.Count < 2)
             throw new ArgumentException("Length of expected array should be grather than 1");
-        if (expected.Count() != observed.Count())
+        if (expected.Count != observed.Count)
             throw new ArgumentException("Length of expected and observed arrays should be equal");
 
         CheckPositive(expected);
@@ -221,7 +220,7 @@ public static class ChiSquareApache
         double sumExpected = 0.0;
         double sumObserved = 0.0;
 
-        for (int i = 0; i < observed.Count(); i++)
+        for (int i = 0; i < observed.Count; i++)
         {
             sumExpected += expected[i];
             sumObserved += observed[i];
@@ -238,7 +237,7 @@ public static class ChiSquareApache
 
         double sumSq = 0.0;
 
-        for (int i = 0; i < observed.Count(); i++)
+        for (int i = 0; i < observed.Count; i++)
         {
             if (rescale)
             {

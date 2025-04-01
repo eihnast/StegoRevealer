@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
@@ -229,7 +230,7 @@ public class HidingExtractionTests
         string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
         var hidingResult = kzHider.Hide(data, "customNameKzh");
 
-        var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new Exception("hidingResult.Path is null"));
+        var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
 
         var kzExtractor = new KochZhaoExtractor(newImage);
         kzExtractor.Params.Threshold = 20;

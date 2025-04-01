@@ -3,7 +3,7 @@ using StegoRevealer.Common.ConsoleInterface;
 
 namespace StegoRevealer.CLI;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {

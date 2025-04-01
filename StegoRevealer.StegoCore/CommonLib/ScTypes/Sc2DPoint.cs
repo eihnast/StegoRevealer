@@ -3,7 +3,7 @@
 /// <summary>
 /// Координаты 2D-точки
 /// </summary>
-public struct Sc2DPoint : ScValuesPair<int>
+public struct Sc2DPoint : IScValuesPair<int>
 {
     /// <summary>
     /// Y-координата (значение на оси ординат) - первое значение

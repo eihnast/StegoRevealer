@@ -61,15 +61,10 @@ public class BlocksTraverseOptions
     /// Ключ генератора ГПСЧ<br/>
     /// Если не null, метод обхода будет считаться псевдослучайным
     /// </summary>
-    public int? Seed { get; set; } = null;
+    public int? Seed { get; set; }
 
 
     // Конструкторы
-
-    /// <summary>
-    /// Создаёт параметры обхода по умолчанию
-    /// </summary>
-    public BlocksTraverseOptions() { }
 
     /// <summary>
     /// Создаёт параметры обхода с указанными значениями<br/>

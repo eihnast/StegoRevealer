@@ -5,9 +5,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators
 
 public class EntropyCalculator
 {
-    private StatmParameters _params;
+    private readonly StatmParameters _params;
 
-    private double[] _pValues;
+    private readonly double[] _pValues;
 
     public EntropyData CalcEntropy()
     {

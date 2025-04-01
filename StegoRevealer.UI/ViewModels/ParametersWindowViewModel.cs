@@ -38,7 +38,7 @@ public class ParametersWindowViewModel : ViewModelBase
     }
 
 
-    private InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
+    private readonly InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
 
 
     public object? ParametersDto { get; set; } = null;
@@ -91,7 +91,7 @@ public class ParametersWindowViewModel : ViewModelBase
         if (viewModels.Count == 0)
             return GetNewViewModel(viewModelType);
         else
-            return viewModels.First();
+            return viewModels[0];
     }
 
 

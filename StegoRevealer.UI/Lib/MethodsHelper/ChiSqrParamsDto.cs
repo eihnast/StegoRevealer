@@ -10,7 +10,7 @@ namespace StegoRevealer.UI.Lib.MethodsHelper;
 /// DTO для параметров стегоаналитического метода Хи-квадрат: 
 /// <see cref="ChiSquareParameters"/>
 /// </summary>
-public class ChiSqrParamsDto : BaseParamsDto<ChiSquareParameters>
+public class ChiSqrParamsDto : IParamsDto<ChiSquareParameters>
 {
     public bool Visualize { get; set; } = true;
 
@@ -54,7 +54,7 @@ public class ChiSqrParamsDto : BaseParamsDto<ChiSquareParameters>
     }
 
     /// <inheritdoc/>
-    public override void FillParameters(ref ChiSquareParameters parameters)
+    public void FillParameters(ref ChiSquareParameters parameters)
     {
         if (parameters is null)
             return;

@@ -1,7 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using static StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators.EntropyCalculator;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -11,8 +10,6 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 /// </summary>
 public class StatmAnalyser
 {
-    private const string MethodName = "Statistical metricks calculator";
-
     /// <summary>
     /// Параметры метода
     /// </summary>
@@ -42,8 +39,9 @@ public class StatmAnalyser
     public StatmResult Analyse(bool verboseLog = false)
     {
         var result = new StatmResult();
-        result.Log($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
+
+        _writeToLog($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
 
         var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2));  // Шум
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
@@ -69,7 +67,7 @@ public class StatmAnalyser
         result.ContrastValue = contrastCalcTask.Result;
         result.EntropyValues = entropyCalcTask.Result;
 
-        result.Log($"Подсчёт характеристик завершён");
+        _writeToLog($"Подсчёт характеристик завершён");
         return result;
     }
 }

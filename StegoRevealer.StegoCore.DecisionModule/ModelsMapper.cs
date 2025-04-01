@@ -1,6 +1,4 @@
-﻿using StegoRevealer_StegoCore_TrainingModule;
-
-namespace StegoRevealer.StegoCore.DecisionModule;
+﻿namespace StegoRevealer.StegoCore.DecisionModule;
 
 public static class ModelsMapper
 {

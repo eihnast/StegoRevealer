@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using System.Collections.Concurrent;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
@@ -6,8 +7,8 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /*
  * Класс-обёртка над объектом изображения текущей используемой библиотеки (Skia-Sharp)
  * Есть два режима загрузки изображения:
- *   - как ридер: открывается поток чтения файла на диске, и он удерживает файл открытым для манипуляций с изображением;
- *   - в память: загружает всё изображение в память при помощи MemoryStream.
+ *   - как ридер: открывается поток чтения файла на диске, и он удерживает файл открытым для манипуляций с изображением
+ *   - в память: загружает всё изображение в память при помощи MemoryStream
  * Первый вариант, теоретически, быстрее, а второй предоставляет возможности разделения экземпляров одного изображения - например, клонирование
  */
 
@@ -34,12 +35,6 @@ public class ScImage : IDisposable
     /// Key - путь, Value - объект
     /// </summary>
     private static ConcurrentDictionary<string, ScImage> _loadedImages = new();
-
-    /// <summary>
-    /// Хранилище открытых файловых потоков изображений<br/>
-    /// Key - путь, Value - объект
-    /// </summary>
-    private static ConcurrentDictionary<string, FileStream> _fileStreams = new();
 
 
     private string? _path = null;
@@ -89,14 +84,14 @@ public class ScImage : IDisposable
         get 
         {
             if (_image is null)
-                throw new Exception("Image is null");
+                throw new IncorrectValueException("Image is null");
             var pixel = _image.GetPixel(x, y);
             return ScPixel.FromSkColor(pixel);
         }
         set
         {
             if (_image is null)
-                throw new Exception("Image is null");
+                throw new IncorrectValueException("Image is null");
             _image.SetPixel(x, y, value.ToSkColor());
         }
     }
@@ -268,7 +263,7 @@ public class ScImage : IDisposable
             if (IsInMemory && cloneInMemoryImagesDirectly)
             {
                 if (_memoryStream is null)
-                    throw new Exception("Error while cloning image: memory stream is null");
+                    throw new OperationException("Error while cloning image: memory stream is null");
                 var clonedMemoryStream = CloneMemoryStream(_memoryStream);
                 return new ScImage(clonedMemoryStream, _path);
             }
@@ -289,7 +284,7 @@ public class ScImage : IDisposable
                 fileStream = _file;
 
             if (fileStream is null)
-                throw new Exception("Error while cloning ScImage: fileStream is null");
+                throw new OperationException("Error while cloning ScImage: fileStream is null");
 
             clonedImage = new ScImage(fileStream, _path ?? string.Empty);
             // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
@@ -301,7 +296,7 @@ public class ScImage : IDisposable
         }
     }
 
-    private object cloningLock = new object();
+    private readonly object cloningLock = new object();
 
     // Клонирует MemoryStream
     private static MemoryStream CloneMemoryStream(MemoryStream memoryStream)
@@ -427,7 +422,7 @@ public class ScImage : IDisposable
     /// <summary>
     /// Получение формата, требуемого текущей библиотекой
     /// </summary>
-    private SKEncodedImageFormat ImageFormatToSkFormat(ImageFormat format)
+    private static SKEncodedImageFormat ImageFormatToSkFormat(ImageFormat format)
     {
         switch (format)
         {
@@ -461,6 +456,6 @@ public class ScImage : IDisposable
                 return ImageFormat.Bmp;
         }
 
-        throw new Exception("Unknown image extension");
+        throw new IncorrectValueException("Unknown image extension");
     }
 }

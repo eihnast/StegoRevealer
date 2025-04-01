@@ -3,7 +3,7 @@
 /// <summary>
 /// Пара индексов
 /// </summary>
-public struct ScIndexPair : ScValuesPair<int>
+public struct ScIndexPair : IScValuesPair<int>
 {
     /// <summary>
     /// Первый индекс

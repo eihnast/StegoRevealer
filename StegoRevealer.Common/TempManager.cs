@@ -6,7 +6,7 @@ public class TempManager
 {
     // Описание синглтона
     private static TempManager? _instance;
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
     public static TempManager Instance
     {
         get
@@ -24,8 +24,14 @@ public class TempManager
     }
 
 
-    private static List<string> _tempImages = new List<string>();
-    private static List<ImageHandler> _openedHandlers = new List<ImageHandler>();
+    private TempManager()
+    {
+        // Приватный конструктор
+    }
+
+
+    private readonly List<string> _tempImages = new List<string>();
+    private readonly List<ImageHandler> _openedHandlers = new List<ImageHandler>();
 
     public void RememberTempImage(string imagePath) => _tempImages.Add(imagePath);
 
@@ -35,19 +41,17 @@ public class TempManager
     public void DeleteTempImages(bool withRetry = true)
     {
         var notDeleted = new List<string>();
-        foreach (var imagePath in _tempImages)
+        
+        foreach (var imagePath in _tempImages.Where(File.Exists))
         {
-            if (File.Exists(imagePath))
+            try
             {
-                try
-                {
-                    File.Delete(imagePath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("Error wile deleting temp image: " + ex.Message);
-                    notDeleted.Add(imagePath);
-                }
+                File.Delete(imagePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error wile deleting temp image: " + ex.Message);
+                notDeleted.Add(imagePath);
             }
         }
 

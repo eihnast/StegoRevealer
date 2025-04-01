@@ -73,8 +73,6 @@ public static class LsbCommon
                     indexes[k]++;
                 }
             }
-
-            yield break;
         }
         else  // Чересканально
         {
@@ -88,8 +86,6 @@ public static class LsbCommon
                     indexes[k]++;
                 }
             }
-
-            yield break;
         }
     }
 
@@ -113,7 +109,7 @@ public static class LsbCommon
         }
         else  // Поканально (R: Pixel1, Pixel2, Pixel3 --> 0,1,2)
         {
-            var (w, h, d) = parameters.Image.GetImgSizes();
+            var (w, h, _) = parameters.Image.GetImgSizes();
             int pixelsNum = w * h;
             int channelInnerIndex = index / pixelsNum;  // Индекс канала в списке используемых каналов
             channel = (int)parameters.Channels[channelInnerIndex];  // Реальный индекс канала (Red - 0 и т.д.)
@@ -131,7 +127,7 @@ public static class LsbCommon
     {
         var rnd = parameters.Seed.HasValue ? new Random(parameters.Seed.Value) : new Random();
 
-        var (width, height, depth) = parameters.Image.GetImgSizes();
+        var (width, height, _) = parameters.Image.GetImgSizes();
         int imgLinearLength = width * height * parameters.Channels.Count;  // Общее число цветовых байт изображения
         if (usingColorBytesNum < 0 || usingColorBytesNum > imgLinearLength)
             usingColorBytesNum = imgLinearLength;
@@ -145,7 +141,5 @@ public static class LsbCommon
             var (y, x, channel) = GetImgByteIndexesFromLinearIndex(index, parameters);
             yield return new ScPointCoords(y, x, channel);
         }
-
-        yield break;
     }
 }

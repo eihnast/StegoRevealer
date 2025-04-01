@@ -34,7 +34,7 @@ public class MainWindowViewModel : ViewModelBase
     }
 
 
-    private InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
+    private readonly InstancesList _viewModelsInstances = new();  // Список объектов ViewModel
 
     public MainWindowViewModel() { }
 
@@ -67,7 +67,7 @@ public class MainWindowViewModel : ViewModelBase
         if (viewModels.Count == 0)
             return GetNewViewModel(viewModelType);
         else
-            return viewModels.First();
+            return viewModels[0];
     }
 
 

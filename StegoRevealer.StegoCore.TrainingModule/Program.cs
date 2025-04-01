@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
 
-internal class Program
+internal static class Program
 {
     static void Main(string[] args)
     {
@@ -71,10 +71,10 @@ internal class Program
             resultsProbabilities.Add(imgData, predictResult.Probability);
         }
 
-        int truePositive = results.Where(r => r.Key.IsDataHided && r.Value).Count();
-        int trueNegative = results.Where(r => !r.Key.IsDataHided && !r.Value).Count();
-        int falsePositive = results.Where(r => !r.Key.IsDataHided && r.Value).Count();
-        int falseNegative = results.Where(r => r.Key.IsDataHided && !r.Value).Count();
+        int truePositive = results.Count(r => r.Key.IsDataHided && r.Value);
+        int trueNegative = results.Count(r => !r.Key.IsDataHided && !r.Value);
+        int falsePositive = results.Count(r => !r.Key.IsDataHided && r.Value);
+        int falseNegative = results.Count(r => r.Key.IsDataHided && !r.Value);
 
         Console.WriteLine("Матрциа ошибок:");
         Console.WriteLine($"\tПравильноположительных: TP (True Positive) = {truePositive}");
@@ -87,16 +87,11 @@ internal class Program
         double recall = CalcRecall(truePositive, falseNegative);
         double f1Score = CalcF1Score(precision, recall);
 
-        //double rocAuc = CalculateRocAuc(results.Select(r => r.Key.IsDataHided).ToArray(), resultsProbabilities.Select(rp => rp.Value).ToArray());
-        //double aucPr = CalculateAucPr(results.Select(r => r.Key.IsDataHided).ToArray(), resultsProbabilities.Select(rp => rp.Value).ToArray());
-
         Console.WriteLine("Значения метрик:");
         Console.WriteLine($"\tAccuracy: {accuracy}");  // точность классификации.
         Console.WriteLine($"\tPrecision: {precision}");  // точность предсказания положительных примеров.
         Console.WriteLine($"\tRecall: {recall}");  // полнота предсказания положительных примеров.
         Console.WriteLine($"\tF1 Score: {f1Score}");  // гармоническое среднее между Precision и Recall.
-        //Console.WriteLine($"\tAUC: {rocAuc}");  // площадь под ROC-кривой.
-        //Console.WriteLine($"\tAUCPR: {aucPr}");  // площадь под кривой Precision-Recall.
         Console.WriteLine();
 
         var dataForAucs = testData.Select(td => new { realNum = td.IsDataHided ? 1 : 0, probability = resultsProbabilities[td] });
@@ -148,8 +143,8 @@ internal class Program
             "TestData\\MlAnalysisDataTesting_ForComplexSaNoVertical.csv", "DecisionModel_ComplexSaNoVertical", firstTwenty: firstTwenty);
         TestModel<DecisionModel_ComplexSaNoPixelsNum.ModelInput>(
             "TestData\\MlAnalysisDataTesting_ForComplexSaNoPixelsNum.csv", "DecisionModel_ComplexSaNoPixelsNum", firstTwenty: firstTwenty);
-        //TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
-        //    "TestData\\MlAnalysisDataTesting_ForComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
+            "TestData\\MlAnalysisDataTesting_ForComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
         TestModel<DecisionModel_ComplexSaOnlySaMethods.ModelInput>(
             "TestData\\MlAnalysisDataTesting_ForComplexSaOnlySaMethods.csv", "DecisionModel_ComplexSaOnlySaMethods", firstTwenty: firstTwenty);
     }
@@ -166,8 +161,8 @@ internal class Program
             "TrainingData\\MlAnalysisData_ComplexSaNoVertical.csv", "DecisionModel_ComplexSaNoVertical", firstTwenty: firstTwenty);
         TestModel<DecisionModel_ComplexSaNoPixelsNum.ModelInput>(
             "TrainingData\\MlAnalysisData_ComplexSaNoPixelsNum.csv", "DecisionModel_ComplexSaNoPixelsNum", firstTwenty: firstTwenty);
-        //TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
-        //    "TrainingData\\MlAnalysisData_ComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
+        TestModel<DecisionModel_ComplexSaNoKzha.ModelInput>(
+            "TrainingData\\MlAnalysisData_ComplexSaNoKzha.csv", "DecisionModel_ComplexSaNoKzha", firstTwenty: firstTwenty);
         TestModel<DecisionModel_ComplexSaOnlySaMethods.ModelInput>(
             "TrainingData\\MlAnalysisData_ComplexSaOnlySaMethods.csv", "DecisionModel_ComplexSaOnlySaMethods", firstTwenty: firstTwenty);
     }
@@ -198,7 +193,7 @@ internal class Program
         MLContext mlContext = new MLContext();
 
         // Загружаем модель
-        ITransformer trainedModel = mlContext.Model.Load($"{modelName}.mlnet", out var modelInputSchema);
+        ITransformer trainedModel = mlContext.Model.Load($"{modelName}.mlnet", out var _);
 
         IDataView testData = mlContext.Data.LoadFromTextFile<T>(
             path: processedDataFileName, separatorChar: ';', hasHeader: true);

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using Accord.Statistics.Links;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
@@ -68,7 +69,10 @@ public class KzhaAnalyser
                     extractedData = extractResult.GetResultData() ?? string.Empty;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                result.Log($"Ошибка при попытке извлечения: {ex.Message}");
+            }
 
             result.ExtractedData = extractedData;  // Если включена попытка извлечения, будет string.Empty при неудаче
         }
@@ -124,7 +128,7 @@ public class KzhaAnalyser
         }
 
         // Выбор наибольшего по порогу из подозрительных интервалов в качестве результирующего
-        var maxVariant = thresholds.FirstOrDefault(val => val.Value == thresholds.Values.Max()).Key;  // Ключ - набор коэффициентов
+        var maxVariant = thresholds.FirstOrDefault(val => val.Value.Equals(thresholds.Values.Max())).Key;  // Ключ - набор коэффициентов
         result.SuspiciousInterval = indexes[maxVariant];
         result.Threshold = thresholds[maxVariant];
         result.Coefficients = maxVariant;
@@ -145,17 +149,15 @@ public class KzhaAnalyser
 
     private OneCoeffsPairAnalysisResult AnalyseForOneCoeffPair(ScIndexPair coeff, List<double> cSequence)
     {
-        string temp = string.Empty;
+        var temp = new StringBuilder();
 
         // Логирование cSequences, если оно включено
         if (Params.LoggingCSequences)
         {
-            temp = $"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[";
-            foreach (var val in cSequence)
-                temp += string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}, ", val);
-            temp = temp[..^2];
-            temp += "]\n";
-            _writeToLog(temp);
+            temp.Append($"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[");
+            temp.Append(string.Join(", ", cSequence.Select(cValue => string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}", cValue))));
+            temp.Append("]\n");
+            _writeToLog(temp.ToString());
         }
 
         // Поиск ступенчатого интервала
@@ -169,10 +171,9 @@ public class KzhaAnalyser
         intervalStartIndex = indexLeft;  // Новый 0-й индекс в обрезанной cSequence на самом деле соответствует этому индексу последовательности
         cSequence = cSequence.GetRange(indexLeft, indexRight - indexLeft + 1);
 
-        temp = $"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ";
-        foreach (var val in cSequence)
-            temp += string.Format("{0:f2} ", val);
-        _writeToLog(temp);
+        temp.Append($"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ");
+        temp.Append(string.Join(" ", cSequence.Select(cValue => string.Format("{0:f2}", cValue))));
+        _writeToLog(temp.ToString());
 
         // Расчёт предполагаемого порога скрытия
         double threshold = 0.0;  // Порог подозрительного интервала по наборам коэффициентов
@@ -255,7 +256,7 @@ public class KzhaAnalyser
     /// </summary>
     /// <param name="block">Блок</param>
     /// <param name="coeffs">Индексы коэффициентов блока</param>
-    private double GetAbsDiff(double[,] block, ScIndexPair coeffs)
+    private static double GetAbsDiff(double[,] block, ScIndexPair coeffs)
     {
         (double value1, double value2) = (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
         return Math.Abs(MathMethods.GetModulesDiff(value1, value2));
@@ -268,7 +269,7 @@ public class KzhaAnalyser
     private (int indexLeft, int indexRight) FindSuspiciousInterval(List<double> cSequence)
     {
         if (cSequence.Count < 2)
-            throw new Exception("Length of cSequence must be grather than 1");
+            throw new ArgumentException("Length of cSequence must be grather than 1");
 
         var maxValue = cSequence.Max();  // Определяем максимальное из значений cSequence
         var thresholdValue = maxValue * Params.CutCoefficient;  // Определяем минимальный порог превышения, который будет учитывать как подозрительный  // TODO
@@ -282,9 +283,9 @@ public class KzhaAnalyser
         var intervalIndexes = new List<(int leftIndex, int rightIndex)>();
         int currentLeftIndex = 0;
         int currentRightIndex = 0;
-        for (int i = 0; i < truncatedSequence.Count(); i++)
+        for (int i = 0; i < truncatedSequence.Count; i++)
         {
-            if (truncatedSequence[i] == 0.0)
+            if (truncatedSequence[i].Equals(0.0))
             {
                 currentRightIndex = i - 1;
                 if (currentRightIndex - currentLeftIndex + 1 > 0)  // Если длина интервала при встрече "0" больше 0, то мы его записываем
@@ -294,7 +295,7 @@ public class KzhaAnalyser
         }
 
         // Выбор наиболее длинного интервала
-        if (intervalIndexes.Count() > 0)
+        if (intervalIndexes.Count > 0)
         {
             var intervalSizes = intervalIndexes.Select(interval => interval.rightIndex - interval.leftIndex + 1).ToList();  // Длины интервалов
             var maxIntervalSize = intervalSizes.Max();  // Наибольшая длина интервала
@@ -309,7 +310,7 @@ public class KzhaAnalyser
     /// Возвращает индексы двух последователных максимумов из последовательности (индекс левого из двух наибольших, индекс правого из двух наибольших)
     /// </summary>
     /// <param name="sequence">Последовательность (массив)</param>
-    private ScIndexPair GetTwoMaximumsIndexes(List<double> sequence)
+    private static ScIndexPair GetTwoMaximumsIndexes(List<double> sequence)
     {
         if (sequence.Count < 2)
             throw new ArgumentException("Can't find two maximum values for sequence with length less than 2 elements");

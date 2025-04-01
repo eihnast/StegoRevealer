@@ -4,7 +4,7 @@ public class Logger : IDisposable
 {
     // Описание синглтона
     private static Logger? _instance;
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
     public static Logger Instance
     {
         get
@@ -119,7 +119,10 @@ public class Logger : IDisposable
                     _logWriter.Write(message);
                 _logWriter.Flush();
             }
-            catch { }
+            catch
+            {
+                // Любая ошибка записи в лог на этом этапе игнорируется, т.к. записать в лог её нельзя, но это недостаточно критично для завершения программы
+            }
         }
     }
 

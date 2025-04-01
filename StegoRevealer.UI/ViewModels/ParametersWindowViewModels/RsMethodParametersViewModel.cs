@@ -7,7 +7,9 @@ using StegoRevealer.UI.Lib.MethodsHelper;
 using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
+using System.Text;
 
 namespace StegoRevealer.UI.ViewModels.ParametersWindowViewModels;
 
@@ -28,9 +30,7 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
 
         PixelsGroupLengthValue = rsParamsDto.PixelsGroupLength;
 
-        string mask = string.Empty;
-        foreach (int val in rsParamsDto.FlippingMask)
-            mask += val.ToString();
+        string mask = string.Join("", rsParamsDto.FlippingMask.Select(val => val.ToString()));
         FlippingMaskValue = mask;
 
         ChannelRedChecked = rsParamsDto.Channels.Contains(ImgChannel.Red);
@@ -44,17 +44,20 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
 
         result.PixelsGroupLength = PixelsGroupLengthValue;
 
-        string currentNum = string.Empty;
+        var currentNum = new StringBuilder();
         var mask = new List<int>();
         for (int i = 0; i < FlippingMaskValue.Length; i++)
         {
-            currentNum += FlippingMaskValue[i];
-            if (currentNum == "-")
+            currentNum.Append(FlippingMaskValue[i]);
+            if (currentNum[0] == '-')
                 continue;
-            if (currentNum[..^0] == "0" || currentNum[..^0] == "1")
-                if (int.TryParse(currentNum, out int value))
+            if (currentNum[^0] == '0' || currentNum[^0] == '1')
+            {
+                // Преобразуем 0 или 1 в число для маски
+                if (int.TryParse(currentNum.ToString(), out int value))
                     mask.Add(value);
-            currentNum = string.Empty;
+            }
+            currentNum.Clear();
         }
         result.FlippingMask = mask.ToArray();
 

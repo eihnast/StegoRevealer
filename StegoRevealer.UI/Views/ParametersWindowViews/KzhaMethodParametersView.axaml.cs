@@ -39,10 +39,10 @@ public partial class KzhaMethodParametersView : UserControl
 
 
     private ReadOnlyObservableCollection<ScIndexPair> SelectedCoeffsCollectionView = null!;
-    private IComparer<ScIndexPair> SelectedCoeffsSorting() => SortExpressionComparer<ScIndexPair>.Ascending(pair => pair.ToString());
+    private static IComparer<ScIndexPair> SelectedCoeffsSorting() => SortExpressionComparer<ScIndexPair>.Ascending(pair => pair.ToString());
 
     private ReadOnlyObservableCollection<ScIndexPair> AvailableCoeffsCollectionView = null!;
-    private IComparer<ScIndexPair> AvailableCoeffsSorting() => SortExpressionComparer<ScIndexPair>.Ascending(pair => pair.ToString());
+    private static IComparer<ScIndexPair> AvailableCoeffsSorting() => SortExpressionComparer<ScIndexPair>.Ascending(pair => pair.ToString());
 
     private void SelectedCoeffsListBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
@@ -59,8 +59,8 @@ public partial class KzhaMethodParametersView : UserControl
             _vm.CoeffToSelected(item);
     }
 
-    private void FilterForInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
-    private void FilterForDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
-    private void FilterForPositiveInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
-    private void FilterForPositiveDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
+    private static void FilterForInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
+    private static void FilterForDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
+    private static void FilterForPositiveInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
+    private static void FilterForPositiveDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
 }

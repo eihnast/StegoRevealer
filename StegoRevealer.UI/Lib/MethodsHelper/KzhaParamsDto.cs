@@ -12,7 +12,7 @@ namespace StegoRevealer.UI.Lib.MethodsHelper;
 /// DTO для параметров алгоритма стегоанализа метода Коха-Жао: 
 /// <see cref="KochZhaoParameters"/>
 /// </summary>
-public class KzhaParamsDto : BaseParamsDto<KzhaParameters>
+public class KzhaParamsDto : IParamsDto<KzhaParameters>
 {
     public UniqueList<ImgChannel> Channels { get; set; } = new UniqueList<ImgChannel> { ImgChannel.Blue };
 
@@ -52,7 +52,7 @@ public class KzhaParamsDto : BaseParamsDto<KzhaParameters>
     }
 
     /// <inheritdoc/>
-    public override void FillParameters(ref KzhaParameters parameters)
+    public void FillParameters(ref KzhaParameters parameters)
     {
         if (parameters is null)
             return;

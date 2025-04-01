@@ -11,14 +11,14 @@ public abstract class ParametersWindowViewModelBaseChild : ViewModelBase
     protected InstancesListAccessor _viewModels;  // Список ViewModel
     protected ParametersWindowViewModel _parametersWindowViewModel;  // Ссылка на корневую ViewModel
 
-    public ParametersWindowViewModelBaseChild(ParametersWindowViewModel rootViewModel, InstancesListAccessor viewModelsList)
+    protected ParametersWindowViewModelBaseChild(ParametersWindowViewModel rootViewModel, InstancesListAccessor viewModelsList)
     {
         _parametersWindowViewModel = rootViewModel;
         _viewModels = viewModelsList;
     }
 
     [Experimental]
-    public ParametersWindowViewModelBaseChild()
+    protected ParametersWindowViewModelBaseChild()
     {
         _parametersWindowViewModel = new();
         _viewModels = new(new InstancesList(), AccessMode.Get);

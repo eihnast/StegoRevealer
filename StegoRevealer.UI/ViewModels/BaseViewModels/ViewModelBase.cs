@@ -7,4 +7,5 @@ namespace StegoRevealer.UI.ViewModels.BaseViewModels;
 /// </summary>
 public class ViewModelBase : ReactiveObject
 {
+    // Пока отсутствует общая логика
 }

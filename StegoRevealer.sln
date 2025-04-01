@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore", "StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj", "{2425709C-1913-4325-A4DB-634A1AAE1F91}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.ModuleTests", "StegoRevealer.ModuleTests\StegoRevealer.ModuleTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UnitTests", "StegoRevealer.UnitTests\StegoRevealer.UnitTests.csproj", "{E6DE7E33-D77C-489F-9DB1-45C1A0E31A0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.UI", "StegoRevealer.UI\StegoRevealer.UI.csproj", "{5B9BBC54-F333-4F1F-BF77-942C8EC29CE7}"
 EndProject
@@ -17,8 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StegoRevealer.StegoCore.Tra
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{21DB7700-0752-4C90-95EC-2F2EF91B1035}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\dotnet-desktop.yml = .github\workflows\dotnet-desktop.yml
 		.gitignore = .gitignore
+		.github\workflows\dotnet-desktop.yml = .github\workflows\dotnet-desktop.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

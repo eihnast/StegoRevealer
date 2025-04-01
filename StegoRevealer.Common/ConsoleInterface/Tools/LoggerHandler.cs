@@ -4,8 +4,8 @@ namespace StegoRevealer.Common.ConsoleInterface.Tools;
 
 public class LoggerHandler
 {
-    private List<Action> _logActions = new();
-    private object _lock = new object();
+    private readonly List<Action> _logActions = new();
+    private readonly object _lock = new object();
 
     public LoggerHandler() { }
 

@@ -3,11 +3,11 @@ using StegoRevealer.Common.Entities.AppConfig;
 
 namespace StegoRevealer.Common;
 
-public class Configurator
+public class Configurator : IDisposable
 {
     // Описание синглтона
     private static Configurator? _instance;
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
     public static Configurator Instance
     {
         get
@@ -50,7 +50,7 @@ public class Configurator
 
 
     private const string SettingsFileName = "StegoRevealerSettings.json";
-    private string SettingsPath = SettingsFileName;
+    private readonly string SettingsPath = SettingsFileName;
 
     public AppConfig AppConfig { get; private set; } = null!;
 

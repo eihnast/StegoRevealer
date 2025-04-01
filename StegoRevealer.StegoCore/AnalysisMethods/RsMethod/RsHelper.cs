@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+﻿using StegoRevealer.StegoCore.CommonLib.Exceptions;
+
+namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
 /// <summary>
 /// Вспомогательные функции и константы для метода RS
@@ -87,7 +89,7 @@ public static class RsHelper
         if (afterFlippingResult == beforeFlippingResult)
             return RsGroupType.Unusuable;
 
-        throw new Exception("Error while processing group type definition");
+        throw new CalculationException("Error while processing group type definition");
     }
     public static RsGroupType DefineGroupType((int beforeFlippingResult, int afterFlippingResult) regularityResult) =>
         DefineGroupType(regularityResult.beforeFlippingResult, regularityResult.afterFlippingResult);

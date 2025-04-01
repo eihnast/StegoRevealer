@@ -14,6 +14,16 @@ public class CommandLineInterfaceTests
         string filePath2 = Path.Combine("TestData", fileName2);
         string[] args = { "sa", filePath1, filePath2, "--chi", "--rs", "--kzha" };
 
-        CommandLineParser.HandleCommand(args).Wait();
+        string error = string.Empty;
+        try
+        {
+            CommandLineParser.HandleCommand(args).Wait();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        Assert.IsTrue(string.IsNullOrEmpty(error));
     }
 }

@@ -10,7 +10,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators
 
 public class NoiseCalculator
 {
-    private StatmParameters _params;
+    private readonly StatmParameters _params;
 
     public NoiseCalculator(StatmParameters parameters)
     {
@@ -20,8 +20,8 @@ public class NoiseCalculator
 
     // https://cyberleninka.ru/article/n/metod-otsenki-urovnya-shuma-tsifrovogo-izobrazheniya/viewer
 
-    private double[] mask5 = new double[5] { -3 / 35, 12 / 35, 17 / 35, 12 / 35, -3 / 35 };
-    private double[] mask7 = new double[7] { -2 / 21, 3 / 21, 6 / 21, 7 / 21, 6 / 21, 3 / 21, -2 / 21 };
+    private readonly double[] mask5 = new double[5] { -3 / 35, 12 / 35, 17 / 35, 12 / 35, -3 / 35 };
+    private readonly double[] mask7 = new double[7] { -2 / 21, 3 / 21, 6 / 21, 7 / 21, 6 / 21, 3 / 21, -2 / 21 };
 
 
     public enum NoiseCalculationMethod
@@ -125,7 +125,6 @@ public class NoiseCalculator
         var differences = new byte[5][];
         for (int i = 0; i < 5; i++)
         {
-            var fixedInterval = fixedRowAndIntervals[fixedRowsIds[i]];
             var currentIntervalDiffs = new byte[intervalLength];
 
             for (int j = 0; j < intervalLength; j++)
@@ -146,7 +145,7 @@ public class NoiseCalculator
 
         // П.5
         // СКО шума
-        double noiseSko = Math.Sqrt(35 / 18) * averageSelectedSko;
+        double noiseSko = Math.Sqrt((double)35 / 18) * averageSelectedSko;
 
         return noiseSko;
     }
@@ -178,7 +177,7 @@ public class NoiseCalculator
 
         // П.1. Фиксация 5 (NoiseCalcFixedBlocksCount) блоков с минимальными дисперсиями:
         // в данном случае если их меньше 5 (NoiseCalcFixedBlocksCount) - работаем с имеющимся количеством (исходя из описания метода, можно и с 1)
-        var minDispersionsBlocks = dispersions.OrderBy(val => val.Value).Take(Math.Min(_params.NoiseCalcFixedBlocksCount, dispersions.Count())).ToList();
+        var minDispersionsBlocks = dispersions.OrderBy(val => val.Value).Take(Math.Min(_params.NoiseCalcFixedBlocksCount, dispersions.Count)).ToList();
         var fixedBlocks = minDispersionsBlocks.Select(val => val.Key).ToList();
 
 
@@ -234,7 +233,6 @@ public class NoiseCalculator
         // П.3. В зафиксированных блоках вычисляем выборочные дисперсии и СКО
         var selectedDispersions = new List<double>();
         var selectedSko = new List<double>();
-        var smoothedImageBlocks = new ImageBlocks(new ImageBlocksParameters(smoothedImage, blockSize));
         foreach (var fixedBlock in fixedBlocks)
         {
             var gsBlock = new byte[blockSize, blockSize];
@@ -261,7 +259,7 @@ public class NoiseCalculator
     private List<NoiseCalcMethodIntervalsInRowInfo> GetIntervalsInRow(byte[,,] block)
     {
         if (block.GetLength(0) > 1)
-            throw new Exception("Оценка шума прозводится только по строкам");
+            throw new ArgumentException("Оценка шума прозводится только по строкам");
 
         var analysingChannels = new UniqueList<ImgChannel>() { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
         var intervalsInfo = new List<NoiseCalcMethodIntervalsInRowInfo>();
@@ -293,7 +291,7 @@ public class NoiseCalculator
     private List<NoiseCalcMethodIntervalsInRowInfo> GetIntervalsInRow(byte[,] block)
     {
         if (block.GetLength(0) > 1)
-            throw new Exception("Оценка шума прозводится только по строкам");
+            throw new ArgumentException("Оценка шума прозводится только по строкам");
 
         var intervalsInfo = new List<NoiseCalcMethodIntervalsInRowInfo>();
         int width = block.GetLength(1);
@@ -318,10 +316,10 @@ public class NoiseCalculator
 
 
     // Возвращает информацию об интервале с минимальной дисперсией
-    private NoiseCalcMethodIntervalsInRowInfo GetIntervalWithMinDispersion(List<NoiseCalcMethodIntervalsInRowInfo> intervals)
+    private static NoiseCalcMethodIntervalsInRowInfo GetIntervalWithMinDispersion(List<NoiseCalcMethodIntervalsInRowInfo> intervals)
     {
         if (intervals.Count == 0)
-            throw new Exception("Intervals for detecting interval with minimum dispersion is empty array");
+            throw new ArgumentException("Intervals for detecting interval with minimum dispersion is empty array");
 
         int minIntervalId = 0;
         double minDispersion = intervals[minIntervalId].Dispersion;
@@ -339,7 +337,7 @@ public class NoiseCalculator
     }
 
     // Возвращает значения пикселей на указанном интервале (последовательность значений)
-    private byte[] GetRowIntervalFromBlock(byte[,,] block, int intervalStart, int intervalEnd, int channelId)
+    private static byte[] GetRowIntervalFromBlock(byte[,,] block, int intervalStart, int intervalEnd, int channelId)
     {
         int intervalLength = intervalEnd - intervalStart + 1;
         byte[] result = new byte[intervalLength];
@@ -351,7 +349,7 @@ public class NoiseCalculator
     }
 
     // Возвращает значения пикселей на указанном интервале (последовательность значений)
-    private byte[] GetRowIntervalFromBlock(byte[,] block, int intervalStart, int intervalEnd)
+    private static byte[] GetRowIntervalFromBlock(byte[,] block, int intervalStart, int intervalEnd)
     {
         int intervalLength = intervalEnd - intervalStart + 1;
         byte[] result = new byte[intervalLength];
@@ -363,7 +361,7 @@ public class NoiseCalculator
     }
 
     // Применяет линейный оператор к последовательности (интервалу)
-    private double ApplyLinearOpertorA(byte[] values, double[] mask)
+    private static double ApplyLinearOpertorA(byte[] values, double[] mask)
     {
         if (values.Length != mask.Length)
             throw new ArgumentException("Длины отрезка значений и маски должны быть равны");

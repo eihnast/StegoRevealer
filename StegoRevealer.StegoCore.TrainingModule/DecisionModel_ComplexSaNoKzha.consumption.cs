@@ -7,10 +7,10 @@ using System.IO;
 using System.Collections.Generic;
 namespace StegoRevealer_StegoCore_TrainingModule
 {
-    public partial class DecisionModel_ComplexSaOnlySaMethods
+    public partial class DecisionModel_ComplexSaNoKzha
     {
         /// <summary>
-        /// model input class for DecisionModel_ComplexSaOnlySaMethods.
+        /// model input class for DecisionModel_ComplexSaNoKzha.
         /// </summary>
         #region model input class
         public class ModelInput
@@ -28,22 +28,34 @@ namespace StegoRevealer_StegoCore_TrainingModule
             public float RsRelativeVolume { get; set; }
 
             [LoadColumn(3)]
-            [ColumnName(@"KzhaHorizontalThreshold")]
-            public float KzhaHorizontalThreshold { get; set; }
+            [ColumnName(@"Noise")]
+            public float Noise { get; set; }
 
             [LoadColumn(4)]
-            [ColumnName(@"KzhaHorizontalBitsVolume")]
-            public float KzhaHorizontalBitsVolume { get; set; }
+            [ColumnName(@"Sharpness")]
+            public float Sharpness { get; set; }
 
             [LoadColumn(5)]
-            [ColumnName(@"KzhaVerticalThreshold")]
-            public float KzhaVerticalThreshold { get; set; }
+            [ColumnName(@"Blur")]
+            public float Blur { get; set; }
 
             [LoadColumn(6)]
-            [ColumnName(@"KzhaVerticalBitsVolume")]
-            public float KzhaVerticalBitsVolume { get; set; }
+            [ColumnName(@"Contrast")]
+            public float Contrast { get; set; }
 
             [LoadColumn(7)]
+            [ColumnName(@"EntropyShennon")]
+            public float EntropyShennon { get; set; }
+
+            [LoadColumn(8)]
+            [ColumnName(@"EntropyRenyi11")]
+            public float EntropyRenyi11 { get; set; }
+
+            [LoadColumn(9)]
+            [ColumnName(@"PixelsNum")]
+            public float PixelsNum { get; set; }
+
+            [LoadColumn(10)]
             [ColumnName(@"IsDataHided")]
             public bool IsDataHided { get; set; }
 
@@ -52,7 +64,7 @@ namespace StegoRevealer_StegoCore_TrainingModule
         #endregion
 
         /// <summary>
-        /// model output class for DecisionModel_ComplexSaOnlySaMethods.
+        /// model output class for DecisionModel_ComplexSaNoKzha.
         /// </summary>
         #region model output class
         public class ModelOutput
@@ -66,17 +78,26 @@ namespace StegoRevealer_StegoCore_TrainingModule
             [ColumnName(@"RsRelativeVolume")]
             public float RsRelativeVolume { get; set; }
 
-            [ColumnName(@"KzhaHorizontalThreshold")]
-            public float KzhaHorizontalThreshold { get; set; }
+            [ColumnName(@"Noise")]
+            public float Noise { get; set; }
 
-            [ColumnName(@"KzhaHorizontalBitsVolume")]
-            public float KzhaHorizontalBitsVolume { get; set; }
+            [ColumnName(@"Sharpness")]
+            public float Sharpness { get; set; }
 
-            [ColumnName(@"KzhaVerticalThreshold")]
-            public float KzhaVerticalThreshold { get; set; }
+            [ColumnName(@"Blur")]
+            public float Blur { get; set; }
 
-            [ColumnName(@"KzhaVerticalBitsVolume")]
-            public float KzhaVerticalBitsVolume { get; set; }
+            [ColumnName(@"Contrast")]
+            public float Contrast { get; set; }
+
+            [ColumnName(@"EntropyShennon")]
+            public float EntropyShennon { get; set; }
+
+            [ColumnName(@"EntropyRenyi11")]
+            public float EntropyRenyi11 { get; set; }
+
+            [ColumnName(@"PixelsNum")]
+            public float PixelsNum { get; set; }
 
             [ColumnName(@"IsDataHided")]
             public bool IsDataHided { get; set; }
@@ -97,7 +118,7 @@ namespace StegoRevealer_StegoCore_TrainingModule
 
         #endregion
 
-        private static string MLNetModelPath = Path.GetFullPath("DecisionModel_ComplexSaOnlySaMethods.mlnet");
+        private static string MLNetModelPath = Path.GetFullPath("DecisionModel_ComplexSaNoKzha.mlnet");
 
         public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
 

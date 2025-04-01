@@ -11,7 +11,7 @@ namespace StegoRevealer.UI.Tools.MvvmTools;
 /// </summary>
 public class InstancesList
 {
-    private Dictionary<Type, List<object>> _instances = new();  // Словарь объектов
+    private readonly Dictionary<Type, List<object>> _instances = new();  // Словарь объектов
 
     /// <summary>
     /// Добавление объекта
@@ -46,7 +46,7 @@ public class InstancesList
     public object? GetFirstByType(Type type)
     {
         if (_instances.ContainsKey(type) && _instances[type].Count > 0)
-            return _instances[type].First();
+            return _instances[type][0];
         return null;
     }
 

@@ -308,7 +308,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             case AnalysisMethod.ChiSquare:
                 if (_chiSquareParameters is not null)
                 {
-                    var chiParamsDto = receivedParameters.Parameters as BaseParamsDto<ChiSquareParameters>;
+                    var chiParamsDto = receivedParameters.Parameters as IParamsDto<ChiSquareParameters>;
                     chiParamsDto?.FillParameters(ref _chiSquareParameters);
                     Logger.LogInfo("Received ChiSquare method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
                 }
@@ -316,7 +316,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             case AnalysisMethod.RegularSingular:
                 if (_rsParameters is not null)
                 {
-                    var rsParamsDto = receivedParameters.Parameters as BaseParamsDto<RsParameters>;
+                    var rsParamsDto = receivedParameters.Parameters as IParamsDto<RsParameters>;
                     rsParamsDto?.FillParameters(ref _rsParameters);
                     Logger.LogInfo("Received Regular-Singular method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
                 }
@@ -324,7 +324,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             case AnalysisMethod.KochZhaoAnalysis:
                 if (_kzhaParameters is not null)
                 {
-                    var kzhaParamsDto = receivedParameters.Parameters as BaseParamsDto<KzhaParameters>;
+                    var kzhaParamsDto = receivedParameters.Parameters as IParamsDto<KzhaParameters>;
                     kzhaParamsDto?.FillParameters(ref _kzhaParameters);
                     Logger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
                 }
@@ -348,7 +348,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
-        catch { }
+        catch
+        {
+            Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+        }
 
         return false;
     }
@@ -414,7 +417,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 return false;
             if (!(ActiveMethods[AnalysisMethod.RegularSingular] && _rsParameters is not null))
                 return false;
-            if (!((ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null)))
+            if (!(ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null))
                 return false;
             return true;
         }
@@ -427,7 +430,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public async Task StartAnalysis()
     {
         Logger.LogInfo("Starting steganalysis");
-        if (ActiveMethods.Count(m => m.Value is true) == 0)
+        if (!ActiveMethods.Any(m => m.Value))
         {
             DrawCurrentImage();
             Logger.LogWarning("No active steganalysis methods, operation canceled");
@@ -465,7 +468,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработка результатов стегоанализа
     /// </summary>
-    [Obsolete]
+    [Obsolete("Теперь запуск СА осуществляется через JointAnalysis и обрабатываются его результаты")]
     private void ProcessAnalysisResults(Dictionary<AnalysisMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
     {
         if (results is null)

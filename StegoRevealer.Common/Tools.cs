@@ -136,11 +136,8 @@ public static class Tools
 
     public static bool StringContainsAnyOfSubstring(string str, IEnumerable<string> substrings)
     {
-        foreach (var substring in substrings)
-        {
-            if (str.Contains(substring, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
+        if (substrings.Any(substring => str.Contains(substring, StringComparison.OrdinalIgnoreCase)))
+            return true;
         return false;
     }
 

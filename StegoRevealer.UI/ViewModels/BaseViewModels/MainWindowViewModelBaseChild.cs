@@ -11,14 +11,14 @@ public abstract class MainWindowViewModelBaseChild : ViewModelBase
     protected InstancesListAccessor _viewModels;  // Список ViewModel
     protected MainWindowViewModel _mainWindowViewModel;  // Ссылка на корневую ViewModel
 
-    public MainWindowViewModelBaseChild(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList)
+    protected MainWindowViewModelBaseChild(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList)
     {
         _mainWindowViewModel = rootViewModel;
         _viewModels = viewModelsList;
     }
 
     [Experimental]
-    public MainWindowViewModelBaseChild()
+    protected MainWindowViewModelBaseChild()
     {
         _mainWindowViewModel = new();
         _viewModels = new(new InstancesList(), AccessMode.Get);

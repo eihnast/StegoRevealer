@@ -9,7 +9,7 @@ public static class WinConsole
 
     private static string PromptLine = string.Empty;
     private static nint? SavedStdHandle;
-    private static COORD? SavedCursorPosition;
+    private static Coord? SavedCursorPosition;
 
 
     [DllImport("kernel32.dll")]
@@ -31,16 +31,16 @@ public static class WinConsole
     private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
     [DllImport("kernel32.dll")]
-    private static extern bool SetConsoleCursorPosition(IntPtr hConsoleOutput, COORD dwCursorPosition);
+    private static extern bool SetConsoleCursorPosition(IntPtr hConsoleOutput, Coord dwCursorPosition);
 
     [DllImport("kernel32.dll")]
     private static extern IntPtr GetStdHandle(int nStdHandle);
 
     [DllImport("kernel32.dll")]
-    private static extern bool ReadConsoleOutputCharacter(IntPtr hConsoleOutput, [Out] StringBuilder lpCharacter, uint nLength, COORD dwReadCoord, out uint lpNumberOfCharsRead);
+    private static extern bool ReadConsoleOutputCharacter(IntPtr hConsoleOutput, [Out] StringBuilder lpCharacter, uint nLength, Coord dwReadCoord, out uint lpNumberOfCharsRead);
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct COORD
+    private struct Coord
     {
         public short X;
         public short Y;
@@ -54,7 +54,7 @@ public static class WinConsole
     {
         // Сохраняем текущую позицию курсора и строку приглашения ввода
         IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-        COORD cursorPosition;
+        Coord cursorPosition;
         cursorPosition.X = 0;
         cursorPosition.Y = (short)Console.CursorTop;
 
@@ -96,11 +96,11 @@ public static class WinConsole
         if (GetConsoleWindow() == IntPtr.Zero)
         {
             // Попытка подключиться к консоли, из которой было запущено приложение
-            if (!AttachConsole(ATTACH_PARENT_PROCESS))
-            {
-                // Если не удалось подключиться, создаем новую консоль
+            bool consoleAttached = AttachConsole(ATTACH_PARENT_PROCESS);
+
+            // Если не удалось подключиться, создаем новую консоль
+            if (!consoleAttached)
                 AllocConsole();
-            }
         }
 
         // Включаем обработку виртуальных терминалов для корректного вывода
@@ -124,7 +124,7 @@ public static class WinConsole
     {
         // Очищаем строку приглашения ввода
         IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-        COORD cursorPosition;
+        Coord cursorPosition;
         cursorPosition.X = 0;
         cursorPosition.Y = (short)(Console.CursorTop - 0); // Перемещаем курсор на строку выше
         SetConsoleCursorPosition(stdHandle, cursorPosition);

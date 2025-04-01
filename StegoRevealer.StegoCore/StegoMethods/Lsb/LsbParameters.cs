@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -173,7 +174,7 @@ public class LsbParameters : StegoMethodParams, IParams
     /// </summary>
     public int CalcRealContainerVolume()
     {
-        var (w, h ,d) = Image.GetImgSizes();
+        var (w, h ,_) = Image.GetImgSizes();
         return w * h * Channels.Count * LsbNum;  // Возвращает количество пикселей
     }
 
@@ -264,6 +265,6 @@ public class LsbParameters : StegoMethodParams, IParams
         if (!isError && GetUsedVolumes(oneChannelVolume).Sum() < tempDataNum)
             isError = true;
         if (isError)
-            throw new Exception("There is no able to define correct start pixels values");
+            throw new CalculationException("There is no able to define correct start pixels values");
     }
 }

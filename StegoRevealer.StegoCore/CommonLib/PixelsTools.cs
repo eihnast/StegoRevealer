@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.CommonLib.Entities;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.TypeExtensions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ScMath;
@@ -219,7 +220,7 @@ public static class PixelsTools
     private static byte ToGrayscaleByte(byte[] rgb, bool asAverage = false)
     {
         if (rgb.Length != 3)
-            throw new Exception("RGB array must contains only 3 byte values!");
+            throw new IncorrectValueException("RGB array must contains only 3 byte values!");
 
         byte result = 0;
 
@@ -257,7 +258,7 @@ public static class PixelsTools
         int width = pixelsArray.GetLength(1);
         int deep = pixelsArray.GetLength(2);
         if (deep != 3)
-            throw new Exception("Can't calculate grayscale byte if there not 3 bytes of pixel in origin array");
+            throw new IncorrectValueException("Can't calculate grayscale byte if there not 3 bytes of pixel in origin array");
 
         // Перевод в grayscale
         var gimar = new byte[height, width];

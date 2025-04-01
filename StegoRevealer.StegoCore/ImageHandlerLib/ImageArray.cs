@@ -111,18 +111,6 @@ public class ImageArray
     }
 
     /// <summary>
-    /// Устанавливает значение пикселя по координатам в массиве пикселей
-    /// </summary>
-    public void Set(int y, int x, ScPixel value)
-    {
-        if (_img is null)
-            return;
-
-        for(int i = 0; i < Math.Min(value.Length, _img[y, x].Length); i++)
-            Set(y, x, i, value[i]);
-    }
-
-    /// <summary>
     /// Получение значения интенсивности цвета определённого координатами пикселя
     /// </summary>
     public byte Get(int y, int x, int z)
@@ -138,6 +126,18 @@ public class ImageArray
         }
 
         return _img[y, x][z];
+    }
+
+    /// <summary>
+    /// Устанавливает значение пикселя по координатам в массиве пикселей
+    /// </summary>
+    public void Set(int y, int x, ScPixel value)
+    {
+        if (_img is null)
+            return;
+
+        for(int i = 0; i < Math.Min(value.Length, _img[y, x].Length); i++)
+            Set(y, x, i, value[i]);
     }
 
     /// <summary>

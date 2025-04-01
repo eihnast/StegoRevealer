@@ -8,7 +8,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators
 
 public class ContrastCalculator
 {
-    private StatmParameters _params;
+    private readonly StatmParameters _params;
 
     public ContrastCalculator(StatmParameters parameters)
     {

@@ -7,7 +7,7 @@ namespace StegoRevealer.StegoCore.Logger;
 /// </summary>
 public abstract class LoggedResult
 {
-    private List<LogMessage> _logRecords = new();  // Записи лога
+    private readonly List<LogMessage> _logRecords = new();  // Записи лога
 
     /// <summary>
     /// Получение записей лога
@@ -64,6 +64,7 @@ public abstract class LoggedResult
         return errors;
     }
 
-    public override string ToString() => string.Join("\n", _logRecords);
-    public string ToString(int indent = 0) => string.Join("\n", _logRecords.Select(r => string.Join("", Enumerable.Repeat("\t", indent)) + r.ToString()));
+    public string ToString(int indent = 0) => indent == 0 
+        ? string.Join("\n", _logRecords) 
+        : string.Join("\n", _logRecords.Select(r => string.Join("", Enumerable.Repeat("\t", indent)) + r.ToString()));
 }

@@ -41,15 +41,9 @@ public class SteganalysisResultsDto
 
     public double StatmContrastValue { get; private set; } = 0.0;
 
-    // public double StatmEntropyTsallisValue { get; private set; } = 0.0;
-
-    // public double StatmEntropyVaidaValue { get; private set; } = 0.0;
-
     public double StatmEntropyShennonValue { get; private set; } = 0.0;
 
     public double StatmEntropyRenyiValue { get; private set; } = 0.0;
-
-    // public double StatmEntropyHavardValue { get; private set; } = 0.0;
 
 
     public bool? IsHidingDeceted { get; private set; } = null;
@@ -97,11 +91,8 @@ public class SteganalysisResultsDto
             StatmSharpnessValue = statmRes.SharpnessValue;
             StatmBlurValue = statmRes.BlurValue;
             StatmContrastValue = statmRes.ContrastValue;
-            // StatmEntropyTsallisValue = statmRes.EntropyValues.Tsallis;
-            // StatmEntropyVaidaValue = statmRes.EntropyValues.Vaida;
             StatmEntropyShennonValue = statmRes.EntropyValues.Shennon;
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
-            // StatmEntropyHavardValue = statmRes.EntropyValues.Havard;
         }
 
         if (isHidingDeceted is not null)

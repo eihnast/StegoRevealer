@@ -14,7 +14,7 @@ public class BitArrayTests
     {
         byte byteValue = 78;
         var bitArray = BitArrayExtensions.NewFromByte(byteValue);
-        Assert.AreEqual(true, bitArray.IsOneByte());
+        Assert.IsTrue(bitArray.IsOneByte());
     }
 
     [TestMethod]
@@ -23,7 +23,7 @@ public class BitArrayTests
         var bits = new BitArray(8);
         for (int i = 0; i < 8; i++)
             bits[i] = (i % 2 == 0 ? true : false);
-        Assert.AreEqual(true, bits.IsOneByte());
+        Assert.IsTrue(bits.IsOneByte());
     }
 
     [TestMethod]
@@ -35,8 +35,8 @@ public class BitArrayTests
         var bitsUnderhead = new BitArray(7);
         for (int i = 0; i < 7; i++)
             bitsUnderhead[i] = (i % 2 == 0 ? true : false);
-        Assert.AreEqual(false, bitsOverhead.IsOneByte());
-        Assert.AreEqual(false, bitsUnderhead.IsOneByte());
+        Assert.IsFalse(bitsOverhead.IsOneByte());
+        Assert.IsFalse(bitsUnderhead.IsOneByte());
     }
 
     [TestMethod]
@@ -89,7 +89,7 @@ public class BitArrayTests
             bitArray[i] = byteAsBitsWithExtra[i];
 
         var result = bitArray.AsByte(provideOneByte: true);
-        Assert.AreEqual(result, byteValue);
+        Assert.AreEqual(byteValue, result);
     }
 
     [TestMethod]
@@ -103,7 +103,7 @@ public class BitArrayTests
             bitArray[i] = byteAsBitsWithExtra[i];
 
         var result = bitArray.AsByte(provideOneByte: true);
-        Assert.AreEqual(result, expectedByteValue);
+        Assert.AreEqual(expectedByteValue, result);
     }
 
     [TestMethod]
@@ -169,8 +169,8 @@ public class BitArrayTests
     {
         bool valueZero = false;
         bool valueOne = true;
-        Assert.AreEqual(true, PixelsTools.InvertBit(valueZero));
-        Assert.AreEqual(false, PixelsTools.InvertBit(valueOne));
+        Assert.IsTrue(PixelsTools.InvertBit(valueZero));
+        Assert.IsFalse(PixelsTools.InvertBit(valueOne));
     }
 
     [TestMethod]
@@ -180,8 +180,8 @@ public class BitArrayTests
         bool valueOne = true;
         PixelsTools.InvertBit(ref valueZero);
         PixelsTools.InvertBit(ref valueOne);
-        Assert.AreEqual(true, valueZero);
-        Assert.AreEqual(false, valueOne);
+        Assert.IsTrue(valueZero);
+        Assert.IsFalse(valueOne);
     }
 
     [TestMethod]

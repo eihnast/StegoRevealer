@@ -12,7 +12,7 @@ public class InstancesListAccessor
     /// <summary>
     /// Установленный режим доступа
     /// </summary>
-    public AccessMode AccessMode { get; } = AccessMode.Get;
+    public AccessMode AccessMode { get; }
 
 
     /// <summary>
@@ -26,7 +26,7 @@ public class InstancesListAccessor
     private bool HasSetAccess => AccessMode.HasFlag(AccessMode.Set);
 
 
-    private InstancesList _instancesList;  // Хранилище объектов
+    private readonly InstancesList _instancesList;  // Хранилище объектов
 
 
     public InstancesListAccessor(InstancesList instancesList, AccessMode accessMode)
