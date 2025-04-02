@@ -70,11 +70,11 @@ namespace StegoRevealer.UI.Components
         {
             InitializeComponent();
 
-            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullValueException("Missing PART_ScrollViewer"); ;
-            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullValueException("Missing PART_VirtualContainer"); ;
-            _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullValueException("Missing PART_TextHost"); ;
-            _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullValueException("Missing PART_TextBlock"); ;
-            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullValueException("Missing PART_LoadingOverlay"); ;
+            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullValueException("Missing PART_ScrollViewer");
+            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullValueException("Missing PART_VirtualContainer");
+            _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullValueException("Missing PART_TextHost");
+            _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullValueException("Missing PART_TextBlock");
+            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullValueException("Missing PART_LoadingOverlay");
 
             _scrollViewer.ScrollChanged += OnScrollChanged;
             this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
