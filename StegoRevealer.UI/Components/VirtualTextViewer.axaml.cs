@@ -69,11 +69,11 @@ namespace StegoRevealer.UI.Components
         {
             InitializeComponent();
 
-            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer");
-            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer");
-            _textHost = this.FindControl<Border>("PART_TextHost");
-            _textBlock = this.FindControl<TextBlock>("PART_TextBlock");
-            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay");
+            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullReferenceException("Missing PART_ScrollViewer"); ;
+            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullReferenceException("Missing PART_VirtualContainer"); ;
+            _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullReferenceException("Missing PART_TextHost"); ;
+            _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullReferenceException("Missing PART_TextBlock"); ;
+            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullReferenceException("Missing PART_LoadingOverlay"); ;
 
             _scrollViewer.ScrollChanged += OnScrollChanged;
             this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
@@ -96,7 +96,7 @@ namespace StegoRevealer.UI.Components
 
         private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
-        private void OnScrollChanged(object sender, ScrollChangedEventArgs e) => UpdateVisibleText();
+        private void OnScrollChanged(object? sender, ScrollChangedEventArgs e) => UpdateVisibleText();
 
         public async void SetText(string text)
         {
@@ -195,11 +195,11 @@ namespace StegoRevealer.UI.Components
 
             string visible = _fullText.Substring(firstChar, Math.Min(totalLength, _fullText.Length - firstChar));
 
-            if (string.Concat(_textBlock.Inlines.Select(i => (i as Run)?.Text)) == visible && !_selectAllMode && _selectionStart == -1)
+            if (string.Concat(_textBlock.Inlines?.OfType<Run>().Select(r => r.Text) ?? Enumerable.Empty<string>()) == visible && !_selectAllMode && _selectionStart == -1)
                 return; // пропускаем, если текст тот же и нет выделения
 
             _textHost.Margin = new Thickness(0, scrollLine * _lineHeight, 0, 0);
-            _textBlock.Inlines.Clear();
+            _textBlock.Inlines?.Clear();
 
             if (_selectAllMode || (_selectionStart >= 0 && _selectionEnd >= 0))
             {
@@ -218,19 +218,19 @@ namespace StegoRevealer.UI.Components
                 string after = visible.Substring(safeStart + safeLength);
 
                 if (!string.IsNullOrEmpty(before))
-                    _textBlock.Inlines.Add(new Run(before));
+                    _textBlock.Inlines?.Add(new Run(before));
                 if (!string.IsNullOrEmpty(selected))
-                    _textBlock.Inlines.Add(new Run(selected) { Background = Brushes.LightBlue });
+                    _textBlock.Inlines?.Add(new Run(selected) { Background = Brushes.LightBlue });
                 if (!string.IsNullOrEmpty(after))
-                    _textBlock.Inlines.Add(new Run(after));
+                    _textBlock.Inlines?.Add(new Run(after));
             }
             else
             {
-                _textBlock.Inlines.Add(new Run(visible));
+                _textBlock.Inlines?.Add(new Run(visible));
             }
         }
 
-        private void OnPointerPressed(object sender, PointerPressedEventArgs e)
+        private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
             _isDragging = true;
             _lastPointerPosition = e.GetPosition(this);
@@ -241,7 +241,7 @@ namespace StegoRevealer.UI.Components
             UpdateVisibleText();
         }
 
-        private void OnPointerMoved(object sender, PointerEventArgs e)
+        private void OnPointerMoved(object? sender, PointerEventArgs e)
         {
             if (_isDragging)
             {
@@ -252,13 +252,13 @@ namespace StegoRevealer.UI.Components
             }
         }
 
-        private void OnPointerReleased(object sender, PointerReleasedEventArgs e)
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
         {
             _isDragging = false;
             _autoScrollTimer.Stop();
         }
 
-        private async void OnKeyDown(object sender, KeyEventArgs e)
+        private async void OnKeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
             {
@@ -303,7 +303,7 @@ namespace StegoRevealer.UI.Components
 
         private int GetCharIndexFromPoint(Point point)
         {
-            string visibleText = string.Concat(_textBlock.Inlines.Select(i => (i as Run)?.Text));
+            string visibleText = string.Concat(_textBlock.Inlines?.OfType<Run>().Select(r => r.Text) ?? Enumerable.Empty<string>());
             if (string.IsNullOrEmpty(visibleText))
                 return 0;
 
