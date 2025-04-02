@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
              mc:Ignorable="d"
 			 d:DesignWidth="1200" d:DesignHeight="610" MinWidth="1200" MinHeight="610"
@@ -261,13 +262,20 @@
 									   FontStyle="Italic" TextAlignment="Left"
 									   Height="25" Margin="20 0 0 0"/>
 						</StackPanel>
-						<TextBox Name="ExtractedMessage" Text=""
+						<!--<TextBox Name="ExtractedMessage" Text=""
 								 Classes="ExtractedText"
 								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
 								 TextWrapping="Wrap" FontSize="12"
 								 AcceptsReturn="True" AcceptsTab="True"
 								 IsEnabled="{Binding Path=HasResults}"
-								 MinHeight="300" IsReadOnly="True"/>
+								 MinHeight="300" IsReadOnly="True"/>-->
+						<cmp:VirtualTextViewer Name="ExtractedMessage"
+								 Classes="ExtractedText"
+								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
+								 TextWrapping="Wrap" FontSize="12"
+								 
+								 IsEnabled="{Binding Path=HasResults}"
+								 MinHeight="300" />
 						<!--<ae:TextEditor Name="ExtractedMessage" Text=""
 									   DockPanel.Dock="Top" VerticalAlignment="Stretch"
 									   WordWrap="True" FontSize="12"

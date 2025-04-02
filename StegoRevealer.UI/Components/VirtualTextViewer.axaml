@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="StegoRevealer.UI.Components.VirtualTextViewer"
+			 Focusable="True">
+	<Grid>
+		<!-- Слой текста -->
+		<ScrollViewer Name="PART_ScrollViewer"
+					  VerticalScrollBarVisibility="Auto"
+					  HorizontalScrollBarVisibility="Disabled">
+			<Grid Name="PART_VirtualContainer">
+				<Grid ColumnDefinitions="*,18">
+					<Border Name="PART_TextHost"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Top"
+							Grid.Column="0">
+						<TextBlock Name="PART_TextBlock"
+								   FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
+								   TextWrapping="{Binding TextWrapping, RelativeSource={RelativeSource AncestorType=UserControl}}"
+								   IsHitTestVisible="True"
+								   Cursor="IBeam"
+								   Background="Transparent" />
+					</Border>
+				</Grid>
+			</Grid>
+		</ScrollViewer>
+
+		<!-- Слой загрузки -->
+		<Border Name="PART_LoadingOverlay"
+				Background="#80000000"
+				IsHitTestVisible="False"
+				IsVisible="False"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch">
+			<TextBlock Text="Загрузка..."
+					   Foreground="White"
+					   FontWeight="Bold"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   FontSize="16"/>
+		</Border>
+	</Grid>
+</UserControl>
