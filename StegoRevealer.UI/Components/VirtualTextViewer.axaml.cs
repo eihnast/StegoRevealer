@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 
 namespace StegoRevealer.UI.Components
 {
@@ -69,11 +70,11 @@ namespace StegoRevealer.UI.Components
         {
             InitializeComponent();
 
-            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullReferenceException("Missing PART_ScrollViewer"); ;
-            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullReferenceException("Missing PART_VirtualContainer"); ;
-            _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullReferenceException("Missing PART_TextHost"); ;
-            _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullReferenceException("Missing PART_TextBlock"); ;
-            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullReferenceException("Missing PART_LoadingOverlay"); ;
+            _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullValueException("Missing PART_ScrollViewer"); ;
+            _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullValueException("Missing PART_VirtualContainer"); ;
+            _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullValueException("Missing PART_TextHost"); ;
+            _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullValueException("Missing PART_TextBlock"); ;
+            _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullValueException("Missing PART_LoadingOverlay"); ;
 
             _scrollViewer.ScrollChanged += OnScrollChanged;
             this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
@@ -98,7 +99,7 @@ namespace StegoRevealer.UI.Components
 
         private void OnScrollChanged(object? sender, ScrollChangedEventArgs e) => UpdateVisibleText();
 
-        public async void SetText(string text)
+        public async Task SetText(string text)
         {
             _fullText = text ?? string.Empty;
             _selectionStart = -1;

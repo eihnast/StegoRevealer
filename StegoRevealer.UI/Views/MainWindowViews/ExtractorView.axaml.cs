@@ -64,8 +64,7 @@ public partial class ExtractorView : UserControl
                 return;
 
             // Вывод результатов на форму
-            //ExtractedMessage.Text = CommonTools.FilterBadSymbols(results.ExtractedMessage);
-            ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            _ = ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
@@ -103,8 +102,7 @@ public partial class ExtractorView : UserControl
         _vm.IsParamsOpened = true;
 
         // Сброс формы результатов
-        //ExtractedMessage.Text = string.Empty;
-        ExtractedMessage.SetText(string.Empty);
+        _ = ExtractedMessage.SetText(string.Empty);
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
 
