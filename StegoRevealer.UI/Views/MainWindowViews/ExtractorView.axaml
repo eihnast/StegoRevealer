@@ -273,7 +273,7 @@
 								 Classes="ExtractedText"
 								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
 								 TextWrapping="Wrap" FontSize="12"
-								 
+								 Background="{StaticResource SrDarkMiddle}" ContentBackground="{StaticResource SrDark}"
 								 IsEnabled="{Binding Path=HasResults}"
 								 MinHeight="300" />
 						<!--<ae:TextEditor Name="ExtractedMessage" Text=""

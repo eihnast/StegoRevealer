@@ -48,6 +48,12 @@ namespace StegoRevealer.UI.Components
         public new static readonly StyledProperty<double> FontSizeProperty =
             AvaloniaProperty.Register<VirtualTextViewer, double>(nameof(FontSize), 12);
 
+        public static readonly new StyledProperty<IBrush?> BackgroundProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, IBrush?>(nameof(Background));
+
+        public static readonly StyledProperty<IBrush?> ContentBackgroundProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, IBrush?>(nameof(ContentBackground));
+
         public TextWrapping TextWrapping
         {
             get => GetValue(TextWrappingProperty);
@@ -64,6 +70,18 @@ namespace StegoRevealer.UI.Components
         {
             get => GetValue(FontSizeProperty);
             set => SetValue(FontSizeProperty, value);
+        }
+
+        public new IBrush? Background
+        {
+            get => GetValue(BackgroundProperty);
+            set => SetValue(BackgroundProperty, value);
+        }
+
+        public IBrush? ContentBackground
+        {
+            get => GetValue(ContentBackgroundProperty);
+            set => SetValue(ContentBackgroundProperty, value);
         }
 
         public VirtualTextViewer()
@@ -143,7 +161,7 @@ namespace StegoRevealer.UI.Components
             if (viewport.Width <= 0 || viewport.Height <= 0)
                 return;
 
-            _lineHeight = FontSize + 4;
+            _lineHeight = FontSize + 2;
             _linesVisible = Math.Max(1, (int)(viewport.Height / _lineHeight));
 
             _visualLines = CalculateVisualLines(_fullText);
