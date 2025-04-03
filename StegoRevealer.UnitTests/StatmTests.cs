@@ -125,6 +125,11 @@ public class StatmTests
 
         for (int i = 1; i < names.Count; i++)
             Assert.IsTrue(contrasts[i] > contrasts[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
+
+        double delta = 0.001;
+        var results = new double[] { 0.5646182891942103, 0.5700369446103237, 0.5775864586843207, 0.5849658258387392, 0.6033360514147779, 0.6471471717645584, 0.7618667759370277 };
+        for (int i = 1; i < names.Count; i++)
+            Assert.IsTrue(contrasts[i] - results[i] < delta, $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Expected: {results[i]} (diff is {contrasts[i] - results[i]})");
     }
 
     [TestMethod]
@@ -191,10 +196,12 @@ public class StatmTests
 
         var edgesImar = canny.EdgePixelsArray;
         var cannyImage = image.Clone();
-        for (int y = 0; y < cannyImage.Height; y++)
+        Parallel.For(0, cannyImage.Height, y =>
+        {
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
+        });
         cannyImage.SaveNear("sharpness_canny_gpt_applied");
     }
 
@@ -209,10 +216,12 @@ public class StatmTests
 
         var edgesImar = sobel;
         var cannyImage = image.Clone();
-        for (int y = 0; y < cannyImage.Height; y++)
+        Parallel.For(0, cannyImage.Height, y =>
+        {
             for (int x = 0; x < cannyImage.Width; x++)
                 for (int channelId = 0; channelId < 3; channelId++)
                     cannyImage.ImgArray[y, x, channelId] = edgesImar[y, x];
+        });
         cannyImage.SaveNear("sharpness_sobel_applied");
     }
     #endregion

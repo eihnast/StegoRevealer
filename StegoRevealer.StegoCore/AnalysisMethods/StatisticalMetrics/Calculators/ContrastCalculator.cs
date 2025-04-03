@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ScMath;
+using System.Collections.Concurrent;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
@@ -21,21 +22,21 @@ public class ContrastCalculator
         var gimar = PixelsTools.ToGrayscale(imar, _params.ContrastCalcUseAveragedGrayscale);
 
         // Оценки локального контраста по формуле Гордона
-        var localContrasts = new List<double>();
-        for (int y = 0; y < imar.Height; y++)
+        var localContrasts = new ConcurrentBag<double>();
+        Parallel.For(0, imar.Height, y =>
         {
             for (int x = 0; x < imar.Width; x++)
             {
                 var centerPixels = GetWindowCenterPixels(gimar, new Sc2DPoint(y, x));
                 var surroundPixels = GetWindowSurroundPixels(gimar, new Sc2DPoint(y, x));
 
-                double p = MathMethods.Average(centerPixels.ToArray());
-                double a = MathMethods.Average(surroundPixels.ToArray());
+                double p = MathMethods.Average(centerPixels);
+                double a = MathMethods.Average(surroundPixels);
 
                 double C = Math.Abs(p - a) / (p + a);
                 localContrasts.Add(C);
             }
-        }
+        });
 
         // Предварительная обработка данных
         // Убедимся, что все значения данных строго положительны,
@@ -79,19 +80,39 @@ public class ContrastCalculator
         return pixels;
     }
 
-    private IEnumerable<byte> GetWindowSurroundPixels(byte[,] pixelsArray, Sc2DPoint point)
+    private List<byte> GetWindowSurroundPixels(byte[,] pixelsArray, Sc2DPoint point)
     {
         int height = pixelsArray.GetLength(0);
         int width = pixelsArray.GetLength(1);
 
         int centerOffset = _params.ContrastCalcWindowCenterSize / 2;
         int surroundOffset = _params.ContrastCalcWindowCenterSize;
-        var pixels = new List<byte>();
 
-        for (int y = Math.Max(0, point.Y - surroundOffset); y <= Math.Min(height - 1, point.Y + surroundOffset); y++)
-            for (int x = Math.Max(0, point.X - surroundOffset); x <= Math.Min(width - 1, point.X + surroundOffset); x++)
-                if (!(y >= point.Y - centerOffset && y <= point.Y + centerOffset && x >= point.X - centerOffset && x <= point.X + centerOffset))
+        int minY = Math.Max(0, point.Y - surroundOffset);
+        int maxY = Math.Min(height - 1, point.Y + surroundOffset);
+        int minX = Math.Max(0, point.X - surroundOffset);
+        int maxX = Math.Min(width - 1, point.X + surroundOffset);
+
+        int centerMinY = point.Y - centerOffset;
+        int centerMaxY = point.Y + centerOffset;
+        int centerMinX = point.X - centerOffset;
+        int centerMaxX = point.X + centerOffset;
+
+        int maxPixelCount = (maxY - minY + 1) * (maxX - minX + 1);
+        var pixels = new List<byte>(maxPixelCount);
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                bool inCenterY = y >= centerMinY && y <= centerMaxY;
+                bool inCenterX = x >= centerMinX && x <= centerMaxX;
+                if (!(inCenterY && inCenterX))
+                {
                     pixels.Add(pixelsArray[y, x]);
+                }
+            }
+        }
 
         return pixels;
     }

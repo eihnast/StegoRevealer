@@ -30,18 +30,23 @@ public static class PixelsTools
         value ^= true;
     }
 
+    private static readonly byte[] LsbMasks = new byte[]
+    {
+        0b0000_0000,
+        0b0000_0001,
+        0b0000_0011,
+        0b0000_0111,
+        0b0000_1111,
+        0b0001_1111,
+        0b0011_1111,
+        0b0111_1111,
+        0b1111_1111
+    };
+
     /// <summary>
     /// Инвертирование НЗБ (наименьших значащих бит)
     /// </summary>
-    public static byte InvertLsb(byte value, int lsbNum = 1)
-    {
-        var pixel = BitArrayExtensions.NewFromByte(value);
-        for (int i = 0; i < lsbNum ; i++)  // Т.к. в BitArray 0-й элемент соответствует НЗБ
-        {
-            pixel[i] ^= true;  // Инвертирование без обращения к специальному методу инвертирования
-        }
-        return pixel.AsByte();
-    }
+    public static byte InvertLsb(byte value, int lsbNum = 1) => (byte)(value ^ LsbMasks[lsbNum]);
 
     /// <summary>
     /// Инвертирование НЗБ по ссылке (меняет переданный byte)
@@ -238,7 +243,7 @@ public static class PixelsTools
 
         // Перевод в grayscale
         var gimar = new byte[height, width];
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -247,7 +252,7 @@ public static class PixelsTools
                 var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
                 gimar[y, x] = gbyte;
             }
-        }
+        });
 
         return gimar;
     }
@@ -262,7 +267,7 @@ public static class PixelsTools
 
         // Перевод в grayscale
         var gimar = new byte[height, width];
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -271,7 +276,7 @@ public static class PixelsTools
                 var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
                 gimar[y, x] = gbyte;
             }
-        }
+        });
 
         return gimar;
     }

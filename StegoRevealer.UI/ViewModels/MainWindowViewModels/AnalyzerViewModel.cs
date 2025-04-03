@@ -550,6 +550,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
             + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
+            + "\n\nStatistical metrics = " + Common.Tools.GetFormattedJson(statmRes)
+            + "\nLogs statistical metrics calculation = \n" + statmRes?.ToString(indent: 1)
             + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
     }
 

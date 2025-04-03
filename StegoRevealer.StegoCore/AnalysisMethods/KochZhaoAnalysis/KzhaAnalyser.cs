@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using Accord.Statistics.Links;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
@@ -47,6 +48,8 @@ public class KzhaAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public KzhaResult Analyse(bool verboseLog = false)
     {
+        var timer = Stopwatch.StartNew();
+
         var result = new KzhaResult();
         result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
@@ -77,7 +80,8 @@ public class KzhaAnalyser
             result.ExtractedData = extractedData;  // Если включена попытка извлечения, будет string.Empty при неудаче
         }
 
-        result.Log($"Стегоанализ методом {MethodName} завершён");
+        timer.Stop();
+        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
         return result;
     }
 

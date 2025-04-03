@@ -29,7 +29,7 @@ public class SharpnessCalculator
 
         double maxSharpness = 0.0;
 
-        for (int y = 0; y < height; y++)  // Обходим матрицу граничных пикселей
+        Parallel.For(0, height, y =>  // Обходим матрицу граничных пикселей
         {
             for (int x = 0; x < width; x++)
             {
@@ -93,7 +93,7 @@ public class SharpnessCalculator
                         maxSharpness = sharpness;
                 }
             }
-        }
+        });
 
         return maxSharpness;
     }
@@ -203,7 +203,7 @@ public class SharpnessCalculator
         double[,] yKernel = useScharrOperator ? yScharr : ySobel;
         double[,] xKernel = useScharrOperator ? xScharr : xSobel;
 
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -229,7 +229,7 @@ public class SharpnessCalculator
 
                 gradientDirections[y, x] = Math.Atan2(Gy, Gx);  //  * (180 / Math.PI)
             }
-        }
+        });
 
         return new SobelOperatorResult
         {
@@ -279,7 +279,7 @@ public class SharpnessCalculator
                 if (angles[i, j] < 0)
                     angles[i, j] += 180;
 
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -318,7 +318,7 @@ public class SharpnessCalculator
                 if (pixelsArray[y, x] >= q && pixelsArray[y, x] >= r)
                     supressedArray[y, x] = pixelsArray[y, x];
             }
-        }
+        });
 
         return supressedArray;
     }
@@ -334,7 +334,7 @@ public class SharpnessCalculator
         double highThresholdValue = maxPixelValue * upThreshold;
         double lowThresholdValue = highThresholdValue * downThreshold;
 
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -345,7 +345,7 @@ public class SharpnessCalculator
                 else
                     result[y, x] = _params.SharpnessCalcWeakPixel;
             }
-        }
+        });
 
         return result;
     }
@@ -359,7 +359,7 @@ public class SharpnessCalculator
 
         byte strongPixel = _params.SharpnessCalcStrongPixel;
 
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -381,7 +381,7 @@ public class SharpnessCalculator
                         result[y, x] = 0;
                 }
             }
-        }
+        });
 
         return result;
     }

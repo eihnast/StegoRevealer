@@ -30,9 +30,11 @@ public class EntropyCalculator
         var gimar = PixelsTools.ToGrayscale(imar, _params.EntropyCalcUseAveragedGrayscale);
 
         var histoValues = Enumerable.Repeat(0, 256).ToArray();  // Nk
-        for (int y = 0; y < imar.Height; y++)
+        Parallel.For(0, imar.Height, y =>
+        {
             for (int x = 0; x < imar.Width; x++)
                 histoValues[gimar[y, x]]++;
+        });
 
         int pixelsNum = imar.Width * imar.Height;
         _pValues = new double[256];

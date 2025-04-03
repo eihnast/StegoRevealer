@@ -1,5 +1,8 @@
-﻿using StegoRevealer.StegoCore.CommonLib.Exceptions;
+﻿using MathNet.Numerics.Statistics;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
@@ -38,6 +41,8 @@ public class RsAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public RsResult Analyse(bool verboseLog = false)
     {
+        var timer = Stopwatch.StartNew();
+
         var result = new RsResult();
         result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
@@ -76,7 +81,8 @@ public class RsAnalyser
         result.MessageRelativeVolume = pValuesSum / Params.Channels.Count;
         result.Log($"MessageRelativeVolume for all image = {result.MessageRelativeVolume}");
 
-        result.Log($"Стегоанализ методом {MethodName} завершён");
+        timer.Stop();
+        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
         return result;
     }
 
@@ -99,58 +105,50 @@ public class RsAnalyser
         var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
         var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
-
-        int basketsCount = 4;
-        int basketSize = groups.Count / basketsCount;
-        var baskets = new List<(int StartIndex, int EndIndex)>();
-        for (int i = 0; i < basketsCount - 1; i++)
-            baskets.Add((basketSize * i, basketSize * (i + 1) - 1));
-        baskets.Add((basketSize * (basketsCount - 1), groups.Count - 1));
-
-        var basketTasks = new List<Task<RsGroupsCalcResult>>();
-        foreach (var basket in baskets)
-            basketTasks.Add(Task.Run(() =>
+        Parallel.For(
+            0,
+            groups.Count,
+            () => new RsGroupsCalcResult(), // локальный результат
+            (i, state, localResult) =>
             {
-                var localResult = new RsGroupsCalcResult();
-                for (int i = basket.StartIndex; i <= basket.EndIndex; i++)
+                var regularityResult = CalculateRegularityResults(groups[i], flippingFuncs);
+                var groupType = RsHelper.DefineGroupType(regularityResult);
+                switch (groupType)
                 {
-                    var regularityResult = CalculateRegularityResults(groups[i], flippingFuncs);
-                    var groupType = RsHelper.DefineGroupType(regularityResult);
-                    switch (groupType)
-                    {
-                        case RsGroupType.Singular:
-                            localResult.Singulars++;
-                            break;
-                        case RsGroupType.Regular:
-                            localResult.Regulars++;
-                            break;
-                    }
-
-                    var regularityWithInvertedMaskResult = CalculateRegularityResults(groups[i], flippingFuncsWithInvertedMask);
-                    var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
-                    switch (groupTypeWithInvertedMask)
-                    {
-                        case RsGroupType.Singular:
-                            localResult.SingularsWithInvertedMask++;
-                            break;
-                        case RsGroupType.Regular:
-                            localResult.RegularsWithInvertedMask++;
-                            break;
-                    }
+                    case RsGroupType.Singular:
+                        localResult.Singulars++;
+                        break;
+                    case RsGroupType.Regular:
+                        localResult.Regulars++;
+                        break;
                 }
+
+                var regularityWithInvertedMaskResult = CalculateRegularityResults(groups[i], flippingFuncsWithInvertedMask);
+                var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
+                switch (groupTypeWithInvertedMask)
+                {
+                    case RsGroupType.Singular:
+                        localResult.SingularsWithInvertedMask++;
+                        break;
+                    case RsGroupType.Regular:
+                        localResult.RegularsWithInvertedMask++;
+                        break;
+                }
+
                 return localResult;
-            }));
-
-        foreach (var basketTask in basketTasks)
-            basketTask.Wait();
-
-        foreach (var basketTaskResult in basketTasks.Select(task => task.Result))
-        {
-            result.Singulars += basketTaskResult.Singulars;
-            result.Regulars += basketTaskResult.Regulars;
-            result.SingularsWithInvertedMask += basketTaskResult.SingularsWithInvertedMask;
-            result.RegularsWithInvertedMask += basketTaskResult.RegularsWithInvertedMask;
-        }
+            },
+            localResult =>
+            {
+                // Финальная агрегация в потокобезопасной секции
+                lock (result)
+                {
+                    result.Singulars += localResult.Singulars;
+                    result.Regulars += localResult.Regulars;
+                    result.SingularsWithInvertedMask += localResult.SingularsWithInvertedMask;
+                    result.RegularsWithInvertedMask += localResult.RegularsWithInvertedMask;
+                }
+            }
+        );
 
         return result;
     }
@@ -221,8 +219,8 @@ public class RsAnalyser
     /// <param name="channelArray">Ссылка на массив пикселей изображения в одном канале</param>
     private List<int[]> SplitIntoGroupsInChannelArray(ImageOneChannelArray channelArray)
     {
-        var groups = new List<int[]>();
-        for (int y = 0; y < channelArray.Height; y++)
+        var groups = new ConcurrentBag<int[]>();
+        Parallel.For(0, channelArray.Height, y =>
         {
             for (int xGroup = 0; xGroup < channelArray.Width / Params.PixelsGroupLength; xGroup++)
             {
@@ -240,9 +238,9 @@ public class RsAnalyser
             // "Лишние" пиксели, которые не попадают в последовательную выборку групп, в оригинале учитывались
             // и собирались в дополнительные "остаточные" группы здесь (в единый массив excess, откуда по 
             // достижению длины PixelsGroupLength сразу же выгружались в основной).
-        }
+        });
 
-        return groups;
+        return groups.ToList();
     }
 
     /// <summary>
