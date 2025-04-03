@@ -2,12 +2,15 @@
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ScMath;
+using static Plotly.NET.StyleParam.Range;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 
 public class SharpnessCalculator
 {
     private readonly StatmParameters _params;
+
+    private readonly object _lock = new object();
 
     public SharpnessCalculator(StatmParameters parameters)
     {
@@ -31,6 +34,8 @@ public class SharpnessCalculator
 
         Parallel.For(0, height, y =>  // Обходим матрицу граничных пикселей
         {
+            double localSharpness = 0.0;
+
             for (int x = 0; x < width; x++)
             {
                 var currentPixel = edgesImar[y, x];
@@ -80,18 +85,36 @@ public class SharpnessCalculator
                         pixelsOnLine[i].Value = gimar[pixelsOnLine[i].Y, pixelsOnLine[i].X];
 
                     // Вычисления
-                    byte min = pixelsOnLine.Min(p => p.Value);  // a
-                    byte max = pixelsOnLine.Max(p => p.Value);  // b
+                    PixelInfo? minPixel = null, maxPixel = null;
+                    byte min = 255;  // a
+                    byte max = 0;  // b
 
-                    var minPixel = pixelsOnLine.Where(p => p.Value == min).OrderBy(p => Math.Sqrt(Math.Pow(p.Y - y, 2) + Math.Pow(p.X - x, 2))).First();
-                    var maxPixel = pixelsOnLine.Where(p => p.Value == max).OrderBy(p => Math.Sqrt(Math.Pow(p.Y - y, 2) + Math.Pow(p.X - x, 2))).First();
+                    foreach (var p in pixelsOnLine)
+                    {
+                        if (p.Value < min)
+                        {
+                            min = p.Value;
+                            minPixel = p;
+                        }
+                        if (p.Value > max)
+                        {
+                            max = p.Value;
+                            maxPixel = p;
+                        }
+                    }
+                    if (minPixel == null || maxPixel == null)
+                        continue;
 
                     double distance = Math.Sqrt(Math.Pow(minPixel.Y - maxPixel.Y, 2) + Math.Pow(minPixel.X - maxPixel.X, 2));  // w
 
-                    double sharpness = Math.Abs(max - min) / distance;
-                    if (sharpness > maxSharpness)
-                        maxSharpness = sharpness;
+                    localSharpness = Math.Abs(max - min) / distance;
                 }
+            }
+
+            lock (_lock)
+            {
+                if (localSharpness > maxSharpness)
+                    maxSharpness = localSharpness;
             }
         });
 

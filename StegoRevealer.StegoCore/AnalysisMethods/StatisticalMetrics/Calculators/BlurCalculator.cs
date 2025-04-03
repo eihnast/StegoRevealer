@@ -7,6 +7,8 @@ public class BlurCalculator
 {
     private readonly StatmParameters _params;
 
+    private readonly object _locker = new object();
+
     public BlurCalculator(StatmParameters parameters)
     {
         _params = parameters;
@@ -23,10 +25,18 @@ public class BlurCalculator
 
         int MN = imar.Height * imar.Width;
         double C = 0.0;
-        Parallel.For(0, imar.Height, y =>
+        Parallel.For(0, imar.Height, () => 0.0, (y, state, localSum) =>
         {
             for (int x = 0; x < imar.Width; x++)
-                C += Math.Abs((double)(blurredImarB1[y, x] - blurredImarB2[y, x]) / MN);
+                localSum += Math.Abs((double)(blurredImarB1[y, x] - blurredImarB2[y, x]) / MN);
+            return localSum;
+        },
+        localSum =>
+        {
+            lock (_locker)
+            {
+                C += localSum;
+            }
         });
 
         return 1 / C;  // Возвращаем обратное: чем выше число, тем больше размытость
