@@ -1,10 +1,13 @@
 ﻿using StegoRevealer.StegoCore.CommonLib;
+using System.ComponentModel;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 
 public class BlurCalculator
 {
     private readonly StatmParameters _params;
+
+    private readonly object _locker = new object();
 
     public BlurCalculator(StatmParameters parameters)
     {
@@ -22,24 +25,34 @@ public class BlurCalculator
 
         int MN = imar.Height * imar.Width;
         double C = 0.0;
-        for (int y = 0; y < imar.Height; y++)
+        Parallel.For(0, imar.Height, () => 0.0, (y, state, localSum) =>
+        {
             for (int x = 0; x < imar.Width; x++)
-                C += Math.Abs((double)(blurredImarB1[y, x] - blurredImarB2[y, x]) / MN);
+                localSum += Math.Abs((double)(blurredImarB1[y, x] - blurredImarB2[y, x]) / MN);
+            return localSum;
+        },
+        localSum =>
+        {
+            lock (_locker)
+            {
+                C += localSum;
+            }
+        });
 
         return 1 / C;  // Возвращаем обратное: чем выше число, тем больше размытость
     }
 
     private static byte[,] ApplyAverageFilter(byte[,] pixelsArray, int filterSize)
     {
-        int width = pixelsArray.GetLength(0);
         int height = pixelsArray.GetLength(1);
+        int width = pixelsArray.GetLength(0);
         byte[,] result = new byte[width, height];
 
         int filterOffset = filterSize / 2;
 
-        for (int x = 0; x < width; x++)
+        Parallel.For(0, height, y =>
         {
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
                 int averageSum = 0;
                 int pixelCount = 0;
@@ -65,7 +78,7 @@ public class BlurCalculator
                 byte averageValue = (byte)(averageSum / pixelCount);
                 result[x, y] = averageValue;
             }
-        }
+        });
 
         return result;
     }

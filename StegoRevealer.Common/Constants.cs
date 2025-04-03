@@ -19,7 +19,7 @@ public static class Constants
         public static string StatmBlur => "Уровень размытости";
         public static string StatmContrast => "Уровень контраста";
         public static string StatmShennon => "Энтропия Шеннона";
-        public static string StatmRenyi => "Энтропия Реньи (α = 2,5)";
+        public static string StatmRenyi => "Энтропия Реньи (α = 1,1)";
         public static string ElapsedTime => "Затраченное время";
     }
 

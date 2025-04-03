@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
+using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 
@@ -35,6 +36,8 @@ public class ChiSquareAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public ChiSquareResult Analyse(bool verboseLog = false)
     {
+        var timer = Stopwatch.StartNew();
+
         var result = new ChiSquareResult();
         result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
 
@@ -95,7 +98,8 @@ public class ChiSquareAnalyser
         if (Params.Visualize)
             result.Image = ColorizeAllImage(toColorizeChannels, 100);
 
-        result.Log($"Стегоанализ методом {MethodName} завершён");
+        timer.Stop();
+        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
         return result;
     }
 

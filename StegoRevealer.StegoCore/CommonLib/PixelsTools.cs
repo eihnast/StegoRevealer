@@ -30,18 +30,23 @@ public static class PixelsTools
         value ^= true;
     }
 
+    private static readonly byte[] LsbMasks = new byte[]
+    {
+        0b0000_0000,
+        0b0000_0001,
+        0b0000_0011,
+        0b0000_0111,
+        0b0000_1111,
+        0b0001_1111,
+        0b0011_1111,
+        0b0111_1111,
+        0b1111_1111
+    };
+
     /// <summary>
     /// Инвертирование НЗБ (наименьших значащих бит)
     /// </summary>
-    public static byte InvertLsb(byte value, int lsbNum = 1)
-    {
-        var pixel = BitArrayExtensions.NewFromByte(value);
-        for (int i = 0; i < lsbNum ; i++)  // Т.к. в BitArray 0-й элемент соответствует НЗБ
-        {
-            pixel[i] ^= true;  // Инвертирование без обращения к специальному методу инвертирования
-        }
-        return pixel.AsByte();
-    }
+    public static byte InvertLsb(byte value, int lsbNum = 1) => (byte)(value ^ LsbMasks[lsbNum]);
 
     /// <summary>
     /// Инвертирование НЗБ по ссылке (меняет переданный byte)
@@ -238,7 +243,7 @@ public static class PixelsTools
 
         // Перевод в grayscale
         var gimar = new byte[height, width];
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -247,7 +252,7 @@ public static class PixelsTools
                 var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
                 gimar[y, x] = gbyte;
             }
-        }
+        });
 
         return gimar;
     }
@@ -262,7 +267,7 @@ public static class PixelsTools
 
         // Перевод в grayscale
         var gimar = new byte[height, width];
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -271,7 +276,7 @@ public static class PixelsTools
                 var gbyte = ToGrayscaleByte(rgb, useAveragedGrayscale);
                 gimar[y, x] = gbyte;
             }
-        }
+        });
 
         return gimar;
     }
@@ -279,42 +284,36 @@ public static class PixelsTools
     // Bresenham's Line Algorithm
     public static List<PixelInfo> GetPixelsOnLine(int y0, int x0, int y1, int x1)
     {
-        var pixels = new List<PixelInfo>();
-
         bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
         if (steep)
         {
-            int t;
-            t = x0;  // swap x0 and y0
-            x0 = y0;
-            y0 = t;
-            t = x1;  // swap x1 and y1
-            x1 = y1;
-            y1 = t;
+            (x0, y0) = (y0, x0);
+            (x1, y1) = (y1, x1);
         }
 
         if (x0 > x1)
         {
-            int t;
-            t = x0;  // swap x0 and x1
-            x0 = x1;
-            x1 = t;
-            t = y0;  // swap y0 and y1
-            y0 = y1;
-            y1 = t;
+            (x0, x1) = (x1, x0);
+            (y0, y1) = (y1, y0);
         }
 
         int dx = x1 - x0;
         int dy = Math.Abs(y1 - y0);
         int error = dx / 2;
         int ystep = (y0 < y1) ? 1 : -1;
-
         int y = y0;
+
+        var pixels = new List<PixelInfo>(dx + 1);
+
         for (int x = x0; x <= x1; x++)
         {
-            pixels.Add(new PixelInfo { Y = steep ? x : y, X = steep ? y : x });
+            pixels.Add(new PixelInfo
+            {
+                Y = steep ? x : y,
+                X = steep ? y : x
+            });
 
-            error = error - dy;
+            error -= dy;
             if (error < 0)
             {
                 y += ystep;

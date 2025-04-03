@@ -230,14 +230,14 @@ public class ImageHandler : IDisposable
 
         int channelId = (int)channel;
 
-        for (int y = 0; y < _imgArray.Height; y++)
+        Parallel.For(0, _imgArray.Height, y =>
         {
             for (int x = 0; x < _imgArray.Width; x++)
             {
                 var pixel = _imgArray[y, x];
                 pixel[channelId] = PixelsTools.InvertLsb(_imgArray[y, x][channelId], lsbNum);
             }
-        }
+        });
     }
 
     // Получение "инвертированного" обработчика

@@ -67,7 +67,7 @@ public class ImageBlocks
 
         // Формирование матрицы блоков
         _blocksMatrix = new BlockCoords[BlocksInColumn, BlocksInRow];
-        for (int y = 0; y < BlocksInColumn; y++)
+        Parallel.For(0, BlocksInColumn, y =>
         {
             for (int x = 0; x < BlocksInRow; x++)
             {
@@ -82,7 +82,7 @@ public class ImageBlocks
                     );
                 _blocksMatrix[y, x] = new BlockCoords(lt, rd);
             }
-        }
+        });
     }
 
 

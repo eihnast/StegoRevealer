@@ -29,10 +29,26 @@ public class EntropyCalculator
         var imar = _params.Image.ImgArray;
         var gimar = PixelsTools.ToGrayscale(imar, _params.EntropyCalcUseAveragedGrayscale);
 
-        var histoValues = Enumerable.Repeat(0, 256).ToArray();  // Nk
-        for (int y = 0; y < imar.Height; y++)
+        int[][] localHistos = new int[Environment.ProcessorCount][];
+        for (int i = 0; i < localHistos.Length; i++)
+            localHistos[i] = new int[256];
+
+        // Распараллеленный проход по строкам
+        Parallel.For(0, imar.Height, y =>
+        {
+            int[] local = localHistos[Thread.GetCurrentProcessorId() % localHistos.Length];
             for (int x = 0; x < imar.Width; x++)
-                histoValues[gimar[y, x]]++;
+            {
+                byte gray = gimar[y, x];
+                Interlocked.Increment(ref local[gray]); // потокобезопасный инкремент
+            }
+        });
+
+        // Слияние локальных гистограмм
+        var histoValues = new int[256];
+        for (int i = 0; i < 256; i++)
+            for (int t = 0; t < localHistos.Length; t++)
+                histoValues[i] += localHistos[t][i];
 
         int pixelsNum = imar.Width * imar.Height;
         _pValues = new double[256];

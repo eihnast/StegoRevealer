@@ -186,6 +186,20 @@ public static class MathMethods
     }
 
     /// <summary>
+    /// Возвращает среднее арифметическое последовательности
+    /// </summary>
+    public static byte Average(IEnumerable<byte> values)
+    {
+        var length = values.Count();
+        double average = 0.0;
+        for (int i = 0; i < length; i++)
+            average += values.ElementAt(i);
+        average /= length;
+        average = Math.Max(0, Math.Min(average, 255));
+        return (byte)average;
+    }
+
+    /// <summary>
     /// Возвращает среднее арифметическое матрицы
     /// </summary>
     public static double Average(double[,] values)
@@ -264,7 +278,7 @@ public static class MathMethods
 
         int kernelOffset = kernel.GetLength(0) / 2;
 
-        for (int y = 0; y < height; y++)
+        Parallel.For(0, height, y =>
         {
             for (int x = 0; x < width; x++)
             {
@@ -285,7 +299,7 @@ public static class MathMethods
 
                 result[y, x] = val;
             }
-        }
+        });
 
         return result;
     }

@@ -1,6 +1,7 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -38,6 +39,8 @@ public class StatmAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public StatmResult Analyse(bool verboseLog = false)
     {
+        var timer = Stopwatch.StartNew();
+
         var result = new StatmResult();
         _writeToLog = result.Log;
 
@@ -67,7 +70,8 @@ public class StatmAnalyser
         result.ContrastValue = contrastCalcTask.Result;
         result.EntropyValues = entropyCalcTask.Result;
 
-        _writeToLog($"Подсчёт характеристик завершён");
+        timer.Stop();
+        _writeToLog($"Подсчёт характеристик завершён за {timer.ElapsedMilliseconds} мс");
         return result;
     }
 }
