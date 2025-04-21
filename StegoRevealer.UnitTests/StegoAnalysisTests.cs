@@ -1,6 +1,8 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+﻿using Newtonsoft.Json.Bson;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using System.Collections.Concurrent;
 
@@ -78,6 +80,74 @@ public class StegoAnalysisTests
             {
                 Assert.AreEqual(kzhaExpectedResults[imgName].MessageBitsVolume, kzhaResults[imgName].MessageBitsVolume);
                 Assert.AreEqual(kzhaExpectedResults[imgName].Threshold, Math.Round(kzhaResults[imgName].Threshold, 2));
+            }
+        }
+    }
+
+    [TestMethod]
+    public void SpaMethodTest()
+    {
+        var imgNames = new[] { "SPA_img1.png", "SPA_img2.png" };
+        var spaResults = new ConcurrentDictionary<string, SpaResult>();
+
+        var imgAnalysisTasks = new List<Task>();
+        foreach (var imgName in imgNames)
+        {
+            imgAnalysisTasks.Add(Task.Run(() =>
+            {
+                string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+                var img = new ImageHandler(imagePath);
+                var spaAnalyser = new SpaAnalyser(img);
+                spaResults.TryAdd(imgName, spaAnalyser.Analyse());
+            }));
+        }
+        Task.WaitAll(imgAnalysisTasks);
+
+        var spaExpectedResults = new Dictionary<string, SpaResult>()
+        {
+            { 
+                "SPA_img1.png", 
+                new SpaResult 
+                { 
+                    AvgHidedDataProbability = 0.0, 
+                    HidedDataProbabilities = new()
+                    {   { ImgChannel.Red, 0.0 },
+                        { ImgChannel.Green, 0.0 },
+                        { ImgChannel.Blue, 0.0 }
+                    }
+                } 
+            },
+            {
+                "SPA_img2.png",
+                new SpaResult
+                {
+                    AvgHidedDataProbability = 0.0,
+                    HidedDataProbabilities = new()
+                    {   { ImgChannel.Red, 0.0 },
+                        { ImgChannel.Green, 0.0 },
+                        { ImgChannel.Blue, 0.0 }
+                    }
+                }
+            },
+        };
+
+        Console.WriteLine("SPA results:");
+        foreach (var imgName in imgNames)
+        {
+            Console.WriteLine($"Image: {imgName}");
+            Console.WriteLine($"AvgHidedDataProbability: {spaResults[imgName].AvgHidedDataProbability}");
+            foreach (var channel in spaResults[imgName].HidedDataProbabilities.Keys)
+            {
+                Console.WriteLine($"Channel: {channel}, Probability: {spaResults[imgName].HidedDataProbabilities[channel]}");
+            }
+        }
+
+        foreach (var imgName in imgNames)
+        {
+            Assert.AreEqual(spaExpectedResults[imgName].AvgHidedDataProbability, Math.Round(spaResults[imgName].AvgHidedDataProbability, 4));
+            foreach (var channel in spaResults[imgName].HidedDataProbabilities.Keys)
+            {
+                Assert.AreEqual(spaExpectedResults[imgName].HidedDataProbabilities[channel], Math.Round(spaResults[imgName].HidedDataProbabilities[channel], 4));
             }
         }
     }

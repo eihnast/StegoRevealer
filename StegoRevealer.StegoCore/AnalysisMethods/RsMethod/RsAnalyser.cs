@@ -44,8 +44,8 @@ public class RsAnalyser
         var timer = Stopwatch.StartNew();
 
         var result = new RsResult();
-        result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
+        _writeToLog($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
 
         double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
 
@@ -76,6 +76,7 @@ public class RsAnalyser
             var pValue = CalculatePValue(unturnedValues, invertedValues);
             pValuesSum += pValue;
             result.Log($"For {channel} channel calculated results: pValue = {pValue}");
+            result.MessageRelativeVolumesByChannels[channel] = pValue;
         }
 
         result.MessageRelativeVolume = pValuesSum / Params.Channels.Count;

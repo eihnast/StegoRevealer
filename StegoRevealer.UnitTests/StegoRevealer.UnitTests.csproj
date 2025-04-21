@@ -252,6 +252,12 @@
 		<None Update="TestData\ShennonRenyiTest.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="TestData\SPA_img1.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="TestData\SPA_img2.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\TraverseTestImage.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
