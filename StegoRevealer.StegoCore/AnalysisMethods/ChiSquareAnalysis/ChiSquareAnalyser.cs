@@ -1,9 +1,8 @@
-﻿using Accord.Math;
-using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+﻿using System.Diagnostics;
+using Accord.Math;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
-using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 
@@ -12,7 +11,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 /// </summary>
 public class ChiSquareAnalyser
 {
-    private const string MethodName = "Pair analysis (Chi-Square)";
+    private const string MethodName = "CSA (Chi-Square Attack)";
 
     private static readonly object _lock = new object();
 
@@ -52,7 +51,7 @@ public class ChiSquareAnalyser
         _hidingDegrees = Enumerable.Repeat((byte)0, Params.ImgBlocks.BlocksInRow * Params.ImgBlocks.BlocksInColumn).ToList();
 
         _writeToLog = result.Log;
-        _writeToLog($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
+        _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
         double fullness = 0.0;
         if (!Params.UseSeparateChannelsCalc)
@@ -71,7 +70,7 @@ public class ChiSquareAnalyser
                     lock (_lock)
                     {
                         result.MessageRelativeVolumesByChannels![channel] = channelFullness;
-                        _writeToLog($"Относительный объём скрытого сообщения в канале {channel}: {channelFullness}");
+                        _writeToLog($"Relative message volume at channel '{channel}': {channelFullness}");
                     }
                 }));
             }
@@ -81,13 +80,16 @@ public class ChiSquareAnalyser
         }
 
         result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
+        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
 
         // Визуализация скрытия на изображении целиком
         if (Params.Visualize)
             result.Image = ColorizeAllImage(_hidingDegrees, 100);
 
         timer.Stop();
-        _writeToLog($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
     }
 
@@ -137,10 +139,8 @@ public class ChiSquareAnalyser
             if (verboseLog)
             {
                 int pixelsNum = (blockPixelsIndexes.Rd.Y - blockPixelsIndexes.Lt.Y + 1) * (blockPixelsIndexes.Rd.X - blockPixelsIndexes.Lt.X + 1);
-                _writeToLog!($"Блок № {blockNumber}");
-                _writeToLog($"\tБлок содержит {pixelsNum} пикселей");
-                _writeToLog(string.Format("\tChi-Square: {0:f2}\tP-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
-                _writeToLog("");
+                _writeToLog?.Invoke($"Block {blockNumber}: block contains {pixelsNum} pixels; " + 
+                    string.Format("Chi-Square statistic: {0:f2}; P-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
             }
         }
 

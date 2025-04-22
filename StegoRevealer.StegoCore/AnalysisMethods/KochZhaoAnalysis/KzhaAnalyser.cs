@@ -1,8 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
-using System.Text;
-using Accord.Statistics.Links;
-using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
@@ -18,7 +14,7 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 /// </summary>
 public class KzhaAnalyser
 {
-    private const string MethodName = "Koch-Zhao method analysis";
+    private const string MethodName = "CKZhA (Consecutive Koch-Zhao Attack)";
 
     /// <summary>
     /// Параметры метода
@@ -51,8 +47,8 @@ public class KzhaAnalyser
         var timer = Stopwatch.StartNew();
 
         var result = new KzhaResult();
-        result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
+        _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
         // Стегоанализ
         result = InnerAnalyse(result);
@@ -74,14 +70,16 @@ public class KzhaAnalyser
             }
             catch (Exception ex)
             {
-                result.Log($"Ошибка при попытке извлечения: {ex.Message}");
+                _writeToLog($"Error while extracting: {ex.Message}");
             }
 
             result.ExtractedData = extractedData;  // Если включена попытка извлечения, будет string.Empty при неудаче
         }
 
         timer.Stop();
-        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
     }
 
@@ -145,23 +143,19 @@ public class KzhaAnalyser
         if (result.Threshold >= Params.Threshold && result.MessageBitsVolume > 0)
             result.SuspiciousIntervalIsFound = true;
 
-        result.Log($"В качестве результирующих выбраны коэффициенты ({maxVariant.FirstIndex}, {maxVariant.SecondIndex})");
-        result.Log($"Факт наличия скрытой информации по итогу анализа {(result.SuspiciousIntervalIsFound ? "установлен" : "не установлен")}");
+        _writeToLog($"The resulting coefficients are chosen: ({maxVariant.FirstIndex}, {maxVariant.SecondIndex})");
+        _writeToLog($"Hided data (by evaluating): {(result.SuspiciousIntervalIsFound ? "exists" : "not exists")}");
 
         return result;
     }
 
     private OneCoeffsPairAnalysisResult AnalyseForOneCoeffPair(ScIndexPair coeff, List<double> cSequence)
     {
-        var temp = new StringBuilder();
-
         // Логирование cSequences, если оно включено
         if (Params.LoggingCSequences)
         {
-            temp.Append($"\nПолная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}):\n[");
-            temp.Append(string.Join(", ", cSequence.Select(cValue => string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:f2}", cValue))));
-            temp.Append("]\n");
-            _writeToLog(temp.ToString());
+            _writeToLog($"Full cSequence for coefficients pair ({coeff.FirstIndex}, {coeff.SecondIndex}): [" +
+                string.Join("; ", cSequence.Select(cValue => string.Format("{0:f2}", cValue))) + "]");
         }
 
         // Поиск ступенчатого интервала
@@ -169,15 +163,14 @@ public class KzhaAnalyser
 
         // Получение непрерывного интервала аномально высоких значений cSequence
         (int indexLeft, int indexRight) = FindSuspiciousInterval(cSequence);
-        _writeToLog($"Для коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) получены следующие координаты интервала: [{indexLeft}:{indexRight}]");
+        _writeToLog($"For coefficients pair ({coeff.FirstIndex}, {coeff.SecondIndex}) calculated interval coordinates: [{indexLeft}:{indexRight}]");
 
         // Обрезка cSequences и сохранение оригинального индекса
         intervalStartIndex = indexLeft;  // Новый 0-й индекс в обрезанной cSequence на самом деле соответствует этому индексу последовательности
         cSequence = cSequence.GetRange(indexLeft, indexRight - indexLeft + 1);
 
-        temp.Append($"Обрезанная последовательность cSequence для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}): ");
-        temp.Append(string.Join(" ", cSequence.Select(cValue => string.Format("{0:f2}", cValue))));
-        _writeToLog(temp.ToString());
+        _writeToLog($"Truncated cSequence for coefficients pair ({coeff.FirstIndex}, {coeff.SecondIndex}): [" +
+            string.Join("; ", cSequence.Select(cValue => string.Format("{0:f2}", cValue))) + "]");
 
         // Расчёт предполагаемого порога скрытия
         double threshold = 0.0;  // Порог подозрительного интервала по наборам коэффициентов
@@ -186,16 +179,16 @@ public class KzhaAnalyser
 
         bool detectedSecretData = cSequence.Count >= 8;  // Возможно ли извлечь хотя бы байт
 
-        _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) " +
-            $"{(detectedSecretData ? "найден подозрительный интервал" : "не найден подозрительный интервал")}");
+        _writeToLog($"For coefficients pair ({coeff.FirstIndex}, {coeff.SecondIndex}) " +
+            $"{(detectedSecretData ? "found suspicious interval" : "suspicious interval not found")}");
 
         // Запись подозрительного порога и интервала для текущего набора коэффициентов
         if (detectedSecretData)
         {
             threshold = cSequence.Min();  // Порог - минимальное из значений cSequence
             indexes = new ScIndexPair(intervalStartIndex, intervalStartIndex + cSequence.Count - 1);
-            _writeToLog($"Для набора коэффициентов ({coeff.FirstIndex}, {coeff.SecondIndex}) установлены значения: " +
-                $"Threshold (Порог) = {threshold}, Indexes (координаты ступенчатого всплеска) = ({indexes?.FirstIndex}, {indexes?.SecondIndex})");
+            _writeToLog($"For coefficients pair ({coeff.FirstIndex}, {coeff.SecondIndex}) calculated analysis results: " +
+                $"Threshold = {threshold}; Indexes = ({indexes?.FirstIndex}, {indexes?.SecondIndex})");
             hasSuspiciousInterval = true;  // Считаем, что подозрительный интервал (хотя бы один) найден
         }
         else

@@ -1,4 +1,5 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
@@ -45,8 +46,11 @@ public class SteganalysisResultsDto
 
     public double StatmEntropyRenyiValue { get; private set; } = 0.0;
 
+    public bool IsComplexMethodExecuted { get; private set; } = false;
 
-    public bool? IsHidingDeceted { get; private set; } = null;
+    public bool IsHidingDetected { get; private set; }
+
+    public double DecisionPobability { get; private set; } = 0.0;
 
 
     public long ElapsedTime { get; private set; } = 0;
@@ -57,7 +61,7 @@ public class SteganalysisResultsDto
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
     public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null, StatmResult? statmRes = null,
-        long? elapsedTime = null, bool? isHidingDeceted = null)
+        ComplexSaMethodResult? complexSaResult = null, long? elapsedTime = null)
     {
         if (elapsedTime is not null)
             ElapsedTime = elapsedTime.Value;
@@ -95,7 +99,11 @@ public class SteganalysisResultsDto
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
         }
 
-        if (isHidingDeceted is not null)
-            IsHidingDeceted = isHidingDeceted;
+        if (complexSaResult is not null)
+        {
+            IsComplexMethodExecuted = true;
+            IsHidingDetected = complexSaResult.IsHidingDetected;
+            DecisionPobability = complexSaResult.DecisionProbability;
+        }
     }
 }

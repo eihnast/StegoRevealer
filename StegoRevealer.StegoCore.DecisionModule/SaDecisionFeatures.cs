@@ -1,6 +1,6 @@
 ﻿namespace StegoRevealer.StegoCore.DecisionModule;
 
-public class SteganalysisResults
+public class SaDecisionFeatures
 {
     public double ChiSquareHorizontalVolume { get; set; } = 0.0;
     public double ChiSquareVerticalVolume { get; set; } = 0.0;

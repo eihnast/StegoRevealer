@@ -167,12 +167,13 @@ public partial class AnalyzerView : UserControl
 
 
             // Вывод о наличии встраивания
-            string hidingDecisionText = results.IsHidingDeceted is null ? IsHidingDecisionCannotBeCalculated :
-                (results.IsHidingDeceted is true ? Constants.ResultsDefaults.Deceted : Constants.ResultsDefaults.NotDetected);
-            var hidingDecisionTextBrush = results.IsHidingDeceted is null ? DefaultTextBrush :
-                (results.IsHidingDeceted is true ? BadTextBrush : GoodTextBrush);
-            AutoDetectionResultValue.Text = hidingDecisionText;
-            AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
+            if (results.IsComplexMethodExecuted)
+            {
+                string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Deceted : Constants.ResultsDefaults.NotDetected;
+                var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
+                AutoDetectionResultValue.Text = hidingDecisionText;
+                AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
+            }
         }
     }
 
@@ -243,7 +244,7 @@ public partial class AnalyzerView : UserControl
         StatResultsEntropyRenyiValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
-        AutoDetectionResultValue.Text = IsHidingDecisionCannotBeCalculated;
+        AutoDetectionResultValue.Text = MessageNotAnalyzed;
         AutoDetectionResultValue.Foreground = DefaultTextBrush;
     }
 }

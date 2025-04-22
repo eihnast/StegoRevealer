@@ -2,9 +2,13 @@
 
 public static class SteganalysisDecision
 {
-    public static bool Calculate(SteganalysisResults saResult)
+    public static SteganalysisDecisionResult Calculate(SaDecisionFeatures features)
     {
-        bool isHided = DecisionModel_ComplexSa.Predict(ModelsMapper.SaResultToDeicisionInputModel(saResult)).PredictedLabel;
-        return isHided;
+        var predict = DecisionModel_ComplexSa.Predict(ModelsMapper.SaResultToDeicisionInputModel(features));
+        return new SteganalysisDecisionResult
+        {
+            IsHidingDetected = predict.PredictedLabel,
+            Probability = predict.Probability
+        };
     }
 }

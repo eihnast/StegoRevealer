@@ -1,6 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 
@@ -42,7 +41,7 @@ public class SpaAnalyser
         var result = new SpaResult();
         _writeToLog = result.Log;
 
-        _writeToLog($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
+        _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
         var analysisTasks = new List<Task>();
         foreach (var channel in Params.Channels)
@@ -60,23 +59,25 @@ public class SpaAnalyser
                         volume = AnalyzeInOneChannelStegExpose((int)channel);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(Params.MethodVersion), "Неизвестная версия метода стегоанализа");
+                        throw new ArgumentOutOfRangeException(nameof(Params.MethodVersion), "Unknown SPA version");
                 }
 
                 lock (_lock)
                 {
                     result.MessageRelativeVolumesByChannels[channel] = volume;
-                    _writeToLog($"Объём скрытого сообщения в канале {channel}: {volume}");
+                    _writeToLog($"Relative message volume at channel '{channel}': {volume}");
                 }
             }));
         }
         Task.WaitAll(analysisTasks);
 
         result.MessageRelativeVolume = result.MessageRelativeVolumesByChannels.Values.Average();
-        _writeToLog($"Усреднённый объём скрытого сообщения: {result.MessageRelativeVolume}");
+        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
 
         timer.Stop();
-        _writeToLog($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
     }
 

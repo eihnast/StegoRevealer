@@ -21,14 +21,23 @@ public class LogMessage
     public LogMessageType Type { get { return _type; } }
 
 
-    public LogMessage(string msg, LogMessageType type = LogMessageType.Info)
+    private readonly DateTime _dateTime;  // Время записи
+
+    /// <summary>
+    /// Сообщение
+    /// </summary>
+    public DateTime DateTime { get { return _dateTime; } }
+
+
+    public LogMessage(string msg, LogMessageType type = LogMessageType.Info, DateTime? dt = null)
     {
         _message = msg;
         _type = type;
+        _dateTime = dt ?? DateTime.Now;
     }
 
     public override string ToString()
     {
-        return $"[{_type}] {_message}";
+        return $"{_dateTime:yy-MM-dd-HH-mm-ss} [{_type}] {_message}";
     }
 }

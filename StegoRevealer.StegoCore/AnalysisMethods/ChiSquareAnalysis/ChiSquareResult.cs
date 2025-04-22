@@ -36,6 +36,11 @@ public class ChiSquareResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     [JsonIgnore]
     public ImageHandler? Image { get; set; }
+    
+    /// <summary>
+    /// Время, затраченное на анализ
+    /// </summary>
+    public long ElapsedTime { get; set; }
 
 
     public ChiSquareResult() { }

@@ -41,6 +41,11 @@ public class StatmResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public EntropyData EntropyValues { get; set; } = new();
 
+    /// <summary>
+    /// Время, затраченное на анализ
+    /// </summary>
+    public long ElapsedTime { get; set; }
+
 
     public StatmResult() { }
 }

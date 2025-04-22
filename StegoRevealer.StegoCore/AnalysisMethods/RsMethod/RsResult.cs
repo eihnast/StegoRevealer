@@ -30,6 +30,11 @@ public class RsResult : LoggedResult, ILoggedAnalysisResult
         { ImgChannel.Blue, 0.0 }
     };
 
+    /// <summary>
+    /// Время, затраченное на анализ
+    /// </summary>
+    public long ElapsedTime { get; set; }
+
 
     public RsResult() { }
 }

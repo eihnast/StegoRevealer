@@ -27,6 +27,8 @@ using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.DecisionModule;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.Common;
+using StegoRevealer.StegoCore.CommonLib.Entities;
+using StegoRevealer.StegoCore.CommonLib;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -39,6 +41,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
     private KzhaParameters? _kzhaParameters = null;
+    private ComplexSaMethodParameters? _complexSaParameters = null;
 
 
     /// <summary>
@@ -153,7 +156,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public bool ComplexMethodSelected
     {
         get => _complexMethodSelected;
-        set => this.RaiseAndSetIfChanged(ref _complexMethodSelected, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _complexMethodSelected, value);
+            ActiveMethods[AnalysisMethod.Complex] = value;
+        }
     }
     private bool _complexMethodSelected = true;
 
@@ -263,6 +270,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             _kzhaParameters = new KzhaParameters(CurrentImage);
         else
             _kzhaParameters.Image = CurrentImage;
+
+        if (_complexSaParameters is null)
+            _complexSaParameters = new ComplexSaMethodParameters(CurrentImage);
+        else
+            _complexSaParameters.Image = CurrentImage;
     }
 
     /// <summary>
@@ -363,13 +375,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
+            Logger.LogInfo($"Loading new image for steganalysis: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
 
             if (!string.IsNullOrEmpty(tempPath))
             {
-                TempManager.Instance.RememberTempImage(tempPath);
+                TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
             }
         }
@@ -403,29 +416,13 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
 
 
-    private bool DecisionCanBeCalculated
-    {
-        get
-        {
-            if (CurrentImage is null)
-                return false;
-            if (!(ActiveMethods[AnalysisMethod.ChiSquare] && _chiSquareParameters is not null))
-                return false;
-            if (!(ActiveMethods[AnalysisMethod.RegularSingular] && _rsParameters is not null))
-                return false;
-            if (!(ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null))
-                return false;
-            return true;
-        }
-    }
-
-
     /// <summary>
     /// Запуск процесса стегоанализа для указанных выбранных методов
     /// </summary>
     public async Task StartAnalysis()
     {
-        Logger.LogInfo("Starting steganalysis");
+        var image = TempManager.Instance.GetOriginalImageByTemp(CurrentImage?.ImgName ?? string.Empty);
+        Logger.LogInfo($"Started new steganalysis operation from UI for image '{image}'");
         if (!ActiveMethods.Any(m => m.Value))
         {
             DrawCurrentImage();
@@ -433,25 +430,23 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
         }
 
-        var complexAnalysisParams = new JointAnalysisParameters();
+        var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
         // Создание задач
         if (ActiveMethods[AnalysisMethod.ChiSquare] && _chiSquareParameters is not null)  // Хи-квадрат
-            complexAnalysisParams.ChiSquareParameters = _chiSquareParameters;
+            jointAnalysisParams.ChiSquareParameters = _chiSquareParameters;
         if (ActiveMethods[AnalysisMethod.RegularSingular] && _rsParameters is not null)  // RS
-            complexAnalysisParams.RsParameters = _rsParameters;
+            jointAnalysisParams.RsParameters = _rsParameters;
         if (ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
-            complexAnalysisParams.KzhaParameters = _kzhaParameters;
+            jointAnalysisParams.KzhaParameters = _kzhaParameters;
         if (CurrentImage is not null)
-            complexAnalysisParams.Image = CurrentImage;
-        if (ComplexMethodSelected)
-            complexAnalysisParams.UseComplexMethod = true;
+            jointAnalysisParams.StatmParameters = new StatmParameters(CurrentImage);
+        if (ActiveMethods[AnalysisMethod.Complex] && _complexSaParameters is not null)
+            jointAnalysisParams.ComplexSaMethodParameters = _complexSaParameters;
 
-        Logger.LogInfo("Starting steganalysis operations");
+        Logger.LogInfo("Starting steganalysis algorithms");
 
-        var result = await JointAnalysisStarter.Start(complexAnalysisParams);
-
-        Logger.LogInfo("Steganalysis operations completed");
+        var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
         // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
         var chiRes = result.ChiSquareResult;
@@ -459,67 +454,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawCurrentImage();
 
         ProcessAnalysisResults(result);
+
+        Logger.LogInfo("Steganalysis operation completed");
     }
 
     /// <summary>
     /// Обработка результатов стегоанализа
     /// </summary>
-    [Obsolete("Теперь запуск СА осуществляется через JointAnalysis и обрабатываются его результаты")]
-    private void ProcessAnalysisResults(Dictionary<AnalysisMethod, ILoggedAnalysisResult?>? results, Stopwatch timer)
-    {
-        if (results is null)
-        {
-            ResetResults();
-            return;
-        }
-
-        // Приведение к известным типам результатов
-        var chiRes = results[AnalysisMethod.ChiSquare] as ChiSquareResult;
-        var rsRes = results[AnalysisMethod.RegularSingular] as RsResult;
-        var kzhaRes = results[AnalysisMethod.KochZhaoAnalysis] as KzhaResult;
-        var statmRes = results[AnalysisMethod.Statm] as StatmResult;
-
-        // Формирование вывода
-        bool? isHidingDetected = null;
-        if (DecisionCanBeCalculated && chiRes is not null && rsRes is not null && kzhaRes is not null && statmRes is not null)
-        {
-            var saResult = new SteganalysisResults
-            {
-                ChiSquareHorizontalVolume = chiRes.MessageRelativeVolume,
-                RsVolume = rsRes.MessageRelativeVolume,
-                KzhaHorizontalThreshold = kzhaRes.Threshold,
-                KzhaHorizontalMessageBitVolume = kzhaRes.MessageBitsVolume / Common.Tools.GetContainerFrequencyVolume(CurrentImage!),
-                NoiseValue = statmRes.NoiseValue,
-                SharpnessValue = statmRes.SharpnessValue,
-                BlurValue = statmRes.BlurValue,
-                ContrastValue = statmRes.ContrastValue,
-                EntropyShennonValue = statmRes.EntropyValues.Shennon,
-                EntropyRenyiValue = statmRes.EntropyValues.Renyi
-            };
-
-            isHidingDetected = SteganalysisDecision.Calculate(saResult);
-        }
-
-        // Вывод визуализированного изображения
-        if (chiRes is not null && (_chiSquareParameters?.Visualize ?? false))
-            DrawedImage = chiRes?.Image;
-
-        // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, timer.ElapsedMilliseconds, isHidingDetected);
-        Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
-            + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
-            + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
-            + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
-            + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
-            + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
-            + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
-            + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
-    }
-
-    /// <summary>
-    /// Обработка результатов стегоанализа
-    /// </summary>
-    private void ProcessAnalysisResults(JointAnalysisResults? results)
+    private void ProcessAnalysisResults(JointAnalysisResult? results)
     {
         if (results is null)
         {
@@ -530,7 +472,9 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         // Приведение к известным типам результатов
         var chiRes = results.ChiSquareResult;
         var rsRes = results.RsResult;
+        var spaRes = results.SpaResult;
         var kzhaRes = results.KzhaResult;
+        var complexRes = results.ComplexSaMethodResults;
         var statmRes = results.StatmResult;
 
         // Вывод визуализированного изображения
@@ -538,17 +482,21 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, results.ElapsedTime, results.IsHidingDetected);
-        Logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
-            + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
-            + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
-            + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
-            + "\nLogs of Regular-Singular method = \n" + rsRes?.ToString(indent: 1)
-            + "\n\nKoch-Zhao Analysis = " + Common.Tools.GetFormattedJson(kzhaRes)
-            + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
-            + "\n\nStatistical metrics = " + Common.Tools.GetFormattedJson(statmRes)
-            + "\nLogs statistical metrics calculation = \n" + statmRes?.ToString(indent: 1)
-            + $"\n\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, complexRes, results.ElapsedTime);
+        Logger.LogInfo("Steganalysis operaions info:\n"
+            + (chiRes is null ? string.Empty : "\tChi-Square Attack result = " + Common.Tools.GetFormattedJson(chiRes, true))
+            + (rsRes is null ? string.Empty : "\n\tRegular-Singular result = " + Common.Tools.GetFormattedJson(rsRes, true))
+            + (spaRes is null ? string.Empty : "\n\tSample Pair Analysis result = " + Common.Tools.GetFormattedJson(spaRes, true))
+            + (kzhaRes is null ? string.Empty : "\n\tConsecutive Koch-Zhao Attack result = " + Common.Tools.GetFormattedJson(kzhaRes, true))
+            + (statmRes is null ? string.Empty : "\n\tQuality characteristics calculation result = " + Common.Tools.GetFormattedJson(statmRes, true))
+            + (complexRes is null ? string.Empty : "\n\tComplex Steganalysis Method result = " + Common.Tools.GetFormattedJson(complexRes, true))
+            + $"\n\tElapsed time = {CurrentResults.ElapsedTime}"
+            + (chiRes is null ? string.Empty : "\n\tLogs of Chi-Square Attack method:\n" + chiRes?.ToString(indent: 2))
+            + (rsRes is null ? string.Empty : "\n\tLogs of Regular-Singular method:\n" + rsRes?.ToString(indent: 2))
+            + (spaRes is null ? string.Empty : "\n\tLogs of Sample Pair Analysis method:\n" + spaRes?.ToString(indent: 2))
+            + (kzhaRes is null ? string.Empty : "\n\tLogs of Consecutive Koch-Zhao Attack method:\n" + kzhaRes?.ToString(indent: 2))
+            + (statmRes is null ? string.Empty : "\n\tLogs of Quality characteristics calculation:\n" + statmRes?.ToString(indent: 2))
+            + (complexRes is null ? string.Empty : "\n\tLogs of Complex Steganalysis Method method:\n" + complexRes?.ToString(indent: 2)));
     }
 
 

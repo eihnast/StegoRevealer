@@ -35,6 +35,11 @@ public class SpaResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public bool IsHidingDetected { get; set; }
 
+    /// <summary>
+    /// Время, затраченное на анализ
+    /// </summary>
+    public long ElapsedTime { get; set; }
+
 
     public SpaResult() { }
 }
