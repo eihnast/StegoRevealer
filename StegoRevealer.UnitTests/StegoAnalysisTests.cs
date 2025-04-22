@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Bson;
-using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
