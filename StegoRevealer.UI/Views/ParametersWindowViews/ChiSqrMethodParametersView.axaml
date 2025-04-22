@@ -36,6 +36,11 @@
                           Background="{x:Null}" BorderBrush="#FFE0E0E0" 
 						  Foreground="#FFE6E6E6" FontSize="12" 
 						  Margin="0 5 0 0"/>
+				<CheckBox Name="IsUsePreviousCnumsChecked" Content="Использовать режим накопления"
+						  IsChecked="{Binding Path=UsePreviousCnums}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0"
+						  Foreground="#FFE6E6E6" FontSize="12"
+						  Margin="0 5 0 0"/>
 				<CheckBox Name="IsUseUnifiedCathegoriesChecked" Content="Объединять низкочастотные категории"
 						  IsChecked="{Binding Path=UseUnifiedCathegories}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
