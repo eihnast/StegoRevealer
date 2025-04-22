@@ -153,11 +153,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public bool ComplexMethodSelected
     {
         get => _complexMethodSelected;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _complexMethodSelected, value);
-            ActiveMethods[AnalysisMethod.RegularSingular] = value;
-        }
+        set => this.RaiseAndSetIfChanged(ref _complexMethodSelected, value);
     }
     private bool _complexMethodSelected = true;
 

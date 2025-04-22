@@ -1,6 +1,7 @@
-﻿using MathNet.Numerics.Statistics;
-using StegoRevealer.StegoCore.CommonLib.Exceptions;
+﻿using StegoRevealer.StegoCore.CommonLib.Exceptions;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
@@ -12,6 +13,8 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 public class RsAnalyser
 {
     private const string MethodName = "RS (Regular-Singular) analysis";
+
+    private static readonly object _lock = new object();
 
     /// <summary>
     /// Параметры метода
@@ -100,19 +103,25 @@ public class RsAnalyser
         if (channelArray is null)
             throw new ArgumentException($"Error while getting OneChannelArray for channel '{channel}'");
 
-        var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
-        result.GroupsNumber = groups.Count;
+        //var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
+        //result.GroupsNumber = groups.Count;
+
+        int blockNumber = 0;
+
+        var traversalOptions = Params.GetTraversalOptions();
+        traversalOptions.Channels = [channel];
+        var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
         var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
         var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
-        Parallel.For(
-            0,
-            groups.Count,
-            () => new RsGroupsCalcResult(), // локальный результат
-            (i, state, localResult) =>
+        Parallel.ForEach(iterator,
+            () => new RsGroupsCalcResult(),
+            (block, state, localResult) =>
             {
-                var regularityResult = CalculateRegularityResults(groups[i], flippingFuncs);
+                var pixels = GetLinearPixelsList(block, channelArray);
+
+                var regularityResult = CalculateRegularityResults(pixels, flippingFuncs);
                 var groupType = RsHelper.DefineGroupType(regularityResult);
                 switch (groupType)
                 {
@@ -124,7 +133,7 @@ public class RsAnalyser
                         break;
                 }
 
-                var regularityWithInvertedMaskResult = CalculateRegularityResults(groups[i], flippingFuncsWithInvertedMask);
+                var regularityWithInvertedMaskResult = CalculateRegularityResults(pixels, flippingFuncsWithInvertedMask);
                 var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
                 switch (groupTypeWithInvertedMask)
                 {
@@ -136,12 +145,12 @@ public class RsAnalyser
                         break;
                 }
 
+                Interlocked.Increment(ref blockNumber);
                 return localResult;
             },
             localResult =>
             {
-                // Финальная агрегация в потокобезопасной секции
-                lock (result)
+                lock (_lock)
                 {
                     result.Singulars += localResult.Singulars;
                     result.Regulars += localResult.Regulars;
@@ -151,6 +160,7 @@ public class RsAnalyser
             }
         );
 
+        result.GroupsNumber = blockNumber + 1;
         return result;
     }
 
@@ -218,6 +228,7 @@ public class RsAnalyser
     /// Метод формирования массива групп (разбиения изображения на группы)
     /// </summary>
     /// <param name="channelArray">Ссылка на массив пикселей изображения в одном канале</param>
+    [Obsolete("Вместо старого разбиения на группы необходимо использовать общий механизм итерации по блокам")]
     private List<int[]> SplitIntoGroupsInChannelArray(ImageOneChannelArray channelArray)
     {
         var groups = new ConcurrentBag<int[]>();
@@ -242,6 +253,23 @@ public class RsAnalyser
         });
 
         return groups.ToList();
+    }
+
+    private IEnumerable<int> GetLinearPixelsList(Sc2DPoint blockCoords, ImageOneChannelArray channelArray)
+    {
+        var blockPixelsIndexes = Params.ImgBlocks[blockCoords.Y, blockCoords.X];
+        var pixels = new List<int>();
+
+        for (int y = blockPixelsIndexes.Lt.Y; y <= blockPixelsIndexes.Rd.Y; y++)
+        {
+            for (int x = blockPixelsIndexes.Lt.X; x <= blockPixelsIndexes.Rd.X; x++)
+            {
+                var pixel = channelArray[y, x];
+                pixels.Add(pixel);
+            }
+        }
+
+        return pixels;
     }
 
     /// <summary>
@@ -279,7 +307,7 @@ public class RsAnalyser
     /// <param name="group">Группа</param>
     /// <param name="flippingFuncs">Массив функций для применения к значениям группы по маске</param>
     /// <returns>Значения регулярности до и после флиппинга</returns>
-    private (int beforeFlippingResult, int afterFlippingResult) CalculateRegularityResults(int[] group, Func<int, int>[] flippingFuncs)
+    private (int beforeFlippingResult, int afterFlippingResult) CalculateRegularityResults(IEnumerable<int> group, Func<int, int>[] flippingFuncs)
     {
         var flippedGroup = RsHelper.ApplyFlipping(group, flippingFuncs);  // Расчёт "перевёрнутой" группы
         int beforeFlippingResult = Params.RegularityFunction(group);
