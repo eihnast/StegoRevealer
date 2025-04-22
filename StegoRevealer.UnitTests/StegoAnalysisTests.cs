@@ -49,10 +49,10 @@ public class StegoAnalysisTests
         var chiSquareExpectedResults = new Dictionary<string, ChiSquareResult>()
         {
             { "SA_img1.png", new ChiSquareResult { MessageRelativeVolume = 0.9935 } },
-            { "SA_img2.png", new ChiSquareResult { MessageRelativeVolume = 0.0013 } },
-            { "SA_img3.png", new ChiSquareResult { MessageRelativeVolume = 0.2347 } },
+            { "SA_img2.png", new ChiSquareResult { MessageRelativeVolume = 0.0 } },  // 0.0013
+            { "SA_img3.png", new ChiSquareResult { MessageRelativeVolume = 0.1667 } },  // 0.2347
             { "SA_img4.png", new ChiSquareResult { MessageRelativeVolume = 1.0 } },
-            { "SA_img5.png", new ChiSquareResult { MessageRelativeVolume = 0.5833 } }
+            { "SA_img5.png", new ChiSquareResult { MessageRelativeVolume = 0.55 } }  // 0.5833
         };
         var rsExpectedResults = new Dictionary<string, RsResult>()
         {

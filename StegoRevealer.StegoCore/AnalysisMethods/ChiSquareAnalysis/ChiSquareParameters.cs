@@ -124,7 +124,7 @@ public class ChiSquareParameters
     }
 
 
-    public bool UseIncreasedCnum { get; set; } = true;
+    public bool UseIncreasedCnum { get; set; } = false;  // Считать количество цветов начиная с 1, а не с 0
 
 
     public ChiSquareParameters(ImageHandler image)
