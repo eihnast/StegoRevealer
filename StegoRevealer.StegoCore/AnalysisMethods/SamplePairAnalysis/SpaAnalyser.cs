@@ -1,6 +1,6 @@
 ﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Data;
 using System.Diagnostics;
-using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 
@@ -49,63 +49,178 @@ public class SpaAnalyser
         {
             analysisTasks.Add(Task.Run(() =>
             {
-                double probability = AnalyzeInOneChannel((int)channel);
+                double volume = 0.0;
+
+                switch (Params.MethodVersion)
+                {
+                    case SpaVersion.Original:
+                        volume = AnalyzeInOneChannel((int)channel);
+                        break;
+                    case SpaVersion.StegExpose:
+                        volume = AnalyzeInOneChannelStegExpose((int)channel);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Params.MethodVersion), "Неизвестная версия метода стегоанализа");
+                }
 
                 lock (_lock)
                 {
-                    result.HidedDataProbabilities[channel] = probability;
-                    _writeToLog($"Вероятность наличия скрытого сообщения в канале {channel}: {probability}");
+                    result.MessageRelativeVolumesByChannels[channel] = volume;
+                    _writeToLog($"Объём скрытого сообщения в канале {channel}: {volume}");
                 }
             }));
         }
         Task.WaitAll(analysisTasks);
 
-        result.AvgHidedDataProbability = result.HidedDataProbabilities.Values.Average();
-        _writeToLog($"Усреднённая вероятность наличия скрытого сообщения: {result.AvgHidedDataProbability}");
+        result.MessageRelativeVolume = result.MessageRelativeVolumesByChannels.Values.Average();
+        _writeToLog($"Усреднённый объём скрытого сообщения: {result.MessageRelativeVolume}");
 
         timer.Stop();
         _writeToLog($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
         return result;
     }
 
+    // Классическая версия метода
     private double AnalyzeInOneChannel(int channgelId)
     {
-        int u = 0, v = 0;
-
-        Parallel.For(0, Params.Image.Height, () => (0, 0), (y, state, counts) =>
+        double P = 0.0, Q = 0.0;
+        if (!Params.UseDoubleDirection)
+            (P, Q) = CalcPairsValues(channgelId, Params.Direction);
+        else
         {
-            var imar = Params.Image.ImgArray;
-            int localU = counts.Item1;
-            int localV = counts.Item2;
-
-            for (int x = 0; x < Params.Image.Width - 1; x += 2)
+            double horizP = 0.0, horizQ = 0.0, vertP = 0.0, vertQ = 0.0;
+            var tasks = new List<Task>
             {
-                byte x1 = imar[y, x, channgelId];
-                byte x2 = imar[y, x + 1, channgelId];
+                Task.Run(() => (horizP, horizQ) = CalcPairsValues(channgelId, PairDirection.Horizontal)),
+                Task.Run(() => (vertP, vertQ) = CalcPairsValues(channgelId, PairDirection.Vertical))
+            };
+            Task.WaitAll(tasks);
 
-                if (x1 / 2 == x2 / 2)
-                    localU++;
-                else if (Math.Abs(x1 - x2) == 1)
-                    localV++;
-            }
+            P = horizP + vertP;
+            Q = horizQ + vertQ;
+        }
 
-            return (localU, localV);
-        },
-        counts =>
+        // Вычисление статистики и вероятности наличия стегоданных
+        double p = P + Q == 0 ? 0 : Math.Abs((double)(P - Q) / (P + Q));
+        p = Math.Max(0, Math.Min(1, p));
+        return p;
+    }
+
+    private (double P, double Q) CalcPairsValues(int channgelId, PairDirection pairDirection)
+    {
+        int P = 0, Q = 0;
+        var imar = Params.Image.ImgArray;
+
+        int localWidth = Params.Image.Width;
+        if (pairDirection is not PairDirection.Vertical)
+            localWidth--;
+        int localWHeight = Params.Image.Height;
+        if (pairDirection is not PairDirection.Horizontal)
+            localWHeight--;
+
+        Parallel.For(0, localWHeight, y =>
         {
-            lock (this)
+            for (int x = 0; x < localWidth; x++)
             {
-                u += counts.Item1;
-                v += counts.Item2;
+                (byte x1, byte x2) = GetPairValues(imar, y, x, channgelId);
+                int diff = x1 - x2;
+
+                if (Math.Abs(diff) == 1)
+                {
+                    if ((x1 & 1) == 0 && diff == 1)
+                        Interlocked.Increment(ref P);
+                    else if ((x1 & 1) == 1 && diff == -1)
+                        Interlocked.Increment(ref P);
+                    else if ((x1 & 1) == 0 && diff == -1)
+                        Interlocked.Increment(ref Q);
+                    else if ((x1 & 1) == 1 && diff == 1)
+                        Interlocked.Increment(ref Q);
+                }
             }
         });
 
-        // Вычисление статистики и вероятности наличия стегоданных
-        double totalPairs = u + v;
-        if (totalPairs == 0)
-            return 0.0;
+        return (P, Q);
+    }
 
-        double P = v / totalPairs;
-        return P;
+    /// <summary>
+    /// Получает значения пары пикселей в зависимости от направления
+    /// </summary>
+    private (byte p1, byte p2) GetPairValues(ImageArray imgArray, int y, int x, int channelId)
+    {
+        byte p1 = imgArray[y, x, channelId];
+        byte p2 = Params.Direction switch
+        {
+            PairDirection.Horizontal => imgArray[y, x + 1, channelId],
+            PairDirection.Vertical => imgArray[y + 1, x, channelId],
+            PairDirection.Diagonal => imgArray[y + 1, x + 1, channelId],
+            _ => (byte)0
+        };
+        return (p1, p2);
+    }
+
+    // Реализация StegExpose-версии
+    private double AnalyzeInOneChannelStegExpose(int channgelId)
+    {
+        int[] histogram = new int[256];
+        var imar = Params.Image.ImgArray;
+
+        int P = 0, X = 0, Y = 0, Z = 0, W = 0;
+
+        void calcValues(byte u, byte v)
+        {
+            if ((u >> 1 == v >> 1) && (v & 0x1) != (u & 0x1))
+                Interlocked.Increment(ref W);
+            if (u == v)
+                Interlocked.Increment(ref Z);
+            if ((v == (v >> 1) << 1) && (u < v) || (v != (v >> 1) << 1) && (u > v))
+                Interlocked.Increment(ref X);
+            if ((v == (v >> 1) << 1) && (u > v) || (v != (v >> 1) << 1) && (u < v))
+                Interlocked.Increment(ref Y);
+            Interlocked.Increment(ref P);
+        }
+
+        Task[] tasks = [
+            Task.Run(() =>
+                Parallel.For(0, Params.Image.Height, y =>
+                {
+                    for (int x = 0; x < Params.Image.Width - 1; x += 2)
+                        calcValues(imar[y, x, channgelId], imar[y, x + 1, channgelId]);
+                })
+            ),
+            Task.Run(() =>
+                Parallel.For(0, Params.Image.Width, x =>
+                {
+                    for (int y = 0; y < Params.Image.Height; y += 2)
+                        calcValues(imar[y, x, channgelId], imar[y + 1, x, channgelId]);
+                })
+            )
+        ];
+        Task.WaitAll(tasks);
+
+        double a = 0.5 * (W + Z);
+        double b = 2 * X - P;
+        double c = Y - X;
+        double x;
+
+        if (a == 0)
+            x = c / b;
+        double discriminant = Math.Pow(b, 2) - (4 * a * c);
+
+        if (discriminant >= 0)
+        {
+            double rootpos = ((-1 * b) + Math.Sqrt(discriminant)) / (2 * a);
+            double rootneg = ((-1 * b) - Math.Sqrt(discriminant)) / (2 * a);
+
+            if (Math.Abs(rootpos) <= Math.Abs(rootneg))
+                x = rootpos;
+            else
+                x = rootneg;
+        }
+        else
+            x = c / b;
+
+        if (x == 0)
+            x = c / b;
+        return x;
     }
 }

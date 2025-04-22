@@ -1,5 +1,4 @@
-﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
-using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.Logger;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
@@ -17,19 +16,24 @@ public class SpaResult : LoggedResult, ILoggedAnalysisResult
 
 
     /// <summary>
-    /// Усреднённая вероятность наличия скрытого сообщения
+    /// Усреднённый оценённый относительный объём встроенных данных
     /// </summary>
-    public double AvgHidedDataProbability { get; set; } = 0.0;
+    public double MessageRelativeVolume { get; set; } = 0.0;
 
     /// <summary>
-    /// Вероятности наличия скрытого сообщения по каналам
+    /// Оценённые относительные объёмы встроенных данных
     /// </summary>
-    public Dictionary<ImgChannel, double> HidedDataProbabilities { get; set; } = new Dictionary<ImgChannel, double> 
+    public Dictionary<ImgChannel, double> MessageRelativeVolumesByChannels { get; set; } = new Dictionary<ImgChannel, double>
     {
         { ImgChannel.Red, 0.0 },
         { ImgChannel.Green, 0.0 },
         { ImgChannel.Blue, 0.0 }
     };
+
+    /// <summary>
+    /// Обнаружено ли скрытие методом SPA
+    /// </summary>
+    public bool IsHidingDetected { get; set; }
 
 
     public SpaResult() { }

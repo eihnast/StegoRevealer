@@ -14,6 +14,22 @@ public class SpaParameters
     public ImageHandler Image { get; set; }
 
     /// <summary>
+    /// Версия метода
+    /// </summary>
+    public SpaVersion MethodVersion { get; set; } = SpaVersion.Original;
+
+    /// <summary>
+    /// Направление анализа пар пикселей (если не включён UseDoubleDirection)
+    /// </summary>
+    public PairDirection Direction { get; set; } = PairDirection.Horizontal;
+
+    /// <summary>
+    /// Выполнять двухпроходный алгоритм (с горизонтальным и вертикальным направлением анализа)<br/>
+    /// Игнрирует параметр Direction
+    /// </summary>
+    public bool UseDoubleDirection { get; set; } = true;
+
+    /// <summary>
     /// Анализируемые каналы
     /// </summary>
     public UniqueList<ImgChannel> Channels { get; }

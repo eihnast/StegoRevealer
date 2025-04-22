@@ -87,7 +87,7 @@ public class StegoAnalysisTests
     [TestMethod]
     public void SpaMethodTest()
     {
-        var imgNames = new[] { "SPA_img1.png", "SPA_img2.png" };
+        var imgNames = new[] { "SPA_img1.png", "SPA_img2.png", "SPA_img3.png" };  // real: 52% 82% 0%
         var spaResults = new ConcurrentDictionary<string, SpaResult>();
 
         var imgAnalysisTasks = new List<Task>();
@@ -108,12 +108,12 @@ public class StegoAnalysisTests
             { 
                 "SPA_img1.png", 
                 new SpaResult 
-                { 
-                    AvgHidedDataProbability = 0.0, 
-                    HidedDataProbabilities = new()
-                    {   { ImgChannel.Red, 0.0 },
-                        { ImgChannel.Green, 0.0 },
-                        { ImgChannel.Blue, 0.0 }
+                {
+                    MessageRelativeVolume = 0.3684,
+                    MessageRelativeVolumesByChannels = new()
+                    {   { ImgChannel.Red, 0.3630 },
+                        { ImgChannel.Green, 0.3830 },
+                        { ImgChannel.Blue, 0.3590 }
                     }
                 } 
             },
@@ -121,34 +121,42 @@ public class StegoAnalysisTests
                 "SPA_img2.png",
                 new SpaResult
                 {
-                    AvgHidedDataProbability = 0.0,
-                    HidedDataProbabilities = new()
-                    {   { ImgChannel.Red, 0.0 },
-                        { ImgChannel.Green, 0.0 },
-                        { ImgChannel.Blue, 0.0 }
+                    MessageRelativeVolume = 0.5745,
+                    MessageRelativeVolumesByChannels = new()
+                    {   { ImgChannel.Red, 0.5603 },
+                        { ImgChannel.Green, 0.595 },
+                        { ImgChannel.Blue, 0.5682 }
                     }
                 }
             },
+            {
+                "SPA_img3.png",
+                new SpaResult
+                {
+                    MessageRelativeVolume = 0.0102,
+                    MessageRelativeVolumesByChannels = new()
+                    {   { ImgChannel.Red, 0.0089 },
+                        { ImgChannel.Green, 0.0027 },
+                        { ImgChannel.Blue, 0.0191 }
+                    }
+                }
+            }
         };
 
         Console.WriteLine("SPA results:");
         foreach (var imgName in imgNames)
         {
             Console.WriteLine($"Image: {imgName}");
-            Console.WriteLine($"AvgHidedDataProbability: {spaResults[imgName].AvgHidedDataProbability}");
-            foreach (var channel in spaResults[imgName].HidedDataProbabilities.Keys)
-            {
-                Console.WriteLine($"Channel: {channel}, Probability: {spaResults[imgName].HidedDataProbabilities[channel]}");
-            }
+            Console.WriteLine($"\tAvgHidedDataVolume: {spaResults[imgName].MessageRelativeVolume}");
+            foreach (var channel in spaResults[imgName].MessageRelativeVolumesByChannels.Keys)
+                Console.WriteLine($"\tChannel: {channel}, Volume: {spaResults[imgName].MessageRelativeVolumesByChannels[channel]}");
         }
 
         foreach (var imgName in imgNames)
         {
-            Assert.AreEqual(spaExpectedResults[imgName].AvgHidedDataProbability, Math.Round(spaResults[imgName].AvgHidedDataProbability, 4));
-            foreach (var channel in spaResults[imgName].HidedDataProbabilities.Keys)
-            {
-                Assert.AreEqual(spaExpectedResults[imgName].HidedDataProbabilities[channel], Math.Round(spaResults[imgName].HidedDataProbabilities[channel], 4));
-            }
+            Assert.AreEqual(spaExpectedResults[imgName].MessageRelativeVolume, Math.Round(spaResults[imgName].MessageRelativeVolume, 4));
+            foreach (var channel in spaResults[imgName].MessageRelativeVolumesByChannels.Keys)
+                Assert.AreEqual(spaExpectedResults[imgName].MessageRelativeVolumesByChannels[channel], Math.Round(spaResults[imgName].MessageRelativeVolumesByChannels[channel], 4));
         }
     }
 }
