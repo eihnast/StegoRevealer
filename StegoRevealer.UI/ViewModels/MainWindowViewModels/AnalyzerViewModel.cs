@@ -29,6 +29,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.Common;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -40,6 +41,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     // Параметры методов стегоанализа
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
+    private SpaParameters? _spaParameters = null;
     private KzhaParameters? _kzhaParameters = null;
     private ComplexSaMethodParameters? _complexSaParameters = null;
 
@@ -95,6 +97,20 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         }
     }
     private bool _methodRsSelected = true;
+
+    /// <summary>
+    /// Выбран ли метод SPA
+    /// </summary>
+    public bool MethodSpaSelected
+    {
+        get => _methodSpaSelected;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _methodSpaSelected, value);
+            ActiveMethods[AnalysisMethod.RegularSingular] = value;
+        }
+    }
+    private bool _methodSpaSelected = true;
 
     /// <summary>
     /// Выбран ли метод КЖА
@@ -266,6 +282,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         else
             _rsParameters.Image = CurrentImage;
 
+        if (_spaParameters is null)
+            _spaParameters = new SpaParameters(CurrentImage);
+        else
+            _spaParameters.Image = CurrentImage;
+
         if (_kzhaParameters is null)
             _kzhaParameters = new KzhaParameters(CurrentImage);
         else
@@ -290,6 +311,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         {
             AnalysisMethod.ChiSquare => _chiSquareParameters,
             AnalysisMethod.RegularSingular => _rsParameters,
+            AnalysisMethod.Spa => _spaParameters,
             AnalysisMethod.KochZhaoAnalysis => _kzhaParameters,
             _ => throw new System.NotImplementedException()
         };
@@ -327,6 +349,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                     var rsParamsDto = receivedParameters.Parameters as IParamsDto<RsParameters>;
                     rsParamsDto?.FillParameters(ref _rsParameters);
                     Logger.LogInfo("Received Regular-Singular method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
+                }
+                break;
+            case AnalysisMethod.Spa:
+                if (_spaParameters is not null)
+                {
+                    var spaParamsDto = receivedParameters.Parameters as IParamsDto<SpaParameters>;
+                    spaParamsDto?.FillParameters(ref _spaParameters);
+                    Logger.LogInfo("Received SPA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as SpaParamsDto));
                 }
                 break;
             case AnalysisMethod.KochZhaoAnalysis:
@@ -437,6 +467,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             jointAnalysisParams.ChiSquareParameters = _chiSquareParameters;
         if (ActiveMethods[AnalysisMethod.RegularSingular] && _rsParameters is not null)  // RS
             jointAnalysisParams.RsParameters = _rsParameters;
+        if (ActiveMethods[AnalysisMethod.Spa] && _spaParameters is not null)  // SPA
+            jointAnalysisParams.SpaParameters = _spaParameters;
         if (ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
             jointAnalysisParams.KzhaParameters = _kzhaParameters;
         if (CurrentImage is not null)
@@ -482,7 +514,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, kzhaRes, statmRes, complexRes, results.ElapsedTime);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, kzhaRes, statmRes, complexRes, results.ElapsedTime);
         Logger.LogInfo("Steganalysis operaions info:\n"
             + (chiRes is null ? string.Empty : "\tChi-Square Attack result = " + Common.Tools.GetFormattedJson(chiRes, true))
             + (rsRes is null ? string.Empty : "\n\tRegular-Singular result = " + Common.Tools.GetFormattedJson(rsRes, true))

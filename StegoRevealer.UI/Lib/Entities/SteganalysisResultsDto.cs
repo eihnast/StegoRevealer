@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 
@@ -19,6 +20,10 @@ public class SteganalysisResultsDto
     public bool IsMethodRsExecuted { get; private set; } = false;
 
     public double RsMessageRelativeVolume { get; private set; } = 0.0;
+
+    public bool IsMethodSpaExecuted { get; private set; } = false;
+
+    public double SpaMessageRelativeVolume { get; private set; } = 0.0;
 
     public bool IsMethodKzhaExecuted { get; private set; } = false;
 
@@ -60,8 +65,8 @@ public class SteganalysisResultsDto
     /// Заполняет DTO результатами стегоанализа<br/>
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
-    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null, StatmResult? statmRes = null,
-        ComplexSaMethodResult? complexSaResult = null, long? elapsedTime = null)
+    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, SpaResult? spaRes = null, KzhaResult? kzhaRes = null,
+        StatmResult? statmRes = null, ComplexSaMethodResult? complexSaResult = null, long? elapsedTime = null)
     {
         if (elapsedTime is not null)
             ElapsedTime = elapsedTime.Value;
@@ -76,6 +81,12 @@ public class SteganalysisResultsDto
         {
             IsMethodRsExecuted = true;
             RsMessageRelativeVolume = rsRes.MessageRelativeVolume;
+        }
+
+        if (spaRes is not null)
+        {
+            IsMethodSpaExecuted = true;
+            SpaMessageRelativeVolume = spaRes.MessageRelativeVolume;
         }
 
         if (kzhaRes is not null)

@@ -43,6 +43,7 @@ public partial class AnalyzerView : UserControl
         AutoDetectionResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
         ChiFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue);
         RsFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.RsValue);
+        SpaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.SpaValue);
         KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection);
         KzhaBitsNumDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum);
         KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes);
@@ -101,6 +102,10 @@ public partial class AnalyzerView : UserControl
             // RS
             if (results.IsMethodRsExecuted)
                 RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
+
+            // SPA
+            if (results.IsMethodSpaExecuted)
+                SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
 
             // Kzha
             if (results.IsMethodKzhaExecuted)
@@ -183,6 +188,8 @@ public partial class AnalyzerView : UserControl
         await _vm.OpenParametersWindow(AnalysisMethod.ChiSquare);
     private async void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.RegularSingular);
+    private async void MethodSpaParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalysisMethod.Spa);
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
@@ -221,7 +228,7 @@ public partial class AnalyzerView : UserControl
 
         // Сброс формы результатов
         CommonTools.SetFields("IsEnabled", false, 
-            ChiFullnessBlock, RsFullnessBlock, KzhaIntervalFoundedBlock,
+            ChiFullnessBlock, RsFullnessBlock, SpaFullnessBlock, KzhaIntervalFoundedBlock,
             KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock);
 
         CommonTools.SetFields("IsVisible", false, 
@@ -231,6 +238,7 @@ public partial class AnalyzerView : UserControl
 
         ChiFullnessValue.Text = MessageNotAnalyzed;
         RsFullnessValue.Text = MessageNotAnalyzed;
+        SpaFullnessValue.Text = MessageNotAnalyzed;
         KzhaIntervalFoundedValue.Text = MessageNotAnalyzed;
         KzhaBitsNumValue.Text = MessageUnknown;
         KzhaSuspiciousIntervalValue.Text = MessageUnknown;
