@@ -53,6 +53,9 @@
 		<Compile Update="Views\ParametersWindowViews\KzhaMethodParametersView.axaml.cs">
 			<DependentUpon>KzhaMethodParametersView.axaml</DependentUpon>
 		</Compile>
+		<Compile Update="Views\ParametersWindowViews\ZcaMethodParametersView.axaml.cs">
+		  <DependentUpon>ZcaMethodParametersView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\ParametersWindowViews\SpaMethodParametersView.axaml.cs">
 		  <DependentUpon>SpaMethodParametersView.axaml</DependentUpon>
 		</Compile>

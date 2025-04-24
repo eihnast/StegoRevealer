@@ -6,6 +6,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 
 namespace StegoRevealer.StegoCore.CommonLib;
@@ -35,10 +36,15 @@ public static class JointAnalysisStarter
             var kzhaMethodAnalyzer = new KzhaAnalyser(parameters.KzhaParameters);
             methodTasks[AnalysisMethod.KochZhaoAnalysis] = Task.Run(() => kzhaMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
-        if (parameters.SpaParameters is not null)  // CKZhA
+        if (parameters.SpaParameters is not null)  // SPA
         {
             var spaMethodAnalyzer = new SpaAnalyser(parameters.SpaParameters);
             methodTasks[AnalysisMethod.Spa] = Task.Run(() => spaMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
+        }
+        if (parameters.ZcaParameters is not null)  // ZCA
+        {
+            var zcaMethodAnalyzer = new ZcaAnalyser(parameters.ZcaParameters);
+            methodTasks[AnalysisMethod.Zca] = Task.Run(() => zcaMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
         if (parameters.StatmParameters is not null)  // Statm
         {
@@ -66,6 +72,7 @@ public static class JointAnalysisStarter
         var chiRes = results[AnalysisMethod.ChiSquare] as ChiSquareResult;
         var rsRes = results[AnalysisMethod.RegularSingular] as RsResult;
         var spaRes = results[AnalysisMethod.Spa] as SpaResult;
+        var zcaRes = results[AnalysisMethod.Zca] as ZcaResult;
         var kzhaRes = results[AnalysisMethod.KochZhaoAnalysis] as KzhaResult;
         var statmRes = results[AnalysisMethod.Statm] as StatmResult;
         var complexSaRes = results[AnalysisMethod.Complex] as ComplexSaMethodResult;
@@ -75,6 +82,7 @@ public static class JointAnalysisStarter
             ChiSquareResult = chiRes,
             RsResult = rsRes,
             SpaResult = spaRes,
+            ZcaResult = zcaRes,
             KzhaResult = kzhaRes,
             StatmResult = statmRes,
             ComplexSaMethodResults = complexSaRes,

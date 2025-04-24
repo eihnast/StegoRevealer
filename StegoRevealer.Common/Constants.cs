@@ -8,6 +8,7 @@ public static class Constants
         public static string ChiSqrValue => "Оценка заполненности по методу Хи-квадрат";
         public static string RsValue => "Оценка заполненности по методу RS";
         public static string SpaValue => "Оценка заполненности по методу SPA";
+        public static string ZcaValue => "Встраивание по методу анализа сжатия Жилкина";
         public static string KzhaDetection => "Обнаружен подозрительный интервал при стегоанализе Коха-Жао";
         public static string KzhaBitsNum => "Количество бит скрытой информации";
         public static string KzhaIndexes => "Индексы блоков подозрительного интервала";
@@ -34,7 +35,7 @@ public static class Constants
         public static string IsHidingDecisionCannotBeCalculated => "невозможно определить";
         public static string Yes => "да";
         public static string No => "нет";
-        public static string Deceted => "обнаружено";
+        public static string Detected => "обнаружено";
         public static string NotDetected => "не обнаружено";
     }
 }

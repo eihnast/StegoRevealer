@@ -4,6 +4,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 
 namespace StegoRevealer.StegoCore.CommonLib.Entities;
 
@@ -14,6 +15,8 @@ public class JointAnalysisResult
     public RsResult? RsResult { get; set; } = null;
 
     public SpaResult? SpaResult { get; set; } = null;
+
+    public ZcaResult? ZcaResult { get; set; } = null;
 
     public KzhaResult? KzhaResult { get; set; } = null;
 

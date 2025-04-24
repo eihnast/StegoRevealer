@@ -115,15 +115,15 @@ public class SpaAnalyser
         int localWidth = Params.Image.Width;
         if (pairDirection is not PairDirection.Vertical)
             localWidth--;
-        int localWHeight = Params.Image.Height;
+        int localHeight = Params.Image.Height;
         if (pairDirection is not PairDirection.Horizontal)
-            localWHeight--;
+            localHeight--;
 
-        Parallel.For(0, localWHeight, y =>
+        Parallel.For(0, localHeight, y =>
         {
             for (int x = 0; x < localWidth; x++)
             {
-                (byte x1, byte x2) = GetPairValues(imar, y, x, channgelId);
+                (byte x1, byte x2) = GetPairValues(imar, y, x, channgelId, pairDirection);
                 int diff = x1 - x2;
 
                 if (Math.Abs(diff) == 1)
@@ -146,10 +146,12 @@ public class SpaAnalyser
     /// <summary>
     /// Получает значения пары пикселей в зависимости от направления
     /// </summary>
-    private (byte p1, byte p2) GetPairValues(ImageArray imgArray, int y, int x, int channelId)
+    private (byte p1, byte p2) GetPairValues(ImageArray imgArray, int y, int x, int channelId, PairDirection? pairDirection = null)
     {
         byte p1 = imgArray[y, x, channelId];
-        byte p2 = Params.Direction switch
+
+        pairDirection ??= Params.Direction;
+        byte p2 = pairDirection switch
         {
             PairDirection.Horizontal => imgArray[y, x + 1, channelId],
             PairDirection.Vertical => imgArray[y + 1, x, channelId],
@@ -191,7 +193,7 @@ public class SpaAnalyser
             Task.Run(() =>
                 Parallel.For(0, Params.Image.Width, x =>
                 {
-                    for (int y = 0; y < Params.Image.Height; y += 2)
+                    for (int y = 0; y < Params.Image.Height - 1; y += 2)
                         calcValues(imar[y, x, channgelId], imar[y + 1, x, channgelId]);
                 })
             )

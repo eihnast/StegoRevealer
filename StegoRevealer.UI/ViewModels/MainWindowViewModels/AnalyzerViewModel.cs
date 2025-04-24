@@ -30,6 +30,7 @@ using StegoRevealer.Common;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -42,6 +43,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
     private SpaParameters? _spaParameters = null;
+    private ZcaParameters? _zcaParameters = null;
     private KzhaParameters? _kzhaParameters = null;
     private ComplexSaMethodParameters? _complexSaParameters = null;
 
@@ -107,10 +109,24 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         set
         {
             this.RaiseAndSetIfChanged(ref _methodSpaSelected, value);
-            ActiveMethods[AnalysisMethod.RegularSingular] = value;
+            ActiveMethods[AnalysisMethod.Spa] = value;
         }
     }
     private bool _methodSpaSelected = true;
+
+    /// <summary>
+    /// Выбран ли метод ZCA
+    /// </summary>
+    public bool MethodZcaSelected
+    {
+        get => _methodZcaSelected;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _methodZcaSelected, value);
+            ActiveMethods[AnalysisMethod.Zca] = value;
+        }
+    }
+    private bool _methodZcaSelected = false;
 
     /// <summary>
     /// Выбран ли метод КЖА
@@ -246,6 +262,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     {
         foreach (AnalysisMethod method in Enum.GetValues(typeof(AnalysisMethod)))
             ActiveMethods.Add(method, true);
+        ActiveMethods[AnalysisMethod.Zca] = false;
 
         WindowResizeAction += SetImagePreviewSizes;
         if (_mainWindowViewModel.MainWindow is not null)
@@ -287,6 +304,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         else
             _spaParameters.Image = CurrentImage;
 
+        if (_zcaParameters is null)
+            _zcaParameters = new ZcaParameters(CurrentImage);
+        else
+            _zcaParameters.Image = CurrentImage;
+
         if (_kzhaParameters is null)
             _kzhaParameters = new KzhaParameters(CurrentImage);
         else
@@ -312,6 +334,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             AnalysisMethod.ChiSquare => _chiSquareParameters,
             AnalysisMethod.RegularSingular => _rsParameters,
             AnalysisMethod.Spa => _spaParameters,
+            AnalysisMethod.Zca => _zcaParameters,
             AnalysisMethod.KochZhaoAnalysis => _kzhaParameters,
             _ => throw new System.NotImplementedException()
         };
@@ -357,6 +380,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                     var spaParamsDto = receivedParameters.Parameters as IParamsDto<SpaParameters>;
                     spaParamsDto?.FillParameters(ref _spaParameters);
                     Logger.LogInfo("Received SPA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as SpaParamsDto));
+                }
+                break;
+            case AnalysisMethod.Zca:
+                if (_zcaParameters is not null)
+                {
+                    var zcaParamsDto = receivedParameters.Parameters as IParamsDto<ZcaParameters>;
+                    zcaParamsDto?.FillParameters(ref _zcaParameters);
+                    Logger.LogInfo("Received ZCA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ZcaParamsDto));
                 }
                 break;
             case AnalysisMethod.KochZhaoAnalysis:
@@ -469,6 +500,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             jointAnalysisParams.RsParameters = _rsParameters;
         if (ActiveMethods[AnalysisMethod.Spa] && _spaParameters is not null)  // SPA
             jointAnalysisParams.SpaParameters = _spaParameters;
+        if (ActiveMethods[AnalysisMethod.Zca] && _zcaParameters is not null)  // ZCA
+            jointAnalysisParams.ZcaParameters = _zcaParameters;
         if (ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
             jointAnalysisParams.KzhaParameters = _kzhaParameters;
         if (CurrentImage is not null)
@@ -505,6 +538,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         var chiRes = results.ChiSquareResult;
         var rsRes = results.RsResult;
         var spaRes = results.SpaResult;
+        var zcaRes = results.ZcaResult;
         var kzhaRes = results.KzhaResult;
         var complexRes = results.ComplexSaMethodResults;
         var statmRes = results.StatmResult;
@@ -514,11 +548,12 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, kzhaRes, statmRes, complexRes, results.ElapsedTime);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, kzhaRes, zcaRes, statmRes, complexRes, results.ElapsedTime);
         Logger.LogInfo("Steganalysis operaions info:\n"
             + (chiRes is null ? string.Empty : "\tChi-Square Attack result = " + Common.Tools.GetFormattedJson(chiRes, true))
             + (rsRes is null ? string.Empty : "\n\tRegular-Singular result = " + Common.Tools.GetFormattedJson(rsRes, true))
             + (spaRes is null ? string.Empty : "\n\tSample Pair Analysis result = " + Common.Tools.GetFormattedJson(spaRes, true))
+            + (zcaRes is null ? string.Empty : "\n\tZhilkin Compression Analysis result = " + Common.Tools.GetFormattedJson(zcaRes, true))
             + (kzhaRes is null ? string.Empty : "\n\tConsecutive Koch-Zhao Attack result = " + Common.Tools.GetFormattedJson(kzhaRes, true))
             + (statmRes is null ? string.Empty : "\n\tQuality characteristics calculation result = " + Common.Tools.GetFormattedJson(statmRes, true))
             + (complexRes is null ? string.Empty : "\n\tComplex Steganalysis Method result = " + Common.Tools.GetFormattedJson(complexRes, true))
@@ -526,6 +561,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             + (chiRes is null ? string.Empty : "\n\tLogs of Chi-Square Attack method:\n" + chiRes?.ToString(indent: 2))
             + (rsRes is null ? string.Empty : "\n\tLogs of Regular-Singular method:\n" + rsRes?.ToString(indent: 2))
             + (spaRes is null ? string.Empty : "\n\tLogs of Sample Pair Analysis method:\n" + spaRes?.ToString(indent: 2))
+            + (zcaRes is null ? string.Empty : "\n\tLogs of Zhilkin Compression Analysis method:\n" + zcaRes?.ToString(indent: 2))
             + (kzhaRes is null ? string.Empty : "\n\tLogs of Consecutive Koch-Zhao Attack method:\n" + kzhaRes?.ToString(indent: 2))
             + (statmRes is null ? string.Empty : "\n\tLogs of Quality characteristics calculation:\n" + statmRes?.ToString(indent: 2))
             + (complexRes is null ? string.Empty : "\n\tLogs of Complex Steganalysis Method method:\n" + complexRes?.ToString(indent: 2)));

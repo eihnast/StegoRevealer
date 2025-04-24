@@ -139,7 +139,7 @@ public class SteganalysisProcessor
         outputStr.AppendLine(Constants.ResultsNames.HidingDesicionDetection + " " +
             (result.ComplexSaMethodResults is null
             ? Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated
-            : (result.ComplexSaMethodResults.IsHidingDetected ? Constants.ResultsDefaults.Deceted.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
+            : (result.ComplexSaMethodResults.IsHidingDetected ? Constants.ResultsDefaults.Detected.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
 
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + Common.Tools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0));

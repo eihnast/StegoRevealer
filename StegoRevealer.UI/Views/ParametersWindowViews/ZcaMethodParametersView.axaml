@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
+             x:Class="StegoRevealer.UI.Views.ParametersWindowViews.ZcaMethodParametersView">
+
+	<Design.DataContext>
+		<vm:ZcaMethodParametersViewModel/>
+	</Design.DataContext>
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*,*" RowDefinitions="40,*"
+			  Margin="20 10 20 10">
+
+			<Label Name="TitleLabel" Content="Параметры метода анализа сжатия Жилкина"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
+				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                   Background="{x:Null}" BorderBrush="{x:Null}"
+                   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
+						HorizontalAlignment="Center">
+				
+				<Label Content="Порог коэффициента сжатия"
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 0 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"
+					   VerticalAlignment="Center"/>
+				<TextBox Name="RatioThreshold" Text="{Binding Path=RatioThresholdValue}"
+                         Foreground="#FFE0E0E0"
+						 MinWidth="150" Margin="5 5 20 0" HorizontalContentAlignment="Center"
+						 KeyDown="FilterForPositiveDouble_KeyDown"/>
+
+				<CheckBox Name="IsUseOverallCompression" Content="Анализировать целиком (по всем каналам вместе)"
+						  IsChecked="{Binding Path=UseOverallCompression}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0"
+						  Foreground="#FFE6E6E6" FontSize="12"
+						  Margin="0 20 0 0"/>
+				
+				<Label Content="Выбор метода сжатия"
+					   Margin="0 20 0 0"
+					   FontSize="13" Foreground="#FFE0E0E0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"/>
+				<RadioButton Name="CompressingAlgorithmChoice_Zip" Content="ZIP"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=CompressingAlgorithmZip}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="CompressingAlgorithmChoice_GZip" Content="GZIP"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=CompressingAlgorithmGZip}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="CompressingAlgorithmChoice_BZip2" Content="BZIP2"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=CompressingAlgorithmBZip2}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+
+				<!-- Выбор каналов -->
+				<Label Content="Выбор анализируемых каналов"
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 20 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}" />
+				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+							  IsChecked="{Binding Path=ChannelRedChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+							  IsChecked="{Binding Path=ChannelGreenChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+							  IsChecked="{Binding Path=ChannelBlueChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0">
+				<Label Content="Выбор обхода массива"
+					   FontSize="13" Foreground="#FFE0E0E0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"/>
+				<RadioButton Name="TraverseChoice_Horizontal" Content="Горизонтальный"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=TraverseHorizontal}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="TraverseChoice_Vertical" Content="Вертикальный"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=TraverseVertical}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+
+				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
+					<Label Content="Ширина блока:"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Width="110" Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<TextBox Name="BlockWidth"
+							 Text="{Binding Path=BlockWidthValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8,1,8,1"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveInteger_KeyDown"/>
+				</DockPanel>
+				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
+					<Label Content="Высота блока:"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Width="110" Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<TextBox Name="BlockHeight"
+							 Text="{Binding Path=BlockHeightValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8,1,8,1"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveInteger_KeyDown"/>
+				</DockPanel>
+			</StackPanel>
+		</Grid>
+	</Grid>
+
+</UserControl>

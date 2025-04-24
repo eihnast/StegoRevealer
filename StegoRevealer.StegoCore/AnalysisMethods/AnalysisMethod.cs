@@ -10,5 +10,6 @@ public enum AnalysisMethod
     Spa,
     KochZhaoAnalysis,
     Statm,
-    Complex
+    Complex,
+    Zca
 }
