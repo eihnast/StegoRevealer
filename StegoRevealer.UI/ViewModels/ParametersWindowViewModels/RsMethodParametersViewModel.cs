@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
-using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib.Interfaces;
 using StegoRevealer.UI.Lib.MethodsHelper;
@@ -9,7 +9,6 @@ using StegoRevealer.UI.ViewModels.BaseViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Text;
 
 namespace StegoRevealer.UI.ViewModels.ParametersWindowViewModels;
 
@@ -36,6 +35,11 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
         ChannelRedChecked = rsParamsDto.Channels.Contains(ImgChannel.Red);
         ChannelGreenChecked = rsParamsDto.Channels.Contains(ImgChannel.Green);
         ChannelBlueChecked = rsParamsDto.Channels.Contains(ImgChannel.Blue);
+
+        TraverseHorizontal = rsParamsDto.TraverseType is TraverseType.Horizontal;
+        TraverseVertical = rsParamsDto.TraverseType is TraverseType.Vertical;
+        BlockWidthValue = rsParamsDto.BlockWidth;
+        BlockHeightValue = rsParamsDto.BlockHeight;
     }
 
     public object CollectParameters()
@@ -65,6 +69,13 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
             result.Channels.Add(ImgChannel.Green);
         if (ChannelBlueChecked)
             result.Channels.Add(ImgChannel.Blue);
+
+        result.TraverseType = TraverseType.Horizontal;
+        if (!TraverseHorizontal && TraverseVertical)
+            result.TraverseType = TraverseType.Vertical;
+
+        result.BlockWidth = BlockWidthValue;
+        result.BlockHeight = BlockHeightValue;
 
         return result;
     }
@@ -105,5 +116,33 @@ public class RsMethodParametersViewModel : ParametersWindowViewModelBaseChild, I
     {
         get => _channelBlueChecked;
         set => this.RaiseAndSetIfChanged(ref _channelBlueChecked, value);
+    }
+
+    private bool _traverseHorizontal = true;
+    public bool TraverseHorizontal
+    {
+        get => _traverseHorizontal;
+        set => this.RaiseAndSetIfChanged(ref _traverseHorizontal, value);
+    }
+
+    private bool _traverseVertical = false;
+    public bool TraverseVertical
+    {
+        get => _traverseVertical;
+        set => this.RaiseAndSetIfChanged(ref _traverseVertical, value);
+    }
+
+    private int _blockWidthValue = 1;
+    public int BlockWidthValue
+    {
+        get => _blockWidthValue;
+        set => this.RaiseAndSetIfChanged(ref _blockWidthValue, value);
+    }
+
+    private int _blockHeightValue = 1;
+    public int BlockHeightValue
+    {
+        get => _blockHeightValue;
+        set => this.RaiseAndSetIfChanged(ref _blockHeightValue, value);
     }
 }

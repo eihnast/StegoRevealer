@@ -26,6 +26,12 @@
 		<DataTemplate DataType="{x:Type viewmodels:RsMethodParametersViewModel}">
 			<views:RsMethodParametersView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:SpaMethodParametersViewModel}">
+			<views:SpaMethodParametersView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:ZcaMethodParametersViewModel}">
+			<views:ZcaMethodParametersView/>
+		</DataTemplate>
 	</Window.DataTemplates>
 
 	<Design.DataContext>

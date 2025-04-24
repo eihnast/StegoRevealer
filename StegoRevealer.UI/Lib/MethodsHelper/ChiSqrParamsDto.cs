@@ -20,6 +20,8 @@ public class ChiSqrParamsDto : IParamsDto<ChiSquareParameters>
 
     public bool UseUnifiedCathegories { get; set; } = true;
 
+    public bool UsePreviousCnums { get; set; } = true;
+
     public int UnifyingCathegoriesThreshold { get; set; } = 4;
 
     public double Threshold { get; set; } = 0.95;
@@ -42,6 +44,7 @@ public class ChiSqrParamsDto : IParamsDto<ChiSquareParameters>
         TraverseType = parameters.TraverseType;
         ExcludeZeroPairs = parameters.ExcludeZeroPairs;
         UseUnifiedCathegories = parameters.UseUnifiedCathegories;
+        UsePreviousCnums = parameters.UsePreviousCnums;
         UnifyingCathegoriesThreshold = parameters.UnifyingCathegoriesThreshold;
         Threshold = parameters.Threshold;
 
@@ -63,6 +66,7 @@ public class ChiSqrParamsDto : IParamsDto<ChiSquareParameters>
         parameters.TraverseType = TraverseType;
         parameters.ExcludeZeroPairs = ExcludeZeroPairs;
         parameters.UseUnifiedCathegories = UseUnifiedCathegories;
+        parameters.UsePreviousCnums = UsePreviousCnums;
         parameters.UnifyingCathegoriesThreshold = UnifyingCathegoriesThreshold;
         parameters.Threshold = Threshold;
 

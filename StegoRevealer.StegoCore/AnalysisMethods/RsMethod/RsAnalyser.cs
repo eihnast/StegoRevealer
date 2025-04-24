@@ -1,8 +1,9 @@
-﻿using MathNet.Numerics.Statistics;
-using StegoRevealer.StegoCore.CommonLib.Exceptions;
-using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using System.Diagnostics;
 using System.Collections.Concurrent;
-using System.Diagnostics;
+using StegoRevealer.StegoCore.CommonLib.Exceptions;
+using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
@@ -11,7 +12,9 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 /// </summary>
 public class RsAnalyser
 {
-    private const string MethodName = "RS (Regular-Singular) analysis";
+    private const string MethodName = "RS (Regular-Singular)";
+
+    private static readonly object _lock = new object();
 
     /// <summary>
     /// Параметры метода
@@ -44,8 +47,8 @@ public class RsAnalyser
         var timer = Stopwatch.StartNew();
 
         var result = new RsResult();
-        result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
         _writeToLog = result.Log;
+        _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
         double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
 
@@ -66,23 +69,27 @@ public class RsAnalyser
         foreach (var channel in Params.Channels)
         {
             var unturnedValues = tasksByChannel[channel].UnturnedTask.Result;
-            result.Log($"Analysis for {channel} channel in original image completed. Regulars num = {unturnedValues.Regulars}, Singulars num = {unturnedValues.Singulars}. " +
-                $"Regulars with inverted mask num = {unturnedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {unturnedValues.SingularsWithInvertedMask}");
+            _writeToLog($"Calculations for {channel} channel in original image completed. Regulars = {unturnedValues.Regulars}, Singulars = {unturnedValues.Singulars}, " +
+                $"Regulars (inverted mask) = {unturnedValues.RegularsWithInvertedMask}, Singulars (inverted mask) = {unturnedValues.SingularsWithInvertedMask}");
 
             var invertedValues = tasksByChannel[channel].InvertedTask.Result;
-            result.Log($"Analysis for {channel} channel in inverted image completed. Regulars num = {invertedValues.Regulars}, Singulars num = {invertedValues.Singulars}. " +
-                $"Regulars with inverted mask num = {invertedValues.RegularsWithInvertedMask}, Singulars with inverted mask num = {invertedValues.SingularsWithInvertedMask}");
+            _writeToLog($"Calculations for {channel} channel in original image completed. Regulars = {invertedValues.Regulars}, Singulars = {invertedValues.Singulars}, " +
+                $"Regulars (inverted mask) = {invertedValues.RegularsWithInvertedMask}, Singulars (inverted mask) = {invertedValues.SingularsWithInvertedMask}");
 
             var pValue = CalculatePValue(unturnedValues, invertedValues);
             pValuesSum += pValue;
-            result.Log($"For {channel} channel calculated results: pValue = {pValue}");
+
+            _writeToLog($"Relative message volume at channel '{channel}' (pValue): {pValue}");
+            result.MessageRelativeVolumesByChannels[channel] = pValue;
         }
 
         result.MessageRelativeVolume = pValuesSum / Params.Channels.Count;
-        result.Log($"MessageRelativeVolume for all image = {result.MessageRelativeVolume}");
+        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
 
         timer.Stop();
-        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
     }
 
@@ -99,19 +106,25 @@ public class RsAnalyser
         if (channelArray is null)
             throw new ArgumentException($"Error while getting OneChannelArray for channel '{channel}'");
 
-        var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
-        result.GroupsNumber = groups.Count;
+        //var groups = SplitIntoGroupsInChannelArray(channelArray);  // Дешевле хранить массивы по 4 byte-значения группы, чем координаты группы (минимум 4 int на группу)
+        //result.GroupsNumber = groups.Count;
+
+        int blockNumber = 0;
+
+        var traversalOptions = Params.GetTraversalOptions();
+        traversalOptions.Channels = [channel];
+        var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
         var flippingFuncs = GetFlippingFuncsByMask(Params.FlippingMask);
         var flippingFuncsWithInvertedMask = GetFlippingFuncsByMask(RsHelper.InvertMask(Params.FlippingMask));
 
-        Parallel.For(
-            0,
-            groups.Count,
-            () => new RsGroupsCalcResult(), // локальный результат
-            (i, state, localResult) =>
+        Parallel.ForEach(iterator,
+            () => new RsGroupsCalcResult(),
+            (block, state, localResult) =>
             {
-                var regularityResult = CalculateRegularityResults(groups[i], flippingFuncs);
+                var pixels = GetLinearPixelsList(block, channelArray);
+
+                var regularityResult = CalculateRegularityResults(pixels, flippingFuncs);
                 var groupType = RsHelper.DefineGroupType(regularityResult);
                 switch (groupType)
                 {
@@ -123,7 +136,7 @@ public class RsAnalyser
                         break;
                 }
 
-                var regularityWithInvertedMaskResult = CalculateRegularityResults(groups[i], flippingFuncsWithInvertedMask);
+                var regularityWithInvertedMaskResult = CalculateRegularityResults(pixels, flippingFuncsWithInvertedMask);
                 var groupTypeWithInvertedMask = RsHelper.DefineGroupType(regularityWithInvertedMaskResult);
                 switch (groupTypeWithInvertedMask)
                 {
@@ -135,12 +148,12 @@ public class RsAnalyser
                         break;
                 }
 
+                Interlocked.Increment(ref blockNumber);
                 return localResult;
             },
             localResult =>
             {
-                // Финальная агрегация в потокобезопасной секции
-                lock (result)
+                lock (_lock)
                 {
                     result.Singulars += localResult.Singulars;
                     result.Regulars += localResult.Regulars;
@@ -150,6 +163,7 @@ public class RsAnalyser
             }
         );
 
+        result.GroupsNumber = blockNumber + 1;
         return result;
     }
 
@@ -173,8 +187,8 @@ public class RsAnalyser
         double invRmi = (double)invertedValues.RegularsWithInvertedMask / invertedValues.GroupsNumber;
         double invSmi = (double)invertedValues.SingularsWithInvertedMask / invertedValues.GroupsNumber;
 
-        _writeToLog?.Invoke($"Значения точек RS-диаграммы: Rm = {Rm:0.###}; Sm = {Sm:0.###}; Rmi = {Rmi:0.###}; Smi = {Smi:0.###}; " +
-            $"invRm = {invRm:0.###}; invSm = {invSm:0.###}; invRmi = {invRmi:0.###}; invSmi = {invSmi:0.###}.");
+        _writeToLog?.Invoke($"RS-diagram points values: Rm = {Rm:0.###}; Sm = {Sm:0.###}; Rmi = {Rmi:0.###}; Smi = {Smi:0.###}; " +
+            $"invRm = {invRm:0.###}; invSm = {invSm:0.###}; invRmi = {invRmi:0.###}; invSmi = {invSmi:0.###}");
 
         // Mathematical code
         double d0 = Rm - Sm;
@@ -186,12 +200,10 @@ public class RsAnalyser
         double b = d0i - d1i - d1 - 3 * d0;
         double c = d0 - d0i;
 
-        _writeToLog?.Invoke($"Промежуточные значения решения: d0 = {d0:0.###}; d0i = {d0i:0.###}; d1 = {d1:0.###}; d1i = {d1i:0.###}; " +
-            $"a = {a:0.###}; b = {b:0.###}; c = {c:0.###}.");
-
         double D = Math.Pow(b, 2) - 4 * a * c;
 
-        _writeToLog?.Invoke($"Вычислен дискриминант: D = {D:0.####}.");
+        _writeToLog?.Invoke($"Intermediate values: d0 = {d0:0.###}; d0i = {d0i:0.###}; d1 = {d1:0.###}; d1i = {d1i:0.###}; " +
+            $"a = {a:0.###}; b = {b:0.###}; c = {c:0.###}. Discriminant D = {D:0.####}");
 
         double x1 = 0, x2 = 0, minX = 0;
         if (D.Equals(0.0))
@@ -206,7 +218,7 @@ public class RsAnalyser
                 minX = x2;
         }
 
-        _writeToLog?.Invoke($"Корни решения: x1 = {x1:0.###}; x2 = {x2:0.###}.");
+        _writeToLog?.Invoke($"Roots: x1 = {x1:0.###}; x2 = {x2:0.###}. Minimum root value = {minX:0.###}");
 
         double p = minX / (minX - 0.5);
         return Math.Max(p, 0.0);
@@ -217,6 +229,7 @@ public class RsAnalyser
     /// Метод формирования массива групп (разбиения изображения на группы)
     /// </summary>
     /// <param name="channelArray">Ссылка на массив пикселей изображения в одном канале</param>
+    [Obsolete("Вместо старого разбиения на группы необходимо использовать общий механизм итерации по блокам")]
     private List<int[]> SplitIntoGroupsInChannelArray(ImageOneChannelArray channelArray)
     {
         var groups = new ConcurrentBag<int[]>();
@@ -241,6 +254,23 @@ public class RsAnalyser
         });
 
         return groups.ToList();
+    }
+
+    private IEnumerable<int> GetLinearPixelsList(Sc2DPoint blockCoords, ImageOneChannelArray channelArray)
+    {
+        var blockPixelsIndexes = Params.ImgBlocks[blockCoords.Y, blockCoords.X];
+        var pixels = new List<int>();
+
+        for (int y = blockPixelsIndexes.Lt.Y; y <= blockPixelsIndexes.Rd.Y; y++)
+        {
+            for (int x = blockPixelsIndexes.Lt.X; x <= blockPixelsIndexes.Rd.X; x++)
+            {
+                var pixel = channelArray[y, x];
+                pixels.Add(pixel);
+            }
+        }
+
+        return pixels;
     }
 
     /// <summary>
@@ -278,7 +308,7 @@ public class RsAnalyser
     /// <param name="group">Группа</param>
     /// <param name="flippingFuncs">Массив функций для применения к значениям группы по маске</param>
     /// <returns>Значения регулярности до и после флиппинга</returns>
-    private (int beforeFlippingResult, int afterFlippingResult) CalculateRegularityResults(int[] group, Func<int, int>[] flippingFuncs)
+    private (int beforeFlippingResult, int afterFlippingResult) CalculateRegularityResults(IEnumerable<int> group, Func<int, int>[] flippingFuncs)
     {
         var flippedGroup = RsHelper.ApplyFlipping(group, flippingFuncs);  // Расчёт "перевёрнутой" группы
         int beforeFlippingResult = Params.RegularityFunction(group);

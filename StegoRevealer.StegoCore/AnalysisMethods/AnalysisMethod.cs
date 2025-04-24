@@ -7,6 +7,9 @@ public enum AnalysisMethod
 {
     ChiSquare,
     RegularSingular,
+    Spa,
     KochZhaoAnalysis,
-    Statm
+    Statm,
+    Complex,
+    Zca
 }

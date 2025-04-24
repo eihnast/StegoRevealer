@@ -27,11 +27,11 @@ public static class RsHelper
     /// <summary>
     /// Стандартная функция регулярности
     /// </summary>
-    public static int DefaultRegularityFunction(IList<int> nums)
+    public static int DefaultRegularityFunction(IEnumerable<int> nums)
     {
         int sum = 0;
-        for (int i = 0; i < nums.Count - 1; i++)
-            sum += Math.Abs(nums[i + 1] - nums[i]);
+        for (int i = 0; i < nums.Count() - 1; i++)
+            sum += Math.Abs(nums.ElementAt(i + 1) - nums.ElementAt(i));
         return sum;
     }
 
@@ -97,14 +97,14 @@ public static class RsHelper
     /// <summary>
     /// Применить функции флиппинга к группе
     /// </summary>
-    public static int[] ApplyFlipping(int[] group, Func<int, int>[] funcs)
+    public static int[] ApplyFlipping(IEnumerable<int> group, Func<int, int>[] funcs)
     {
-        if (group.Length != funcs.Length)
+        if (group.Count() != funcs.Length)
             throw new ArgumentException("Group length and number of flipping functions should be equal");
 
-        var flippedGroup = new int[group.Length];
-        for (int i = 0; i < group.Length; i++)
-            flippedGroup[i] = funcs[i](group[i]);
+        var flippedGroup = new int[group.Count()];
+        for (int i = 0; i < group.Count(); i++)
+            flippedGroup[i] = funcs[i](group.ElementAt(i));
         return flippedGroup;
     }
 }

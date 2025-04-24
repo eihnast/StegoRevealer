@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.Encodings.Web;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.Common;
@@ -14,6 +15,7 @@ public static class Tools
         {
             WriteIndented = !notIndented,
             PropertyNamingPolicy = null,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,  // Убрать экранирование кириллицы в Unicode escaping
             Converters =
             {
                 new JsonStringEnumConverter(),

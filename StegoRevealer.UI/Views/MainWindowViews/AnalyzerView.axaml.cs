@@ -43,6 +43,8 @@ public partial class AnalyzerView : UserControl
         AutoDetectionResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
         ChiFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue);
         RsFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.RsValue);
+        SpaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.SpaValue);
+        ZcaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ZcaValue);
         KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection);
         KzhaBitsNumDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum);
         KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes);
@@ -101,6 +103,19 @@ public partial class AnalyzerView : UserControl
             // RS
             if (results.IsMethodRsExecuted)
                 RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
+
+            // SPA
+            if (results.IsMethodSpaExecuted)
+                SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
+
+            // ZCA
+            if (results.IsMethodZcaExecuted)
+            {
+                string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+                var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
+                ZcaFullnessValue.Foreground = zcaHidingDetectedTextBrush;
+                ZcaFullnessValue.Text = zcaHidingDetectedText;
+            }
 
             // Kzha
             if (results.IsMethodKzhaExecuted)
@@ -167,12 +182,13 @@ public partial class AnalyzerView : UserControl
 
 
             // Вывод о наличии встраивания
-            string hidingDecisionText = results.IsHidingDeceted is null ? IsHidingDecisionCannotBeCalculated :
-                (results.IsHidingDeceted is true ? Constants.ResultsDefaults.Deceted : Constants.ResultsDefaults.NotDetected);
-            var hidingDecisionTextBrush = results.IsHidingDeceted is null ? DefaultTextBrush :
-                (results.IsHidingDeceted is true ? BadTextBrush : GoodTextBrush);
-            AutoDetectionResultValue.Text = hidingDecisionText;
-            AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
+            if (results.IsComplexMethodExecuted)
+            {
+                string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+                var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
+                AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
+                AutoDetectionResultValue.Text = hidingDecisionText;
+            }
         }
     }
 
@@ -182,6 +198,10 @@ public partial class AnalyzerView : UserControl
         await _vm.OpenParametersWindow(AnalysisMethod.ChiSquare);
     private async void MethodRsParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.RegularSingular);
+    private async void MethodSpaParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalysisMethod.Spa);
+    private async void MethodZcaParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalysisMethod.Zca);
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
@@ -220,7 +240,7 @@ public partial class AnalyzerView : UserControl
 
         // Сброс формы результатов
         CommonTools.SetFields("IsEnabled", false, 
-            ChiFullnessBlock, RsFullnessBlock, KzhaIntervalFoundedBlock,
+            ChiFullnessBlock, RsFullnessBlock, SpaFullnessBlock, KzhaIntervalFoundedBlock,
             KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock);
 
         CommonTools.SetFields("IsVisible", false, 
@@ -230,6 +250,9 @@ public partial class AnalyzerView : UserControl
 
         ChiFullnessValue.Text = MessageNotAnalyzed;
         RsFullnessValue.Text = MessageNotAnalyzed;
+        SpaFullnessValue.Text = MessageNotAnalyzed;
+        ZcaFullnessValue.Foreground = DefaultTextBrush;
+        ZcaFullnessValue.Text = MessageNotAnalyzed;
         KzhaIntervalFoundedValue.Text = MessageNotAnalyzed;
         KzhaBitsNumValue.Text = MessageUnknown;
         KzhaSuspiciousIntervalValue.Text = MessageUnknown;
@@ -243,7 +266,7 @@ public partial class AnalyzerView : UserControl
         StatResultsEntropyRenyiValue.Text = MessageUnknown;
         KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
-        AutoDetectionResultValue.Text = IsHidingDecisionCannotBeCalculated;
         AutoDetectionResultValue.Foreground = DefaultTextBrush;
+        AutoDetectionResultValue.Text = MessageNotAnalyzed;
     }
 }

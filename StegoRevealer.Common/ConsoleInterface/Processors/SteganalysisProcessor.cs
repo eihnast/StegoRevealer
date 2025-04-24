@@ -3,6 +3,9 @@ using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using System.Text;
 
@@ -37,23 +40,24 @@ public class SteganalysisProcessor
             return;
 
         _logger.LogInfo($"Starting steganalysis for file '{_fileName}'");
-        var complexAnalysisParams = new JointAnalysisParameters();
+        var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
         if (_currentImage is null)
             return;
 
         // Создание задач
         if (_useChiSqr || _useAllMethods)  // Хи-квадрат
-            complexAnalysisParams.ChiSquareParameters = new ChiSquareParameters(_currentImage);
+            jointAnalysisParams.ChiSquareParameters = new ChiSquareParameters(_currentImage);
         if (_userRs || _useAllMethods)  // RS
-            complexAnalysisParams.RsParameters = new RsParameters(_currentImage);
+            jointAnalysisParams.RsParameters = new RsParameters(_currentImage);
         if (_useKzha || _useAllMethods)  // KZHA
-            complexAnalysisParams.KzhaParameters = new KzhaParameters(_currentImage);
-        complexAnalysisParams.Image = _currentImage;
+            jointAnalysisParams.KzhaParameters = new KzhaParameters(_currentImage);
+        jointAnalysisParams.StatmParameters = new StatmParameters(_currentImage);
+        jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(_currentImage);
 
         _logger.LogInfo("Starting steganalysis operations");
 
-        var result = await JointAnalysisStarter.Start(complexAnalysisParams);
+        var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
         _logger.LogInfo("Steganalysis operations completed");
 
@@ -120,7 +124,7 @@ public class SteganalysisProcessor
         return true;
     }
 
-    private static void PrintResults(JointAnalysisResults result, string imgName)
+    private static void PrintResults(JointAnalysisResult result, string imgName)
     {
         // Приведение к известным типам результатов
         var chiRes = result.ChiSquareResult;
@@ -133,9 +137,9 @@ public class SteganalysisProcessor
         outputStr.AppendLine($"Результаты стегоанализа изображения '{imgName}'");
 
         outputStr.AppendLine(Constants.ResultsNames.HidingDesicionDetection + " " +
-            (result.IsHidingDetected is null
+            (result.ComplexSaMethodResults is null
             ? Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated
-            : (result.IsHidingDetected.Value ? Constants.ResultsDefaults.Deceted.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
+            : (result.ComplexSaMethodResults.IsHidingDetected ? Constants.ResultsDefaults.Detected.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
 
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + Common.Tools.GetValueAsPercents(chiRes?.MessageRelativeVolume ?? 0.0));
         outputStr.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + Common.Tools.GetValueAsPercents(rsRes?.MessageRelativeVolume ?? 0.0));
@@ -204,7 +208,7 @@ public class SteganalysisProcessor
 
         if (!string.IsNullOrEmpty(tempPath))
         {
-            TempManager.Instance.RememberTempImage(tempPath);
+            TempManager.Instance.RememberTempImage(path, tempPath);
             return CreateImageHandler(tempPath);
         }
 

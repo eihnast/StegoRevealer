@@ -1,7 +1,7 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
+﻿using System.Diagnostics;
+using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 
@@ -43,8 +43,7 @@ public class StatmAnalyser
 
         var result = new StatmResult();
         _writeToLog = result.Log;
-
-        _writeToLog($"Выполняется подсчёт характеристик для файла изображения {Params.Image.ImgName}");
+        _writeToLog($"Started quality characteristics calculation for image '{Params.Image.ImgName}'");
 
         var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2));  // Шум
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
@@ -71,7 +70,9 @@ public class StatmAnalyser
         result.EntropyValues = entropyCalcTask.Result;
 
         timer.Stop();
-        _writeToLog($"Подсчёт характеристик завершён за {timer.ElapsedMilliseconds} мс");
+        _writeToLog($"Quality characteristics calculation ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
     }
 }

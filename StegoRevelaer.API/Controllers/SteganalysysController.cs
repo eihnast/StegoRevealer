@@ -3,11 +3,14 @@ using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.CommonLib;
+using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.DecisionModule;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Security.Cryptography;
 
 namespace StegoRevelaer.API.Controllers;
 
@@ -33,67 +36,26 @@ public class SteganalysysController : ControllerBase
             // Запуск комплексного стегоанализа
             var image = new ImageHandler(path);
             var complexMethodTasks = new List<Task>();
-            ComplexSaMethodResults? complexSaMethodResults = null;
             if (image is null)
                 return GetErrorResult("Не удалось создать обработчик изображения");
 
-            complexSaMethodResults = new ComplexSaMethodResults();
 
-            var complexChiSqrMethodHorizontalAnalyzer = new ChiSquareAnalyser(image);
-            complexChiSqrMethodHorizontalAnalyzer.Params.TraverseType = TraverseType.Horizontal;
+            var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
-            var complexChiSqrMethodVerticalAnalyzer = new ChiSquareAnalyser(image);
-            complexChiSqrMethodVerticalAnalyzer.Params.TraverseType = TraverseType.Vertical;
+            // Создание задач
+            jointAnalysisParams.ChiSquareParameters = new ChiSquareParameters(image);
+            jointAnalysisParams.RsParameters = new RsParameters(image);
+            jointAnalysisParams.SpaParameters = new SpaParameters(image);
+            jointAnalysisParams.KzhaParameters = new KzhaParameters(image);
+            jointAnalysisParams.StatmParameters = new StatmParameters(image);
+            jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(image);
 
-            var complexRsMethodAnalyzer = new RsAnalyser(image);
-
-            var complexKzhaMethodHorizontalAnalyzer = new KzhaAnalyser(image);
-            complexKzhaMethodHorizontalAnalyzer.Params.TraverseType = TraverseType.Horizontal;
-
-            var complexKzhaMethodVerticalAnalyzer = new KzhaAnalyser(image);
-            complexKzhaMethodVerticalAnalyzer.Params.TraverseType = TraverseType.Horizontal;
-
-            var statmAnalyzer = new StatmAnalyser(image);
-            statmAnalyzer.Params.EntropyCalcSensitivity = 1.1;
-
-            complexSaMethodResults.PixelsNum = image.Width * image.Height;
-
-            // Задачи
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.ChiSquareHorizontalResult = complexChiSqrMethodHorizontalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.ChiSquareVerticalResult = complexChiSqrMethodVerticalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.RsResult = complexRsMethodAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.KzhaHorizontalResult = complexKzhaMethodHorizontalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.KzhaVerticalResult = complexKzhaMethodVerticalAnalyzer.Analyse(); } catch { } }));
-            complexMethodTasks.Add(Task.Run(() => { try { complexSaMethodResults.StatmResult = statmAnalyzer.Analyse(); } catch { } }));
-
-            // Ожидание
-            foreach (var complesMethodTask in complexMethodTasks)
-                await complesMethodTask;
-
-            var saResult = new SteganalysisResults
-            {
-                ChiSquareHorizontalVolume = complexSaMethodResults.ChiSquareHorizontalResult.MessageRelativeVolume,
-                ChiSquareVerticalVolume = complexSaMethodResults.ChiSquareVerticalResult.MessageRelativeVolume,
-                RsVolume = complexSaMethodResults.RsResult.MessageRelativeVolume,
-                KzhaHorizontalThreshold = complexSaMethodResults.KzhaHorizontalResult.Threshold,
-                KzhaHorizontalMessageBitVolume = complexSaMethodResults.KzhaHorizontalResult.MessageBitsVolume,
-                KzhaVerticalThreshold = complexSaMethodResults.KzhaVerticalResult.Threshold,
-                KzhaVerticalMessageBitVolume = complexSaMethodResults.KzhaVerticalResult.MessageBitsVolume,
-                NoiseValue = complexSaMethodResults.StatmResult.NoiseValue,
-                SharpnessValue = complexSaMethodResults.StatmResult.SharpnessValue,
-                BlurValue = complexSaMethodResults.StatmResult.BlurValue,
-                ContrastValue = complexSaMethodResults.StatmResult.ContrastValue,
-                EntropyShennonValue = complexSaMethodResults.StatmResult.EntropyValues.Shennon,
-                EntropyRenyiValue = complexSaMethodResults.StatmResult.EntropyValues.Renyi,
-                PixelsNumber = (image?.Width ?? 0) * (image?.Height ?? 0)
-            };
-
-            bool isHidingDetected = SteganalysisDecision.Calculate(saResult);
+            var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
             return new JsonResult(new
             {
-                isHidingDetected,
-                steganalysisResult = verboseResult ? saResult : null
+                result.ComplexSaMethodResults?.IsHidingDetected,
+                steganalysisResult = verboseResult ? result : null
             });
         }
         catch (Exception e)

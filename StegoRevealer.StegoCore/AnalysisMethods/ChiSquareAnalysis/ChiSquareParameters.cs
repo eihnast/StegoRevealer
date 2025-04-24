@@ -47,14 +47,22 @@ public class ChiSquareParameters
     public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
 
     /// <summary>
+    /// Применять ли алгоритм по отдельности для каждого канала<br/>
+    /// Игнорирует настройку UseUnitedCnum
+    /// </summary>
+    public bool UseSeparateChannelsCalc { get; set; } = true;
+
+    /// <summary>
     /// Описывает варинт формирования массива Carr - ColorsArray<br/>
     /// false: будут отдельно считаться количество интенсивности цветов в каждом канале<br/>
-    /// true: будет считаться общее количество интенсивности цветов без учёта канала
+    /// true: будет считаться общее количество интенсивности цветов без учёта канала<br/>
+    /// Не учитывается, если включён UseSeparateChannelsCalc
     /// </summary>
     public bool UseUnitedCnum { get; set; } = true;
 
     /// <summary>
-    /// Учитывать ли подсчёт цветов предыдущих блоков при оценке текущего
+    /// Учитывать ли подсчёт цветов предыдущих блоков при оценке текущего (режим подсчёта с накоплением)<br/>
+    /// (повышение чувствительности при низкой плотности встраивания и устойчивости к локальным флуктуациям в блоках, более надёжная оценка теоретических частот)
     /// </summary>
     public bool UsePreviousCnums { get; set; } = true;
 
@@ -118,7 +126,7 @@ public class ChiSquareParameters
     }
 
 
-    public bool UseIncreasedCnum { get; set; } = true;
+    public bool UseIncreasedCnum { get; set; } = false;  // Считать количество цветов начиная с 1, а не с 0
 
 
     public ChiSquareParameters(ImageHandler image)

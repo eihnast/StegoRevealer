@@ -1,8 +1,8 @@
-﻿using Accord.Math;
+﻿using System.Diagnostics;
+using Accord.Math;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
-using System.Diagnostics;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 
@@ -11,12 +11,21 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 /// </summary>
 public class ChiSquareAnalyser
 {
-    private const string MethodName = "Pair analysis (Chi-Square)";
+    private const string MethodName = "CSA (Chi-Square Attack)";
+
+    private static readonly object _lock = new object();
+
+    private List<byte> _hidingDegrees = new();
 
     /// <summary>
     /// Параметры метода
     /// </summary>
     public ChiSquareParameters Params { get; set; }
+
+    /// <summary>
+    /// Внутренний метод-прослойка для записи в лог
+    /// </summary>
+    private Action<string>? _writeToLog = null;
 
 
     public ChiSquareAnalyser(ImageHandler image)
@@ -39,16 +48,62 @@ public class ChiSquareAnalyser
         var timer = Stopwatch.StartNew();
 
         var result = new ChiSquareResult();
-        result.Log($"Выполняется стегоанализ методом {MethodName} для файла изображения {Params.Image.ImgName}");
+        _hidingDegrees = Enumerable.Repeat((byte)0, Params.ImgBlocks.BlocksInRow * Params.ImgBlocks.BlocksInColumn).ToList();
 
-        var cnumArr = new int[Params.UseUnitedCnum ? 256 : Params.Channels.Count * 256];
+        _writeToLog = result.Log;
+        _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
+
+        double fullness = 0.0;
+        if (!Params.UseSeparateChannelsCalc)
+        {
+            fullness = RealizeChiSquareAttack(null, verboseLog);
+            result.MessageRelativeVolumesByChannels = null;
+        }
+        else
+        {
+            var tasks = new List<Task>();
+            foreach (var channel in Params.Channels)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    var channelFullness = RealizeChiSquareAttack(channel, verboseLog);
+                    lock (_lock)
+                    {
+                        result.MessageRelativeVolumesByChannels![channel] = channelFullness;
+                        _writeToLog($"Relative message volume at channel '{channel}': {channelFullness}");
+                    }
+                }));
+            }
+
+            Task.WaitAll(tasks);
+            fullness = result.MessageRelativeVolumesByChannels!.Values.Average();
+        }
+
+        result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
+        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
+
+        // Визуализация скрытия на изображении целиком
+        if (Params.Visualize)
+            result.Image = ColorizeAllImage(_hidingDegrees, 100);
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    private double RealizeChiSquareAttack(ImgChannel? channel = null, bool verboseLog = false)
+    {
+        var cnumArr = new int[Params.UseUnitedCnum || Params.UseSeparateChannelsCalc ? 256 : Params.Channels.Count * 256];
         cnumArr = Enumerable.Repeat(Params.UseIncreasedCnum ? 1 : 0, cnumArr.Length).ToArray();
 
         double fullness = 0.0;  // Относительная заполненность контейнера
         int blockNumber = 0;  // Счётчик блоков
 
-        var toColorizeChannels = new List<ImgChannel>();
         var traversalOptions = Params.GetTraversalOptions();
+        if (Params.UseSeparateChannelsCalc && channel is not null)
+            traversalOptions.Channels = [channel.Value];
         var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
         foreach (var block in iterator)
@@ -75,8 +130,8 @@ public class ChiSquareAnalyser
                 fullness += 1;  // +1 блок со встроенной информацией
 
             // Если необходима - визуализация скрытия в блоке: запись нужного канала для блока
-            if (Params.Visualize)
-                toColorizeChannels.Add(blockContainsHiddenInfo ? ImgChannel.Red : ImgChannel.Green);
+            if (Params.Visualize && blockContainsHiddenInfo)
+                _hidingDegrees[blockNumber]++;
 
             blockNumber++;
 
@@ -84,31 +139,21 @@ public class ChiSquareAnalyser
             if (verboseLog)
             {
                 int pixelsNum = (blockPixelsIndexes.Rd.Y - blockPixelsIndexes.Lt.Y + 1) * (blockPixelsIndexes.Rd.X - blockPixelsIndexes.Lt.X + 1);
-                result.Log($"Блок № {blockNumber}");
-                result.Log($"\tБлок содержит {pixelsNum} пикселей");
-                result.Log(string.Format("\tChi-Square: {0:f2}\tP-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
-                result.Log("");
+                _writeToLog?.Invoke($"Block {blockNumber}: block contains {pixelsNum} pixels; " + 
+                    string.Format("Chi-Square statistic: {0:f2}; P-Value: {1:f2}", chiSqr.statistic, chiSqr.pValue));
             }
         }
 
         fullness /= blockNumber;  // Делим количество заполненных блоков на количество всех блоков
-        result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
-
-        // Визуализация скрытия на изображении целиком
-        if (Params.Visualize)
-            result.Image = ColorizeAllImage(toColorizeChannels, 100);
-
-        timer.Stop();
-        result.Log($"Стегоанализ методом {MethodName} завершён за {timer.ElapsedMilliseconds} мс");
-        return result;
+        return fullness;
     }
 
     /// <summary>
     /// Визуализирует скрытие во всём изображении поблочно
     /// </summary>
-    /// <param name="channelsToColorizeInBlock">Массив каналов, в которые надо сместить цвет для каждого блока</param>
-    /// <param name="colorOffset">Смещение цвета</param>
-    private ImageHandler ColorizeAllImage(List<ImgChannel> channelsToColorizeInBlock, int colorOffset = 100)
+    /// <param name="hidingDegreesInBlocks">Массив степеней скрытия в каждом блоке (0 - без скрытия, 1 - в одном канале, 2 - в двух каналах, 3 - в трёх каналах)</param>
+    /// <param name="colorMaxOffset">Смещение цвета для 3-й степени</param>
+    private ImageHandler ColorizeAllImage(List<byte> hidingDegreesInBlocks, int colorMaxOffset = 100)
     {
         var colorizedImage = Params.Image.Clone();
 
@@ -120,14 +165,16 @@ public class ChiSquareAnalyser
         foreach (var blockIndexes in iterator)
         {
             var coords = Params.ImgBlocks[blockIndexes.Y, blockIndexes.X];
-            var channelId = (int)channelsToColorizeInBlock[i];
+            byte hidingDegree = hidingDegreesInBlocks[i];
+            var channelId = hidingDegree == 0 ? (int)ImgChannel.Green : (int)ImgChannel.Red;
+            int offset = hidingDegree == 0 ? colorMaxOffset / 3 * 2 : (Params.UseSeparateChannelsCalc ? colorMaxOffset / 3 * hidingDegree : colorMaxOffset);
 
             for (int y = coords.Lt.Y; y <= coords.Rd.Y; y++)
             {
                 for (int x = coords.Lt.X; x <= coords.Rd.X; x++)
                 {
                     var colorByte = colorizedImage.ImgArray[y, x, channelId];
-                    var newValue = Convert.ToByte(Math.Min((int)colorByte + colorOffset, 255));
+                    var newValue = Convert.ToByte(Math.Min((int)colorByte + offset, 255));
                     colorizedImage.ImgArray[y, x, channelId] = newValue;
                 }
             }
@@ -266,7 +313,7 @@ public class ChiSquareAnalyser
     private int[] CreateCnumArr(BlockCoords blockCoords)
     {
         var imar = Params.Image.ImgArray;
-        if (Params.UseUnitedCnum)  // Если считаем только значения интенсивности без учёта канала
+        if (Params.UseUnitedCnum || Params.UseSeparateChannelsCalc)  // Если считаем только значения интенсивности без учёта канала
         {
             var cnum = Enumerable.Repeat(0, 256).ToArray();
             

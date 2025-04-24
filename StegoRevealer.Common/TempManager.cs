@@ -1,4 +1,5 @@
-﻿using StegoRevealer.StegoCore.ImageHandlerLib;
+﻿using StegoRevealer.Common.Entities;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.Common;
 
@@ -30,10 +31,13 @@ public class TempManager
     }
 
 
-    private readonly List<string> _tempImages = new List<string>();
+    private readonly List<TempImage> _tempImages = new List<TempImage>();
     private readonly List<ImageHandler> _openedHandlers = new List<ImageHandler>();
 
-    public void RememberTempImage(string imagePath) => _tempImages.Add(imagePath);
+    public void RememberTempImage(string originalPath, string tempPath) => _tempImages.Add(new TempImage { OriginalPath = originalPath, TempPath = tempPath });
+
+    public string? GetOriginalImageByTemp(string tempImgName) => 
+        _tempImages.FirstOrDefault(img => Path.GetFileNameWithoutExtension(img.TempPath).Equals(tempImgName, StringComparison.OrdinalIgnoreCase))?.OriginalPath;
 
     public void RememberHandler(ImageHandler imageHandler) => _openedHandlers.Add(imageHandler);
     public void ForgetHandler(ImageHandler imageHandler) => _openedHandlers.Remove(imageHandler);
@@ -42,16 +46,16 @@ public class TempManager
     {
         var notDeleted = new List<string>();
         
-        foreach (var imagePath in _tempImages.Where(File.Exists))
+        foreach (var tempImage in _tempImages.Where(img => File.Exists(img.TempPath)))
         {
             try
             {
-                File.Delete(imagePath);
+                File.Delete(tempImage.TempPath);
             }
             catch (Exception ex)
             {
                 Logger.LogError("Error wile deleting temp image: " + ex.Message);
-                notDeleted.Add(imagePath);
+                notDeleted.Add(tempImage.TempPath);
             }
         }
 

@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
+             x:Class="StegoRevealer.UI.Views.ParametersWindowViews.SpaMethodParametersView">
+
+	<Design.DataContext>
+		<vm:SpaMethodParametersViewModel/>
+	</Design.DataContext>
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*,*" RowDefinitions="40,*"
+			  Margin="20 10 20 10">
+
+			<Label Name="TitleLabel" Content="Параметры стегоанализа методом Sample Pair Analysis"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
+				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                   Background="{x:Null}" BorderBrush="{x:Null}"
+                   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
+						HorizontalAlignment="Center">
+				
+				<!-- Выбор каналов -->
+				<Label Content="Выбор анализируемых каналов"
+					   FontSize="13" Foreground="#FFE0E0E0"
+					   Margin="0 20 0 0"
+                       Background="{x:Null}" BorderBrush="{x:Null}" />
+				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+							  IsChecked="{Binding Path=ChannelRedChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+							  IsChecked="{Binding Path=ChannelGreenChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+							  IsChecked="{Binding Path=ChannelBlueChecked}"
+							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
+							  HorizontalContentAlignment="Center"/>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0">
+				<Label Content="Выбор направления анализа"
+					   FontSize="13" Foreground="#FFE0E0E0"
+                       Background="{x:Null}" BorderBrush="{x:Null}"/>
+				<RadioButton Name="DirectionChoice_Horizontal" Content="Горизонтальное"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="DirectionGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=DirectionHorizontal}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="DirectionChoice_Vertical" Content="Вертикальное"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="DirectionGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=DirectionVertical}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+				<RadioButton Name="DirectionChoice_Diagonal" Content="Диагональное"
+							 Foreground="#FFE6E6E6" FontSize="12" GroupName="DirectionGroup"
+							 Padding="10 0 0 0" Margin="20 0 0 0"
+							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
+							 IsChecked="{Binding Path=DirectionDiagonal}"
+							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+
+				<CheckBox Name="IsUseDoubleDirectionChecked" Content="Использовать двойной проход"
+						  IsChecked="{Binding Path=UseDoubleDirection}"
+                          Background="{x:Null}" BorderBrush="#FFE0E0E0"
+						  Foreground="#FFE6E6E6" FontSize="12"
+						  Margin="0 5 0 0"/>
+			</StackPanel>
+		</Grid>
+	</Grid>
+
+</UserControl>

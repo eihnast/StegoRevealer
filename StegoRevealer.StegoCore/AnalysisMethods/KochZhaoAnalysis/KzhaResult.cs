@@ -45,6 +45,11 @@ public class KzhaResult : LoggedResult, ILoggedAnalysisResult
     /// </summary>
     public (int leftInd, int rightInd)? SuspiciousInterval { get; set; }
 
+    /// <summary>
+    /// Время, затраченное на анализ
+    /// </summary>
+    public long ElapsedTime { get; set; }
+
 
     public KzhaResult() { }
 }

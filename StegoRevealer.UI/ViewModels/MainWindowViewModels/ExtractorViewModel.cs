@@ -411,7 +411,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
 
             if (!string.IsNullOrEmpty(tempPath))
             {
-                TempManager.Instance.RememberTempImage(tempPath);
+                TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
             }
         }

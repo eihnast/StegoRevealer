@@ -2,7 +2,7 @@
 
 public static class ModelsMapper
 {
-    public static DecisionModel_ComplexSa.ModelInput SaResultToDeicisionInputModel(SteganalysisResults saResult)
+    public static DecisionModel_ComplexSa.ModelInput SaResultToDeicisionInputModel(SaDecisionFeatures saResult)
     {
         return new DecisionModel_ComplexSa.ModelInput
         {

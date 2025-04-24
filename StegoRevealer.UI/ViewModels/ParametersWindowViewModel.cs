@@ -4,6 +4,8 @@ using ReactiveUI;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
@@ -55,6 +57,10 @@ public class ParametersWindowViewModel : ViewModelBase
                 SelectChiSqrParameters(currentParameters);
             else if (currentParameters is RsParameters)
                 SelectRsParameters(currentParameters);
+            else if (currentParameters is SpaParameters)
+                SelectSpaParameters(currentParameters);
+            else if (currentParameters is ZcaParameters)
+                SelectZcaParameters(currentParameters);
             else if (currentParameters is KzhaParameters)
                 SelectKzhaParameters(currentParameters);
         }
@@ -108,6 +114,26 @@ public class ParametersWindowViewModel : ViewModelBase
     private void SelectRsParameters(object parameters)
     {
         var paramsVm = GetOrCreateViewModel(typeof(RsMethodParametersViewModel)) as RsMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
+    }
+    private void SelectSpaParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(SpaMethodParametersViewModel)) as SpaMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
+    }
+    private void SelectZcaParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(ZcaMethodParametersViewModel)) as ZcaMethodParametersViewModel;
         if (paramsVm is not null)
         {
             CurrentViewModel = paramsVm;

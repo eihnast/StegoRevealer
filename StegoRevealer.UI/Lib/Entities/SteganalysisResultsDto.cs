@@ -1,7 +1,10 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 
 namespace StegoRevealer.UI.Lib.Entities;
@@ -18,6 +21,14 @@ public class SteganalysisResultsDto
     public bool IsMethodRsExecuted { get; private set; } = false;
 
     public double RsMessageRelativeVolume { get; private set; } = 0.0;
+
+    public bool IsMethodSpaExecuted { get; private set; } = false;
+
+    public double SpaMessageRelativeVolume { get; private set; } = 0.0;
+
+    public bool IsMethodZcaExecuted { get; private set; } = false;
+
+    public bool IsZcaHidingDetected { get; private set; } = false;
 
     public bool IsMethodKzhaExecuted { get; private set; } = false;
 
@@ -45,8 +56,11 @@ public class SteganalysisResultsDto
 
     public double StatmEntropyRenyiValue { get; private set; } = 0.0;
 
+    public bool IsComplexMethodExecuted { get; private set; } = false;
 
-    public bool? IsHidingDeceted { get; private set; } = null;
+    public bool IsHidingDetected { get; private set; }
+
+    public double DecisionPobability { get; private set; } = 0.0;
 
 
     public long ElapsedTime { get; private set; } = 0;
@@ -56,8 +70,8 @@ public class SteganalysisResultsDto
     /// Заполняет DTO результатами стегоанализа<br/>
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
-    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, KzhaResult? kzhaRes = null, StatmResult? statmRes = null,
-        long? elapsedTime = null, bool? isHidingDeceted = null)
+    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, SpaResult? spaRes = null, KzhaResult? kzhaRes = null,
+        ZcaResult? zcaRes = null, StatmResult? statmRes = null, ComplexSaMethodResult? complexSaResult = null, long? elapsedTime = null)
     {
         if (elapsedTime is not null)
             ElapsedTime = elapsedTime.Value;
@@ -72,6 +86,18 @@ public class SteganalysisResultsDto
         {
             IsMethodRsExecuted = true;
             RsMessageRelativeVolume = rsRes.MessageRelativeVolume;
+        }
+
+        if (spaRes is not null)
+        {
+            IsMethodSpaExecuted = true;
+            SpaMessageRelativeVolume = spaRes.MessageRelativeVolume;
+        }
+
+        if (zcaRes is not null)
+        {
+            IsMethodZcaExecuted = true;
+            IsZcaHidingDetected = zcaRes.IsHidingDetected;
         }
 
         if (kzhaRes is not null)
@@ -95,7 +121,11 @@ public class SteganalysisResultsDto
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
         }
 
-        if (isHidingDeceted is not null)
-            IsHidingDeceted = isHidingDeceted;
+        if (complexSaResult is not null)
+        {
+            IsComplexMethodExecuted = true;
+            IsHidingDetected = complexSaResult.IsHidingDetected;
+            DecisionPobability = complexSaResult.DecisionProbability;
+        }
     }
 }
