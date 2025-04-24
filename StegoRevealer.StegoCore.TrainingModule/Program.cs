@@ -3,6 +3,9 @@ using CsvHelper;
 using Microsoft.ML;
 using StegoRevealer_StegoCore_TrainingModule;
 using System.Globalization;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.AnalysisMethods.HcfCom;
+using Newtonsoft.Json;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
 
@@ -10,18 +13,46 @@ internal static class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
-        CheckMlModels();
+        string originPath = "e:\\Temp\\Steganalysis\\OriginImages\\";
+        string targetPath = "e:\\Temp\\Steganalysis\\Обучение метода FAN\\ClearImages\\";
 
-        Console.WriteLine("Проверка моделей на специальном тестовом датасете");
-        TestMlModels();
+        var filenames = Directory.GetFiles(originPath);
+        var rnd = new Random();
+        rnd.Shuffle(filenames);
 
-        Console.WriteLine("Ручной подсчёт значений матрицы ошибок на тестовом датасете");
-        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting_ForComplexSa.csv");
+        var resultFilenames = new List<string>();
+        foreach (var file in filenames[0..100])
+        {
+            string fileName = Path.GetFileName(file);
+            string newFileName = Path.Combine(targetPath, fileName);
+            File.Copy(file, newFileName, true);
+            resultFilenames.Add(newFileName);
+        }
 
-        Console.WriteLine("Проверка модели на тестовом датасете в 2 НЗБ");
-        TestMlModel2Lsb();
-        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
+        var comLists = new List<double[]>();
+        foreach (var file in resultFilenames)
+        {
+            var img = new ImageHandler(file);
+            var comList = FanAnalyser.ComputeCompositeCom(img);
+            Console.WriteLine($"Calculated for {file}");
+            comLists.Add(comList);
+        }
+
+        var serializedComLists = JsonConvert.SerializeObject(comLists);
+        Console.WriteLine(serializedComLists);
+
+        //Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
+        //CheckMlModels();
+
+        //Console.WriteLine("Проверка моделей на специальном тестовом датасете");
+        //TestMlModels();
+
+        //Console.WriteLine("Ручной подсчёт значений матрицы ошибок на тестовом датасете");
+        //CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting_ForComplexSa.csv");
+
+        //Console.WriteLine("Проверка модели на тестовом датасете в 2 НЗБ");
+        //TestMlModel2Lsb();
+        //CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
     }
 
     private static void TestMlModel2Lsb()
