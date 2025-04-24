@@ -2,7 +2,9 @@
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.UI.Lib.MethodsHelper;
 using System.Collections.Concurrent;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
@@ -156,6 +158,94 @@ public class StegoAnalysisTests
             Assert.AreEqual(spaExpectedResults[imgName].MessageRelativeVolume, Math.Round(spaResults[imgName].MessageRelativeVolume, 4));
             foreach (var channel in spaResults[imgName].MessageRelativeVolumesByChannels.Keys)
                 Assert.AreEqual(spaExpectedResults[imgName].MessageRelativeVolumesByChannels[channel], Math.Round(spaResults[imgName].MessageRelativeVolumesByChannels[channel], 4));
+        }
+    }
+
+    [TestMethod]
+    public void ZcaMethodTest()
+    {
+        var imgNames = new[] { "ZCA_img1.png", "ZCA_img2.png", "ZCA_img3.png" };  // real: 52% 82% 0%
+        var zcaResults = new ConcurrentDictionary<string, ZcaResult>();
+        var zcaResultsWithOverall = new ConcurrentDictionary<string, ZcaResult>();
+
+        var imgAnalysisTasks = new List<Task>();
+        foreach (var imgName in imgNames)
+        {
+            imgAnalysisTasks.Add(Task.Run(() =>
+            {
+                string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+                var img = new ImageHandler(imagePath);
+
+                var zcaAnalyser = new ZcaAnalyser(img);
+                zcaResultsWithOverall.TryAdd(imgName, zcaAnalyser.Analyse());
+
+                //zcaAnalyser.Params.UseOverallCompression = false;
+                //zcaResults.TryAdd(imgName, zcaAnalyser.Analyse());
+            }));
+        }
+        Task.WaitAll(imgAnalysisTasks);
+
+        var zcaExpectedResults = new Dictionary<string, ZcaResult>()
+        {
+            {
+                "ZCA_img1.png",
+                new ZcaResult
+                {
+                    IsHidingDetected = true,
+                    IsHidedByChannels = new()
+                    {   { ImgChannel.Red, true },
+                        { ImgChannel.Green, true },
+                        { ImgChannel.Blue, true }
+                    }
+                }
+            },
+            {
+                "ZCA_img2.png",
+                new ZcaResult
+                {
+                    IsHidingDetected = true,
+                    IsHidedByChannels = new()
+                    {   { ImgChannel.Red, true },
+                        { ImgChannel.Green, true },
+                        { ImgChannel.Blue, true }
+                    }
+                }
+            },
+            {
+                "ZCA_img3.png",
+                new ZcaResult
+                {
+                    IsHidingDetected = false,
+                    IsHidedByChannels = new()
+                    {   { ImgChannel.Red, false },
+                        { ImgChannel.Green, false },
+                        { ImgChannel.Blue, false }
+                    }
+                }
+            }
+        };
+
+        //Console.WriteLine("ZCA results:");
+        //foreach (var imgName in imgNames)
+        //{
+        //    Console.WriteLine($"Image: {imgName}");
+        //    Console.WriteLine($"\tIsHidingDetected: {zcaResults[imgName].IsHidingDetected}");
+        //    foreach (var channel in zcaResults[imgName].IsHidedByChannels.Keys)
+        //        Console.WriteLine($"\tChannel: {channel}, Hided: {zcaResults[imgName].IsHidedByChannels[channel]}");
+        //}
+        Console.WriteLine("ZCA with overall analysis results:");
+        foreach (var imgName in imgNames)
+        {
+            Console.WriteLine($"Image: {imgName}");
+            Console.WriteLine($"\tIsHidingDetected: {zcaResultsWithOverall[imgName].IsHidingDetected}");
+        }
+
+        foreach (var imgName in imgNames)
+        {
+            Assert.AreEqual(zcaExpectedResults[imgName].IsHidingDetected, zcaResultsWithOverall[imgName].IsHidingDetected);
+            //Assert.AreEqual(zcaExpectedResults[imgName].IsHidingDetected, zcaResults[imgName].IsHidingDetected);
+            //foreach (var channel in zcaResults[imgName].IsHidedByChannels.Keys)
+            //    Assert.AreEqual(zcaExpectedResults[imgName].IsHidedByChannels[channel], zcaResults[imgName].IsHidedByChannels[channel]);
         }
     }
 }

@@ -85,6 +85,10 @@ public class ScImage : IDisposable
         {
             if (_image is null)
                 throw new IncorrectValueException("Image is null");
+            if (x > Width - 1)
+                throw new IndexOutOfRangeException($"X index out of range: {x} > {Width - 1}");
+            if (y > Height - 1)
+                throw new IndexOutOfRangeException($"Y index out of range: {y} > {Height - 1}");
             var pixel = _image.GetPixel(x, y);
             return ScPixel.FromSkColor(pixel);
         }
@@ -92,6 +96,10 @@ public class ScImage : IDisposable
         {
             if (_image is null)
                 throw new IncorrectValueException("Image is null");
+            if (x > Width - 1)
+                throw new IndexOutOfRangeException($"X index out of range: {x} > {Width - 1}");
+            if (y > Height - 1)
+                throw new IndexOutOfRangeException($"Y index out of range: {y} > {Height - 1}");
             _image.SetPixel(x, y, value.ToSkColor());
         }
     }
