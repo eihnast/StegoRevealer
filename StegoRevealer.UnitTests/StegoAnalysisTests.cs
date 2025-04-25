@@ -1,10 +1,10 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.Fan;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.UI.Lib.MethodsHelper;
 using System.Collections.Concurrent;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
@@ -247,5 +247,53 @@ public class StegoAnalysisTests
             //foreach (var channel in zcaResults[imgName].IsHidedByChannels.Keys)
             //    Assert.AreEqual(zcaExpectedResults[imgName].IsHidedByChannels[channel], zcaResults[imgName].IsHidedByChannels[channel]);
         }
+    }
+
+    [TestMethod]
+    public void FanMethodTest()
+    {
+        var imgNames = new[] { "FAN_img1.png", "FAN_img2.png", "FAN_img3.png" };  // real: 52% 82% 0%
+        var fanResults = new ConcurrentDictionary<string, FanResult>();
+
+        var imgAnalysisTasks = new List<Task>();
+        foreach (var imgName in imgNames)
+        {
+            var task = Task.Run(() =>
+            {
+                string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+                var img = new ImageHandler(imagePath);
+
+                var fanAnalyser = new FanAnalyser(img);
+                fanResults.TryAdd(imgName, fanAnalyser.Analyse());
+            });
+            task.Wait();
+        }
+        Task.WaitAll(imgAnalysisTasks);
+
+        var fanExpectedResults = new Dictionary<string, FanResult>()
+        {
+            {
+                "FAN_img1.png",
+                new FanResult { IsHidingDetected = true }
+            },
+            {
+                "FAN_img2.png",
+                new FanResult { IsHidingDetected = true }
+            },
+            {
+                "FAN_img3.png",
+                new FanResult { IsHidingDetected = false }
+            }
+        };
+
+        Console.WriteLine("FAN with overall analysis results:");
+        foreach (var imgName in imgNames)
+        {
+            Console.WriteLine($"Image: {imgName}");
+            Console.WriteLine($"\tIsHidingDetected: {fanResults[imgName].IsHidingDetected}");
+        }
+
+        foreach (var imgName in imgNames)
+            Assert.AreEqual(fanExpectedResults[imgName].IsHidingDetected, fanResults[imgName].IsHidingDetected);
     }
 }
