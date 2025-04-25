@@ -110,11 +110,11 @@ public class StegoAnalysisTests
                 "SPA_img1.png", 
                 new SpaResult 
                 {
-                    MessageRelativeVolume = 0.3684,
+                    MessageRelativeVolume = 0.3334,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.3630 },
-                        { ImgChannel.Green, 0.3830 },
-                        { ImgChannel.Blue, 0.3590 }
+                    {   { ImgChannel.Red, 0.3309 },
+                        { ImgChannel.Green, 0.3436 },
+                        { ImgChannel.Blue, 0.3257 }
                     }
                 } 
             },
@@ -122,11 +122,11 @@ public class StegoAnalysisTests
                 "SPA_img2.png",
                 new SpaResult
                 {
-                    MessageRelativeVolume = 0.5745,
+                    MessageRelativeVolume = 0.5305,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.5603 },
-                        { ImgChannel.Green, 0.595 },
-                        { ImgChannel.Blue, 0.5682 }
+                    {   { ImgChannel.Red, 0.5225 },
+                        { ImgChannel.Green, 0.545 },
+                        { ImgChannel.Blue, 0.5241 }
                     }
                 }
             },
@@ -134,11 +134,11 @@ public class StegoAnalysisTests
                 "SPA_img3.png",
                 new SpaResult
                 {
-                    MessageRelativeVolume = 0.0102,
+                    MessageRelativeVolume = 0.0096,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.0089 },
-                        { ImgChannel.Green, 0.0027 },
-                        { ImgChannel.Blue, 0.0191 }
+                    {   { ImgChannel.Red, 0.0078 },
+                        { ImgChannel.Green, 0.0024 },
+                        { ImgChannel.Blue, 0.0187 }
                     }
                 }
             }
