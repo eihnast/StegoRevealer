@@ -4,7 +4,7 @@ using Microsoft.ML;
 using StegoRevealer_StegoCore_TrainingModule;
 using System.Globalization;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.StegoCore.AnalysisMethods.HcfCom;
+using StegoRevealer.StegoCore.AnalysisMethods.Fan;
 using Newtonsoft.Json;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
