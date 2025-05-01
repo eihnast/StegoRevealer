@@ -6,6 +6,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 
@@ -274,26 +275,32 @@ public class StegoAnalysisTests
         {
             {
                 "FAN_img1.png",
-                new FanResult { IsHidingDetected = true }
+                new FanResult { IsHidingDetected = true, MahalanobisDistance = 1.1922 }
             },
             {
                 "FAN_img2.png",
-                new FanResult { IsHidingDetected = true }
+                new FanResult { IsHidingDetected = true, MahalanobisDistance = 1.1229 }
             },
             {
                 "FAN_img3.png",
-                new FanResult { IsHidingDetected = false }
+                new FanResult { IsHidingDetected = false, MahalanobisDistance = 3.7128 }
             }
         };
 
-        Console.WriteLine("FAN with overall analysis results:");
+        Console.WriteLine("\nFAN analysis results:");
         foreach (var imgName in imgNames)
         {
             Console.WriteLine($"Image: {imgName}");
+            Console.WriteLine($"\tMahalanobisDistance: {fanResults[imgName].MahalanobisDistance}");
             Console.WriteLine($"\tIsHidingDetected: {fanResults[imgName].IsHidingDetected}");
         }
 
         foreach (var imgName in imgNames)
+        {
             Assert.AreEqual(fanExpectedResults[imgName].IsHidingDetected, fanResults[imgName].IsHidingDetected);
+            Assert.IsNotNull(fanResults[imgName].MahalanobisDistance);
+            if (fanResults[imgName].MahalanobisDistance is not null)
+                Assert.AreEqual(fanExpectedResults[imgName].MahalanobisDistance, Math.Round(fanResults[imgName].MahalanobisDistance!.Value, 4));
+        }
     }
 }

@@ -23,7 +23,12 @@ public class FanResult : LoggedResult, ILoggedAnalysisResult
     /// <summary>
     /// Обнаружено ли скрытие методом SPA
     /// </summary>
-    public bool IsHidingDetected { get; set; }
+    public bool IsHidingDetected { get; set; } = false;
+
+    /// <summary>
+    /// Вычисленное расстояние Махаланобиса
+    /// </summary>
+    public double? MahalanobisDistance { get; set; }
 
     /// <summary>
     /// Время, затраченное на анализ

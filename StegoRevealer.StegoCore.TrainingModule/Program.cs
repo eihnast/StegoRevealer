@@ -1,11 +1,11 @@
-﻿using CsvHelper.Configuration;
-using CsvHelper;
+﻿using System.Globalization;
 using Microsoft.ML;
-using StegoRevealer_StegoCore_TrainingModule;
-using System.Globalization;
+using Newtonsoft.Json;
+using CsvHelper;
+using CsvHelper.Configuration;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.AnalysisMethods.Fan;
-using Newtonsoft.Json;
+using StegoRevealer_StegoCore_TrainingModule;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
 
@@ -13,15 +13,33 @@ internal static class Program
 {
     static void Main(string[] args)
     {
-        string originPath = "e:\\Temp\\Steganalysis\\OriginImages\\";
-        string targetPath = "e:\\Temp\\Steganalysis\\Обучение метода FAN\\ClearImages\\";
+        // TrainFanCOMs();
+
+        Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
+        CheckMlModels();
+
+        Console.WriteLine("Проверка моделей на специальном тестовом датасете");
+        TestMlModels();
+
+        Console.WriteLine("Ручной подсчёт значений матрицы ошибок на тестовом датасете");
+        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting_ForComplexSa.csv");
+
+        Console.WriteLine("Проверка модели на тестовом датасете в 2 НЗБ");
+        TestMlModel2Lsb();
+        CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
+    }
+
+    private static void TrainFanCOMs()
+    {
+        string originPath = "clearImagesPath";
+        string targetPath = "choosenClearImagesPath";
 
         var filenames = Directory.GetFiles(originPath);
         var rnd = new Random();
         rnd.Shuffle(filenames);
 
         var resultFilenames = new List<string>();
-        foreach (var file in filenames[0..100])
+        foreach (var file in filenames[0..16000])
         {
             string fileName = Path.GetFileName(file);
             string newFileName = Path.Combine(targetPath, fileName);
@@ -36,24 +54,17 @@ internal static class Program
             var comList = FanAnalyser.ComputeCompositeCom(img);
             Console.WriteLine($"Calculated for {file}");
             comLists.Add(comList);
+            img.CloseHandler();
         }
 
         var serializedComLists = JsonConvert.SerializeObject(comLists);
         Console.WriteLine(serializedComLists);
 
-        //Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
-        //CheckMlModels();
-
-        //Console.WriteLine("Проверка моделей на специальном тестовом датасете");
-        //TestMlModels();
-
-        //Console.WriteLine("Ручной подсчёт значений матрицы ошибок на тестовом датасете");
-        //CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting_ForComplexSa.csv");
-
-        //Console.WriteLine("Проверка модели на тестовом датасете в 2 НЗБ");
-        //TestMlModel2Lsb();
-        //CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
+        var resFile = File.OpenWrite("comListData");
+        using (var writer = new StreamWriter(resFile))
+            writer.WriteLine(serializedComLists);
     }
+
 
     private static void TestMlModel2Lsb()
     {
