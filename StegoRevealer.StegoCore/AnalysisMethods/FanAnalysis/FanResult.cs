@@ -1,7 +1,7 @@
 ﻿using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.Logger;
 
-namespace StegoRevealer.StegoCore.AnalysisMethods.Fan;
+namespace StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 
 /// <summary>
 /// Результаты стегоанализа метода анализа аддитивного шума

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.StegoCore.AnalysisMethods.Fan;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer_StegoCore_TrainingModule;
 
 namespace StegoRevealer.StegoCore.TrainingModule;

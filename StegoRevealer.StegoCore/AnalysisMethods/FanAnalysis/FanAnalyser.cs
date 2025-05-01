@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Accord.Math;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Statistics;
 using MessagePack;
 using MessagePack.Resolvers;
-using Newtonsoft.Json;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 
-namespace StegoRevealer.StegoCore.AnalysisMethods.Fan;
+namespace StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 
 /// <summary>
 /// Стегоанализатор метода Коха-Жао
@@ -102,7 +99,7 @@ public class FanAnalyser
         double[][]? trainingComs = null;
 
         var assembly = Assembly.GetExecutingAssembly();
-        string resourceName = "StegoRevealer.StegoCore.AnalysisMethods.Fan.FanComsTrainingSet.msgpack";
+        string resourceName = "StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis.FanComsTrainingSet.msgpack";
 
         using (var stream = assembly.GetManifestResourceStream(resourceName))
         using (MemoryStream ms = new MemoryStream())

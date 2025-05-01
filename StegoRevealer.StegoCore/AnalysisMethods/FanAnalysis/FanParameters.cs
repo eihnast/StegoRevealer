@@ -1,6 +1,6 @@
 ﻿using StegoRevealer.StegoCore.ImageHandlerLib;
 
-namespace StegoRevealer.StegoCore.AnalysisMethods.Fan;
+namespace StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 
 /// <summary>
 /// Параметры стегоанализа метода анализа аддитивного шума
