@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
+             x:Class="StegoRevealer.UI.Views.ParametersWindowViews.FanMethodParametersView">
+
+	<Design.DataContext>
+		<vm:KzhaMethodParametersViewModel/>
+	</Design.DataContext>
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*,*" RowDefinitions="40,Auto,*"
+			  Margin="20 10 20 10">
+
+			<Label Name="TitleLabel" Content="Параметры стегоанализа метода Fast Additive Noise (HCF-COM)"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
+				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                   Background="{x:Null}" BorderBrush="{x:Null}"
+                   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
+						HorizontalAlignment="Center">
+				<DockPanel LastChildFill="True"
+						   Margin="0 15 0 0" HorizontalAlignment="Left">
+					<Label Content="Порог дистанции Махаланобиса центра масс (COM):"
+						   FontSize="12" Foreground="#FFE0E0E0"
+						   Padding="0" HorizontalContentAlignment="Left"
+                           Background="{x:Null}" BorderBrush="{x:Null}"
+						   VerticalAlignment="Center"/>
+					<TextBox Name="Threshold"
+							 Text="{Binding Path=ThresholdValue}"
+							 FontSize="12"
+							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 Padding="8 1 8 1" Margin="10 0 0 0"
+							 VerticalContentAlignment="Center"
+							 KeyDown="FilterForPositiveDouble_KeyDown"/>
+				</DockPanel>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0"
+						HorizontalAlignment="Center">
+			</StackPanel>
+		</Grid>
+	</Grid>
+
+</UserControl>

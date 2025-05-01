@@ -31,6 +31,7 @@ using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -43,6 +44,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
     private SpaParameters? _spaParameters = null;
+    private FanParameters? _fanParameters = null;
     private ZcaParameters? _zcaParameters = null;
     private KzhaParameters? _kzhaParameters = null;
     private ComplexSaMethodParameters? _complexSaParameters = null;
@@ -113,6 +115,20 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         }
     }
     private bool _methodSpaSelected = true;
+
+    /// <summary>
+    /// Выбран ли метод FAN
+    /// </summary>
+    public bool MethodFanSelected
+    {
+        get => _methodFanSelected;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _methodFanSelected, value);
+            ActiveMethods[AnalysisMethod.Fan] = value;
+        }
+    }
+    private bool _methodFanSelected = true;
 
     /// <summary>
     /// Выбран ли метод ZCA
@@ -304,6 +320,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         else
             _spaParameters.Image = CurrentImage;
 
+        if (_fanParameters is null)
+            _fanParameters = new FanParameters(CurrentImage);
+        else
+            _fanParameters.Image = CurrentImage;
+
         if (_zcaParameters is null)
             _zcaParameters = new ZcaParameters(CurrentImage);
         else
@@ -334,6 +355,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             AnalysisMethod.ChiSquare => _chiSquareParameters,
             AnalysisMethod.RegularSingular => _rsParameters,
             AnalysisMethod.Spa => _spaParameters,
+            AnalysisMethod.Fan => _fanParameters,
             AnalysisMethod.Zca => _zcaParameters,
             AnalysisMethod.KochZhaoAnalysis => _kzhaParameters,
             _ => throw new System.NotImplementedException()
@@ -380,6 +402,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                     var spaParamsDto = receivedParameters.Parameters as IParamsDto<SpaParameters>;
                     spaParamsDto?.FillParameters(ref _spaParameters);
                     Logger.LogInfo("Received SPA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as SpaParamsDto));
+                }
+                break;
+            case AnalysisMethod.Fan:
+                if (_fanParameters is not null)
+                {
+                    var fanParamsDto = receivedParameters.Parameters as IParamsDto<FanParameters>;
+                    fanParamsDto?.FillParameters(ref _fanParameters);
+                    Logger.LogInfo("Received FAN method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as FanParamsDto));
                 }
                 break;
             case AnalysisMethod.Zca:
@@ -500,6 +530,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             jointAnalysisParams.RsParameters = _rsParameters;
         if (ActiveMethods[AnalysisMethod.Spa] && _spaParameters is not null)  // SPA
             jointAnalysisParams.SpaParameters = _spaParameters;
+        if (ActiveMethods[AnalysisMethod.Fan] && _fanParameters is not null)  // FAN
+            jointAnalysisParams.FanParameters = _fanParameters;
         if (ActiveMethods[AnalysisMethod.Zca] && _zcaParameters is not null)  // ZCA
             jointAnalysisParams.ZcaParameters = _zcaParameters;
         if (ActiveMethods[AnalysisMethod.KochZhaoAnalysis] && _kzhaParameters is not null)  // KZHA
@@ -538,6 +570,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         var chiRes = results.ChiSquareResult;
         var rsRes = results.RsResult;
         var spaRes = results.SpaResult;
+        var fanRes = results.FanResult;
         var zcaRes = results.ZcaResult;
         var kzhaRes = results.KzhaResult;
         var complexRes = results.ComplexSaMethodResults;
@@ -548,11 +581,12 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawedImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
-        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, kzhaRes, zcaRes, statmRes, complexRes, results.ElapsedTime);
+        CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, fanRes, kzhaRes, zcaRes, statmRes, complexRes, results.ElapsedTime);
         Logger.LogInfo("Steganalysis operaions info:\n"
             + (chiRes is null ? string.Empty : "\tChi-Square Attack result = " + Common.Tools.GetFormattedJson(chiRes, true))
             + (rsRes is null ? string.Empty : "\n\tRegular-Singular result = " + Common.Tools.GetFormattedJson(rsRes, true))
             + (spaRes is null ? string.Empty : "\n\tSample Pair Analysis result = " + Common.Tools.GetFormattedJson(spaRes, true))
+            + (fanRes is null ? string.Empty : "\n\tFast Additive Noise (HCF-COM) result = " + Common.Tools.GetFormattedJson(fanRes, true))
             + (zcaRes is null ? string.Empty : "\n\tZhilkin Compression Analysis result = " + Common.Tools.GetFormattedJson(zcaRes, true))
             + (kzhaRes is null ? string.Empty : "\n\tConsecutive Koch-Zhao Attack result = " + Common.Tools.GetFormattedJson(kzhaRes, true))
             + (statmRes is null ? string.Empty : "\n\tQuality characteristics calculation result = " + Common.Tools.GetFormattedJson(statmRes, true))
@@ -561,6 +595,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             + (chiRes is null ? string.Empty : "\n\tLogs of Chi-Square Attack method:\n" + chiRes?.ToString(indent: 2))
             + (rsRes is null ? string.Empty : "\n\tLogs of Regular-Singular method:\n" + rsRes?.ToString(indent: 2))
             + (spaRes is null ? string.Empty : "\n\tLogs of Sample Pair Analysis method:\n" + spaRes?.ToString(indent: 2))
+            + (fanRes is null ? string.Empty : "\n\tLogs of Fast Additive Noise (HCF-COM) method:\n" + fanRes?.ToString(indent: 2))
             + (zcaRes is null ? string.Empty : "\n\tLogs of Zhilkin Compression Analysis method:\n" + zcaRes?.ToString(indent: 2))
             + (kzhaRes is null ? string.Empty : "\n\tLogs of Consecutive Koch-Zhao Attack method:\n" + kzhaRes?.ToString(indent: 2))
             + (statmRes is null ? string.Empty : "\n\tLogs of Quality characteristics calculation:\n" + statmRes?.ToString(indent: 2))

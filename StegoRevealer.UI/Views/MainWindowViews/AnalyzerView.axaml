@@ -70,7 +70,7 @@
 						<Grid Name="MethodsSelectGrid" IsEnabled="{Binding Path=HasLoadedImage}"
 							  Grid.Column="0" Grid.Row="1"
 							  Margin="20 10 20 10"
-							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30">
+							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30">
 
 							<CheckBox Name="IsComplexMethodChecked" Content="Метод комплексного стегоанализа"
 									  Classes="MethodTurnCheckbox"
@@ -100,21 +100,29 @@
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="3"
 									Click="MethodSpaParamsBtn_Click"/>
-							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия Жилкина"
+							<CheckBox Name="IsMethodFanChecked" Content="Метод Fast Additive Noise (HCF-COM)"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="4"
+									  IsChecked="{Binding Path=MethodFanSelected}"/>
+							<Button Name="MethodFanParamsBtn" Content="Параметры"
+									Classes="MethodParametersBtn"
+									Grid.Column="1" Grid.Row="4"
+									Click="MethodFanParamsBtn_Click"/>
+							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия Жилкина"
+									  Classes="MethodTurnCheckbox"
+									  Grid.Column="0" Grid.Row="5"
 									  IsChecked="{Binding Path=MethodZcaSelected}"/>
 							<Button Name="MethodZcaParamsBtn" Content="Параметры"
 									Classes="MethodParametersBtn"
-									Grid.Column="1" Grid.Row="4"
+									Grid.Column="1" Grid.Row="5"
 									Click="MethodZcaParamsBtn_Click"/>
 							<CheckBox Name="IsMethodKzaChecked" Content="Стегоанализ последовательного Коха-Жао"
 									  Classes="MethodTurnCheckbox"
-									  Grid.Column="0" Grid.Row="5"
+									  Grid.Column="0" Grid.Row="6"
 									  IsChecked="{Binding Path=MethodKzhaSelected}"/>
 							<Button Name="MethodKzaParamsBtn" Content="Параметры"
 									Classes="MethodParametersBtn"
-									Grid.Column="1" Grid.Row="5"
+									Grid.Column="1" Grid.Row="6"
 									Click="MethodKzaParamsBtn_Click"/>
 						</Grid>
 						<!-- / Сетка методов для выбора -->
@@ -181,13 +189,23 @@
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
-							
-							<DockPanel Name="ZcaFullnessBlock" DockPanel.Dock="Top"
+
+							<DockPanel Name="FanResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="ZcaFullnessDesc" Text="Встраивание по методу анализа сжатия Жилкина: "
+								<TextBlock Name="FanResultDesc" Text="Встраивание по методу анализа FAN (HCF-COM): "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="ZcaFullnessValue" Text="Анализ не проводился"
+								<TextBlock Name="FanResultValue" Text="Анализ не проводился"
+										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+										   DockPanel.Dock="Left"/>
+							</DockPanel>
+							
+							<DockPanel Name="ZcaResultBlock" DockPanel.Dock="Top"
+									   LastChildFill="True">
+								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия Жилкина: "
+										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
+										   HorizontalAlignment="Stretch"/>
+								<TextBlock Name="ZcaResultValue" Text="Анализ не проводился"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0" Padding="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>

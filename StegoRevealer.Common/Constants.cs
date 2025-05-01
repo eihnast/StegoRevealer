@@ -8,6 +8,7 @@ public static class Constants
         public static string ChiSqrValue => "Оценка заполненности по методу Хи-квадрат";
         public static string RsValue => "Оценка заполненности по методу RS";
         public static string SpaValue => "Оценка заполненности по методу SPA";
+        public static string FanValue => "Оценка заполненности по методу FAN (CHF-COM)";
         public static string ZcaValue => "Встраивание по методу анализа сжатия Жилкина";
         public static string KzhaDetection => "Обнаружен подозрительный интервал при стегоанализе Коха-Жао";
         public static string KzhaBitsNum => "Количество бит скрытой информации";

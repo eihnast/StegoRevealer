@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
@@ -15,6 +16,8 @@ public class JointAnalysisMethodsParameters
     public RsParameters? RsParameters { get; set; } = null;
 
     public SpaParameters? SpaParameters { get; set; } = null;
+
+    public FanParameters? FanParameters { get; set; } = null;
 
     public ZcaParameters? ZcaParameters { get; set; } = null;
 
