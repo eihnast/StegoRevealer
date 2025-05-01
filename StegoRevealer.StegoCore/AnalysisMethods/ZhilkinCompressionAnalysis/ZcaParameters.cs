@@ -10,10 +10,24 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 /// </summary>
 public class ZcaParameters
 {
+    private ImageHandler _image;
+
     /// <summary>
     /// Изображение
     /// </summary>
-    public ImageHandler Image { get; set; }
+    public ImageHandler Image
+    {
+        get => _image;
+        set
+        {
+            if (BlockWidth == _image.Width || BlockWidth > value.Width)
+                BlockWidth = value.Width;
+            if (BlockHeight == _image.Height || BlockHeight > value.Height)
+                BlockHeight = value.Height;
+            _image = value;
+            UpdateBlocks(false);
+        }
+    }
 
     /// <summary>
     /// Анализируемые каналы
@@ -83,7 +97,7 @@ public class ZcaParameters
 
     public ZcaParameters(ImageHandler image)
     {
-        Image = image;
+        _image = image;
         _blockWidth = 16;
         _blockHeight = 16;
 

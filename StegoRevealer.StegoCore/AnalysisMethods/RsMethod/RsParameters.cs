@@ -10,10 +10,24 @@ namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 /// </summary>
 public class RsParameters
 {
+    private ImageHandler _image;
+
     /// <summary>
     /// Изображение
     /// </summary>
-    public ImageHandler Image { get; set; }
+    public ImageHandler Image
+    {
+        get => _image;
+        set
+        {
+            if (BlockWidth == _image.Width || BlockWidth > value.Width)
+                BlockWidth = value.Width;
+            if (BlockHeight == _image.Height || BlockHeight > value.Height)
+                BlockHeight = value.Height;
+            _image = value;
+            UpdateBlocks(false);
+        }
+    }
 
     /// <summary>
     /// Анализируемые каналы
@@ -99,7 +113,7 @@ public class RsParameters
 
     public RsParameters(ImageHandler image)
     {
-        Image = image;
+        _image = image;
         _blockWidth = 4;  // По умолчанию анализ ведётся по 4 пикселя подряд в строке
         _blockHeight = 1;
 
