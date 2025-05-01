@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
@@ -25,6 +26,12 @@ public class SteganalysisResultsDto
     public bool IsMethodSpaExecuted { get; private set; } = false;
 
     public double SpaMessageRelativeVolume { get; private set; } = 0.0;
+
+    public bool IsMethodFanExecuted { get; private set; } = false;
+
+    public bool IsFanHidingDetected { get; private set; } = false;
+
+    public double? FanMahalanobisDistance { get; private set; } = 0.0;
 
     public bool IsMethodZcaExecuted { get; private set; } = false;
 
@@ -70,7 +77,7 @@ public class SteganalysisResultsDto
     /// Заполняет DTO результатами стегоанализа<br/>
     /// Если результат по методу передан равным null, будет считаться, что метод не исполнялся
     /// </summary>
-    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, SpaResult? spaRes = null, KzhaResult? kzhaRes = null,
+    public SteganalysisResultsDto(ChiSquareResult? chiRes = null, RsResult? rsRes = null, SpaResult? spaRes = null, FanResult? fanRes = null, KzhaResult? kzhaRes = null,
         ZcaResult? zcaRes = null, StatmResult? statmRes = null, ComplexSaMethodResult? complexSaResult = null, long? elapsedTime = null)
     {
         if (elapsedTime is not null)
@@ -92,6 +99,13 @@ public class SteganalysisResultsDto
         {
             IsMethodSpaExecuted = true;
             SpaMessageRelativeVolume = spaRes.MessageRelativeVolume;
+        }
+
+        if (fanRes is not null)
+        {
+            IsMethodFanExecuted = true;
+            IsFanHidingDetected = fanRes.IsHidingDetected;
+            FanMahalanobisDistance = fanRes.MahalanobisDistance;
         }
 
         if (zcaRes is not null)

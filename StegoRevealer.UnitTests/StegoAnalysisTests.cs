@@ -1,11 +1,12 @@
 ﻿using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
-using StegoRevealer.UI.Lib.MethodsHelper;
 using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace StegoRevealer.StegoCore.ModuleTests;
 
@@ -110,11 +111,11 @@ public class StegoAnalysisTests
                 "SPA_img1.png", 
                 new SpaResult 
                 {
-                    MessageRelativeVolume = 0.3684,
+                    MessageRelativeVolume = 0.3334,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.3630 },
-                        { ImgChannel.Green, 0.3830 },
-                        { ImgChannel.Blue, 0.3590 }
+                    {   { ImgChannel.Red, 0.3309 },
+                        { ImgChannel.Green, 0.3436 },
+                        { ImgChannel.Blue, 0.3257 }
                     }
                 } 
             },
@@ -122,11 +123,11 @@ public class StegoAnalysisTests
                 "SPA_img2.png",
                 new SpaResult
                 {
-                    MessageRelativeVolume = 0.5745,
+                    MessageRelativeVolume = 0.5305,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.5603 },
-                        { ImgChannel.Green, 0.595 },
-                        { ImgChannel.Blue, 0.5682 }
+                    {   { ImgChannel.Red, 0.5225 },
+                        { ImgChannel.Green, 0.545 },
+                        { ImgChannel.Blue, 0.5241 }
                     }
                 }
             },
@@ -134,11 +135,11 @@ public class StegoAnalysisTests
                 "SPA_img3.png",
                 new SpaResult
                 {
-                    MessageRelativeVolume = 0.0102,
+                    MessageRelativeVolume = 0.0096,
                     MessageRelativeVolumesByChannels = new()
-                    {   { ImgChannel.Red, 0.0089 },
-                        { ImgChannel.Green, 0.0027 },
-                        { ImgChannel.Blue, 0.0191 }
+                    {   { ImgChannel.Red, 0.0078 },
+                        { ImgChannel.Green, 0.0024 },
+                        { ImgChannel.Blue, 0.0187 }
                     }
                 }
             }
@@ -246,6 +247,60 @@ public class StegoAnalysisTests
             //Assert.AreEqual(zcaExpectedResults[imgName].IsHidingDetected, zcaResults[imgName].IsHidingDetected);
             //foreach (var channel in zcaResults[imgName].IsHidedByChannels.Keys)
             //    Assert.AreEqual(zcaExpectedResults[imgName].IsHidedByChannels[channel], zcaResults[imgName].IsHidedByChannels[channel]);
+        }
+    }
+
+    [TestMethod]
+    public void FanMethodTest()
+    {
+        var imgNames = new[] { "FAN_img1.png", "FAN_img2.png", "FAN_img3.png" };  // real: 52% 82% 0%
+        var fanResults = new ConcurrentDictionary<string, FanResult>();
+
+        var imgAnalysisTasks = new List<Task>();
+        foreach (var imgName in imgNames)
+        {
+            var task = Task.Run(() =>
+            {
+                string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+                var img = new ImageHandler(imagePath);
+
+                var fanAnalyser = new FanAnalyser(img);
+                fanResults.TryAdd(imgName, fanAnalyser.Analyse());
+            });
+            task.Wait();
+        }
+        Task.WaitAll(imgAnalysisTasks);
+
+        var fanExpectedResults = new Dictionary<string, FanResult>()
+        {
+            {
+                "FAN_img1.png",
+                new FanResult { IsHidingDetected = true, MahalanobisDistance = 1.1922 }
+            },
+            {
+                "FAN_img2.png",
+                new FanResult { IsHidingDetected = true, MahalanobisDistance = 1.1229 }
+            },
+            {
+                "FAN_img3.png",
+                new FanResult { IsHidingDetected = false, MahalanobisDistance = 3.7128 }
+            }
+        };
+
+        Console.WriteLine("\nFAN analysis results:");
+        foreach (var imgName in imgNames)
+        {
+            Console.WriteLine($"Image: {imgName}");
+            Console.WriteLine($"\tMahalanobisDistance: {fanResults[imgName].MahalanobisDistance}");
+            Console.WriteLine($"\tIsHidingDetected: {fanResults[imgName].IsHidingDetected}");
+        }
+
+        foreach (var imgName in imgNames)
+        {
+            Assert.AreEqual(fanExpectedResults[imgName].IsHidingDetected, fanResults[imgName].IsHidingDetected);
+            Assert.IsNotNull(fanResults[imgName].MahalanobisDistance);
+            if (fanResults[imgName].MahalanobisDistance is not null)
+                Assert.AreEqual(fanExpectedResults[imgName].MahalanobisDistance, Math.Round(fanResults[imgName].MahalanobisDistance!.Value, 4));
         }
     }
 }

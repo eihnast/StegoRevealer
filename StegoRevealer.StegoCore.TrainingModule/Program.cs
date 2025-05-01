@@ -1,8 +1,11 @@
-﻿using CsvHelper.Configuration;
-using CsvHelper;
+﻿using System.Globalization;
 using Microsoft.ML;
+using Newtonsoft.Json;
+using CsvHelper;
+using CsvHelper.Configuration;
+using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer_StegoCore_TrainingModule;
-using System.Globalization;
 
 namespace StegoRevealer.StegoCore.TrainingModule;
 
@@ -10,6 +13,8 @@ internal static class Program
 {
     static void Main(string[] args)
     {
+        // TrainFanCOMs();
+
         Console.WriteLine("Проверка моделей на датаестах обучения, для проверки взяты 20% последних данных");
         CheckMlModels();
 
@@ -23,6 +28,43 @@ internal static class Program
         TestMlModel2Lsb();
         CalcValuesForTestDataSet("TestData\\MlAnalysisDataTesting2Lsb_ForComplexSa.csv");
     }
+
+    private static void TrainFanCOMs()
+    {
+        string originPath = "clearImagesPath";
+        string targetPath = "choosenClearImagesPath";
+
+        var filenames = Directory.GetFiles(originPath);
+        var rnd = new Random();
+        rnd.Shuffle(filenames);
+
+        var resultFilenames = new List<string>();
+        foreach (var file in filenames[0..16000])
+        {
+            string fileName = Path.GetFileName(file);
+            string newFileName = Path.Combine(targetPath, fileName);
+            File.Copy(file, newFileName, true);
+            resultFilenames.Add(newFileName);
+        }
+
+        var comLists = new List<double[]>();
+        foreach (var file in resultFilenames)
+        {
+            var img = new ImageHandler(file);
+            var comList = FanAnalyser.ComputeCompositeCom(img);
+            Console.WriteLine($"Calculated for {file}");
+            comLists.Add(comList);
+            img.CloseHandler();
+        }
+
+        var serializedComLists = JsonConvert.SerializeObject(comLists);
+        Console.WriteLine(serializedComLists);
+
+        var resFile = File.OpenWrite("comListData");
+        using (var writer = new StreamWriter(resFile))
+            writer.WriteLine(serializedComLists);
+    }
+
 
     private static void TestMlModel2Lsb()
     {

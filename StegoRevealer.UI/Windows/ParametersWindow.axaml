@@ -32,6 +32,9 @@
 		<DataTemplate DataType="{x:Type viewmodels:ZcaMethodParametersViewModel}">
 			<views:ZcaMethodParametersView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:FanMethodParametersViewModel}">
+			<views:FanMethodParametersView/>
+		</DataTemplate>
 	</Window.DataTemplates>
 
 	<Design.DataContext>

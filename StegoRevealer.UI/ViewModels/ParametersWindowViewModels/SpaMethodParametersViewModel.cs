@@ -22,17 +22,17 @@ public class SpaMethodParametersViewModel : ParametersWindowViewModelBaseChild, 
         if (spaParameters is null)
             return;
 
-        SpaParamsDto rsParamsDto = new SpaParamsDto(spaParameters);
+        SpaParamsDto spaParamsDto = new SpaParamsDto(spaParameters);
 
-        UseDoubleDirection = rsParamsDto.UseDoubleDirection;
+        UseDoubleDirection = spaParamsDto.UseDoubleDirection;
 
-        ChannelRedChecked = rsParamsDto.Channels.Contains(ImgChannel.Red);
-        ChannelGreenChecked = rsParamsDto.Channels.Contains(ImgChannel.Green);
-        ChannelBlueChecked = rsParamsDto.Channels.Contains(ImgChannel.Blue);
+        ChannelRedChecked = spaParamsDto.Channels.Contains(ImgChannel.Red);
+        ChannelGreenChecked = spaParamsDto.Channels.Contains(ImgChannel.Green);
+        ChannelBlueChecked = spaParamsDto.Channels.Contains(ImgChannel.Blue);
 
-        DirectionHorizontal = rsParamsDto.Direction is PairDirection.Horizontal;
-        DirectionVertical = rsParamsDto.Direction is PairDirection.Vertical;
-        DirectionDiagonal = rsParamsDto.Direction is PairDirection.Diagonal;
+        DirectionHorizontal = spaParamsDto.Direction is PairDirection.Horizontal;
+        DirectionVertical = spaParamsDto.Direction is PairDirection.Vertical;
+        DirectionDiagonal = spaParamsDto.Direction is PairDirection.Diagonal;
     }
 
     public object CollectParameters()

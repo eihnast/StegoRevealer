@@ -8,6 +8,7 @@ public enum AnalysisMethod
     ChiSquare,
     RegularSingular,
     Spa,
+    Fan,
     KochZhaoAnalysis,
     Statm,
     Complex,

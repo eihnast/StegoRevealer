@@ -2,6 +2,7 @@
 using System.Linq;
 using ReactiveUI;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
@@ -59,6 +60,8 @@ public class ParametersWindowViewModel : ViewModelBase
                 SelectRsParameters(currentParameters);
             else if (currentParameters is SpaParameters)
                 SelectSpaParameters(currentParameters);
+            else if (currentParameters is FanParameters)
+                SelectFanParameters(currentParameters);
             else if (currentParameters is ZcaParameters)
                 SelectZcaParameters(currentParameters);
             else if (currentParameters is KzhaParameters)
@@ -124,6 +127,16 @@ public class ParametersWindowViewModel : ViewModelBase
     private void SelectSpaParameters(object parameters)
     {
         var paramsVm = GetOrCreateViewModel(typeof(SpaMethodParametersViewModel)) as SpaMethodParametersViewModel;
+        if (paramsVm is not null)
+        {
+            CurrentViewModel = paramsVm;
+            paramsVm.SetParameters(parameters);
+            FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+        }
+    }
+    private void SelectFanParameters(object parameters)
+    {
+        var paramsVm = GetOrCreateViewModel(typeof(FanMethodParametersViewModel)) as FanMethodParametersViewModel;
         if (paramsVm is not null)
         {
             CurrentViewModel = paramsVm;

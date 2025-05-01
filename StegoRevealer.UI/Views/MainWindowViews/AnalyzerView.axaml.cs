@@ -44,7 +44,8 @@ public partial class AnalyzerView : UserControl
         ChiFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue);
         RsFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.RsValue);
         SpaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.SpaValue);
-        ZcaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ZcaValue);
+        FanResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.FanValue);
+        ZcaResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ZcaValue);
         KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection);
         KzhaBitsNumDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum);
         KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes);
@@ -108,13 +109,24 @@ public partial class AnalyzerView : UserControl
             if (results.IsMethodSpaExecuted)
                 SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
 
+            // FAN
+            if (results.IsMethodFanExecuted)
+            {
+                string fanHidingDetectedText = results.IsFanHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+                if (results.FanMahalanobisDistance is not null)
+                    fanHidingDetectedText += $" ({Math.Round(results.FanMahalanobisDistance.Value, 3)})";
+                var fanHidingDetectedTextBrush = results.IsFanHidingDetected ? BadTextBrush : GoodTextBrush;
+                FanResultValue.Foreground = fanHidingDetectedTextBrush;
+                FanResultValue.Text = fanHidingDetectedText;
+            }
+
             // ZCA
             if (results.IsMethodZcaExecuted)
             {
                 string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
                 var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
-                ZcaFullnessValue.Foreground = zcaHidingDetectedTextBrush;
-                ZcaFullnessValue.Text = zcaHidingDetectedText;
+                ZcaResultValue.Foreground = zcaHidingDetectedTextBrush;
+                ZcaResultValue.Text = zcaHidingDetectedText;
             }
 
             // Kzha
@@ -200,6 +212,8 @@ public partial class AnalyzerView : UserControl
         await _vm.OpenParametersWindow(AnalysisMethod.RegularSingular);
     private async void MethodSpaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.Spa);
+    private async void MethodFanParamsBtn_Click(object sender, RoutedEventArgs e) =>
+        await _vm.OpenParametersWindow(AnalysisMethod.Fan);
     private async void MethodZcaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.Zca);
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
@@ -251,8 +265,10 @@ public partial class AnalyzerView : UserControl
         ChiFullnessValue.Text = MessageNotAnalyzed;
         RsFullnessValue.Text = MessageNotAnalyzed;
         SpaFullnessValue.Text = MessageNotAnalyzed;
-        ZcaFullnessValue.Foreground = DefaultTextBrush;
-        ZcaFullnessValue.Text = MessageNotAnalyzed;
+        ZcaResultValue.Foreground = DefaultTextBrush;
+        ZcaResultValue.Text = MessageNotAnalyzed;
+        FanResultValue.Foreground = DefaultTextBrush;
+        FanResultValue.Text = MessageNotAnalyzed;
         KzhaIntervalFoundedValue.Text = MessageNotAnalyzed;
         KzhaBitsNumValue.Text = MessageUnknown;
         KzhaSuspiciousIntervalValue.Text = MessageUnknown;

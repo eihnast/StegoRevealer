@@ -50,6 +50,9 @@
 		<Compile Update="Views\ParametersWindowViews\ChiSqrMethodParametersView.axaml.cs">
 			<DependentUpon>ChiSqrMethodParametersView.axaml</DependentUpon>
 		</Compile>
+		<Compile Update="Views\ParametersWindowViews\FanMethodParametersView.axaml.cs">
+		  <DependentUpon>FanMethodParametersView.axaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\ParametersWindowViews\KzhaMethodParametersView.axaml.cs">
 			<DependentUpon>KzhaMethodParametersView.axaml</DependentUpon>
 		</Compile>

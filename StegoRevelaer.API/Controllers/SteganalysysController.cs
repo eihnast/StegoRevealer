@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
+using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.DecisionModule;
@@ -46,6 +48,7 @@ public class SteganalysysController : ControllerBase
             jointAnalysisParams.ChiSquareParameters = new ChiSquareParameters(image);
             jointAnalysisParams.RsParameters = new RsParameters(image);
             jointAnalysisParams.SpaParameters = new SpaParameters(image);
+            jointAnalysisParams.FanParameters = new FanParameters(image);
             jointAnalysisParams.KzhaParameters = new KzhaParameters(image);
             jointAnalysisParams.StatmParameters = new StatmParameters(image);
             jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(image);
@@ -103,6 +106,102 @@ public class SteganalysysController : ControllerBase
             RsResult? result = null;
             var rs = new RsAnalyser(image);
             await Task.Run(() => result = rs.Analyse());
+
+            return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetErrorResult(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SpaAsync(string path)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(path))
+                return GetErrorResult("Передан пустой путь изображения");
+
+            var image = new ImageHandler(path);
+            if (image is null)
+                return GetErrorResult("Не удалось создать обработчик изображения");
+
+            SpaResult? result = null;
+            var spa = new SpaAnalyser(image);
+            await Task.Run(() => result = spa.Analyse());
+
+            return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetErrorResult(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> FanAsync(string path)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(path))
+                return GetErrorResult("Передан пустой путь изображения");
+
+            var image = new ImageHandler(path);
+            if (image is null)
+                return GetErrorResult("Не удалось создать обработчик изображения");
+
+            FanResult? result = null;
+            var fan = new FanAnalyser(image);
+            await Task.Run(() => result = fan.Analyse());
+
+            return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetErrorResult(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> KzhaAsync(string path)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(path))
+                return GetErrorResult("Передан пустой путь изображения");
+
+            var image = new ImageHandler(path);
+            if (image is null)
+                return GetErrorResult("Не удалось создать обработчик изображения");
+
+            KzhaResult? result = null;
+            var kzha = new KzhaAnalyser(image);
+            await Task.Run(() => result = kzha.Analyse());
+
+            return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetErrorResult(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ZcaAsync(string path)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(path))
+                return GetErrorResult("Передан пустой путь изображения");
+
+            var image = new ImageHandler(path);
+            if (image is null)
+                return GetErrorResult("Не удалось создать обработчик изображения");
+
+            ZcaResult? result = null;
+            var zca = new ZcaAnalyser(image);
+            await Task.Run(() => result = zca.Analyse());
 
             return new JsonResult(result);
         }

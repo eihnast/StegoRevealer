@@ -2,6 +2,7 @@
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
@@ -41,6 +42,11 @@ public static class JointAnalysisStarter
             var spaMethodAnalyzer = new SpaAnalyser(parameters.SpaParameters);
             methodTasks[AnalysisMethod.Spa] = Task.Run(() => spaMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
         }
+        if (parameters.FanParameters is not null)  // FAN
+        {
+            var fanMethodAnalyzer = new FanAnalyser(parameters.FanParameters);
+            methodTasks[AnalysisMethod.Fan] = Task.Run(() => fanMethodAnalyzer.Analyse() as ILoggedAnalysisResult);
+        }
         if (parameters.ZcaParameters is not null)  // ZCA
         {
             var zcaMethodAnalyzer = new ZcaAnalyser(parameters.ZcaParameters);
@@ -72,6 +78,7 @@ public static class JointAnalysisStarter
         var chiRes = results[AnalysisMethod.ChiSquare] as ChiSquareResult;
         var rsRes = results[AnalysisMethod.RegularSingular] as RsResult;
         var spaRes = results[AnalysisMethod.Spa] as SpaResult;
+        var fanRes = results[AnalysisMethod.Fan] as FanResult;
         var zcaRes = results[AnalysisMethod.Zca] as ZcaResult;
         var kzhaRes = results[AnalysisMethod.KochZhaoAnalysis] as KzhaResult;
         var statmRes = results[AnalysisMethod.Statm] as StatmResult;
@@ -82,6 +89,7 @@ public static class JointAnalysisStarter
             ChiSquareResult = chiRes,
             RsResult = rsRes,
             SpaResult = spaRes,
+            FanResult = fanRes,
             ZcaResult = zcaRes,
             KzhaResult = kzhaRes,
             StatmResult = statmRes,
