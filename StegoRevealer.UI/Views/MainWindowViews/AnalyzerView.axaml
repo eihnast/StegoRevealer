@@ -36,6 +36,24 @@
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
+				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
+					<TextBox Text="Ширина:"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageWidthValue" Text="{Binding Path=CurrentImageWidth}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Text="Высота:" Margin="20 0 0 0"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageHeightValue" Text="{Binding Path=CurrentImageHeight}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"/>
+				</DockPanel>
 			</StackPanel>
 			<!-- / Левая панель выбора изображения -->
 
