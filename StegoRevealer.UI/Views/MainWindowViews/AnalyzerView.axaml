@@ -30,7 +30,14 @@
 					<TextBox Name="ImagePathLabel" Text="{Binding Path=ImagePath}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
-							 HorizontalAlignment="Stretch"/>
+							 HorizontalAlignment="Stretch"
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</TextBox>
 				</DockPanel>
 				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
 					   Margin="10"
@@ -40,18 +47,22 @@
 					<TextBox Text="Ширина:"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
 					<TextBox Name="ImageWidthValue" Text="{Binding Path=CurrentImageWidth}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
-					<TextBox Text="Высота:" Margin="20 0 0 0"
+					<TextBox Text="Высота:" Margin="30 0 0 0"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
 					<TextBox Name="ImageHeightValue" Text="{Binding Path=CurrentImageHeight}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
 				</DockPanel>
 			</StackPanel>
