@@ -10,6 +10,8 @@
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
 		<Version>2025.5.21</Version>
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
