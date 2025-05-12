@@ -142,7 +142,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ActiveMethods[AnalysisMethod.Zca] = value;
         }
     }
-    private bool _methodZcaSelected = false;
+    private bool _methodZcaSelected = true;
 
     /// <summary>
     /// Выбран ли метод КЖА
@@ -311,7 +311,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     {
         foreach (AnalysisMethod method in Enum.GetValues(typeof(AnalysisMethod)))
             ActiveMethods.Add(method, true);
-        ActiveMethods[AnalysisMethod.Zca] = false;
+        //ActiveMethods[AnalysisMethod.Zca] = false;
 
         WindowResizeAction += SetImagePreviewSizes;
         if (_mainWindowViewModel.MainWindow is not null)
