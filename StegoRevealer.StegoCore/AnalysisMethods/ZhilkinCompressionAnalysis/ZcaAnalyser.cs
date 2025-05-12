@@ -154,12 +154,12 @@ public class ZcaAnalyser
             IntPtr ptr = bitmap.GetPixels();
             byte* pixels = (byte*)ptr;
 
-            for (int y = 0; y < height; y++)
+            for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
                 {
                     ScPixel px = Params.Image.ImgArray[y, x];
-                    int offset = (y * width + x) * 4; // 4 байта на пиксель (BGRA)
+                    int offset = ((y - blockCoords.Lt.Y) * width + (x - blockCoords.Lt.X)) * 4; // 4 байта на пиксель (BGRA)
 
                     pixels[offset + 0] = px.Blue;
                     pixels[offset + 1] = px.Green;
