@@ -104,4 +104,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup Label="DecisionModel_ComplexSa_WithSpaFan2">
+    <None Include="DecisionModel_ComplexSa_WithSpaFan2.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
