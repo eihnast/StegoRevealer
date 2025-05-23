@@ -554,6 +554,28 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
         }
 
+        JointAnalysisResult? result = null;
+        try
+        {
+            result = await AnalysisOperationExecute();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Fatal error while executing analysis joint analysis operation: [{ex.GetType().Name}] {ex.Message}");
+        }
+
+        // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
+        var chiRes = result?.ChiSquareResult;
+        if (chiRes is not null)
+            DrawCurrentImage();
+
+        ProcessAnalysisResults(result);
+
+        Logger.LogInfo("Steganalysis operation completed");
+    }
+
+    private async Task<JointAnalysisResult> AnalysisOperationExecute()
+    {
         var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
         // Создание задач
@@ -577,15 +599,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         Logger.LogInfo("Starting steganalysis algorithms");
 
         var result = await JointAnalysisStarter.Start(jointAnalysisParams);
-
-        // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
-        var chiRes = result.ChiSquareResult;
-        if (chiRes is not null)
-            DrawCurrentImage();
-
-        ProcessAnalysisResults(result);
-
-        Logger.LogInfo("Steganalysis operation completed");
+        return result;
     }
 
     /// <summary>
