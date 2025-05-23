@@ -23,6 +23,8 @@ public class ZcaAnalyser
     /// </summary>
     private Action<string>? _writeToLog = null;
 
+    private bool _verboseLog = false;
+
     public ZcaAnalyser(ImageHandler image)
     {
         Params = new ZcaParameters(image);
@@ -40,16 +42,36 @@ public class ZcaAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public ZcaResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new ZcaResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
 
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result);
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodExecuted = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public void AnalyseInner(ZcaResult result)
+    {
         if (Params.UseOverallCompression)
         {
-            var analyzeTask = Task.Run(() => SingleAnalyze(null, verboseLog));
+            var analyzeTask = Task.Run(() => SingleAnalyze(null, _verboseLog));
             var isHided = analyzeTask.Result;
             result.IsHidingDetected = isHided;
         }
@@ -60,11 +82,11 @@ public class ZcaAnalyser
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    var isHided = SingleAnalyze(channel, verboseLog);
+                    var isHided = SingleAnalyze(channel, _verboseLog);
                     lock (_lock)
                     {
                         result.IsHidedByChannels[channel] = isHided;
-                        _writeToLog($"Is hided in channel '{channel}': {isHided}");
+                        _writeToLog?.Invoke($"Is hided in channel '{channel}': {isHided}");
                     }
                 }));
             }
@@ -73,13 +95,7 @@ public class ZcaAnalyser
             result.IsHidingDetected = result.IsHidedByChannels.Values.Count(v => v is true) > Params.Channels.Count / 2;
         }
 
-        _writeToLog($"Hiding is {(result.IsHidingDetected ? "" : "not")} detected");
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
+        _writeToLog?.Invoke($"Hiding is {(result.IsHidingDetected ? "" : "not")} detected");
     }
 
     public bool SingleAnalyze(ImgChannel? channel = null, bool verboseLog = false)
@@ -147,25 +163,14 @@ public class ZcaAnalyser
         int height = blockCoords.Rd.Y - blockCoords.Lt.Y + 1;
         int width = blockCoords.Rd.X - blockCoords.Lt.X + 1;
 
-        var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var bitmap = new SKBitmap(width, height);
 
-        unsafe
+        for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
         {
-            IntPtr ptr = bitmap.GetPixels();
-            byte* pixels = (byte*)ptr;
-
-            for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
+            for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
             {
-                for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
-                {
-                    ScPixel px = Params.Image.ImgArray[y, x];
-                    int offset = ((y - blockCoords.Lt.Y) * width + (x - blockCoords.Lt.X)) * 4; // 4 байта на пиксель (BGRA)
-
-                    pixels[offset + 0] = px.Blue;
-                    pixels[offset + 1] = px.Green;
-                    pixels[offset + 2] = px.Red;
-                    pixels[offset + 3] = px.Alpha;
-                }
+                var pixel = Params.Image.ImgArray[y, x];
+                bitmap.SetPixel(x - blockCoords.Lt.X, y - blockCoords.Lt.Y, MapToSKColor(pixel, channel));
             }
         }
 
@@ -178,25 +183,14 @@ public class ZcaAnalyser
         int height = block.GetLength(0);
         int width = block.GetLength(1);
 
-        var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var bitmap = new SKBitmap(width, height);
 
-        unsafe
+        for (int y = 0; y < height; y++)
         {
-            IntPtr ptr = bitmap.GetPixels();
-            byte* pixels = (byte*)ptr;
-
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    ScPixel px = block[y, x];
-                    int offset = (y * width + x) * 4; // 4 байта на пиксель (BGRA)
-
-                    pixels[offset + 0] = px.Blue;
-                    pixels[offset + 1] = px.Green;
-                    pixels[offset + 2] = px.Red;
-                    pixels[offset + 3] = px.Alpha;
-                }
+                var pixel = block[y, x];
+                bitmap.SetPixel(x, y, MapToSKColor(pixel, channel));
             }
         }
 

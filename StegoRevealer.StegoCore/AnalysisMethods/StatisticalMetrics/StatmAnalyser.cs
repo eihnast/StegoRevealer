@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Calculators;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
@@ -21,6 +22,8 @@ public class StatmAnalyser
     /// </summary>
     private Action<string> _writeToLog = (string str) => new string(str);
 
+    private bool _verboseLog = false;
+
 
     public StatmAnalyser(ImageHandler image)
     {
@@ -42,9 +45,28 @@ public class StatmAnalyser
         var timer = Stopwatch.StartNew();
 
         var result = new StatmResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started quality characteristics calculation for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result);
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing quality characteristics calculation: [{ex.GetType().Name}] {ex.Message}");
+            result.MethodExecuted = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Quality characteristics calculation ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public void AnalyseInner(StatmResult result)
+    {
         var noiseCalcTask = new Task<double>(() => new NoiseCalculator(Params).CalcNoiseLevel(NoiseCalculator.NoiseCalculationMethod.Method2));  // Шум
         var sharpnessCalcTask = new Task<double>(() => new SharpnessCalculator(Params).CalcSharpness());  // Резкость
         var blurCalcTask = new Task<double>(() => new BlurCalculator(Params).CalcBlur());  // Размытость
@@ -68,11 +90,5 @@ public class StatmAnalyser
         result.BlurValue = blurCalcTask.Result;
         result.ContrastValue = contrastCalcTask.Result;
         result.EntropyValues = entropyCalcTask.Result;
-
-        timer.Stop();
-        _writeToLog($"Quality characteristics calculation ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
     }
 }

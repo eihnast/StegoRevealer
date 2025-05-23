@@ -19,6 +19,8 @@ public class SpaAnalyser
     /// </summary>
     private Action<string>? _writeToLog = null;
 
+    private bool _verboseLog = false;
+
     public SpaAnalyser(ImageHandler image)
     {
         Params = new SpaParameters(image);
@@ -36,13 +38,33 @@ public class SpaAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public SpaResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new SpaResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
 
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result);
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodExecuted = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public void AnalyseInner(SpaResult result)
+    {
         var analysisTasks = new List<Task>();
         foreach (var channel in Params.Channels)
         {
@@ -65,20 +87,14 @@ public class SpaAnalyser
                 lock (_lock)
                 {
                     result.MessageRelativeVolumesByChannels[channel] = volume;
-                    _writeToLog($"Relative message volume at channel '{channel}': {volume}");
+                    _writeToLog?.Invoke($"Relative message volume at channel '{channel}': {volume}");
                 }
             }));
         }
         Task.WaitAll(analysisTasks);
 
         result.MessageRelativeVolume = result.MessageRelativeVolumesByChannels.Values.Average();
-        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
+        _writeToLog?.Invoke($"Average relative message volume = {result.MessageRelativeVolume}");
     }
 
     // Классическая версия метода

@@ -55,7 +55,7 @@ public class LsbHider : IHider
         LsbParameters? lsbParams = parameters as LsbParameters;
         if (lsbParams is null)  // Не удалось привести к LsbParameters
         {
-            result.Error("lsbParams является null");
+            result.LogError("lsbParams является null");
             return result;
         }
 
@@ -72,7 +72,7 @@ public class LsbHider : IHider
     private LsbHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         LsbHideResult result = new();  // Результаты скрытия
-        result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
+        result.LogInfo($"Запущен процесс скрытия для {Params.Image.ImgName}");
 
         // Начальные проверки
         if (data is not null)
@@ -80,10 +80,10 @@ public class LsbHider : IHider
 
         if (Params.Data.Length == 0)
         {
-            result.Error("Отсутствуют данные для скрытия");
+            result.LogError("Отсутствуют данные для скрытия");
             return result;
         }
-        result.Log($"Объём скрываемых данных: {Params.Data.Length} символов");
+        result.LogInfo($"Объём скрываемых данных: {Params.Data.Length} символов");
 
         // Доопределение параметров скрытия
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
@@ -91,7 +91,7 @@ public class LsbHider : IHider
         int hidingVolume = GetHidingVolume(containerVolume, Params.DataBitLength);  // Реальный объём скрытия
         double relativeHidingVolume = (double)hidingVolume / containerVolume;  // Доля заполнения объёма контейнера
         int usingColorBytesNum = Math.Min(Params.CalcRealContainerVolume(), Params.GetNeededColorBytesNum());  // Количество цветовых байт, нужных для скрытия
-        result.Log($"Установлены параметры:\n\t" +
+        result.LogInfo($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tcontainerVolume = {containerVolume}\n\t" +
             $"hidingVolume = {hidingVolume}\n\trelativeHidingVolume = {relativeHidingVolume}\n\t" +
             $"usingColorBytesNum = {usingColorBytesNum}");
@@ -101,7 +101,7 @@ public class LsbHider : IHider
             = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
         // Осуществление скрытия
-        result.Log("Запущена процедура скрытия");
+        result.LogInfo("Запущена процедура скрытия");
 
         var colorBytesIndexes = new List<ScPointCoords>();
         if (isRandomHiding)
@@ -140,7 +140,7 @@ public class LsbHider : IHider
         foreach (var basketTask in basketsTasks)
             basketTask.Wait();
 
-        result.Log("Завершён цикл скрытия");
+        result.LogInfo("Завершён цикл скрытия");
 
         // Сохранение изображения со внедрённой информацией
         if (string.IsNullOrEmpty(newImagePath))
@@ -153,9 +153,9 @@ public class LsbHider : IHider
             result.Path = Params.Image.Save(newImagePath);
         }
 
-        result.Log($"Изображение сохранено как {result.Path}");
+        result.LogInfo($"Изображение сохранено как {result.Path}");
 
-        result.Log($"Процесс скрытия завершён");
+        result.LogInfo($"Процесс скрытия завершён");
         return result;
     }
 

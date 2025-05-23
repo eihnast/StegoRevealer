@@ -53,7 +53,7 @@ public class KochZhaoHider : IHider
         KochZhaoParameters? kzParams = parameters as KochZhaoParameters;
         if (kzParams is null)  // Не удалось привести к KochZhaoParameters
         {
-            result.Error("kzParams является null");
+            result.LogError("kzParams является null");
             return result;
         }
 
@@ -70,7 +70,7 @@ public class KochZhaoHider : IHider
     private KochZhaoHideResult HideAlgorithm(string? data, string? newImagePath)
     { 
         KochZhaoHideResult result = new();
-        result.Log($"Запущен процесс скрытия для {Params.Image.ImgName}");
+        result.LogInfo($"Запущен процесс скрытия для {Params.Image.ImgName}");
 
         // Начальные проверки
         if (data is not null)
@@ -78,10 +78,10 @@ public class KochZhaoHider : IHider
 
         if (Params.Data.Length == 0)
         {
-            result.Error("Отсутствуют данные для скрытия");
+            result.LogError("Отсутствуют данные для скрытия");
             return result;
         }
-        result.Log($"Объём скрываемых данных: {Params.Data.Length} символов");
+        result.LogInfo($"Объём скрываемых данных: {Params.Data.Length} символов");
 
         // Доопределение параметров скрытия
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
@@ -92,16 +92,16 @@ public class KochZhaoHider : IHider
         int blockSize = Params.BlockSize;  // Используемый размер блока
 
         // Логирование
-        result.Log($"Установлены параметры: isRandomHiding = {isRandomHiding}, containerVolume = {containerVolume}, hidingVolume = {hidingVolume}, " +
+        result.LogInfo($"Установлены параметры: isRandomHiding = {isRandomHiding}, containerVolume = {containerVolume}, hidingVolume = {hidingVolume}, " +
             $"relativeHidingVolume = {relativeHidingVolume}, usingBlocksNum = {usingBlocksNum}, blockSize = {blockSize}");
-        result.Log($"Для скрытия используется порог = {Params.Threshold}");
+        result.LogInfo($"Для скрытия используется порог = {Params.Threshold}");
 
         // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
         Func<ImageBlocks, BlocksTraverseOptions, int?, IEnumerable<ScPointCoords>> iterator
             = isRandomHiding ? BlocksTraverseHelper.GetForRandomAccessOneChannelBlocksIndexes : BlocksTraverseHelper.GetForLinearAccessOneChannelBlocksIndexes;
 
         // Осуществление скрытия
-        result.Log("Запущен цикл скрытия");
+        result.LogInfo("Запущен цикл скрытия");
         int k = 0;  // Индекс бита данных
         ScPointCoords? firstblockIndex = null;
         ScPointCoords? lastblockIndex = null;
@@ -152,13 +152,13 @@ public class KochZhaoHider : IHider
         foreach (var basketTask in basketTasks)
             basketTask.Wait();
         
-        result.Log("Завершён цикл скрытия");
+        result.LogInfo("Завершён цикл скрытия");
 
         // Логирование
         if (!isRandomHiding && firstblockIndex is not null && lastblockIndex is not null)
-            result.Log($"Скрытие осуществлено последовательно в блоки: с ({firstblockIndex.Value.Y}, {firstblockIndex.Value.X}, {firstblockIndex.Value.ChannelId}) по " +
+            result.LogInfo($"Скрытие осуществлено последовательно в блоки: с ({firstblockIndex.Value.Y}, {firstblockIndex.Value.X}, {firstblockIndex.Value.ChannelId}) по " +
                 $"({lastblockIndex.Value.Y}, {lastblockIndex.Value.X}, {lastblockIndex.Value.ChannelId})");
-        result.Log($"В ходе скрытия должно быть записано {Params.DataBitLength} бит, реально записано {k} бит " +
+        result.LogInfo($"В ходе скрытия должно быть записано {Params.DataBitLength} бит, реально записано {k} бит " +
             $"({(k == Params.DataBitLength ? "совпадает" : "не совпадает")})");
 
         // Сохранение изображения со внедрённой информацией
@@ -171,9 +171,9 @@ public class KochZhaoHider : IHider
         {
             result.Path = Params.Image.Save(newImagePath);
         }
-        result.Log($"Изображение сохранено как {result.Path}");
+        result.LogInfo($"Изображение сохранено как {result.Path}");
 
-        result.Log($"Процесс скрытия завершён");
+        result.LogInfo($"Процесс скрытия завершён");
         return result;
     }
 

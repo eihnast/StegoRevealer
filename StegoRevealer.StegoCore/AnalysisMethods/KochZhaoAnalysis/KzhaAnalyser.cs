@@ -26,6 +26,8 @@ public class KzhaAnalyser
     /// </summary>
     private Action<string> _writeToLog = (string str) => new string(str);
 
+    private bool _verboseLog = false;
+
 
     public KzhaAnalyser(ImageHandler image)
     {
@@ -44,14 +46,34 @@ public class KzhaAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public KzhaResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new KzhaResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result);
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodExecuted = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public void AnalyseInner(KzhaResult result)
+    {
         // Стегоанализ
-        result = InnerAnalyse(result);
+        result = ExecuteSteganalysisAlgorithm(result);
 
         // Попытка автоматического извлечения
         if (Params.TryToExtract && result.MessageBitsVolume > 0 && result.Threshold >= Params.Threshold)
@@ -75,18 +97,12 @@ public class KzhaAnalyser
 
             result.ExtractedData = extractedData;  // Если включена попытка извлечения, будет string.Empty при неудаче
         }
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
     }
 
     /// <summary>
     /// Основная логика метода стегоанализа
     /// </summary>
-    private KzhaResult InnerAnalyse(KzhaResult result)
+    private KzhaResult ExecuteSteganalysisAlgorithm(KzhaResult result)
     {
         var cSequences = new Dictionary<ScIndexPair, List<double>>();
         foreach (var coeff in Params.AnalysisCoeffs)
