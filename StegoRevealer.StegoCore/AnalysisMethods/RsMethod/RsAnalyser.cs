@@ -4,6 +4,7 @@ using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
@@ -55,7 +56,7 @@ public class RsAnalyser
 
         try
         {
-            AnalyseInner(result);
+            AnalyseInner(result).Wait();
         }
         catch (Exception ex)
         {
@@ -70,7 +71,7 @@ public class RsAnalyser
         return result;
     }
 
-    public void AnalyseInner(RsResult result)
+    public async Task AnalyseInner(RsResult result)
     {
         double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
 
@@ -82,11 +83,14 @@ public class RsAnalyser
             tasksByChannel.Add(channel, (unturnedCalcTask, invertedCalsTask));
         }
 
-        foreach (var calcTasks in tasksByChannel.Values)
-        {
-            calcTasks.UnturnedTask.Wait();
-            calcTasks.InvertedTask.Wait();
-        }
+        var tasks = tasksByChannel.SelectMany(t => new[] { t.Value.UnturnedTask, t.Value.InvertedTask });
+        await Task.WhenAll(tasks);
+
+        //foreach (var calcTasks in tasksByChannel.Values)
+        //{
+        //    calcTasks.UnturnedTask.Wait();
+        //    calcTasks.InvertedTask.Wait();
+        //}
 
         foreach (var channel in Params.Channels)
         {

@@ -52,7 +52,7 @@ public class ZcaAnalyser
 
         try
         {
-            AnalyseInner(result);
+            AnalyseInner(result).Wait();
         }
         catch (Exception ex)
         {
@@ -67,7 +67,7 @@ public class ZcaAnalyser
         return result;
     }
 
-    public void AnalyseInner(ZcaResult result)
+    public async Task AnalyseInner(ZcaResult result)
     {
         if (Params.UseOverallCompression)
         {
@@ -90,7 +90,7 @@ public class ZcaAnalyser
                     }
                 }));
             }
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             result.IsHidingDetected = result.IsHidedByChannels.Values.Count(v => v is true) > Params.Channels.Count / 2;
         }
@@ -108,7 +108,7 @@ public class ZcaAnalyser
         int blockNum = 0;  // d
         int ltThresholdBlocks = 0;
 
-        Parallel.ForEach(iterator, block =>
+        Parallel.ForEach(iterator, async block =>
         {
             var blockCoords = Params.ImgBlocks[block.Y, block.X];
 
@@ -132,7 +132,7 @@ public class ZcaAnalyser
                     Task.Run(() => fX = GetCompressionRatio(blockBitmap)),
                     Task.Run(() => fY = GetCompressionRatio(shuffledBlockBitmap))
                 };
-                Task.WaitAll(compressionRatioTasks);
+                await Task.WhenAll(compressionRatioTasks);
             }
             else
                 _writeToLog?.Invoke($"In channel '{channel}' for block {blockNum} blockBitmap or shuffledBlockBitmap is null, deltaSum will be 0");

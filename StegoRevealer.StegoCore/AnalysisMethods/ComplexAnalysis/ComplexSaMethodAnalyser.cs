@@ -51,7 +51,7 @@ public class ComplexSaMethodAnalyser
 
         try
         {
-            AnalyseInner(result);
+            AnalyseInner(result).Wait();
         }
         catch (Exception ex)
         {
@@ -65,7 +65,7 @@ public class ComplexSaMethodAnalyser
         return ProcessResults(result, timer);
     }
 
-    public void AnalyseInner(ComplexSaMethodResult result)
+    public async Task AnalyseInner(ComplexSaMethodResult result)
     {
         // Запуск комплексного стегоанализа
         var methodTasks = new List<Task>();
@@ -114,7 +114,7 @@ public class ComplexSaMethodAnalyser
         }));
 
         // Ожидание
-        Task.WaitAll(methodTasks);
+        await Task.WhenAll(methodTasks);
     }
 
     private ComplexSaMethodResult ProcessResults(ComplexSaMethodResult complexSaMethodResults, Stopwatch timer)

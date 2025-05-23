@@ -48,7 +48,7 @@ public class SpaAnalyser
 
         try
         {
-            AnalyseInner(result);
+            AnalyseInner(result).Wait();
         }
         catch (Exception ex)
         {
@@ -63,22 +63,22 @@ public class SpaAnalyser
         return result;
     }
 
-    public void AnalyseInner(SpaResult result)
+    public async Task AnalyseInner(SpaResult result)
     {
         var analysisTasks = new List<Task>();
         foreach (var channel in Params.Channels)
         {
-            analysisTasks.Add(Task.Run(() =>
+            analysisTasks.Add(Task.Run(async () =>
             {
                 double volume = 0.0;
 
                 switch (Params.MethodVersion)
                 {
                     case SpaVersion.Original:
-                        volume = AnalyzeInOneChannel((int)channel);
+                        volume = await AnalyzeInOneChannel((int)channel);
                         break;
                     case SpaVersion.StegExpose:
-                        volume = AnalyzeInOneChannelStegExpose((int)channel);
+                        volume = await AnalyzeInOneChannelStegExpose((int)channel);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Params.MethodVersion), "Unknown SPA version");
@@ -91,14 +91,14 @@ public class SpaAnalyser
                 }
             }));
         }
-        Task.WaitAll(analysisTasks);
+        await Task.WhenAll(analysisTasks);
 
         result.MessageRelativeVolume = result.MessageRelativeVolumesByChannels.Values.Average();
         _writeToLog?.Invoke($"Average relative message volume = {result.MessageRelativeVolume}");
     }
 
     // Классическая версия метода
-    private double AnalyzeInOneChannel(int channgelId)
+    private async Task<double> AnalyzeInOneChannel(int channgelId)
     {
         double P = 0.0, Q = 0.0;
         if (!Params.UseDoubleDirection)
@@ -111,7 +111,7 @@ public class SpaAnalyser
                 Task.Run(() => (horizP, horizQ) = CalcPairsValues(channgelId, PairDirection.Horizontal)),
                 Task.Run(() => (vertP, vertQ) = CalcPairsValues(channgelId, PairDirection.Vertical))
             };
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             P = horizP + vertP;
             Q = horizQ + vertQ;
@@ -178,7 +178,7 @@ public class SpaAnalyser
     }
 
     // Реализация StegExpose-версии
-    private double AnalyzeInOneChannelStegExpose(int channgelId)
+    private async Task<double> AnalyzeInOneChannelStegExpose(int channgelId)
     {
         int[] histogram = new int[256];
         var imar = Params.Image.ImgArray;
@@ -214,7 +214,7 @@ public class SpaAnalyser
                 })
             )
         ];
-        Task.WaitAll(tasks);
+        await Task.WhenAll(tasks);
 
         double a = 0.5 * (W + Z);
         double b = 2 * X - P;
