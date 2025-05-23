@@ -56,7 +56,7 @@ public class ChiSquareAnalyser
 
         try
         {
-            AnalyseInner(result);
+            AnalyseInner(result).Wait();
         }
         catch (Exception ex)
         {
@@ -71,7 +71,7 @@ public class ChiSquareAnalyser
         return result;
     }
 
-    public void AnalyseInner(ChiSquareResult result)
+    public async Task AnalyseInner(ChiSquareResult result)
     {
         _hidingDegrees = Enumerable.Repeat((byte)0, Params.ImgBlocks.BlocksInRow * Params.ImgBlocks.BlocksInColumn).ToList();
 
@@ -83,21 +83,17 @@ public class ChiSquareAnalyser
         }
         else
         {
-            var tasks = new List<Task>();
-            foreach (var channel in Params.Channels)
+            var tasks = Params.Channels.Select(async channel =>
             {
-                tasks.Add(Task.Run(() =>
+                var channelFullness = RealizeChiSquareAttack(channel, _verboseLog);
+                lock (_lock)
                 {
-                    var channelFullness = RealizeChiSquareAttack(channel, _verboseLog);
-                    lock (_lock)
-                    {
-                        result.MessageRelativeVolumesByChannels![channel] = channelFullness;
-                        _writeToLog($"Relative message volume at channel '{channel}': {channelFullness}");
-                    }
-                }));
-            }
+                    result.MessageRelativeVolumesByChannels![channel] = channelFullness;
+                    _writeToLog?.Invoke($"Relative message volume at channel '{channel}': {channelFullness}");
+                }
+            });
 
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
             fullness = result.MessageRelativeVolumesByChannels!.Values.Average();
         }
 

@@ -20,7 +20,8 @@ public static class Tools
             {
                 new JsonStringEnumConverter(),
                 new LogMessageListConverter()
-            }
+            },
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals  // Включает вывод NaN, Infinity
         });
     }
 
