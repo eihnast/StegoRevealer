@@ -55,7 +55,7 @@ public class StatmAnalyser
         catch (Exception ex)
         {
             result.LogError($"Fatal error while executing quality characteristics calculation: [{ex.GetType().Name}] {ex.Message}");
-            result.MethodExecuted = false;
+            result.MethodSuccessful = false;
         }
 
         timer.Stop();

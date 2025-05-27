@@ -196,7 +196,7 @@
 										 HorizontalAlignment="Stretch"/>
 								<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left"/>
+										   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
 							</DockPanel>
 							
 							<DockPanel Name="RsFullnessBlock" DockPanel.Dock="Top"

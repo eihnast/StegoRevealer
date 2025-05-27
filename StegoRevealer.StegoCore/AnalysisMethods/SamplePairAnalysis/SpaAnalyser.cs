@@ -53,7 +53,7 @@ public class SpaAnalyser
         catch (Exception ex)
         {
             result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
-            result.MethodExecuted = false;
+            result.MethodSuccessful = false;
         }
 
         timer.Stop();

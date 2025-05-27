@@ -38,5 +38,6 @@ public static class Constants
         public static string No => "нет";
         public static string Detected => "обнаружено";
         public static string NotDetected => "не обнаружено";
+        public static string WasFatalError => "произошла ошибка";
     }
 }

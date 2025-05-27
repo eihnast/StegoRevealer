@@ -54,7 +54,7 @@ public abstract class LoggedResult
     /// <summary>
     /// Считать ли метод выполненным (независимо от наличия ошибок в логе)
     /// </summary>
-    public bool MethodExecuted { get; set; } = true;
+    public bool MethodSuccessful { get; set; } = true;
 
 
     /// <summary>

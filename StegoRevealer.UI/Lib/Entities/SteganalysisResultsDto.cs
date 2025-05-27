@@ -7,6 +7,9 @@ using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
+using StegoRevealer.StegoCore.Logger;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StegoRevealer.UI.Lib.Entities;
 
@@ -15,61 +18,59 @@ namespace StegoRevealer.UI.Lib.Entities;
 /// </summary>
 public class SteganalysisResultsDto
 {
-    public bool IsMethodChiSqrExecuted { get; private set; } = false;
-
+    // CSA
+    public SaMethodExecutionState MethodChiSqrState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public double ChiSqrMessageRelativeVolume { get; private set; } = 0.0;
+    public List<string> ChiSqrErrors { get; private set; } = new();
 
-    public bool IsMethodRsExecuted { get; private set; } = false;
-
+    // RS
+    public SaMethodExecutionState MethodRsState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public double RsMessageRelativeVolume { get; private set; } = 0.0;
+    public List<string> RsErrors { get; private set; } = new();
 
-    public bool IsMethodSpaExecuted { get; private set; } = false;
-
+    // SPA
+    public SaMethodExecutionState MethodSpaState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public double SpaMessageRelativeVolume { get; private set; } = 0.0;
+    public List<string> SpaErrors { get; private set; } = new();
 
-    public bool IsMethodFanExecuted { get; private set; } = false;
-
+    // FAN (HCF-COM)
+    public SaMethodExecutionState MethodFanState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public bool IsFanHidingDetected { get; private set; } = false;
-
     public double? FanMahalanobisDistance { get; private set; } = 0.0;
+    public List<string> FanErrors { get; private set; } = new();
 
-    public bool IsMethodZcaExecuted { get; private set; } = false;
-
+    // ZCA
+    public SaMethodExecutionState MethodZcaState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public bool IsZcaHidingDetected { get; private set; } = false;
+    public List<string> ZcaErrors { get; private set; } = new();
 
-    public bool IsMethodKzhaExecuted { get; private set; } = false;
-
+    // KZHA
+    public SaMethodExecutionState MethodKzhaState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public bool KzhaSuspiciousIntervalIsFound { get; private set; } = false;
-
     public double KzhaThreshold { get; private set; } = 0.0;
-
     public ScIndexPair? KzhaCoefficients { get; private set; } = null;
-
     public int KzhaMessageBitsVolume { get; private set; } = 0;
-
     public string? KzhaExtractedData { get; private set; } = null;
-
     public (int leftInd, int rightInd)? KzhaSuspiciousInterval { get; private set; } = null;
+    public List<string> KzhaErrors { get; private set; } = new();
 
+    // STATM
+    public SaMethodExecutionState StatmCalcState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public double StatmNoiseValue { get; private set; } = 0.0;
-
     public double StatmSharpnessValue { get; private set; } = 0.0;
-
     public double StatmBlurValue { get; private set; } = 0.0;
-
     public double StatmContrastValue { get; private set; } = 0.0;
-
     public double StatmEntropyShennonValue { get; private set; } = 0.0;
-
     public double StatmEntropyRenyiValue { get; private set; } = 0.0;
+    public List<string> StatmErrors { get; private set; } = new();
 
-    public bool IsComplexMethodExecuted { get; private set; } = false;
-
+    // COMPLEX
+    public SaMethodExecutionState ComplexMethodState { get; private set; } = SaMethodExecutionState.NotExecuted;
     public bool IsHidingDetected { get; private set; }
-
     public double DecisionPobability { get; private set; } = 0.0;
+    public List<string> ComplexMethodErrors { get; private set; } = new();
 
-
+    // 
     public long ElapsedTime { get; private set; } = 0;
 
 
@@ -85,61 +86,76 @@ public class SteganalysisResultsDto
 
         if (chiRes is not null)
         {
-            IsMethodChiSqrExecuted = true;
+            MethodChiSqrState = GetMethodState(chiRes);
             ChiSqrMessageRelativeVolume = chiRes.MessageRelativeVolume;
+            ChiSqrErrors = GetErrorsEntries(chiRes);
         }
 
         if (rsRes is not null)
         {
-            IsMethodRsExecuted = true;
+            MethodRsState = GetMethodState(rsRes);
             RsMessageRelativeVolume = rsRes.MessageRelativeVolume;
+            RsErrors = GetErrorsEntries(rsRes);
         }
 
         if (spaRes is not null)
         {
-            IsMethodSpaExecuted = true;
+            MethodSpaState = GetMethodState(spaRes);
             SpaMessageRelativeVolume = spaRes.MessageRelativeVolume;
+            SpaErrors = GetErrorsEntries(spaRes);
         }
 
         if (fanRes is not null)
         {
-            IsMethodFanExecuted = true;
+            MethodFanState = GetMethodState(fanRes);
             IsFanHidingDetected = fanRes.IsHidingDetected;
             FanMahalanobisDistance = fanRes.MahalanobisDistance;
+            FanErrors = GetErrorsEntries(fanRes);
         }
 
         if (zcaRes is not null)
         {
-            IsMethodZcaExecuted = true;
+            MethodZcaState = GetMethodState(zcaRes);
             IsZcaHidingDetected = zcaRes.IsHidingDetected;
+            ZcaErrors = GetErrorsEntries(zcaRes);
         }
 
         if (kzhaRes is not null)
         {
-            IsMethodKzhaExecuted = true;
+            MethodKzhaState = GetMethodState(kzhaRes);
             KzhaSuspiciousIntervalIsFound = kzhaRes.SuspiciousIntervalIsFound;
             KzhaThreshold = kzhaRes.Threshold;
             KzhaCoefficients = kzhaRes.Coefficients;
             KzhaMessageBitsVolume = kzhaRes.MessageBitsVolume;
             KzhaExtractedData = kzhaRes.ExtractedData;
             KzhaSuspiciousInterval = kzhaRes.SuspiciousInterval;
+            KzhaErrors = GetErrorsEntries(kzhaRes);
         }
 
         if (statmRes is not null)
         {
+            StatmCalcState = GetMethodState(statmRes);
             StatmNoiseValue = statmRes.NoiseValue;
             StatmSharpnessValue = statmRes.SharpnessValue;
             StatmBlurValue = statmRes.BlurValue;
             StatmContrastValue = statmRes.ContrastValue;
             StatmEntropyShennonValue = statmRes.EntropyValues.Shennon;
             StatmEntropyRenyiValue = statmRes.EntropyValues.Renyi;
+            StatmErrors = GetErrorsEntries(statmRes);
         }
 
         if (complexSaResult is not null)
         {
-            IsComplexMethodExecuted = true;
+            ComplexMethodState = GetMethodState(complexSaResult);
             IsHidingDetected = complexSaResult.IsHidingDetected;
             DecisionPobability = complexSaResult.DecisionProbability;
+            ComplexMethodErrors = GetErrorsEntries(complexSaResult);
         }
     }
+
+    private static SaMethodExecutionState GetMethodState(LoggedResult result) => result.HasErrors
+                ? (result.MethodSuccessful ? SaMethodExecutionState.WithErrors : SaMethodExecutionState.FatalError)
+                : SaMethodExecutionState.Executed;
+
+    private static List<string> GetErrorsEntries(LoggedResult result) => result.GetErrors().Select(x => x.ToString()).ToList();
 }

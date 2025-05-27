@@ -1,12 +1,17 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.UI.Lib;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -22,6 +27,7 @@ public partial class AnalyzerView : UserControl
     private static SolidColorBrush BadTextBrush = CommonTools.GetBrush("SrDarkRed");
     private static SolidColorBrush GoodTextBrush = CommonTools.GetBrush("SrDarkGreen");
     private static SolidColorBrush DefaultTextBrush = CommonTools.GetBrush("SrDefaultWhite");
+    private static SolidColorBrush ErrorTextBrush = CommonTools.GetBrush("SrDefaultYellow");
 
     private AnalyzerViewModel _vm = null!;
 
@@ -98,19 +104,25 @@ public partial class AnalyzerView : UserControl
             // Вывод результатов на форму
 
             // ChiSqr
-            if (results.IsMethodChiSqrExecuted)
+            if (IsMethodStateExecuted(results.MethodChiSqrState))
                 ChiFullnessValue.Text = Common.Tools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
+            else if (results.MethodChiSqrState is SaMethodExecutionState.FatalError)
+                SetErroredResult(ChiFullnessValue, results.ChiSqrErrors);
 
             // RS
-            if (results.IsMethodRsExecuted)
+            if (IsMethodStateExecuted(results.MethodRsState))
                 RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
+            else if (results.MethodRsState is SaMethodExecutionState.FatalError)
+                SetErroredResult(RsFullnessValue, results.RsErrors);
 
             // SPA
-            if (results.IsMethodSpaExecuted)
+            if (IsMethodStateExecuted(results.MethodSpaState))
                 SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
+            else if (results.MethodSpaState is SaMethodExecutionState.FatalError)
+                SetErroredResult(SpaFullnessValue, results.SpaErrors);
 
             // FAN
-            if (results.IsMethodFanExecuted)
+            if (IsMethodStateExecuted(results.MethodFanState))
             {
                 string fanHidingDetectedText = results.IsFanHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
                 if (results.FanMahalanobisDistance is not null)
@@ -119,18 +131,22 @@ public partial class AnalyzerView : UserControl
                 FanResultValue.Foreground = fanHidingDetectedTextBrush;
                 FanResultValue.Text = fanHidingDetectedText;
             }
+            else if (results.MethodFanState is SaMethodExecutionState.FatalError)
+                SetErroredResult(FanResultValue, results.FanErrors);
 
             // ZCA
-            if (results.IsMethodZcaExecuted)
+            if (IsMethodStateExecuted(results.MethodZcaState))
             {
                 string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
                 var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
                 ZcaResultValue.Foreground = zcaHidingDetectedTextBrush;
                 ZcaResultValue.Text = zcaHidingDetectedText;
             }
+            else if (results.MethodZcaState is SaMethodExecutionState.FatalError)
+                SetErroredResult(ZcaResultValue, results.ZcaErrors);
 
             // Kzha
-            if (results.IsMethodKzhaExecuted)
+            if (IsMethodStateExecuted(results.MethodKzhaState))
             {
                 KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? Constants.ResultsDefaults.Yes : Constants.ResultsDefaults.No;
 
@@ -179,14 +195,28 @@ public partial class AnalyzerView : UserControl
                     }
                 }
             }
+            else if (results.MethodKzhaState is SaMethodExecutionState.FatalError)
+                SetErroredResult(KzhaIntervalFoundedValue, results.KzhaErrors);
 
-            // Statm
-            StatResultsNoise2Value.Text = Common.Tools.GetLongFormattedDouble(results.StatmNoiseValue);
-            StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
-            StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
-            StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
-            StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
-            StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
+            if (IsMethodStateExecuted(results.StatmCalcState))
+            {
+                // Statm
+                StatResultsNoise2Value.Text = Common.Tools.GetLongFormattedDouble(results.StatmNoiseValue);
+                StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
+                StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
+                StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
+                StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
+                StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
+            }
+            else if (results.StatmCalcState is SaMethodExecutionState.FatalError)
+            {
+                SetErroredResult(StatResultsNoise2Value, results.StatmErrors);
+                SetErroredResult(StatResultsSharpnessValue, results.StatmErrors);
+                SetErroredResult(StatResultsBlurValue, results.StatmErrors);
+                SetErroredResult(StatResultsContrastValue, results.StatmErrors);
+                SetErroredResult(StatResultsEntropyShennonValue, results.StatmErrors);
+                SetErroredResult(StatResultsEntropyRenyiValue, results.StatmErrors);
+            }
 
 
             // Затрачено времени
@@ -194,14 +224,43 @@ public partial class AnalyzerView : UserControl
 
 
             // Вывод о наличии встраивания
-            if (results.IsComplexMethodExecuted)
+            if (IsMethodStateExecuted(results.ComplexMethodState))
             {
                 string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
                 var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
                 AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
                 AutoDetectionResultValue.Text = hidingDecisionText;
             }
+            else if (results.ComplexMethodState is SaMethodExecutionState.FatalError)
+                SetErroredResult(AutoDetectionResultValue, results.ComplexMethodErrors);
         }
+    }
+
+    private static bool IsMethodStateExecuted(SaMethodExecutionState state) =>
+        state == SaMethodExecutionState.Executed || state == SaMethodExecutionState.WithErrors;
+
+    private static void SetErroredResult(TextBlock tb, ILoggedAnalysisResult result) => SetErroredResult(tb, result.AsLog().GetErrors().Select(x => x.ToString()));
+    private static void SetErroredResult(TextBlock tb, IEnumerable<string> errors)
+    {
+        string error = string.Join("\n", errors);
+        tb.Foreground = ErrorTextBrush;
+        tb.Text = Constants.ResultsDefaults.WasFatalError;
+
+        var tipText = new TextBlock
+        {
+            FontSize = 13,
+            Text = error
+        };
+
+        var panel = new StackPanel();
+        panel.Children.Add(tipText);
+
+        var tooltip = new ToolTip
+        {
+            Content = panel
+        };
+        ToolTip.SetTip(tb, tooltip);
+        ToolTip.SetPlacement(tb, PlacementMode.Pointer);
     }
 
 
@@ -253,36 +312,36 @@ public partial class AnalyzerView : UserControl
         _vm.IsMethodsOpened = true;
 
         // Сброс формы результатов
-        CommonTools.SetFields("IsEnabled", false, 
-            ChiFullnessBlock, RsFullnessBlock, SpaFullnessBlock, KzhaIntervalFoundedBlock,
-            KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock);
-
         CommonTools.SetFields("IsVisible", false, 
             KzhaBitsNumBlock, KzhaSuspiciousIntervalBlock, KzhaThresholdBlock, KzhaCoeffsBlock, KzhaExtractedDataBlock, KzhaExtractedDataValue);
 
-        KzhaExtractedDataValue.Text = string.Empty;
-
-        ChiFullnessValue.Text = MessageNotAnalyzed;
-        RsFullnessValue.Text = MessageNotAnalyzed;
-        SpaFullnessValue.Text = MessageNotAnalyzed;
-        ZcaResultValue.Foreground = DefaultTextBrush;
-        ZcaResultValue.Text = MessageNotAnalyzed;
-        FanResultValue.Foreground = DefaultTextBrush;
-        FanResultValue.Text = MessageNotAnalyzed;
-        KzhaIntervalFoundedValue.Text = MessageNotAnalyzed;
-        KzhaBitsNumValue.Text = MessageUnknown;
-        KzhaSuspiciousIntervalValue.Text = MessageUnknown;
-        KzhaThresholdValue.Text = MessageUnknown;
-        KzhaCoeffsValue.Text = MessageUnknown;
-        StatResultsNoise2Value.Text = MessageUnknown;
-        StatResultsSharpnessValue.Text = MessageUnknown;
-        StatResultsBlurValue.Text = MessageUnknown;
-        StatResultsContrastValue.Text = MessageUnknown;
-        StatResultsEntropyShennonValue.Text = MessageUnknown;
-        StatResultsEntropyRenyiValue.Text = MessageUnknown;
-        KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
-        AutoDetectionResultValue.Foreground = DefaultTextBrush;
-        AutoDetectionResultValue.Text = MessageNotAnalyzed;
+
+        KzhaExtractedDataValue.Text = string.Empty;
+        KzhaExtractedDataLabelValue.Text = MessageNotFoundData;
+
+        List<TextBlock> notAnalyzedTextTbs = [ChiFullnessValue, RsFullnessValue, SpaFullnessValue, ZcaResultValue, FanResultValue, KzhaIntervalFoundedValue,
+                                              AutoDetectionResultValue];
+        List<TextBlock> unknownTextTbs = [KzhaBitsNumValue, KzhaSuspiciousIntervalValue, KzhaThresholdValue, KzhaCoeffsValue, StatResultsNoise2Value,
+                                          StatResultsSharpnessValue, StatResultsBlurValue, StatResultsContrastValue, StatResultsEntropyShennonValue,
+                                          StatResultsEntropyRenyiValue];
+        var resultValueTbs = notAnalyzedTextTbs.Concat(unknownTextTbs).Concat([KzhaExtractedDataLabelValue]);
+
+        foreach (var tb in notAnalyzedTextTbs)
+            ResetTextValueToMessageNotAnalyzed(tb);
+
+        foreach (var tb in notAnalyzedTextTbs)
+            ResetTextValueToMessageUnknown(tb);
+
+        foreach (var tb in resultValueTbs)
+            ResetTextForeground(tb);
+
+        foreach (var tb in resultValueTbs)
+            ResetToolTip(tb);
     }
+
+    private static void ResetToolTip(TextBlock tb) => ToolTip.SetTip(tb, null);
+    private static void ResetTextForeground(TextBlock tb) => tb.Foreground = DefaultTextBrush;
+    private static void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
+    private static void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
 }
