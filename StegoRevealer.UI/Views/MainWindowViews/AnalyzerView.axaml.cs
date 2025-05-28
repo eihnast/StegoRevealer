@@ -349,4 +349,8 @@ public partial class AnalyzerView : UserControl
     private static void ResetTextForeground(TextBlock tb) => tb.Foreground = DefaultTextBrush;
     private static void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
     private static void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
+
+    private void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsTextToClipboard();
+
+    private void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsJsonToClipboard();
 }

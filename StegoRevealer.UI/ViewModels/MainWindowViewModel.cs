@@ -5,6 +5,7 @@ using StegoRevealer.UI.Windows;
 using ReactiveUI;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.ViewModels;
 
@@ -100,5 +101,11 @@ public class MainWindowViewModel : ViewModelBase
         var vm = GetOrCreateViewModel(typeof(SettingsPageViewModel)) as SettingsPageViewModel;
         if (vm is not null)
             CurrentViewModel = vm;
+    }
+
+    public async Task CopyToClipboard(string text)
+    {
+        if (_mainWindow?.Clipboard is not null)
+            await _mainWindow.Clipboard.SetTextAsync(text);
     }
 }
