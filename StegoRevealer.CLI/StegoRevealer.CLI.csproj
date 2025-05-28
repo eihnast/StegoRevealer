@@ -12,14 +12,14 @@
 
 		<AssemblyName>StegoRevealerCLI</AssemblyName>
 		<Title>Stego Revealer CLI</Title>
-		<Version>2025.5.20</Version>
+		<Version>25.5.21</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>2025.5.20.1844</FileVersion>
-		<AssemblyVersion>2025.5.20.1844</AssemblyVersion>
+		<FileVersion>25.5.21.1850</FileVersion>
+		<AssemblyVersion>25.5.21.1850</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -31,9 +31,9 @@
 		<UpdatePackageVersion>True</UpdatePackageVersion>
 		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
 		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-		<AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
+		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
 		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
-		<AssemblyVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
+		<AssemblyVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
 	</PropertyGroup>
 
 	<ItemGroup>

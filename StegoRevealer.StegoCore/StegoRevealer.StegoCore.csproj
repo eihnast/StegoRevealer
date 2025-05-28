@@ -12,14 +12,14 @@
 
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-		<Version>2025.5.22</Version>
+		<Version>25.5.23</Version>
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
 		<PackageIcon>Assets\AppCoreIconPackage.png</PackageIcon>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
-		<FileVersion>2025.5.22.1844</FileVersion>
-		<AssemblyVersion>2025.5.22.1844</AssemblyVersion>
+		<FileVersion>25.5.23.1850</FileVersion>
+		<AssemblyVersion>25.5.23.1850</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -28,12 +28,12 @@
 		<UpdateAssemblyVersion>True</UpdateAssemblyVersion>
 		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
 		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-		<AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
+		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
 		<UpdatePackageVersion>True</UpdatePackageVersion>
 		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
 		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
 		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
-		<AssemblyVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
+		<AssemblyVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
 	</PropertyGroup>
 
 	<ItemGroup>
