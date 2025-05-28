@@ -12,14 +12,14 @@
 
 		<AssemblyName>StegoRevealerAPI</AssemblyName>
 		<Title>Stego Revealer API Server</Title>
-		<Version>2025.5.12</Version>
+		<Version>25.5.13</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer API</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppApiIcon.ico</ApplicationIcon>
-		<FileVersion>2025.5.12</FileVersion>
-		<AssemblyVersion>2025.5.12.1844</AssemblyVersion>
+		<FileVersion>25.5.13</FileVersion>
+		<AssemblyVersion>25.5.13.1850</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -28,12 +28,12 @@
 		<UpdateAssemblyVersion>True</UpdateAssemblyVersion>
 		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
 		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-		<AssemblyFileVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
+		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
 		<UpdatePackageVersion>True</UpdatePackageVersion>
 		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
 		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
 		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
-		<AssemblyVersionSettings>YearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
+		<AssemblyVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
 	</PropertyGroup>
 
 	<ItemGroup>
