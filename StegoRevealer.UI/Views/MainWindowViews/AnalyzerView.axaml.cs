@@ -82,6 +82,7 @@ public partial class AnalyzerView : UserControl
         StartAnalysis.IsEnabled = false;  // Блокириуем кнопку запуска СА
         LoadImageButton.IsEnabled = false;  // Блокируем кнопку выбора изображения
         MethodsExpander.IsEnabled = false;  // Блокируем всю панель выбора методов
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
 
         _vm.ResetResults();  // Сбрасываем результаты
         ResetResultsExpander();  // Сбрасываем форму результатов
