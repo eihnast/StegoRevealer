@@ -80,6 +80,8 @@ public partial class AnalyzerView : UserControl
     private async void StartAnalysis_Click(object sender, RoutedEventArgs e)
     {
         StartAnalysis.IsEnabled = false;  // Блокириуем кнопку запуска СА
+        LoadImageButton.IsEnabled = false;  // Блокируем кнопку выбора изображения
+        MethodsExpander.IsEnabled = false;  // Блокируем всю панель выбора методов
 
         _vm.ResetResults();  // Сбрасываем результаты
         ResetResultsExpander();  // Сбрасываем форму результатов
@@ -88,6 +90,8 @@ public partial class AnalyzerView : UserControl
         UpdateResults();  // Обновляем форму результатов
         _vm.IsMethodsOpened = false;  // Переключение экспандера
 
+        LoadImageButton.IsEnabled = true;  // Снимаем блокировку кнопки выбора изображения
+        MethodsExpander.IsEnabled = true;  // Снимаем блокировку всей панели выбора методов
         StartAnalysis.IsEnabled = true;  // Снимаем блокировку кнопки запуска СА
     }
 
