@@ -152,5 +152,5 @@ public static class Tools
 
     public static string GetValueAsPercents(double? value) => value is null ? $"{null}" : string.Format("{0:P2}", value);
     public static string GetFormattedDouble(double? value) => value is null ? $"{null}" : string.Format("{0:f2}", value);
-    public static string GetLongFormattedDouble(double? value) => value is null ? $"{null}" : string.Format("{0:F5}", value);
+    public static string GetLongFormattedDouble(double? value) => value is null or double.NaN ? $"–" : (value == 0.0 ? "0,0" : string.Format("{0:F5}", value));
 }
