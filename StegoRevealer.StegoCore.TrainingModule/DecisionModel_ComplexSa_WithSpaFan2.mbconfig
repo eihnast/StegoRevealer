@@ -1,0 +1,799 @@
+﻿{
+  "Scenario": "Classification",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": false,
+    "Type": "TabularFile",
+    "FilePath": "E:\\Temp\\Steganalysis\\_Новые методы\\MlAnalysisData_Summary2_NoPath.csv",
+    "Delimiter": ";",
+    "DecimalMarker": ".",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "ChiSqrHorizontalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "ChiSqrVerticalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RsRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaHorizontalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalThreshold",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalBitsVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "KzhaVerticalRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Noise",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Sharpness",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Blur",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Contrast",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyShennon",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyRenyi25",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyRenyi11",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyRenyi05",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyHavard",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyTsallis",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EntropyVaida",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Width",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Height",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PixelsNum",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SpaMessageRelativeVolume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "FanMahalanobisDistance",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "IsDataHided",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Boolean",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.93605328892589512,
+        "RuntimeInSeconds": 2.487,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfTrees": 66,
+            "NumberOfLeaves": 453,
+            "FeatureFraction": 0.8516251,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.93605328892589512,
+        "RuntimeInSeconds": 2.241,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfTrees": 66,
+            "NumberOfLeaves": 453,
+            "FeatureFraction": 0.85163325,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.93555370524562864,
+        "RuntimeInSeconds": 2.3,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfTrees": 67,
+            "NumberOfLeaves": 453,
+            "FeatureFraction": 0.8514385,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.93555370524562864,
+        "RuntimeInSeconds": 2.243,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfTrees": 67,
+            "NumberOfLeaves": 453,
+            "FeatureFraction": 0.85114175,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.93555370524562864,
+        "RuntimeInSeconds": 2.227,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ]
+          },
+          "e1": {
+            "InputColumnNames": [
+              "ChiSqrHorizontalRelativeVolume",
+              "ChiSqrVerticalRelativeVolume",
+              "RsRelativeVolume",
+              "KzhaHorizontalThreshold",
+              "KzhaHorizontalBitsVolume",
+              "KzhaHorizontalRelativeVolume",
+              "KzhaVerticalThreshold",
+              "KzhaVerticalBitsVolume",
+              "KzhaVerticalRelativeVolume",
+              "Noise",
+              "Sharpness",
+              "Blur",
+              "Contrast",
+              "EntropyShennon",
+              "EntropyRenyi25",
+              "EntropyRenyi11",
+              "EntropyRenyi05",
+              "EntropyHavard",
+              "EntropyTsallis",
+              "EntropyVaida",
+              "Width",
+              "Height",
+              "PixelsNum",
+              "SpaMessageRelativeVolume",
+              "FanMahalanobisDistance"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "NumberOfTrees": 67,
+            "NumberOfLeaves": 453,
+            "FeatureFraction": 0.85145026,
+            "LabelColumnName": "IsDataHided",
+            "FeatureColumnName": "Features"
+          },
+          "e3": {
+            "LabelColumnName": "IsDataHided",
+            "ScoreColumnName": "Score"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "Concatenate",
+      "e2": "FastForestBinary",
+      "e3": "Naive"
+    },
+    "Schema": "e0 * e1 * e2 * e3",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "E:\\Development\\StegoRevealer\\StegoRevealer\\StegoRevealer.StegoCore.TrainingModule\\DecisionModel_ComplexSa_WithSpaFan2.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Tuner": "eci-cfo",
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 600,
+    "OptimizeMetric": "Accuracy",
+    "LabelColumn": "IsDataHided",
+    "AvailableTrainers": [
+      "FASTFOREST"
+    ],
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}

@@ -45,7 +45,7 @@ public class KochZhaoExtractor : IExtractor
         KochZhaoParameters? kzParams = parameters as KochZhaoParameters;
         if (kzParams is null)  // Не удалось привести к KochZhaoParameters
         {
-            result.Error("kzParams является null");
+            result.LogError("kzParams является null");
             return result;
         }
 
@@ -62,14 +62,14 @@ public class KochZhaoExtractor : IExtractor
     private KochZhaoExtractResult ExtractAlgorithm()
     {
         KochZhaoExtractResult result = new();
-        result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
+        result.LogInfo($"Запущен процесс извлечения из {Params.Image.ImgName}");
 
         List<bool> dataBitArray = new();  // Массив извлечённых данных
 
         // Доопределение параметров извлечения
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
         int usedBlocksNum = Params.ToExtractBitLength;  // Количество извлекаемых бит => блоков
-        result.Log($"Установлены параметры:\n\t" +
+        result.LogInfo($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tusedBlocksNum = {usedBlocksNum}");
 
         // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
@@ -79,7 +79,7 @@ public class KochZhaoExtractor : IExtractor
         int brokenBitsNum = 0;
 
         // Осуществление извлечения
-        result.Log("Запущен цикл извлечения");
+        result.LogInfo("Запущен цикл извлечения");
         var traversalOptions = new BlocksTraverseOptions(Params);
         foreach (var block in iterator(Params.ImgBlocks, traversalOptions, usedBlocksNum))
         {
@@ -90,19 +90,19 @@ public class KochZhaoExtractor : IExtractor
             else
                 brokenBitsNum++;
         }
-        result.Log("Завершён цикл извлечения");
+        result.LogInfo("Завершён цикл извлечения");
 
         if (brokenBitsNum > 0)
         {
-            result.Log($"Блоков, из которых не удалось извлечь бит: {brokenBitsNum}");
-            result.Warning("Не из всех блоков удалось успешно извлечь информацию");
+            result.LogInfo($"Блоков, из которых не удалось извлечь бит: {brokenBitsNum}");
+            result.LogWarning("Не из всех блоков удалось успешно извлечь информацию");
         }
 
         // Преобразование извлечённых бит в текст
         result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()), linearBitArrays: true);
-        result.Log($"Объём извлечённой информации: {result.ResultData.Length} символов");
+        result.LogInfo($"Объём извлечённой информации: {result.ResultData.Length} символов");
 
-        result.Log("Процесс извлечения завершён");
+        result.LogInfo("Процесс извлечения завершён");
         return result;
     }
 

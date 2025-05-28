@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace StegoRevealer.StegoCore.Logger;
+﻿namespace StegoRevealer.StegoCore.Logger;
 
 /// <summary>
 /// Результат работы метода, содержащий внутренние записи лога
@@ -12,7 +10,8 @@ public abstract class LoggedResult
     /// <summary>
     /// Получение записей лога
     /// </summary>
-    [JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public List<LogMessage> LogRecords { get { return _logRecords; } }
 
     /// <summary>
@@ -20,27 +19,27 @@ public abstract class LoggedResult
     /// </summary>
     /// <param name="msg">Сообщение</param>
     /// <param name="type">Тип сообщения</param>
-    public void Write(string msg, LogMessageType type = LogMessageType.Info) =>
+    public void WriteLog(string msg, LogMessageType type = LogMessageType.Info) =>
         _logRecords.Add(new LogMessage(msg, type));
 
 
     /// <summary>
     /// Запись информационного сообщения в лог
     /// </summary>
-    public void Log(string msg) => Write(msg, LogMessageType.Info);
+    public void LogInfo(string msg) => WriteLog(msg, LogMessageType.Info);
 
     /// <summary>
     /// Запись предупреждения в лог
     /// </summary>
-    public void Warning(string msg) => Write(msg, LogMessageType.Warning);
+    public void LogWarning(string msg) => WriteLog(msg, LogMessageType.Warning);
 
     /// <summary>
     /// Запись ошибки в лог
     /// </summary>
-    public void Error(string msg)
+    public void LogError(string msg)
     {
         _errorsNum++;
-        Write(msg, LogMessageType.Error);
+        WriteLog(msg, LogMessageType.Error);
     }
 
 
@@ -50,6 +49,11 @@ public abstract class LoggedResult
     /// Содержит ли лог сообщения об ошибках
     /// </summary>
     public bool HasErrors { get { return _errorsNum > 0; } }
+
+    /// <summary>
+    /// Считать ли метод выполненным (независимо от наличия ошибок в логе)
+    /// </summary>
+    public bool MethodSuccessful { get; set; } = true;
 
 
     /// <summary>

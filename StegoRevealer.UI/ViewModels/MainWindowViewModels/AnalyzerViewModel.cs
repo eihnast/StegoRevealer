@@ -32,6 +32,9 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
+using System.Text;
+using Accord;
+using Newtonsoft.Json;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
@@ -48,6 +51,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private ZcaParameters? _zcaParameters = null;
     private KzhaParameters? _kzhaParameters = null;
     private ComplexSaMethodParameters? _complexSaParameters = null;
+
+    private JointAnalysisResult? _currentJointAnalysisResult = null;
 
 
     /// <summary>
@@ -142,7 +147,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ActiveMethods[AnalysisMethod.Zca] = value;
         }
     }
-    private bool _methodZcaSelected = false;
+    private bool _methodZcaSelected = true;
 
     /// <summary>
     /// Выбран ли метод КЖА
@@ -177,6 +182,26 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         private set => this.RaiseAndSetIfChanged(ref _imagePreviewMaxHeight, value);
     }
     private double _imagePreviewMaxHeight;
+
+    /// <summary>
+    /// Ширина текущего изображения
+    /// </summary>
+    public double CurrentImageWidth
+    {
+        get => _currentImageWidth;
+        private set => this.RaiseAndSetIfChanged(ref _currentImageWidth, value);
+    }
+    private double _currentImageWidth = 0.0;
+
+    /// <summary>
+    /// Высота текущего изображения
+    /// </summary>
+    public double CurrentImageHeight
+    {
+        get => _currentImageHeight;
+        private set => this.RaiseAndSetIfChanged(ref _currentImageHeight, value);
+    }
+    private double _currentImageHeight = 0.0;
 
     /// <summary>
     /// Существуют ли результаты проведённого стегоанализа
@@ -239,7 +264,20 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Текущее выбранное изображение
     /// </summary>
-    public ImageHandler? CurrentImage { get; set; } = null;
+    public ImageHandler? CurrentImage 
+    {
+        get => _currentImage;
+        set
+        {
+            _currentImage = value;
+            if (_currentImage is not null)
+            {
+                CurrentImageWidth = _currentImage.Width;
+                CurrentImageHeight = _currentImage.Height;
+            }
+        }
+    }
+    private ImageHandler? _currentImage = null;
 
     // Отображаемое на форме изображение
 
@@ -278,7 +316,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     {
         foreach (AnalysisMethod method in Enum.GetValues(typeof(AnalysisMethod)))
             ActiveMethods.Add(method, true);
-        ActiveMethods[AnalysisMethod.Zca] = false;
+        //ActiveMethods[AnalysisMethod.Zca] = false;
 
         WindowResizeAction += SetImagePreviewSizes;
         if (_mainWindowViewModel.MainWindow is not null)
@@ -521,6 +559,28 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
         }
 
+        JointAnalysisResult? result = null;
+        try
+        {
+            result = await AnalysisOperationExecute();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Fatal error while executing analysis joint analysis operation: [{ex.GetType().Name}] {ex.Message}");
+        }
+
+        // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
+        var chiRes = result?.ChiSquareResult;
+        if (chiRes is not null)
+            DrawCurrentImage();
+
+        ProcessAnalysisResults(result);
+
+        Logger.LogInfo("Steganalysis operation completed");
+    }
+
+    private async Task<JointAnalysisResult> AnalysisOperationExecute()
+    {
         var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
         // Создание задач
@@ -544,15 +604,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         Logger.LogInfo("Starting steganalysis algorithms");
 
         var result = await JointAnalysisStarter.Start(jointAnalysisParams);
-
-        // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
-        var chiRes = result.ChiSquareResult;
-        if (chiRes is not null)
-            DrawCurrentImage();
-
-        ProcessAnalysisResults(result);
-
-        Logger.LogInfo("Steganalysis operation completed");
+        return result;
     }
 
     /// <summary>
@@ -565,6 +617,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             ResetResults();
             return;
         }
+
+        _currentJointAnalysisResult = results;
 
         // Приведение к известным типам результатов
         var chiRes = results.ChiSquareResult;
@@ -615,7 +669,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Сброс результатов стегоанализа
     /// </summary>
-    public void ResetResults() => CurrentResults = null;
+    public void ResetResults()
+    {
+        CurrentResults = null;
+        _currentJointAnalysisResult = null;
+    }
 
 
     // Сбрасывает данные об изображении и результатах
@@ -644,4 +702,67 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         ImagePreviewMaxHeight = Math.Max(0, actualSize.Height - 60 - 80 - 40 - 30);
         ImagePreviewMaxWidth = Math.Max(0, (actualSize.Width - 20 - 30) / 2);
     }
+
+    public async Task CopyResultsTextToClipboard()
+    {
+        if (CurrentResults is null)
+            return;
+
+        var results = new StringBuilder();
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection) + GetResultStringByState(CurrentResults.ComplexMethodState, CurrentResults.IsHidingDetected));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + GetResultStringByState(CurrentResults.MethodChiSqrState, CurrentResults.ChiSqrMessageRelativeVolume));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + GetResultStringByState(CurrentResults.MethodRsState, CurrentResults.RsMessageRelativeVolume));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.SpaValue) + GetResultStringByState(CurrentResults.MethodSpaState, CurrentResults.SpaMessageRelativeVolume));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.FanValue) + GetResultStringByState(CurrentResults.MethodFanState, CurrentResults.IsFanHidingDetected) 
+            + (CurrentResults.FanMahalanobisDistance is not null ? $"({Math.Round(CurrentResults.FanMahalanobisDistance.Value, 3)})" : ""));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ZcaValue) + GetResultStringByState(CurrentResults.MethodZcaState, CurrentResults.IsZcaHidingDetected));
+        
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection) + GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaSuspiciousIntervalIsFound));
+        if (CurrentResults.KzhaSuspiciousIntervalIsFound)
+        {
+            results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum) + GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaMessageBitsVolume));
+            results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes) + (CurrentResults.KzhaSuspiciousInterval is null ? "" :
+                $"[{GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaSuspiciousInterval.Value.leftInd)}, " +
+                $"{GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaSuspiciousInterval.Value.rightInd)}]"));
+            results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaThreshold) + GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaThreshold));
+            results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaCoeffs)
+                + (CurrentResults.KzhaCoefficients is null ? "" : GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaCoefficients.Value.ToString())));
+            results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.KzhaExtractedInfo)
+                + (CurrentResults.KzhaExtractedData is null ? "" : GetResultStringByState(CurrentResults.MethodKzhaState, CurrentResults.KzhaExtractedData)));
+        }
+
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmNoise) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmNoiseValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmSharpness) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmSharpnessValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmBlur) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmBlurValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmContrast) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmContrastValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmShennon) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmEntropyShennonValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.StatmRenyi) + Common.Tools.GetLongFormattedDouble(CurrentResults.StatmEntropyRenyiValue));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime) + CurrentResults.ElapsedTime);
+
+        await _mainWindowViewModel.CopyToClipboard(results.ToString());
+    }
+    public async Task CopyResultsJsonToClipboard()
+    {
+        if (_currentJointAnalysisResult is null)
+            return;
+
+        var results = new
+        {
+            _currentJointAnalysisResult.ComplexSaMethodResults?.IsHidingDetected,
+            SteganalysisResult = _currentJointAnalysisResult
+        };
+
+        await _mainWindowViewModel.CopyToClipboard(JsonConvert.SerializeObject(results, Formatting.Indented));
+    }
+
+    private string GetResultStringByState(SaMethodExecutionState state, double result) =>
+        state is SaMethodExecutionState.FatalError ? Constants.ResultsDefaults.WasFatalError : Common.Tools.GetValueAsPercents(result);
+    private string GetResultStringByState(SaMethodExecutionState state, int result) =>
+        state is SaMethodExecutionState.FatalError ? Constants.ResultsDefaults.WasFatalError : result.ToString();
+    private string GetResultStringByState(SaMethodExecutionState state, long result) =>
+        state is SaMethodExecutionState.FatalError ? Constants.ResultsDefaults.WasFatalError : result.ToString();
+    private string GetResultStringByState(SaMethodExecutionState state, string result) =>
+        state is SaMethodExecutionState.FatalError ? Constants.ResultsDefaults.WasFatalError : result;
+    private string GetResultStringByState(SaMethodExecutionState state, bool result) =>
+        state is SaMethodExecutionState.FatalError ? Constants.ResultsDefaults.WasFatalError : (result ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected);
 }

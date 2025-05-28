@@ -41,7 +41,7 @@ public class LsbExtractor : IExtractor
         LsbParameters? lsbParams = parameters as LsbParameters;
         if (lsbParams is null)  // Не удалось привести к LsbParameters
         {
-            result.Error("kzParams является null");
+            result.LogError("kzParams является null");
             return result;
         }
 
@@ -58,14 +58,14 @@ public class LsbExtractor : IExtractor
     private LsbExtractResult ExtractAlgorithm()
     { 
         LsbExtractResult result = new();
-        result.Log($"Запущен процесс извлечения из {Params.Image.ImgName}");
+        result.LogInfo($"Запущен процесс извлечения из {Params.Image.ImgName}");
 
         List<bool> dataBitArray = new();  // Массив извлечённых данных
 
         // Доопределение параметров извлечения
         bool isRandomHiding = Params.Seed is not null;  // Вид скрытия: последовательный или псевдослучайный
         int usedColorBytesNum = Params.ToExtractColorBytesNum;  // Количество извлекаемых байт цвета
-        result.Log($"Установлены параметры:\n\t" +
+        result.LogInfo($"Установлены параметры:\n\t" +
             $"isRandomHiding = {isRandomHiding}\n\tusedColorBytesNum = {usedColorBytesNum}");
 
         // Выбор типа итерации в зависимости от метода скрытия (последовательное / псевдослучайное)
@@ -73,7 +73,7 @@ public class LsbExtractor : IExtractor
             = isRandomHiding ? LsbCommon.GetForRandomAccessIndex : LsbCommon.GetForLinearAccessIndex;
 
         // Осуществление извлечения
-        result.Log("Запущен цикл извлечения");
+        result.LogInfo("Запущен цикл извлечения");
         foreach (var colorByteCoords in iterator(usedColorBytesNum, Params))
         {
             (int line, int column, int channel) = colorByteCoords.AsTuple();
@@ -83,13 +83,13 @@ public class LsbExtractor : IExtractor
             for (int i = 0; i < extractedBits.Length; i++)
                 dataBitArray.Add(extractedBits[i]);
         }
-        result.Log("Завершён цикл извлечения");
+        result.LogInfo("Завершён цикл извлечения");
 
         // Преобразование извлечённых бит в текст
         result.ResultData = StringBitsTools.BitArrayToString(new BitArray(dataBitArray.ToArray()), linearBitArrays: true);
-        result.Log($"Объём извлечённой информации: {result.ResultData.Length} символов");
+        result.LogInfo($"Объём извлечённой информации: {result.ResultData.Length} символов");
 
-        result.Log("Процесс извлечения завершён");
+        result.LogInfo("Процесс извлечения завершён");
         return result;
     }
 

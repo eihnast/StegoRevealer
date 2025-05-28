@@ -30,12 +30,41 @@
 					<TextBox Name="ImagePathLabel" Text="{Binding Path=ImagePath}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
-							 HorizontalAlignment="Stretch"/>
+							 HorizontalAlignment="Stretch"
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</TextBox>
 				</DockPanel>
 				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
+				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
+					<TextBox Text="Ширина:"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageWidthValue" Text="{Binding Path=CurrentImageWidth}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Text="Высота:" Margin="30 0 0 0"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageHeightValue" Text="{Binding Path=CurrentImageHeight}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+				</DockPanel>
 			</StackPanel>
 			<!-- / Левая панель выбора изображения -->
 
@@ -167,7 +196,7 @@
 										 HorizontalAlignment="Stretch"/>
 								<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left"/>
+										   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
 							</DockPanel>
 							
 							<DockPanel Name="RsFullnessBlock" DockPanel.Dock="Top"
@@ -375,13 +404,32 @@
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">
 								<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
-										   FontStyle="Italic" Padding="0 0 5 0"
+										   FontStyle="Italic" Padding="0 0 5 0" VerticalAlignment="Center"
 										   HorizontalAlignment="Stretch" DockPanel.Dock="Left"
 										   TextAlignment="Left" Height="25"/>
 								<TextBlock Name="ElapsedTimeValue" Text="0 мс"
-										   FontStyle="Italic"
+										   FontStyle="Italic" VerticalAlignment="Center"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
+								<StackPanel Name="ResultsHandlerBlock" DockPanel.Dock="Left" Orientation="Horizontal" 
+											VerticalAlignment="Center" HorizontalAlignment="Right">
+									<Button Name="CopyAsTextBtn" Content="" Click="CopyAsTextBtn_Click">
+										<PathIcon Data="{StaticResource IconCopyText}"/>
+										<ToolTip.Tip>
+											<StackPanel>
+												<TextBlock FontSize="15" Text="Копировать результаты"/>
+											</StackPanel>
+										</ToolTip.Tip>
+									</Button>
+									<Button Name="CopyAsJsonBtn" Content="" Click="CopyAsJsonBtn_Click">
+										<PathIcon Data="{StaticResource IconCopyJson}"/>
+										<ToolTip.Tip>
+											<StackPanel>
+												<TextBlock FontSize="15" Text="Копировать результаты (raw JSON)"/>
+											</StackPanel>
+										</ToolTip.Tip>
+									</Button>
+								</StackPanel>
 							</DockPanel>
 						
 						</DockPanel>

@@ -23,6 +23,8 @@ public class ZcaAnalyser
     /// </summary>
     private Action<string>? _writeToLog = null;
 
+    private bool _verboseLog = false;
+
     public ZcaAnalyser(ImageHandler image)
     {
         Params = new ZcaParameters(image);
@@ -40,16 +42,36 @@ public class ZcaAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public ZcaResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new ZcaResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
 
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result).Wait();
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodSuccessful = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public async Task AnalyseInner(ZcaResult result)
+    {
         if (Params.UseOverallCompression)
         {
-            var analyzeTask = Task.Run(() => SingleAnalyze(null, verboseLog));
+            var analyzeTask = Task.Run(() => SingleAnalyze(null, _verboseLog));
             var isHided = analyzeTask.Result;
             result.IsHidingDetected = isHided;
         }
@@ -60,26 +82,20 @@ public class ZcaAnalyser
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    var isHided = SingleAnalyze(channel, verboseLog);
+                    var isHided = SingleAnalyze(channel, _verboseLog);
                     lock (_lock)
                     {
                         result.IsHidedByChannels[channel] = isHided;
-                        _writeToLog($"Is hided in channel '{channel}': {isHided}");
+                        _writeToLog?.Invoke($"Is hided in channel '{channel}': {isHided}");
                     }
                 }));
             }
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             result.IsHidingDetected = result.IsHidedByChannels.Values.Count(v => v is true) > Params.Channels.Count / 2;
         }
 
-        _writeToLog($"Hiding is {(result.IsHidingDetected ? "" : "not")} detected");
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
+        _writeToLog?.Invoke($"Hiding is {(result.IsHidingDetected ? "" : "not")} detected");
     }
 
     public bool SingleAnalyze(ImgChannel? channel = null, bool verboseLog = false)
@@ -92,7 +108,7 @@ public class ZcaAnalyser
         int blockNum = 0;  // d
         int ltThresholdBlocks = 0;
 
-        Parallel.ForEach(iterator, block =>
+        Parallel.ForEach(iterator, async block =>
         {
             var blockCoords = Params.ImgBlocks[block.Y, block.X];
 
@@ -116,7 +132,7 @@ public class ZcaAnalyser
                     Task.Run(() => fX = GetCompressionRatio(blockBitmap)),
                     Task.Run(() => fY = GetCompressionRatio(shuffledBlockBitmap))
                 };
-                Task.WaitAll(compressionRatioTasks);
+                await Task.WhenAll(compressionRatioTasks);
             }
             else
                 _writeToLog?.Invoke($"In channel '{channel}' for block {blockNum} blockBitmap or shuffledBlockBitmap is null, deltaSum will be 0");

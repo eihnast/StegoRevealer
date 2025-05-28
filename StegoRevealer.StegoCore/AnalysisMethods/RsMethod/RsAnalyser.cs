@@ -4,6 +4,7 @@ using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
@@ -26,6 +27,8 @@ public class RsAnalyser
     /// </summary>
     private Action<string>? _writeToLog = null;
 
+    private bool _verboseLog = false;
+
 
     public RsAnalyser(ImageHandler image)
     {
@@ -44,12 +47,32 @@ public class RsAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public RsResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new RsResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result).Wait();
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodSuccessful = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public async Task AnalyseInner(RsResult result)
+    {
         double pValuesSum = 0.0;  // Сумма P-значений по всем каналам (сумма относительных заполненностей, рассчитанных для каждого канала отдельно)
 
         var tasksByChannel = new Dictionary<ImgChannel, (Task<RsGroupsCalcResult> UnturnedTask, Task<RsGroupsCalcResult> InvertedTask)>();
@@ -60,37 +83,34 @@ public class RsAnalyser
             tasksByChannel.Add(channel, (unturnedCalcTask, invertedCalsTask));
         }
 
-        foreach (var calcTasks in tasksByChannel.Values)
-        {
-            calcTasks.UnturnedTask.Wait();
-            calcTasks.InvertedTask.Wait();
-        }
+        var tasks = tasksByChannel.SelectMany(t => new[] { t.Value.UnturnedTask, t.Value.InvertedTask });
+        await Task.WhenAll(tasks);
+
+        //foreach (var calcTasks in tasksByChannel.Values)
+        //{
+        //    calcTasks.UnturnedTask.Wait();
+        //    calcTasks.InvertedTask.Wait();
+        //}
 
         foreach (var channel in Params.Channels)
         {
             var unturnedValues = tasksByChannel[channel].UnturnedTask.Result;
-            _writeToLog($"Calculations for {channel} channel in original image completed. Regulars = {unturnedValues.Regulars}, Singulars = {unturnedValues.Singulars}, " +
+            _writeToLog?.Invoke($"Calculations for {channel} channel in original image completed. Regulars = {unturnedValues.Regulars}, Singulars = {unturnedValues.Singulars}, " +
                 $"Regulars (inverted mask) = {unturnedValues.RegularsWithInvertedMask}, Singulars (inverted mask) = {unturnedValues.SingularsWithInvertedMask}");
 
             var invertedValues = tasksByChannel[channel].InvertedTask.Result;
-            _writeToLog($"Calculations for {channel} channel in original image completed. Regulars = {invertedValues.Regulars}, Singulars = {invertedValues.Singulars}, " +
+            _writeToLog?.Invoke($"Calculations for {channel} channel in original image completed. Regulars = {invertedValues.Regulars}, Singulars = {invertedValues.Singulars}, " +
                 $"Regulars (inverted mask) = {invertedValues.RegularsWithInvertedMask}, Singulars (inverted mask) = {invertedValues.SingularsWithInvertedMask}");
 
             var pValue = CalculatePValue(unturnedValues, invertedValues);
             pValuesSum += pValue;
 
-            _writeToLog($"Relative message volume at channel '{channel}' (pValue): {pValue}");
+            _writeToLog?.Invoke($"Relative message volume at channel '{channel}' (pValue): {pValue}");
             result.MessageRelativeVolumesByChannels[channel] = pValue;
         }
 
         result.MessageRelativeVolume = pValuesSum / Params.Channels.Count;
-        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
+        _writeToLog?.Invoke($"Average relative message volume = {result.MessageRelativeVolume}");
     }
 
     /// <summary>

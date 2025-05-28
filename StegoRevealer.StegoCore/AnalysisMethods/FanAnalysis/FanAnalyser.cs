@@ -27,6 +27,8 @@ public class FanAnalyser
     /// </summary>
     private Action<string> _writeToLog = (string str) => new string(str);
 
+    private bool _verboseLog = false;
+
     // Пары каналов: RG, GB, BR
     private static readonly (Func<ScPixel, byte>, Func<ScPixel, byte>)[] ChannelPairs = new[]
     {
@@ -63,12 +65,32 @@ public class FanAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public FanResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new FanResult();
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result);
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodSuccessful = false;
+        }
+
+        timer.Stop();
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        result.ElapsedTime = timer.ElapsedMilliseconds;
+        return result;
+    }
+
+    public void AnalyseInner(FanResult result)
+    {
         var comList = ComputeCompositeCom(Params.Image);
         result.ComsList = comList;
 
@@ -84,14 +106,8 @@ public class FanAnalyser
         }
         else
         {
-            result.Error("Training COMs array is null. Method result is false by default.");
+            result.LogError("Training COMs array is null. Method result is false by default.");
         }
-
-        timer.Stop();
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        result.ElapsedTime = timer.ElapsedMilliseconds;
-        return result;
     }
 
     private static double[][]? LoadTrainingComs()

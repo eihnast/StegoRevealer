@@ -128,11 +128,11 @@ public class ZcaParameters
     /// <summary>
     /// Автоматически вычисляет порог. При изменении размеров блока необходимо вызвать заново.
     /// </summary>
-    public void SetAutomaticThreshold()
+    public async Task SetAutomaticThreshold()
     {
         if (Image is not null)
         {
-            double estimatedNoiseLevel = EstimateNoise();
+            double estimatedNoiseLevel = await EstimateNoise();
             int pixelsPerBlock = BlockHeight * BlockWidth;
 
             double deltaThreshold = 0.004 + 0.001 * Math.Log(pixelsPerBlock) + 0.002 * estimatedNoiseLevel;
@@ -140,7 +140,7 @@ public class ZcaParameters
         }
     }
 
-    private double EstimateNoise()
+    private async Task<double> EstimateNoise()
     {
         var imar = Image.ImgArray;
         int height = Image.Height;
@@ -199,7 +199,7 @@ public class ZcaParameters
             Task.Run(calcHorizontal),
             Task.Run(calcVertical)
         };
-        Task.WaitAll(calucaltionTasks);
+        await Task.WhenAll(calucaltionTasks);
 
         double averageDiff = (double)(horizDiffSum + vertDiffSum) / (horizCount + vertCount);
         return Math.Min(1.0, averageDiff / 64.0);  // Нормализация: 64 ~= умеренный шум

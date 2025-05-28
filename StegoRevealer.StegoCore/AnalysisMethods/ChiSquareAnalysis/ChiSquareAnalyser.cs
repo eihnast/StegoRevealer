@@ -17,6 +17,8 @@ public class ChiSquareAnalyser
 
     private List<byte> _hidingDegrees = new();
 
+    private bool _verboseLog = false;
+
     /// <summary>
     /// Параметры метода
     /// </summary>
@@ -45,52 +47,62 @@ public class ChiSquareAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public ChiSquareResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var timer = Stopwatch.StartNew();
 
         var result = new ChiSquareResult();
-        _hidingDegrees = Enumerable.Repeat((byte)0, Params.ImgBlocks.BlocksInRow * Params.ImgBlocks.BlocksInColumn).ToList();
-
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
-        double fullness = 0.0;
-        if (!Params.UseSeparateChannelsCalc)
+        try
         {
-            fullness = RealizeChiSquareAttack(null, verboseLog);
-            result.MessageRelativeVolumesByChannels = null;
+            AnalyseInner(result).Wait();
         }
-        else
+        catch (Exception ex)
         {
-            var tasks = new List<Task>();
-            foreach (var channel in Params.Channels)
-            {
-                tasks.Add(Task.Run(() =>
-                {
-                    var channelFullness = RealizeChiSquareAttack(channel, verboseLog);
-                    lock (_lock)
-                    {
-                        result.MessageRelativeVolumesByChannels![channel] = channelFullness;
-                        _writeToLog($"Relative message volume at channel '{channel}': {channelFullness}");
-                    }
-                }));
-            }
-
-            Task.WaitAll(tasks);
-            fullness = result.MessageRelativeVolumesByChannels!.Values.Average();
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodSuccessful = false;
         }
-
-        result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
-        _writeToLog($"Average relative message volume = {result.MessageRelativeVolume}");
-
-        // Визуализация скрытия на изображении целиком
-        if (Params.Visualize)
-            result.Image = ColorizeAllImage(_hidingDegrees, 100);
 
         timer.Stop();
         _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
 
         result.ElapsedTime = timer.ElapsedMilliseconds;
         return result;
+    }
+
+    public async Task AnalyseInner(ChiSquareResult result)
+    {
+        _hidingDegrees = Enumerable.Repeat((byte)0, Params.ImgBlocks.BlocksInRow * Params.ImgBlocks.BlocksInColumn).ToList();
+
+        double fullness = 0.0;
+        if (!Params.UseSeparateChannelsCalc)
+        {
+            fullness = RealizeChiSquareAttack(null, _verboseLog);
+            result.MessageRelativeVolumesByChannels = null;
+        }
+        else
+        {
+            var tasks = Params.Channels.Select(async channel =>
+            {
+                var channelFullness = RealizeChiSquareAttack(channel, _verboseLog);
+                lock (_lock)
+                {
+                    result.MessageRelativeVolumesByChannels![channel] = channelFullness;
+                    _writeToLog?.Invoke($"Relative message volume at channel '{channel}': {channelFullness}");
+                }
+            });
+
+            await Task.WhenAll(tasks);
+            fullness = result.MessageRelativeVolumesByChannels!.Values.Average();
+        }
+
+        result.MessageRelativeVolume = fullness;  // Относительный объём скрытого сообщения
+        _writeToLog?.Invoke($"Average relative message volume = {result.MessageRelativeVolume}");
+
+        // Визуализация скрытия на изображении целиком
+        if (Params.Visualize)
+            result.Image = ColorizeAllImage(_hidingDegrees, 100);
     }
 
     private double RealizeChiSquareAttack(ImgChannel? channel = null, bool verboseLog = false)

@@ -23,6 +23,8 @@ public class ComplexSaMethodAnalyser
     /// </summary>
     private Action<string>? _writeToLog = null;
 
+    private bool _verboseLog = false;
+
 
     public ComplexSaMethodAnalyser(ImageHandler image)
     {
@@ -40,12 +42,31 @@ public class ComplexSaMethodAnalyser
     /// <param name="verboseLog">Вести подробный лог</param>
     public ComplexSaMethodResult Analyse(bool verboseLog = false)
     {
+        _verboseLog = verboseLog;
         var result = new ComplexSaMethodResult();
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стегоанализа
 
-        _writeToLog = result.Log;
+        _writeToLog = result.LogInfo;
         _writeToLog($"Started steganalysis by method '{MethodName}' for image '{Params.Image.ImgName}'");
 
+        try
+        {
+            AnalyseInner(result).Wait();
+        }
+        catch (Exception ex)
+        {
+            result.LogError($"Fatal error while executing '{MethodName}': [{ex.GetType().Name}] {ex.Message}");
+            result.MethodSuccessful = false;
+        }
+
+        timer.Stop();  // Остановка таймера
+        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
+
+        return ProcessResults(result, timer);
+    }
+
+    public async Task AnalyseInner(ComplexSaMethodResult result)
+    {
         // Запуск комплексного стегоанализа
         var methodTasks = new List<Task>();
 
@@ -67,32 +88,33 @@ public class ComplexSaMethodAnalyser
         statmAnalyzer.Params.EntropyCalcSensitivity = 1.1;
 
         // Задачи
-        methodTasks.Add(Task.Run(() => { 
+        methodTasks.Add(Task.Run(() => {
             try { result.ChiSquareHorizontalResult = chiSqrMethodHorizontalAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
-        methodTasks.Add(Task.Run(() => { 
+            catch { /* Не обрабатываем */ }
+        }));
+        methodTasks.Add(Task.Run(() => {
             try { result.ChiSquareVerticalResult = chiSqrMethodVerticalAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
-        methodTasks.Add(Task.Run(() => { 
+            catch { /* Не обрабатываем */ }
+        }));
+        methodTasks.Add(Task.Run(() => {
             try { result.RsResult = rsMethodAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
-        methodTasks.Add(Task.Run(() => { 
+            catch { /* Не обрабатываем */ }
+        }));
+        methodTasks.Add(Task.Run(() => {
             try { result.KzhaHorizontalResult = kzhaMethodHorizontalAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
-        methodTasks.Add(Task.Run(() => { 
+            catch { /* Не обрабатываем */ }
+        }));
+        methodTasks.Add(Task.Run(() => {
             try { result.KzhaVerticalResult = kzhaMethodVerticalAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
-        methodTasks.Add(Task.Run(() => { 
+            catch { /* Не обрабатываем */ }
+        }));
+        methodTasks.Add(Task.Run(() => {
             try { result.StatmResult = statmAnalyzer.Analyse(); }
-            catch { /* Не обрабатываем */ } }));
+            catch { /* Не обрабатываем */ }
+        }));
 
         // Ожидание
-        Task.WaitAll(methodTasks);
-
-        timer.Stop();  // Остановка таймера
-        _writeToLog($"Steganalysis by method '{MethodName}' ended for {timer.ElapsedMilliseconds} ms");
-
-        return ProcessResults(result, timer);
+        await Task.WhenAll(methodTasks);
     }
 
     private ComplexSaMethodResult ProcessResults(ComplexSaMethodResult complexSaMethodResults, Stopwatch timer)
