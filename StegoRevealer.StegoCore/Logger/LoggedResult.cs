@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace StegoRevealer.StegoCore.Logger;
+﻿namespace StegoRevealer.StegoCore.Logger;
 
 /// <summary>
 /// Результат работы метода, содержащий внутренние записи лога
@@ -12,7 +10,8 @@ public abstract class LoggedResult
     /// <summary>
     /// Получение записей лога
     /// </summary>
-    [JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public List<LogMessage> LogRecords { get { return _logRecords; } }
 
     /// <summary>
