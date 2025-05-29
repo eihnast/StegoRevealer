@@ -35,29 +35,18 @@ public class SteganalysysController : ControllerBase
             if (string.IsNullOrEmpty(path))
                 return GetErrorResult("Передан пустой путь изображения");
 
-            // Запуск комплексного стегоанализа
             var image = new ImageHandler(path);
-            var complexMethodTasks = new List<Task>();
             if (image is null)
                 return GetErrorResult("Не удалось создать обработчик изображения");
 
 
-            var jointAnalysisParams = new JointAnalysisMethodsParameters();
-
-            // Создание задач
-            jointAnalysisParams.ChiSquareParameters = new ChiSquareParameters(image);
-            jointAnalysisParams.RsParameters = new RsParameters(image);
-            jointAnalysisParams.SpaParameters = new SpaParameters(image);
-            jointAnalysisParams.FanParameters = new FanParameters(image);
-            jointAnalysisParams.KzhaParameters = new KzhaParameters(image);
-            jointAnalysisParams.StatmParameters = new StatmParameters(image);
-            jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(image);
-
-            var result = await JointAnalysisStarter.Start(jointAnalysisParams);
+            ComplexSaMethodResult? result = null;
+            var complesSa = new ComplexSaMethodAnalyser(image);
+            await Task.Run(() => result = complesSa.Analyse());
 
             return new JsonResult(new
             {
-                result.ComplexSaMethodResults?.IsHidingDetected,
+                result?.IsHidingDetected,
                 steganalysisResult = verboseResult ? result : null
             });
         }
@@ -66,9 +55,44 @@ public class SteganalysysController : ControllerBase
             return GetErrorResult(e.Message);
         }
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> ChiSqrAsync(string path)
+    public async Task<IActionResult> FullAnalysisAsync(string path)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(path))
+                return GetErrorResult("Передан пустой путь изображения");
+
+            var image = new ImageHandler(path);
+            if (image is null)
+                return GetErrorResult("Не удалось создать обработчик изображения");
+
+
+            var jointAnalysisParams = new JointAnalysisMethodsParameters();
+
+            // Создание параметров всех анализаторов
+            jointAnalysisParams.ChiSquareParameters = new ChiSquareParameters(image);
+            jointAnalysisParams.RsParameters = new RsParameters(image);
+            jointAnalysisParams.SpaParameters = new SpaParameters(image);
+            jointAnalysisParams.FanParameters = new FanParameters(image);
+            jointAnalysisParams.ZcaParameters = new ZcaParameters(image);
+            jointAnalysisParams.KzhaParameters = new KzhaParameters(image);
+            jointAnalysisParams.StatmParameters = new StatmParameters(image);
+            jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(image);
+
+            var result = await JointAnalysisStarter.Start(jointAnalysisParams);
+
+            return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetErrorResult(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CsaAsync(string path)
     {
         try
         {
@@ -164,7 +188,7 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> KzhaAsync(string path)
+    public async Task<IActionResult> CkzhaAsync(string path)
     {
         try
         {
@@ -212,7 +236,7 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> StatsAsync(string path)
+    public async Task<IActionResult> StatmAsync(string path)
     {
         try
         {
