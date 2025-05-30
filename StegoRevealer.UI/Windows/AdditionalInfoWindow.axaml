@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:StegoRevealer.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:StegoRevealer.UI.Views.AdditionalInfoWindowViews"
+        xmlns:viewmodels="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
+        xmlns:rootviewmodels="clr-namespace:StegoRevealer.UI.ViewModels"
+        mc:Ignorable="d"
+		d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
+		WindowStartupLocation="CenterScreen" CanResize="False"
+        x:Class="StegoRevealer.UI.Windows.AdditionalInfoWindow"
+        Icon="/Assets/AppIcon.ico"
+        Title="Stego Revealer">
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type viewmodels:EmptyAdditionalInfoViewModel}">
+			<views:EmptyAdditionalInfoView/>
+		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:JointDecisionInfoViewModel}">
+			<views:JointDecisionInfoView/>
+		</DataTemplate>
+	</Window.DataTemplates>
+
+	<Design.DataContext>
+		<rootviewmodels:AdditionalInfoWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid x:Name="RootGrid" Classes="MainGrid">
+		<ContentControl x:Name="AdditionalInfoWindowContentControl" Content="{Binding CurrentViewModel}"
+						Margin="0,0,0,0"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+	</Grid>
+	
+</Window>
