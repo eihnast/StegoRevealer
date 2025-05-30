@@ -203,6 +203,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
     private double _currentImageHeight = 0.0;
 
+    public string ComplexSaTipText
+    {
+        get => _complexSaTipText;
+        private set => this.RaiseAndSetIfChanged(ref _complexSaTipText, value);
+    }
+    private string _complexSaTipText = "Оценка на основе обученного бинарного классификатора для набора признаков: " +
+        "оценка CSA, RS, CKzhA, оценки качества, количество пикселей";
+
     /// <summary>
     /// Существуют ли результаты проведённого стегоанализа
     /// </summary>

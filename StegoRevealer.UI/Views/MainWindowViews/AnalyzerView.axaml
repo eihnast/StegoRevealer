@@ -101,10 +101,17 @@
 							  Margin="20 10 20 10"
 							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30">
 
-							<CheckBox Name="IsComplexMethodChecked" Content="Метод комплексного стегоанализа"
+							<CheckBox Name="IsComplexMethodChecked" Content="Методика комплексного стегоанализа"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="0"
-									  IsChecked="{Binding Path=ComplexMethodSelected}"/>
+									  IsChecked="{Binding Path=ComplexMethodSelected}"
+									  ToolTip.Placement="Pointer" ToolTip.ShowOnDisabled="True">
+									<ToolTip.Tip>
+										<StackPanel>
+											<TextBlock FontSize="15" Text="{Binding Path=ComplexSaTipText}"/>
+										</StackPanel>
+									</ToolTip.Tip>
+								</CheckBox>
 							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат (Chi-Square Attack)"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="1"
