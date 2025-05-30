@@ -209,7 +209,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         private set => this.RaiseAndSetIfChanged(ref _complexSaTipText, value);
     }
     private string _complexSaTipText = "Оценка на основе обученного бинарного классификатора для набора признаков: " +
-        "оценка CSA, RS, CKzhA, оценки качества, количество пикселей";
+        "оценка CSA, RS, CKZhA, оценки качества, количество пикселей";
 
     /// <summary>
     /// Существуют ли результаты проведённого стегоанализа

@@ -144,7 +144,7 @@
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="4"
 									Click="MethodFanParamsBtn_Click"/>
-							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия Жилкина"
+							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия по Жилкину"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="5"
 									  IsChecked="{Binding Path=MethodZcaSelected}"/>
@@ -238,7 +238,7 @@
 							
 							<DockPanel Name="ZcaResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия Жилкина: "
+								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия по Жилкину: "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="ZcaResultValue" Text="Анализ не проводился"
