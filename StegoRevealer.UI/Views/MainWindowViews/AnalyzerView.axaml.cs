@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -285,6 +286,9 @@ public partial class AnalyzerView : UserControl
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
+    private async void JointDesicionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        await _vm.OpenJointDecisionWindow();
+
 
     // Настройки экспандеров (выбор методов и результатов)
     private void MethodsExpander_Expanded(object sender, RoutedEventArgs e)
@@ -352,7 +356,7 @@ public partial class AnalyzerView : UserControl
     private static void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
     private static void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
 
-    private void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsTextToClipboard();
+    private async void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsTextToClipboard();
 
-    private void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsJsonToClipboard();
+    private async void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsJsonToClipboard();
 }

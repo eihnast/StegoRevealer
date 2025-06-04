@@ -477,6 +477,28 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         }
     }
 
+    /// <summary>
+    /// Открытие модального окна схемы совместного вывода
+    /// </summary>
+    public async Task OpenJointDecisionWindow()
+    {
+        var csaResult = _currentJointAnalysisResult?.ChiSquareResult;
+        var rsResult = _currentJointAnalysisResult?.RsResult;
+
+        if (csaResult is null || rsResult is null)
+        {
+            Logger.LogWarning("No results for joint decision window, operation canceled");
+            return;
+        }
+
+        var additionalInfoVm = new AdditionalInfoWindowViewModel();
+        var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
+        additionalInfoVm.OpenJointDecisionInfo(csaResult, rsResult);
+
+        if (_mainWindowViewModel.MainWindow is not null)
+            await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+    }
+
 
     /// <summary>
     /// Создаёт обработчик изображения

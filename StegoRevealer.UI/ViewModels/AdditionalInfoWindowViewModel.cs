@@ -4,6 +4,8 @@ using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
 using StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels;
 using StegoRevealer.UI.Windows;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 
 namespace StegoRevealer.UI.ViewModels;
 
@@ -76,14 +78,13 @@ public class AdditionalInfoWindowViewModel : ViewModelBase
     }
 
 
-    private void SelectJointDecisionInfo(object data)
+    public void OpenJointDecisionInfo(ChiSquareResult csaRes, RsResult rsRes)
     {
-        var paramsVm = GetOrCreateViewModel(typeof(JointDecisionInfoViewModel)) as JointDecisionInfoViewModel;
-        if (paramsVm is not null)
+        var jointDesicionVm = GetOrCreateViewModel(typeof(JointDecisionInfoViewModel)) as JointDecisionInfoViewModel;
+        if (jointDesicionVm is not null)
         {
-            CurrentViewModel = paramsVm;
-            //paramsVm.SetParameters(parameters);
-            //FillParametersDtoAction += () => ParametersDto = paramsVm.CollectParameters();
+            CurrentViewModel = jointDesicionVm;
+            jointDesicionVm.ProcessResults(csaRes, rsRes);
         }
     }
 }

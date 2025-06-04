@@ -195,25 +195,46 @@
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0" Padding="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
-						
-							<DockPanel Name="ChiFullnessBlock" DockPanel.Dock="Top"
+
+							<DockPanel DockPanel.Dock="Top">
+								<Grid RowDefinitions="*,*" ColumnDefinitions="4*,*"
+									  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+									<DockPanel Name="ChiFullnessBlock" Grid.Row="0" Grid.Column="0"
 									   LastChildFill="True" Margin="0 10 0 0">
-								<TextBlock Name="ChiFullnessDesc" Text="Оценка заполненности по методу Хи-квадрат: "
-										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
-										 HorizontalAlignment="Stretch"/>
-								<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
-										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
-							</DockPanel>
-							
-							<DockPanel Name="RsFullnessBlock" DockPanel.Dock="Top"
-									   LastChildFill="True">
-								<TextBlock Name="RsFullnessDesc" Text="Оценка заполненности по методу RS: "
-										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
-										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
-										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left"/>
+										<TextBlock Name="ChiFullnessDesc" Text="Оценка заполненности по методу Хи-квадрат: "
+												 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
+												 HorizontalAlignment="Stretch"/>
+										<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+												   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
+									</DockPanel>
+
+									<DockPanel Name="RsFullnessBlock" Grid.Row="1" Grid.Column="0"
+											   LastChildFill="True">
+										<TextBlock Name="RsFullnessDesc" Text="Оценка заполненности по методу RS: "
+												   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
+												   HorizontalAlignment="Stretch"/>
+										<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+												   DockPanel.Dock="Left"/>
+									</DockPanel>
+									
+									<Button Name="JointDesicionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
+											HorizontalAlignment="Center" VerticalAlignment="Center"
+											HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+											Padding="5 10 5 10" Content="Совместный вывод" TextBlock.TextWrapping="WrapWithOverflow"
+											TextBlock.TextAlignment="Center"
+											ToolTip.ShowOnDisabled="True" ToolTip.Placement="Pointer"
+											Click="JointDesicionOpenBtn_Click">
+										<ToolTip.Tip>
+											<StackPanel>
+												<TextBlock FontSize="15" Text="Методика формирования вывода при совместном применении методов CSA и RS"/>
+											</StackPanel>
+										</ToolTip.Tip>
+									</Button>
+
+								</Grid>
 							</DockPanel>
 
 							<DockPanel Name="SpaFullnessBlock" DockPanel.Dock="Top"
