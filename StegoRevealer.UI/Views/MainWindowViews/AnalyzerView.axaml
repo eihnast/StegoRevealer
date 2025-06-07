@@ -224,7 +224,7 @@
 											HorizontalAlignment="Center" VerticalAlignment="Center"
 											HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
 											Padding="5 10 5 10" Content="Совместный вывод" TextBlock.TextWrapping="WrapWithOverflow"
-											TextBlock.TextAlignment="Center"
+											TextBlock.TextAlignment="Center" IsVisible="False"
 											ToolTip.ShowOnDisabled="True" ToolTip.Placement="Pointer"
 											Click="JointDesicionOpenBtn_Click">
 										<ToolTip.Tip>

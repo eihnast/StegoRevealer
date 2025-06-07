@@ -10,6 +10,16 @@ public class RsCsaO1Graph : Control
 {
     private static SolidColorBrush BackgroundBrush = CommonTools.GetBrush("SrDark");
 
+    private double? _rsValue = null;
+    private double? _csaValue = null;
+
+    public void SetPoint(double rs, double csa)
+    {
+        _rsValue = rs;
+        _csaValue = csa;
+        InvalidateVisual();  // Перерисовать компонент
+    }
+
     public override void Render(DrawingContext context)
     {
         base.Render(context);
@@ -104,6 +114,21 @@ public class RsCsaO1Graph : Control
         // Подписи значений на осях
         canvas.DrawText("4", margin - 10, MapY(4) + 2, smallTextPaint);
         canvas.DrawText("0.1", MapX(0.1), margin - 10, smallTextPaint);
+
+        // Отрисовка заданной точки, если она установлена
+        if (_rsValue.HasValue && _csaValue.HasValue)
+        {
+            float x = MapX(_csaValue.Value);
+            float y = MapY(_rsValue.Value);
+
+            // Нарисовать саму точку (красный круг)
+            canvas.DrawCircle(x, y, 4, new SKPaint
+            {
+                Color = SKColors.Red,
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            });
+        }
 
         // Вставка на Avalonia DrawingContext
         using var snapshot = skSurface.Snapshot();
