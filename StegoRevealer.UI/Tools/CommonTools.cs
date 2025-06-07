@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using SkiaSharp;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
@@ -190,4 +191,7 @@ public static class CommonTools
             return;
         FilterInput(tb, e, strategy);
     }
+
+    public static SKColor MapToSkiaColor(Color color) =>
+        new SKColor(color.R, color.G, color.B, color.A);
 }

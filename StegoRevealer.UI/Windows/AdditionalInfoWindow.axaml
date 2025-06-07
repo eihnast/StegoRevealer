@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
         xmlns:rootviewmodels="clr-namespace:StegoRevealer.UI.ViewModels"
         mc:Ignorable="d"
-		d:DesignWidth="1280" d:DesignHeight="720" Width="1280" Height="720"
+		d:DesignWidth="1280" d:DesignHeight="900" Width="1280" Height="900"
 		WindowStartupLocation="CenterScreen" CanResize="False"
         x:Class="StegoRevealer.UI.Windows.AdditionalInfoWindow"
         Icon="/Assets/AppIcon.ico"

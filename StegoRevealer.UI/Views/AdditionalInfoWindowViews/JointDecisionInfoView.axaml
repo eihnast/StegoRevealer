@@ -25,8 +25,29 @@
 				   Padding="0"/>
 
 			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 0 0"
-						HorizontalAlignment="Center">
-				<cmp:RsCsaGraph Width="500" Height="500"/>
+						Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+				<cmp:RsCsaGraph Width="700" Height="700"/>
+				<DockPanel Width="400" Height="700" Margin="10 0 0 0" LastChildFill="True" VerticalAlignment="Top">
+					<Label Content="Сектор O.1" Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="14"
+						   HorizontalAlignment="Center" VerticalAlignment="Top" DockPanel.Dock="Top"/>
+					<cmp:RsCsaO1Graph Width="300" Height="300" VerticalAlignment="Top" DockPanel.Dock="Top"/>
+					<Label Content="Описание секторов:" Foreground="#FFE0E0E0" FontSize="14" Margin="0 5 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.1 - Пустой контейнер" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.2 - p ≈ оценка по RS, псевдослучайное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.3 - p ≈ оценка по CSA, последовательное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.4 - p ≈ оценка по RS, псевдослучайное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.5 - p > 80%, псевдослучайное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.6 - p ≈ 100%, последовательное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+					<Label Content="О.7 - p ≈ 100%, псевдослучайное встраивание" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
+				</DockPanel>
 			</StackPanel>
 
 		</Grid>
