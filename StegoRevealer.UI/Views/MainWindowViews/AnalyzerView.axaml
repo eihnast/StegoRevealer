@@ -188,7 +188,7 @@
 							
 							<DockPanel Name="AutoDetectionResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="AutoDetectionResultDesc" Text="Стеганографическое встраивание: "
+								<TextBlock Name="AutoDetectionResultDesc" Text="Встраивание согласно методике комплексного стегоанализа: "
 										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										 HorizontalAlignment="Stretch"/>
 								<TextBlock Name="AutoDetectionResultValue" Text="невозможно определить"

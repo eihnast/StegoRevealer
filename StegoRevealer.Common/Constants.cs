@@ -4,7 +4,7 @@ public static class Constants
 {
     public static class ResultsNames
     {
-        public static string HidingDesicionDetection => "Стеганографическое встраивание";
+        public static string HidingDesicionDetection => "Встраивание согласно методике комплексного стегоанализа";
         public static string ChiSqrValue => "Оценка заполненности по методу Хи-квадрат";
         public static string RsValue => "Оценка заполненности по методу RS";
         public static string SpaValue => "Оценка заполненности по методу SPA";
