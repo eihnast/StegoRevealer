@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using SkiaSharp;
+using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
@@ -194,4 +195,34 @@ public static class CommonTools
 
     public static SKColor MapToSkiaColor(Color color) =>
         new SKColor(color.R, color.G, color.B, color.A);
+
+    public static void OpenExplorerFolder(string path)
+    {
+        if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
+            return;
+
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start("explorer", path);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", path);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("xdg-open", path);
+            }
+            else
+            {
+                Logger.LogError("Not supported OS for folder openin method");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
+        }
+    }
 }

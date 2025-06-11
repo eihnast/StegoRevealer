@@ -21,4 +21,9 @@ public partial class SettingsPageView : UserControl
     {
         _vm = CommonTools.GetViewModel<SettingsPageViewModel>(this.DataContext);
     }
+
+    private void OpenLogsFolderBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _vm.OpenLogsFolder();
+    }
 }

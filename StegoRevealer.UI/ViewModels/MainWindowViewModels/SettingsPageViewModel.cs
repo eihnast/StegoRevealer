@@ -26,4 +26,10 @@ public class SettingsPageViewModel : MainWindowViewModelBaseChild
 
     [Experimental]
     public SettingsPageViewModel() : base() { }
+
+
+    public void OpenLogsFolder()
+    {
+        CommonTools.OpenExplorerFolder(Common.Tools.GetOrCreateTempDirPath());
+    }
 }

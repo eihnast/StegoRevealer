@@ -13,11 +13,11 @@
 
 	<!-- Внешняя сетка -->
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-		  ColumnDefinitions="*,2*,*">
-		<StackPanel Margin="0 30 0 0" Grid.Column="1"
-					HorizontalAlignment="Stretch" VerticalAlignment="Top">
+		  ColumnDefinitions="*,3*,*">
+		<Grid Margin="0 30 0 0" Grid.Column="1" ColumnDefinitions="*,60"
+			  HorizontalAlignment="Stretch" VerticalAlignment="Top">
 			<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-					MinHeight="60" CornerRadius="10"
+					MinHeight="60" CornerRadius="10" Grid.Column="0"
 					Background="{StaticResource SrDark}"
 					BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
 				<DockPanel LastChildFill="True" Margin="20 0 20 0"
@@ -34,7 +34,14 @@
 							   DockPanel.Dock="Left"/>
 				</DockPanel>
 			</Border>
-		</StackPanel>
+			<Button Name="OpenLogsFolderBtn" Click="OpenLogsFolderBtn_Click"
+				    Grid.Column="1" Margin="2 0 0 0"
+					HorizontalAlignment="Left" VerticalAlignment="Center"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					MinHeight="50" MinWidth="50">
+				<PathIcon Data="{StaticResource IconFolder}"/>
+			</Button>
+		</Grid>
 	</Grid>
 	<!-- / Внешняя сетка -->
 
