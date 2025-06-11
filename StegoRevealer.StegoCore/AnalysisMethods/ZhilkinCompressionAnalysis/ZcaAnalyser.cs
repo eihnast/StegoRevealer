@@ -163,14 +163,25 @@ public class ZcaAnalyser
         int height = blockCoords.Rd.Y - blockCoords.Lt.Y + 1;
         int width = blockCoords.Rd.X - blockCoords.Lt.X + 1;
 
-        var bitmap = new SKBitmap(width, height);
+        var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
 
-        for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
+        unsafe
         {
-            for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
+            IntPtr ptr = bitmap.GetPixels();
+            byte* pixels = (byte*)ptr;
+
+            for (int y = blockCoords.Lt.Y; y <= blockCoords.Rd.Y; y++)
             {
-                var pixel = Params.Image.ImgArray[y, x];
-                bitmap.SetPixel(x - blockCoords.Lt.X, y - blockCoords.Lt.Y, MapToSKColor(pixel, channel));
+                for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
+                {
+                    ScPixel px = Params.Image.ImgArray[y, x];
+                    int offset = ((y - blockCoords.Lt.Y) * width + (x - blockCoords.Lt.X)) * 4; // 4 байта на пиксель (BGRA)
+
+                    pixels[offset + 0] = px.Blue;
+                    pixels[offset + 1] = px.Green;
+                    pixels[offset + 2] = px.Red;
+                    pixels[offset + 3] = px.Alpha;
+                }
             }
         }
 
@@ -183,14 +194,25 @@ public class ZcaAnalyser
         int height = block.GetLength(0);
         int width = block.GetLength(1);
 
-        var bitmap = new SKBitmap(width, height);
+        var bitmap = new SKBitmap(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
 
-        for (int y = 0; y < height; y++)
+        unsafe
         {
-            for (int x = 0; x < width; x++)
+            IntPtr ptr = bitmap.GetPixels();
+            byte* pixels = (byte*)ptr;
+
+            for (int y = 0; y < height; y++)
             {
-                var pixel = block[y, x];
-                bitmap.SetPixel(x, y, MapToSKColor(pixel, channel));
+                for (int x = 0; x < width; x++)
+                {
+                    ScPixel px = block[y, x];
+                    int offset = (y * width + x) * 4; // 4 байта на пиксель (BGRA)
+
+                    pixels[offset + 0] = px.Blue;
+                    pixels[offset + 1] = px.Green;
+                    pixels[offset + 2] = px.Red;
+                    pixels[offset + 3] = px.Alpha;
+                }
             }
         }
 
