@@ -55,6 +55,26 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     private bool _hasLoadedImage = false;
 
     /// <summary>
+    /// Ширина текущего изображения
+    /// </summary>
+    public double CurrentImageWidth
+    {
+        get => _currentImageWidth;
+        private set => this.RaiseAndSetIfChanged(ref _currentImageWidth, value);
+    }
+    private double _currentImageWidth = 0.0;
+
+    /// <summary>
+    /// Высота текущего изображения
+    /// </summary>
+    public double CurrentImageHeight
+    {
+        get => _currentImageHeight;
+        private set => this.RaiseAndSetIfChanged(ref _currentImageHeight, value);
+    }
+    private double _currentImageHeight = 0.0;
+
+    /// <summary>
     /// Выбран ли метод НЗБ
     /// </summary>
     public bool MethodLsbSelected
@@ -302,7 +322,20 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Текущее выбранное изображение
     /// </summary>
-    public ImageHandler? CurrentImage { get; set; } = null;
+    public ImageHandler? CurrentImage
+    {
+        get => _currentImage;
+        set
+        {
+            _currentImage = value;
+            if (_currentImage is not null)
+            {
+                CurrentImageWidth = _currentImage.Width;
+                CurrentImageHeight = _currentImage.Height;
+            }
+        }
+    }
+    private ImageHandler? _currentImage = null;
 
     // Отображаемое на форме изображение
 

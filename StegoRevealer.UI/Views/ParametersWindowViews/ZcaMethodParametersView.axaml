@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
              mc:Ignorable="d"
-			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500"
+			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500" MinWidth="800" MinHeight="500"
              x:Class="StegoRevealer.UI.Views.ParametersWindowViews.ZcaMethodParametersView">
 
 	<Design.DataContext>
@@ -16,7 +16,7 @@
 			  ColumnDefinitions="*,*" RowDefinitions="40,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры метода анализа сжатия Жилкина"
+			<Label Name="TitleLabel" Content="Параметры метода анализа сжатия по Жилкину"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"

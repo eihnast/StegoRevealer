@@ -203,6 +203,14 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
     private double _currentImageHeight = 0.0;
 
+    public string ComplexSaTipText
+    {
+        get => _complexSaTipText;
+        private set => this.RaiseAndSetIfChanged(ref _complexSaTipText, value);
+    }
+    private string _complexSaTipText = "Оценка на основе обученного бинарного классификатора для набора признаков: " +
+        "оценка CSA, RS, CKZhA, оценки качества, количество пикселей";
+
     /// <summary>
     /// Существуют ли результаты проведённого стегоанализа
     /// </summary>
@@ -467,6 +475,28 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 }
                 break;
         }
+    }
+
+    /// <summary>
+    /// Открытие модального окна схемы совместного вывода
+    /// </summary>
+    public async Task OpenJointDecisionWindow()
+    {
+        var csaResult = _currentJointAnalysisResult?.ChiSquareResult;
+        var rsResult = _currentJointAnalysisResult?.RsResult;
+
+        if (csaResult is null || rsResult is null)
+        {
+            Logger.LogWarning("No results for joint decision window, operation canceled");
+            return;
+        }
+
+        var additionalInfoVm = new AdditionalInfoWindowViewModel();
+        var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
+        additionalInfoVm.OpenJointDecisionInfo(csaResult, rsResult);
+
+        if (_mainWindowViewModel.MainWindow is not null)
+            await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
     }
 
 

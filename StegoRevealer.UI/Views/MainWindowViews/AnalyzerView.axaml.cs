@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -82,6 +83,7 @@ public partial class AnalyzerView : UserControl
         StartAnalysis.IsEnabled = false;  // Блокириуем кнопку запуска СА
         LoadImageButton.IsEnabled = false;  // Блокируем кнопку выбора изображения
         MethodsExpander.IsEnabled = false;  // Блокируем всю панель выбора методов
+        LoadingOverlay.IsVisible = true;
         await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
 
         _vm.ResetResults();  // Сбрасываем результаты
@@ -91,6 +93,7 @@ public partial class AnalyzerView : UserControl
         UpdateResults();  // Обновляем форму результатов
         _vm.IsMethodsOpened = false;  // Переключение экспандера
 
+        LoadingOverlay.IsVisible = false;
         LoadImageButton.IsEnabled = true;  // Снимаем блокировку кнопки выбора изображения
         MethodsExpander.IsEnabled = true;  // Снимаем блокировку всей панели выбора методов
         StartAnalysis.IsEnabled = true;  // Снимаем блокировку кнопки запуска СА
@@ -99,145 +102,156 @@ public partial class AnalyzerView : UserControl
     // Обновление результатов
     private void UpdateResults()
     {
-        if (_vm.HasResults)
+        if (!_vm.HasResults)
+            return;
+
+        // Загрузка результатов
+        var results = _vm.CurrentResults;
+        if (results is null)
+            return;
+
+        // Вывод результатов на форму
+
+        // ChiSqr
+        if (IsMethodStateExecuted(results.MethodChiSqrState))
+            ChiFullnessValue.Text = Common.Tools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
+        else if (results.MethodChiSqrState is SaMethodExecutionState.FatalError)
+            SetErroredResult(ChiFullnessValue, results.ChiSqrErrors);
+
+        // RS
+        if (IsMethodStateExecuted(results.MethodRsState))
+            RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
+        else if (results.MethodRsState is SaMethodExecutionState.FatalError)
+            SetErroredResult(RsFullnessValue, results.RsErrors);
+
+        // SPA
+        if (IsMethodStateExecuted(results.MethodSpaState))
+            SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
+        else if (results.MethodSpaState is SaMethodExecutionState.FatalError)
+            SetErroredResult(SpaFullnessValue, results.SpaErrors);
+
+        // FAN
+        if (IsMethodStateExecuted(results.MethodFanState))
         {
-            // Загрузка результатов
-            var results = _vm.CurrentResults;
-            if (results is null)
-                return;
+            string fanHidingDetectedText = results.IsFanHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            if (results.FanMahalanobisDistance is not null)
+                fanHidingDetectedText += $" ({Math.Round(results.FanMahalanobisDistance.Value, 3)})";
+            var fanHidingDetectedTextBrush = results.IsFanHidingDetected ? BadTextBrush : GoodTextBrush;
+            FanResultValue.Foreground = fanHidingDetectedTextBrush;
+            FanResultValue.Text = fanHidingDetectedText;
+        }
+        else if (results.MethodFanState is SaMethodExecutionState.FatalError)
+            SetErroredResult(FanResultValue, results.FanErrors);
 
-            // Вывод результатов на форму
+        // ZCA
+        if (IsMethodStateExecuted(results.MethodZcaState))
+        {
+            string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
+            ZcaResultValue.Foreground = zcaHidingDetectedTextBrush;
+            ZcaResultValue.Text = zcaHidingDetectedText;
+        }
+        else if (results.MethodZcaState is SaMethodExecutionState.FatalError)
+            SetErroredResult(ZcaResultValue, results.ZcaErrors);
 
-            // ChiSqr
-            if (IsMethodStateExecuted(results.MethodChiSqrState))
-                ChiFullnessValue.Text = Common.Tools.GetValueAsPercents(results.ChiSqrMessageRelativeVolume);
-            else if (results.MethodChiSqrState is SaMethodExecutionState.FatalError)
-                SetErroredResult(ChiFullnessValue, results.ChiSqrErrors);
+        // Kzha
+        if (IsMethodStateExecuted(results.MethodKzhaState))
+        {
+            KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? Constants.ResultsDefaults.Yes : Constants.ResultsDefaults.No;
 
-            // RS
-            if (IsMethodStateExecuted(results.MethodRsState))
-                RsFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.RsMessageRelativeVolume));
-            else if (results.MethodRsState is SaMethodExecutionState.FatalError)
-                SetErroredResult(RsFullnessValue, results.RsErrors);
-
-            // SPA
-            if (IsMethodStateExecuted(results.MethodSpaState))
-                SpaFullnessValue.Text = Common.Tools.GetValueAsPercents(Math.Min(1.0, results.SpaMessageRelativeVolume));
-            else if (results.MethodSpaState is SaMethodExecutionState.FatalError)
-                SetErroredResult(SpaFullnessValue, results.SpaErrors);
-
-            // FAN
-            if (IsMethodStateExecuted(results.MethodFanState))
+            if (results.KzhaSuspiciousIntervalIsFound)
             {
-                string fanHidingDetectedText = results.IsFanHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
-                if (results.FanMahalanobisDistance is not null)
-                    fanHidingDetectedText += $" ({Math.Round(results.FanMahalanobisDistance.Value, 3)})";
-                var fanHidingDetectedTextBrush = results.IsFanHidingDetected ? BadTextBrush : GoodTextBrush;
-                FanResultValue.Foreground = fanHidingDetectedTextBrush;
-                FanResultValue.Text = fanHidingDetectedText;
-            }
-            else if (results.MethodFanState is SaMethodExecutionState.FatalError)
-                SetErroredResult(FanResultValue, results.FanErrors);
+                KzhaBitsNumBlock.IsVisible = true;
+                KzhaSuspiciousIntervalBlock.IsVisible = true;
+                KzhaThresholdBlock.IsVisible = true;
+                KzhaCoeffsBlock.IsVisible = true;
+                KzhaExtractedDataBlock.IsVisible = true;
 
-            // ZCA
-            if (IsMethodStateExecuted(results.MethodZcaState))
-            {
-                string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
-                var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
-                ZcaResultValue.Foreground = zcaHidingDetectedTextBrush;
-                ZcaResultValue.Text = zcaHidingDetectedText;
-            }
-            else if (results.MethodZcaState is SaMethodExecutionState.FatalError)
-                SetErroredResult(ZcaResultValue, results.ZcaErrors);
-
-            // Kzha
-            if (IsMethodStateExecuted(results.MethodKzhaState))
-            {
-                KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? Constants.ResultsDefaults.Yes : Constants.ResultsDefaults.No;
-
-                if (results.KzhaSuspiciousIntervalIsFound)
+                if (results.KzhaMessageBitsVolume > 0.0)
                 {
-                    KzhaBitsNumBlock.IsVisible = true;
-                    KzhaSuspiciousIntervalBlock.IsVisible = true;
-                    KzhaThresholdBlock.IsVisible = true;
-                    KzhaCoeffsBlock.IsVisible = true;
-                    KzhaExtractedDataBlock.IsVisible = true;
+                    KzhaBitsNumBlock.IsEnabled = true;
+                    KzhaBitsNumValue.Text = results.KzhaMessageBitsVolume.ToString();
+                }
 
-                    if (results.KzhaMessageBitsVolume > 0.0)
-                    {
-                        KzhaBitsNumBlock.IsEnabled = true;
-                        KzhaBitsNumValue.Text = results.KzhaMessageBitsVolume.ToString();
-                    }
+                if (results.KzhaThreshold > 0.0)
+                {
+                    KzhaThresholdBlock.IsEnabled = true;
+                    KzhaThresholdValue.Text = Common.Tools.GetFormattedDouble(results.KzhaThreshold);
+                }
 
-                    if (results.KzhaThreshold > 0.0)
-                    {
-                        KzhaThresholdBlock.IsEnabled = true;
-                        KzhaThresholdValue.Text = Common.Tools.GetFormattedDouble(results.KzhaThreshold);
-                    }
+                // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
+                bool kzhaHasRealData = results.KzhaMessageBitsVolume > 0.0 && results.KzhaThreshold > 0.0;
 
-                    // Если порог или предполагаемое количество бит равно 0, то остальные данные явно неактуальны
-                    bool kzhaHasRealData = results.KzhaMessageBitsVolume > 0.0 && results.KzhaThreshold > 0.0;
+                if (kzhaHasRealData && results.KzhaCoefficients is not null)
+                {
+                    KzhaCoeffsBlock.IsEnabled = true;
+                    KzhaCoeffsValue.Text = results.KzhaCoefficients.Value.ToString();
+                }
 
-                    if (kzhaHasRealData && results.KzhaCoefficients is not null)
-                    {
-                        KzhaCoeffsBlock.IsEnabled = true;
-                        KzhaCoeffsValue.Text = results.KzhaCoefficients.Value.ToString();
-                    }
+                if (kzhaHasRealData && results.KzhaSuspiciousInterval is not null)
+                {
+                    KzhaSuspiciousIntervalBlock.IsEnabled = true;
+                    KzhaSuspiciousIntervalValue.Text =
+                        $"[{results.KzhaSuspiciousInterval.Value.leftInd}, {results.KzhaSuspiciousInterval.Value.rightInd}]";
+                }
 
-                    if (kzhaHasRealData && results.KzhaSuspiciousInterval is not null)
-                    {
-                        KzhaSuspiciousIntervalBlock.IsEnabled = true;
-                        KzhaSuspiciousIntervalValue.Text =
-                            $"[{results.KzhaSuspiciousInterval.Value.leftInd}, {results.KzhaSuspiciousInterval.Value.rightInd}]";
-                    }
-
-                    if (results.KzhaExtractedData is not null)
-                    {
-                        KzhaExtractedDataBlock.IsEnabled = true;
-                        KzhaExtractedDataLabelValue.IsVisible = false;
-                        KzhaExtractedDataValue.IsVisible = true;
-                        KzhaExtractedDataValue.Text = results.KzhaExtractedData;
-                    }
+                if (results.KzhaExtractedData is not null)
+                {
+                    KzhaExtractedDataBlock.IsEnabled = true;
+                    KzhaExtractedDataLabelValue.IsVisible = false;
+                    KzhaExtractedDataValue.IsVisible = true;
+                    KzhaExtractedDataValue.Text = results.KzhaExtractedData;
                 }
             }
-            else if (results.MethodKzhaState is SaMethodExecutionState.FatalError)
-                SetErroredResult(KzhaIntervalFoundedValue, results.KzhaErrors);
+        }
+        else if (results.MethodKzhaState is SaMethodExecutionState.FatalError)
+            SetErroredResult(KzhaIntervalFoundedValue, results.KzhaErrors);
 
-            if (IsMethodStateExecuted(results.StatmCalcState))
-            {
-                // Statm
-                StatResultsNoise2Value.Text = Common.Tools.GetLongFormattedDouble(results.StatmNoiseValue);
-                StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
-                StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
-                StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
-                StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
-                StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
-            }
-            else if (results.StatmCalcState is SaMethodExecutionState.FatalError)
-            {
-                SetErroredResult(StatResultsNoise2Value, results.StatmErrors);
-                SetErroredResult(StatResultsSharpnessValue, results.StatmErrors);
-                SetErroredResult(StatResultsBlurValue, results.StatmErrors);
-                SetErroredResult(StatResultsContrastValue, results.StatmErrors);
-                SetErroredResult(StatResultsEntropyShennonValue, results.StatmErrors);
-                SetErroredResult(StatResultsEntropyRenyiValue, results.StatmErrors);
-            }
-
-
-            // Затрачено времени
-            ElapsedTimeValue.Text = Common.Tools.GetElapsedTime(results.ElapsedTime);
+        if (IsMethodStateExecuted(results.StatmCalcState))
+        {
+            // Statm
+            StatResultsNoise2Value.Text = Common.Tools.GetLongFormattedDouble(results.StatmNoiseValue);
+            StatResultsSharpnessValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmSharpnessValue);
+            StatResultsBlurValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmBlurValue);
+            StatResultsContrastValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmContrastValue);
+            StatResultsEntropyShennonValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyShennonValue);
+            StatResultsEntropyRenyiValue.Text = Common.Tools.GetLongFormattedDouble(results.StatmEntropyRenyiValue);
+        }
+        else if (results.StatmCalcState is SaMethodExecutionState.FatalError)
+        {
+            SetErroredResult(StatResultsNoise2Value, results.StatmErrors);
+            SetErroredResult(StatResultsSharpnessValue, results.StatmErrors);
+            SetErroredResult(StatResultsBlurValue, results.StatmErrors);
+            SetErroredResult(StatResultsContrastValue, results.StatmErrors);
+            SetErroredResult(StatResultsEntropyShennonValue, results.StatmErrors);
+            SetErroredResult(StatResultsEntropyRenyiValue, results.StatmErrors);
+        }
 
 
-            // Вывод о наличии встраивания
-            if (IsMethodStateExecuted(results.ComplexMethodState))
-            {
-                string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
-                var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
-                AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
-                AutoDetectionResultValue.Text = hidingDecisionText;
-            }
-            else if (results.ComplexMethodState is SaMethodExecutionState.FatalError)
-                SetErroredResult(AutoDetectionResultValue, results.ComplexMethodErrors);
+        // Затрачено времени
+        ElapsedTimeValue.Text = Common.Tools.GetElapsedTime(results.ElapsedTime);
+
+
+        // Вывод о наличии встраивания
+        if (IsMethodStateExecuted(results.ComplexMethodState))
+        {
+            string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
+            AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
+            AutoDetectionResultValue.Text = hidingDecisionText;
+        }
+        else if (results.ComplexMethodState is SaMethodExecutionState.FatalError)
+            SetErroredResult(AutoDetectionResultValue, results.ComplexMethodErrors);
+
+        // Проверка доступа к методике формирования совместного вывода RS + CSA
+        if ((results.MethodChiSqrState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors) && 
+            (results.MethodRsState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors))
+        {
+            JointDesicionOpenBtn.IsVisible = true;
+        }
+        else
+        {
+            JointDesicionOpenBtn.IsVisible = false;
         }
     }
 
@@ -282,6 +296,9 @@ public partial class AnalyzerView : UserControl
         await _vm.OpenParametersWindow(AnalysisMethod.Zca);
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
+
+    private async void JointDesicionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        await _vm.OpenJointDecisionWindow();
 
 
     // Настройки экспандеров (выбор методов и результатов)
@@ -350,7 +367,7 @@ public partial class AnalyzerView : UserControl
     private static void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
     private static void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
 
-    private void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsTextToClipboard();
+    private async void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsTextToClipboard();
 
-    private void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.CopyResultsJsonToClipboard();
+    private async void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsJsonToClipboard();
 }

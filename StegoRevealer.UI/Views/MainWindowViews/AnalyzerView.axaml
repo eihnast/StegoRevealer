@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
              mc:Ignorable="d" 
-			 d:DesignWidth="1200" d:DesignHeight="610" MinWidth="1200" MinHeight="610"
+			 d:DesignWidth="1250" d:DesignHeight="650" MinWidth="1250" MinHeight="650"
              x:Class="StegoRevealer.UI.Views.MainWindowViews.AnalyzerView">
 
 	<Design.DataContext>
@@ -101,10 +101,17 @@
 							  Margin="20 10 20 10"
 							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30">
 
-							<CheckBox Name="IsComplexMethodChecked" Content="Метод комплексного стегоанализа"
+							<CheckBox Name="IsComplexMethodChecked" Content="Методика комплексного стегоанализа"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="0"
-									  IsChecked="{Binding Path=ComplexMethodSelected}"/>
+									  IsChecked="{Binding Path=ComplexMethodSelected}"
+									  ToolTip.Placement="Pointer" ToolTip.ShowOnDisabled="True">
+									<ToolTip.Tip>
+										<StackPanel>
+											<TextBlock FontSize="15" Text="{Binding Path=ComplexSaTipText}"/>
+										</StackPanel>
+									</ToolTip.Tip>
+								</CheckBox>
 							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат (Chi-Square Attack)"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="1"
@@ -137,7 +144,7 @@
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="4"
 									Click="MethodFanParamsBtn_Click"/>
-							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия Жилкина"
+							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия по Жилкину"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="5"
 									  IsChecked="{Binding Path=MethodZcaSelected}"/>
@@ -181,32 +188,53 @@
 							
 							<DockPanel Name="AutoDetectionResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="AutoDetectionResultDesc" Text="Стеганографическое встраивание: "
+								<TextBlock Name="AutoDetectionResultDesc" Text="Встраивание согласно методике комплексного стегоанализа: "
 										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										 HorizontalAlignment="Stretch"/>
 								<TextBlock Name="AutoDetectionResultValue" Text="невозможно определить"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0" Padding="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
-						
-							<DockPanel Name="ChiFullnessBlock" DockPanel.Dock="Top"
+
+							<DockPanel DockPanel.Dock="Top">
+								<Grid RowDefinitions="*,*" ColumnDefinitions="4*,*"
+									  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+									<DockPanel Name="ChiFullnessBlock" Grid.Row="0" Grid.Column="0"
 									   LastChildFill="True" Margin="0 10 0 0">
-								<TextBlock Name="ChiFullnessDesc" Text="Оценка заполненности по методу Хи-квадрат: "
-										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
-										 HorizontalAlignment="Stretch"/>
-								<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
-										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
-							</DockPanel>
-							
-							<DockPanel Name="RsFullnessBlock" DockPanel.Dock="Top"
-									   LastChildFill="True">
-								<TextBlock Name="RsFullnessDesc" Text="Оценка заполненности по методу RS: "
-										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
-										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
-										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
-										   DockPanel.Dock="Left"/>
+										<TextBlock Name="ChiFullnessDesc" Text="Оценка заполненности по методу Хи-квадрат: "
+												 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
+												 HorizontalAlignment="Stretch"/>
+										<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+												   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
+									</DockPanel>
+
+									<DockPanel Name="RsFullnessBlock" Grid.Row="1" Grid.Column="0"
+											   LastChildFill="True">
+										<TextBlock Name="RsFullnessDesc" Text="Оценка заполненности по методу RS: "
+												   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
+												   HorizontalAlignment="Stretch"/>
+										<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+												   DockPanel.Dock="Left"/>
+									</DockPanel>
+									
+									<Button Name="JointDesicionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
+											HorizontalAlignment="Center" VerticalAlignment="Center"
+											HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+											Padding="5 10 5 10" Content="Совместный вывод" TextBlock.TextWrapping="WrapWithOverflow"
+											TextBlock.TextAlignment="Center" IsVisible="False"
+											ToolTip.ShowOnDisabled="True" ToolTip.Placement="Pointer"
+											Click="JointDesicionOpenBtn_Click">
+										<ToolTip.Tip>
+											<StackPanel>
+												<TextBlock FontSize="15" Text="Методика формирования вывода при совместном применении методов CSA и RS"/>
+											</StackPanel>
+										</ToolTip.Tip>
+									</Button>
+
+								</Grid>
 							</DockPanel>
 
 							<DockPanel Name="SpaFullnessBlock" DockPanel.Dock="Top"
@@ -231,7 +259,7 @@
 							
 							<DockPanel Name="ZcaResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия Жилкина: "
+								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия по Жилкину: "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="ZcaResultValue" Text="Анализ не проводился"
@@ -448,6 +476,17 @@
 					Click="StartAnalysis_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
 		</Grid>
 		<!-- / Внутренняя сетка -->
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="False" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="400" Height="40"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
 	</Grid>
 	<!-- / Внешняя сетка -->
 	

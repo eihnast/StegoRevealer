@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
         xmlns:rootviewmodels="clr-namespace:StegoRevealer.UI.ViewModels"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-		d:DesignWidth="1200" d:DesignHeight="670" MinWidth="1200" MinHeight="670"
+		d:DesignWidth="1250" d:DesignHeight="700" MinWidth="1250" MinHeight="700" Width="1250" Height="700"
         x:Class="StegoRevealer.UI.Windows.MainWindow"
         Icon="/Assets/AppIcon.ico"
         Title="Stego Revealer">
@@ -73,7 +73,7 @@
 				<Rectangle Margin="15 0 15 0" Height="1" Fill="{StaticResource SrDarkMiddle}"/>
 			</StackPanel>
 		</StackPanel>
-		<ContentControl x:Name="MainWindowContentControl" Content="{Binding CurrentViewModel}"
+		<ContentControl x:Name="MainWindowContentControl" Content="{Binding CurrentViewModel}" MinHeight="650"
 						Margin="0,0,0,0" Grid.Row="1"
 						HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 						VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
