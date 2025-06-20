@@ -515,9 +515,9 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+            Logger.LogError($"Error while creating image handler for '{path}': {ex.Message}");
         }
 
         return false;

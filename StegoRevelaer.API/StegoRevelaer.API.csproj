@@ -49,6 +49,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
 		<ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
 	</ItemGroup>
 

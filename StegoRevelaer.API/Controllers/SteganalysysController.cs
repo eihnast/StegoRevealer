@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using SharpCompress.Common;
+using SkiaSharp;
+using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.FanAnalysis;
@@ -12,7 +15,12 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.DecisionModule;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevelaer.API.Entities.RequestData;
+using System.CommandLine;
+using System.IO;
+using System.Net;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevelaer.API.Controllers;
 
@@ -33,11 +41,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
 
             ComplexSaMethodResult? result = null;
@@ -52,7 +60,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -62,11 +70,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
 
             var jointAnalysisParams = new JointAnalysisMethodsParameters();
@@ -87,7 +95,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -97,11 +105,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             ChiSquareResult? result = null;
             var chiSqr = new ChiSquareAnalyser(image);
@@ -111,7 +119,36 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CsaAsync(CsaRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            ChiSquareResult? result = null;
+            var csaParams = request.CreateParameters(image);
+            var csa = new ChiSquareAnalyser(csaParams);
+            await Task.Run(() => result = csa.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true 
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -121,11 +158,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             RsResult? result = null;
             var rs = new RsAnalyser(image);
@@ -135,7 +172,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -145,11 +182,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             SpaResult? result = null;
             var spa = new SpaAnalyser(image);
@@ -159,7 +196,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -169,11 +206,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             FanResult? result = null;
             var fan = new FanAnalyser(image);
@@ -183,7 +220,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -193,11 +230,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             KzhaResult? result = null;
             var kzha = new KzhaAnalyser(image);
@@ -207,7 +244,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -217,11 +254,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             ZcaResult? result = null;
             var zca = new ZcaAnalyser(image);
@@ -231,7 +268,7 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
@@ -241,11 +278,11 @@ public class SteganalysysController : ControllerBase
         try
         {
             if (string.IsNullOrEmpty(path))
-                return GetErrorResult("Передан пустой путь изображения");
+                return GetBadRequest("Передан пустой путь изображения");
 
-            var image = new ImageHandler(path);
+            var image = CreateImageHandler(path);
             if (image is null)
-                return GetErrorResult("Не удалось создать обработчик изображения");
+                return GetBadRequest("Не удалось создать обработчик изображения");
 
             StatmResult? result = null;
             var statm = new StatmAnalyser(image);
@@ -256,15 +293,110 @@ public class SteganalysysController : ControllerBase
         }
         catch (Exception e)
         {
-            return GetErrorResult(e.Message);
+            return GetBadRequest(e.Message);
         }
     }
 
-    private ContentResult GetErrorResult(string message) =>
+    private ContentResult GetSimpleResult(string message, int code = 400) =>
         new ContentResult()
         {
             Content = message ?? string.Empty,
             ContentType = "text/plain; charset=utf-8",
-            StatusCode = 400
+            StatusCode = code
         };
+
+    private ContentResult GetNotFound(string message) => GetSimpleResult(message, 404);
+    private ContentResult GetBadRequest(string message) => GetSimpleResult(message, 400);
+
+    private async Task<string?> TryGetImage(BaseAnalysisRequest baseRequest)
+    {
+        if (!string.IsNullOrEmpty(baseRequest.ImageUrl))
+        {
+            if (Tools.IsWebPath(baseRequest.ImageUrl))
+            {
+                string filename = Path.GetFileName(baseRequest.ImageUrl);
+                string tempFilename = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + Path.GetExtension(filename);
+                string tempPath = Path.Combine(Tools.GetOrCreateTempDirPath(), tempFilename);
+
+                try
+                {
+                    using var client = new HttpClient();
+                    using var stream = await client.GetStreamAsync(baseRequest.ImageUrl);
+                    using var fs = new FileStream(tempPath, FileMode.OpenOrCreate);
+                    await stream.CopyToAsync(fs);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while loading image by url '{baseRequest.ImageUrl}': {ex.Message}");
+                    return null;
+                }
+
+                TempManager.Instance.RememberTempImage(baseRequest.ImageUrl, tempPath);
+                return tempPath;
+            }
+            else if (Tools.IsLocalPath(baseRequest.ImageUrl))
+            {
+                try
+                {
+                    var tempPath = Tools.CopyFileToTemp(baseRequest.ImageUrl);
+                    if (!string.IsNullOrEmpty(tempPath))
+                    {
+                        TempManager.Instance.RememberTempImage(baseRequest.ImageUrl, tempPath);
+                        return tempPath;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while loading local image '{baseRequest.ImageUrl}': {ex.Message}");
+                    return null;
+                }
+            }
+            else
+            {
+                Logger.LogError($"Error while loading image: cannot correctly handle ImageUrl");
+            }
+
+            return null;
+        }
+        else if (!string.IsNullOrEmpty(baseRequest.ImageData))
+        {
+            var data = Convert.FromBase64String(baseRequest.ImageData);
+
+            string tempFilename = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".png";
+            string tempPath = Path.Combine(Tools.GetOrCreateTempDirPath(), tempFilename);
+
+            try
+            {
+                if (!Tools.TrySaveImageFromBytes(data, tempPath))
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error while loading base64 encoded image: {ex.Message}");
+                return null;
+            }
+
+            TempManager.Instance.RememberTempImage(Tools.GetStartOfBase64(baseRequest.ImageData), tempPath);
+            return tempPath;
+        }
+
+        return null;
+    }
+
+    private ImageHandler? CreateImageHandler(string imgPath)
+    {
+        try
+        {
+            var handler = new ImageHandler(imgPath);
+            TempManager.Instance.RememberHandler(handler);
+            Logger.LogInfo($"Loaded new image for steganalysis: {handler.ImgPath}");
+            return handler;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Error while creating image handler for '{imgPath}': {ex.Message}");
+        }
+
+        return null;
+    }
 }

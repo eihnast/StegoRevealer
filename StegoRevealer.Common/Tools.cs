@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using SkiaSharp;
 
 namespace StegoRevealer.Common;
 
@@ -101,6 +102,22 @@ public static class Tools
         return false;
     }
 
+    public static bool TrySaveImageFromBytes(byte[] imageData, string imgPath)
+    {
+        using var skStream = new SKMemoryStream(imageData);
+        using var skBitmap = SKBitmap.Decode(skStream);
+
+        if (skBitmap == null)
+            return false;
+
+        using var image = SKImage.FromBitmap(skBitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var fileStream = File.OpenWrite(imgPath);
+        data.SaveTo(fileStream);
+
+        return true;
+    }
+
     public static bool IsPathsEquals(string? path1, string? path2)
     {
         if (path1 == path2)
@@ -153,4 +170,9 @@ public static class Tools
     public static string GetValueAsPercents(double? value) => value is null ? $"{null}" : string.Format("{0:P2}", value);
     public static string GetFormattedDouble(double? value) => value is null ? $"{null}" : string.Format("{0:f2}", value);
     public static string GetLongFormattedDouble(double? value) => value is null or double.NaN ? $"–" : (value == 0.0 ? "0,0" : string.Format("{0:F5}", value));
+
+    public static string GetStartOfBase64(string base64String) => base64String.Length > 25 ? base64String[..25] : base64String;
+
+    public static bool IsLocalPath(string path) => new Uri(path).IsFile;
+    public static bool IsWebPath(string path) => path.StartsWith(@"http://") || path.StartsWith(@"https://") || path.StartsWith(@"frp://");
 }
