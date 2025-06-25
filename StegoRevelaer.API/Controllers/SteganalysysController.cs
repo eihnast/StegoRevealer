@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SharpCompress.Common;
-using SkiaSharp;
 using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ComplexAnalysis;
@@ -13,14 +11,8 @@ using StegoRevealer.StegoCore.AnalysisMethods.StatisticalMetrics.Entities;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Entities;
-using StegoRevealer.StegoCore.DecisionModule;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevelaer.API.Entities.RequestData;
-using System.CommandLine;
-using System.IO;
-using System.Net;
-using System.Security.Cryptography;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevelaer.API.Controllers;
 
@@ -34,9 +26,10 @@ public class SteganalysysController : ControllerBase
     {
         _logger = logger;
     }
-
+    
     [HttpGet]
-    public async Task<IActionResult> GetDecisionAsync(string path, bool verboseResult = false)
+    [Route("api/sa/getDecision")]
+    public async Task<IActionResult> ComplexSsaAsync(string path, bool verboseResult = false)
     {
         try
         {
@@ -64,7 +57,38 @@ public class SteganalysysController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [Route("api/sa/getDecision")]
+    public async Task<IActionResult> ComplexSsaAsync(ComplexSsaRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            ComplexSaMethodResult? result = null;
+            var complexSsaParams = request.CreateParameters(image);
+            var complexSsa = new ComplexSaMethodAnalyser(complexSsaParams);
+            await Task.Run(() => result = complexSsa.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
     [HttpGet]
+    [Route("api/sa")]
     public async Task<IActionResult> FullAnalysisAsync(string path)
     {
         try
@@ -92,6 +116,35 @@ public class SteganalysysController : ControllerBase
             var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
             return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("api/sa")]
+    public async Task<IActionResult> FullAnalysisAsync(FullAnalysisRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            var jointAnalysisParams = request.CreateParameters(image);
+            var result = await JointAnalysisStarter.Start(jointAnalysisParams);
+
+            var errors = result?.CollectErrors();
+            return new JsonResult(errors is null || errors.Count == 0
+                ? new { Result = result, Errors = errors }
+                : result);
         }
         catch (Exception e)
         {
@@ -176,6 +229,35 @@ public class SteganalysysController : ControllerBase
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> RsAsync(RsRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            RsResult? result = null;
+            var rsParams = request.CreateParameters(image);
+            var rs = new RsAnalyser(rsParams);
+            await Task.Run(() => result = rs.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> SpaAsync(string path)
     {
@@ -193,6 +275,35 @@ public class SteganalysysController : ControllerBase
             await Task.Run(() => result = spa.Analyse());
 
             return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SpaAsync(SpaRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            SpaResult? result = null;
+            var spaParams = request.CreateParameters(image);
+            var spa = new SpaAnalyser(spaParams);
+            await Task.Run(() => result = spa.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
         }
         catch (Exception e)
         {
@@ -224,6 +335,35 @@ public class SteganalysysController : ControllerBase
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> FanAsync(FanRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            FanResult? result = null;
+            var fanParams = request.CreateParameters(image);
+            var fan = new FanAnalyser(fanParams);
+            await Task.Run(() => result = fan.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> CkzhaAsync(string path)
     {
@@ -241,6 +381,35 @@ public class SteganalysysController : ControllerBase
             await Task.Run(() => result = kzha.Analyse());
 
             return new JsonResult(result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CkzhaAsync(CkzhaRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            KzhaResult? result = null;
+            var kzhaParams = request.CreateParameters(image);
+            var kzha = new KzhaAnalyser(kzhaParams);
+            await Task.Run(() => result = kzha.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
         }
         catch (Exception e)
         {
@@ -272,6 +441,35 @@ public class SteganalysysController : ControllerBase
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> ZcaAsync(ZcaRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            ZcaResult? result = null;
+            var zcaParams = request.CreateParameters(image);
+            var zca = new ZcaAnalyser(zcaParams);
+            await Task.Run(() => result = zca.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> StatmAsync(string path)
     {
@@ -296,6 +494,38 @@ public class SteganalysysController : ControllerBase
             return GetBadRequest(e.Message);
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> StatmAsync(StatmRequest request)
+    {
+        try
+        {
+            var imgPath = await TryGetImage(request);
+
+            if (string.IsNullOrEmpty(imgPath))
+                return GetBadRequest("Не удалось загрузить указанное изображение");
+
+            var image = CreateImageHandler(imgPath);
+            if (image is null)
+                return GetBadRequest("Не удалось создать обработчик изображения");
+
+            StatmResult? result = null;
+            var statmParams = request.CreateParameters(image);
+            var statm = new StatmAnalyser(statmParams);
+            await Task.Run(() => result = statm.Analyse());
+
+            return new JsonResult(result?.HasErrors is null or true
+                ? new { Result = result, Errors = result?.GetErrors() }
+                : result);
+        }
+        catch (Exception e)
+        {
+            return GetBadRequest(e.Message);
+        }
+    }
+
+
+    /* HELPERS */
 
     private ContentResult GetSimpleResult(string message, int code = 400) =>
         new ContentResult()
