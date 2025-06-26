@@ -1,3 +1,4 @@
+using StegoRevealer.Common;
 using StegoRevelaer.API.Services;
 
 namespace StegoRevelaer.API;
@@ -6,6 +7,8 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        Logger.LogInfo("Starting StegoRevelaer API...");
+
         var config = ApiConfigurator.Instance.ApiConfig;
         var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,7 @@ public static class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
+        Logger.LogInfo("Building StegoRevelaer API Host...");
 
         if (app.Environment.IsDevelopment())
         {
@@ -26,5 +30,6 @@ public static class Program
         app.MapControllers();
 
         app.Run();
+        Logger.LogInfo("StegoRevelaer API started");
     }
 }
