@@ -7,6 +7,7 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        Logger.FileSuffix = "API";
         Logger.LogInfo("Starting StegoRevelaer API...");
 
         var config = ApiConfigurator.Instance.ApiConfig;
@@ -29,7 +30,7 @@ public static class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        app.Run();
         Logger.LogInfo("StegoRevelaer API started");
+        app.Run();
     }
 }

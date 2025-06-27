@@ -35,6 +35,8 @@ public class Logger : IDisposable
         { MessageType.Error, "[Error] " }
     };
 
+    public static string FileSuffix { get; set; } = string.Empty;
+
 
     public static void Log(string message, MessageType type, bool lineFeed = true) => Instance.LogInner(message, type, lineFeed);
     public static void LogInfo(string message) => Log(message, MessageType.Info);
@@ -86,7 +88,7 @@ public class Logger : IDisposable
         {
             string tempDir = Tools.GetOrCreateTempDirPath();
 
-            string logName = $"sr_log_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
+            string logName = $"sr_log{(string.IsNullOrEmpty(FileSuffix) ? "" : $"_{FileSuffix}")}_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
             string logPath = Path.Combine(tempDir, logName);
 
             _logWriter = new StreamWriter(logPath, append: false);
