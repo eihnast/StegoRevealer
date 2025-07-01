@@ -30,7 +30,7 @@ public static class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        Logger.LogInfo("StegoRevelaer API started");
+        Logger.LogInfo($"StegoRevelaer API started at {DateTime.Now}");
         app.Run();
     }
 }
