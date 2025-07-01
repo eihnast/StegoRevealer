@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.Common;
+﻿using System.Diagnostics;
+
+namespace StegoRevealer.Common;
 
 public class Logger : IDisposable
 {
@@ -20,6 +22,11 @@ public class Logger : IDisposable
             return _instance;
         }
     }
+
+    private static Stopwatch _timer = Stopwatch.StartNew();
+    private const long MaxLogTime = 1000 * 5; // 1000 * 60 * 60 * 2; // 2 часа
+
+    public static string LogName { get; private set; } = string.Empty;
 
     public enum MessageType
     {
@@ -88,11 +95,13 @@ public class Logger : IDisposable
         {
             string tempDir = Tools.GetOrCreateTempDirPath();
 
-            string logName = $"sr_log{(string.IsNullOrEmpty(FileSuffix) ? "" : $"_{FileSuffix}")}_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
-            string logPath = Path.Combine(tempDir, logName);
+            LogName = $"sr_log{(string.IsNullOrEmpty(FileSuffix) ? "" : $"_{FileSuffix}")}_{DateTime.Now:yy-MM-dd-HH-mm-ss}.log";
+            string logPath = Path.Combine(tempDir, LogName);
 
             _logWriter = new StreamWriter(logPath, append: false);
             _logWasCreated = true;
+
+            _timer = Stopwatch.StartNew();
         }
         catch
         {
@@ -110,6 +119,18 @@ public class Logger : IDisposable
     {
         if (_logWriter is null)
             CheckSettingAndTryCreateLog();
+        
+        if (_timer.ElapsedMilliseconds >= MaxLogTime)
+        {
+            _timer.Restart();
+
+            string oldLogName = LogName;
+            CloseLog();
+            CheckSettingAndTryCreateLog();
+
+            LogInner($"This log is a continuation of the '{LogName}' (cut-off log time is {MaxLogTime} ms)", MessageType.Info, lineFeed: true);
+            //_logWriter?.WriteLine($"This log is a continuation of the '{LogName}' (cut-off log time is {MaxLogTime} ms)");
+        }
 
         if (_logWriter is not null)
         {
@@ -126,6 +147,14 @@ public class Logger : IDisposable
                 // Любая ошибка записи в лог на этом этапе игнорируется, т.к. записать в лог её нельзя, но это недостаточно критично для завершения программы
             }
         }
+    }
+
+    private void CloseLog()
+    {
+        _logWriter?.Close();
+        _logWriter?.Dispose();
+        _logWriter = null;
+        _logWasCreated = false;
     }
 
     private void LogInner(string message, MessageType type, bool lineFeed)
