@@ -21,6 +21,15 @@ public static class Program
         var app = builder.Build();
         Logger.LogInfo("Building StegoRevelaer API Host...");
 
+        app.Lifetime.ApplicationStopping.Register(() =>
+        {
+            Logger.LogInfo("StegoRevelaer API is stopping...");
+            ApiConfigurator.SaveConfig();
+            TempManager.Instance.DeleteImageHandlers();
+            TempManager.Instance.DeleteTempImages();
+            Logger.LogInfo("StegoRevelaer API stopped successfully.");
+        });
+
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
@@ -30,7 +39,7 @@ public static class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        Logger.LogInfo($"StegoRevelaer API started at {DateTime.Now}");
+        Logger.LogInfo($"StegoRevelaer API started at {DateTime.Now}.");
         app.Run();
     }
 }
