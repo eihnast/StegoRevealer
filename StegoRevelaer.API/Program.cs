@@ -21,14 +21,7 @@ public static class Program
         var app = builder.Build();
         Logger.LogInfo("Building StegoRevelaer API Host...");
 
-        app.Lifetime.ApplicationStopping.Register(() =>
-        {
-            Logger.LogInfo("StegoRevelaer API is stopping...");
-            ApiConfigurator.SaveConfig();
-            TempManager.Instance.DeleteImageHandlers();
-            TempManager.Instance.DeleteTempImages();
-            Logger.LogInfo("StegoRevelaer API stopped successfully.");
-        });
+        RegisterClosingOperations(app.Lifetime);
 
         if (app.Environment.IsDevelopment())
         {
@@ -41,5 +34,22 @@ public static class Program
 
         Logger.LogInfo($"StegoRevelaer API started at {DateTime.Now}.");
         app.Run();
+    }
+
+    private static void ExecuteClosingOperations()
+    {
+        Logger.LogInfo("StegoRevelaer API is stopping...");
+        ApiConfigurator.SaveConfig();
+        TempManager.Instance.DeleteImageHandlers();
+        TempManager.Instance.DeleteTempImages();
+        Logger.LogInfo("StegoRevelaer API stopped successfully.");
+    }
+
+    private static void RegisterClosingOperations(this IHostApplicationLifetime lifetime)
+    {
+        lifetime.ApplicationStopping.Register(ExecuteClosingOperations);
+        AppDomain.CurrentDomain.ProcessExit += (s, e) => ExecuteClosingOperations();
+        AppDomain.CurrentDomain.UnhandledException += (s, e) => ExecuteClosingOperations();
+        TaskScheduler.UnobservedTaskException += (s, e) => ExecuteClosingOperations();
     }
 }
