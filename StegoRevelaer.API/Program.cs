@@ -5,6 +5,8 @@ namespace StegoRevelaer.API;
 
 public static class Program
 {
+    private static bool ClosingOperationsExecuted = false;
+
     public static void Main(string[] args)
     {
         Logger.FileSuffix = "API";
@@ -38,11 +40,16 @@ public static class Program
 
     private static void ExecuteClosingOperations()
     {
-        Logger.LogInfo("StegoRevelaer API is stopping...");
-        ApiConfigurator.SaveConfig();
-        TempManager.Instance.DeleteImageHandlers();
-        TempManager.Instance.DeleteTempImages();
-        Logger.LogInfo("StegoRevelaer API stopped successfully.");
+        if (!ClosingOperationsExecuted)
+        {
+            Logger.LogInfo("StegoRevelaer API is stopping...");
+            ApiConfigurator.SaveConfig();
+            TempManager.Instance.DeleteImageHandlers();
+            TempManager.Instance.DeleteTempImages();
+            Logger.LogInfo("StegoRevelaer API stopped successfully.");
+
+            ClosingOperationsExecuted = true;
+        }
     }
 
     private static void RegisterClosingOperations(this IHostApplicationLifetime lifetime)

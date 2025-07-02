@@ -13,6 +13,7 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevelaer.API.Entities.RequestData;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevelaer.API.Controllers;
 
@@ -28,7 +29,7 @@ public class SteganalysysController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetDecision(string path, bool verboseResult = false) => await ComplexSsaAsync(path, verboseResult);
+    public async Task<IActionResult> GetDecisionAsync(string path, bool verboseResult = false) => await ComplexSsaAsync(path, verboseResult);
 
     [HttpGet]
     public async Task<IActionResult> ComplexSsaAsync(string path, bool verboseResult = false)
@@ -47,6 +48,8 @@ public class SteganalysysController : ControllerBase
             var complesSa = new ComplexSaMethodAnalyser(image);
             await Task.Run(() => result = complesSa.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(new
             {
                 result?.IsHidingDetected,
@@ -60,7 +63,7 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetDecision(ComplexSsaRequest request) => await ComplexSsaAsync(request);
+    public async Task<IActionResult> GetDecisionAsync(ComplexSsaRequest request) => await ComplexSsaAsync(request);
 
     [HttpPost]
     public async Task<IActionResult> ComplexSsaAsync(ComplexSsaRequest request)
@@ -81,6 +84,8 @@ public class SteganalysysController : ControllerBase
             var complexSsa = new ComplexSaMethodAnalyser(complexSsaParams);
             await Task.Run(() => result = complexSsa.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -92,7 +97,7 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Full(string path) => await FullAnalysisAsync(path);
+    public async Task<IActionResult> FullAsync(string path) => await FullAnalysisAsync(path);
 
     [HttpGet]
     public async Task<IActionResult> FullAnalysisAsync(string path)
@@ -121,6 +126,8 @@ public class SteganalysysController : ControllerBase
 
             var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result);
         }
         catch (Exception e)
@@ -130,7 +137,7 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Full(FullAnalysisRequest request) => await FullAnalysisAsync(request);
+    public async Task<IActionResult> FullAsync(FullAnalysisRequest request) => await FullAnalysisAsync(request);
 
     [HttpPost]
     public async Task<IActionResult> FullAnalysisAsync(FullAnalysisRequest request)
@@ -148,6 +155,8 @@ public class SteganalysysController : ControllerBase
 
             var jointAnalysisParams = request.CreateParameters(image);
             var result = await JointAnalysisStarter.Start(jointAnalysisParams);
+
+            ClearTempForProcessedImage(image);
 
             var errors = result?.CollectErrors();
             return new JsonResult(errors is null || errors.Count == 0
@@ -176,6 +185,8 @@ public class SteganalysysController : ControllerBase
             var chiSqr = new ChiSquareAnalyser(image);
             await Task.Run(() => result = chiSqr.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result);
         }
         catch (Exception e)
@@ -203,6 +214,8 @@ public class SteganalysysController : ControllerBase
             var csa = new ChiSquareAnalyser(csaParams);
             await Task.Run(() => result = csa.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true 
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -228,6 +241,8 @@ public class SteganalysysController : ControllerBase
             RsResult? result = null;
             var rs = new RsAnalyser(image);
             await Task.Run(() => result = rs.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result);
         }
@@ -256,6 +271,8 @@ public class SteganalysysController : ControllerBase
             var rs = new RsAnalyser(rsParams);
             await Task.Run(() => result = rs.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -281,6 +298,8 @@ public class SteganalysysController : ControllerBase
             SpaResult? result = null;
             var spa = new SpaAnalyser(image);
             await Task.Run(() => result = spa.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result);
         }
@@ -309,6 +328,8 @@ public class SteganalysysController : ControllerBase
             var spa = new SpaAnalyser(spaParams);
             await Task.Run(() => result = spa.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -334,6 +355,8 @@ public class SteganalysysController : ControllerBase
             FanResult? result = null;
             var fan = new FanAnalyser(image);
             await Task.Run(() => result = fan.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result);
         }
@@ -362,6 +385,8 @@ public class SteganalysysController : ControllerBase
             var fan = new FanAnalyser(fanParams);
             await Task.Run(() => result = fan.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -387,6 +412,8 @@ public class SteganalysysController : ControllerBase
             KzhaResult? result = null;
             var kzha = new KzhaAnalyser(image);
             await Task.Run(() => result = kzha.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result);
         }
@@ -415,6 +442,8 @@ public class SteganalysysController : ControllerBase
             var kzha = new KzhaAnalyser(kzhaParams);
             await Task.Run(() => result = kzha.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -440,6 +469,8 @@ public class SteganalysysController : ControllerBase
             ZcaResult? result = null;
             var zca = new ZcaAnalyser(image);
             await Task.Run(() => result = zca.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result);
         }
@@ -468,6 +499,8 @@ public class SteganalysysController : ControllerBase
             var zca = new ZcaAnalyser(zcaParams);
             await Task.Run(() => result = zca.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
                 : result);
@@ -495,6 +528,8 @@ public class SteganalysysController : ControllerBase
             statm.Params.EntropyMethods = EntropyMethods.All;
             await Task.Run(() => result = statm.Analyse());
 
+            ClearTempForProcessedImage(image);
+
             return new JsonResult(result);
         }
         catch (Exception e)
@@ -521,6 +556,8 @@ public class SteganalysysController : ControllerBase
             var statmParams = request.CreateParameters(image);
             var statm = new StatmAnalyser(statmParams);
             await Task.Run(() => result = statm.Analyse());
+
+            ClearTempForProcessedImage(image);
 
             return new JsonResult(result?.HasErrors is null or true
                 ? new { Result = result, Errors = result?.GetErrors() }
@@ -636,5 +673,12 @@ public class SteganalysysController : ControllerBase
         }
 
         return null;
+    }
+
+    private static void ClearTempForProcessedImage(ImageHandler image)
+    {
+        image.CloseHandler();
+        TempManager.Instance.ForgetHandler(image);
+        TempManager.Instance.DeleteTempImages(onlyWithoutHandlers: true, writeToLog: false);
     }
 }

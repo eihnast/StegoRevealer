@@ -1,5 +1,6 @@
 ﻿using StegoRevealer.Common.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.CommandLine;
 
 namespace StegoRevealer.Common;
 
@@ -42,11 +43,13 @@ public class TempManager
     public void RememberHandler(ImageHandler imageHandler) => _openedHandlers.Add(imageHandler);
     public void ForgetHandler(ImageHandler imageHandler) => _openedHandlers.Remove(imageHandler);
 
-    public void DeleteTempImages(bool withRetry = true)
+    public void DeleteTempImages(bool withRetry = true, bool onlyWithoutHandlers = false, bool writeToLog = true)
     {
         var notDeleted = new List<string>();
-        
-        foreach (var tempImage in _tempImages.Where(img => File.Exists(img.TempPath)))
+        var processingImages = _tempImages.Where(img => File.Exists(img.TempPath) &&
+                                                (!onlyWithoutHandlers || !_openedHandlers.Any(h => h.ImgPath.Equals(img.TempPath, StringComparison.OrdinalIgnoreCase))));
+
+        foreach (var tempImage in processingImages)
         {
             try
             {
@@ -66,7 +69,8 @@ public class TempManager
         }
         else
         {
-            Logger.LogInfo("Temp image files deleted");
+            if (writeToLog)
+                Logger.LogInfo("Temp image files deleted");
             _tempImages.Clear();
         }
     }
@@ -78,7 +82,6 @@ public class TempManager
             try
             {
                 imageHandler?.CloseHandler();
-                Logger.LogInfo("All saved image handlers closed");
             }
             catch (Exception ex)
             {
@@ -86,6 +89,7 @@ public class TempManager
             }
         }
 
+        Logger.LogInfo("All saved image handlers closed");
         _openedHandlers.Clear();
     }
 }

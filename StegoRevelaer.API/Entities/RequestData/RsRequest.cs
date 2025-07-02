@@ -22,7 +22,7 @@ public class RsRequest : BaseAnalysisRequest
         parameters.Channels.Clear();
         parameters.Channels.AddRange(Channels);
 
-        parameters.BlockWidth = BlockWidth ?? imgHandler.Width;
+        parameters.BlockWidth = BlockWidth ?? 4;
         parameters.BlockHeight = BlockHeight ?? 1;
 
         return parameters;
