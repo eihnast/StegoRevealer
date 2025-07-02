@@ -28,7 +28,9 @@ public class SteganalysysController : ControllerBase
     }
     
     [HttpGet]
-    [Route("api/sa/getDecision")]
+    public async Task<IActionResult> GetDecision(string path, bool verboseResult = false) => await ComplexSsaAsync(path, verboseResult);
+
+    [HttpGet]
     public async Task<IActionResult> ComplexSsaAsync(string path, bool verboseResult = false)
     {
         try
@@ -58,7 +60,9 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpPost]
-    [Route("api/sa/getDecision")]
+    public async Task<IActionResult> GetDecision(ComplexSsaRequest request) => await ComplexSsaAsync(request);
+
+    [HttpPost]
     public async Task<IActionResult> ComplexSsaAsync(ComplexSsaRequest request)
     {
         try
@@ -88,7 +92,9 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpGet]
-    [Route("api/sa")]
+    public async Task<IActionResult> Full(string path) => await FullAnalysisAsync(path);
+
+    [HttpGet]
     public async Task<IActionResult> FullAnalysisAsync(string path)
     {
         try
@@ -124,7 +130,9 @@ public class SteganalysysController : ControllerBase
     }
 
     [HttpPost]
-    [Route("api/sa")]
+    public async Task<IActionResult> Full(FullAnalysisRequest request) => await FullAnalysisAsync(request);
+
+    [HttpPost]
     public async Task<IActionResult> FullAnalysisAsync(FullAnalysisRequest request)
     {
         try
