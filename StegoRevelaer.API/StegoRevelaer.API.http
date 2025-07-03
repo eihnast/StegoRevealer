@@ -1,6 +1,6 @@
-@StegoRevelaer.API_HostAddress = http://localhost:5280
+@StegoRevelaer.API_HostAddress = http://localhost:11038
 
-GET {{StegoRevelaer.API_HostAddress}}/weatherforecast/
+GET {{StegoRevelaer.API_HostAddress}}/api/sa/
 Accept: application/json
 
 ###
