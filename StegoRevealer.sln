@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{36D591C7-6
 	ProjectSection(SolutionItems) = preProject
 		Docs\APILogo.png = Docs\APILogo.png
 		Docs\AppLogo.png = Docs\AppLogo.png
+		Docs\JointConclusionWindow.jpg = Docs\JointConclusionWindow.jpg
 		Docs\StegoRevealerExample.gif = Docs\StegoRevealerExample.gif
 	EndProjectSection
 EndProject

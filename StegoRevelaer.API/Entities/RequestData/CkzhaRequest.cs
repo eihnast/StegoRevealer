@@ -12,12 +12,12 @@ public class CkzhaRequest : BaseAnalysisRequest
     public double CutCoefficient { get; set; } = 0.35;
     public TraverseType TraverseType { get; set; } = TraverseType.Horizontal;
     public ImgChannel[] Channels { get; set; }
-        = new ImgChannel[] { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
-    public ScIndexPair[] AnalysisCoeffs { get; set; } = 
+        = new ImgChannel[] { ImgChannel.Blue };
+    public (int, int)[] AnalysisCoeffs { get; set; } = 
     [
-        HidingCoefficients.Coeff34,
-        HidingCoefficients.Coeff35,
-        HidingCoefficients.Coeff45
+        (2, 3),
+        (2, 4),
+        (3, 4)
     ];
     public bool TryToExtract { get; set; } = true;
     public bool LoggingCSequences { get; set; } = false;
@@ -37,7 +37,10 @@ public class CkzhaRequest : BaseAnalysisRequest
         parameters.Channels.AddRange(Channels);
 
         parameters.AnalysisCoeffs.Clear();
-        parameters.AnalysisCoeffs.AddRange(AnalysisCoeffs);
+        foreach (var coeff in AnalysisCoeffs)
+        {
+            parameters.AnalysisCoeffs.Add(new ScIndexPair(coeff.Item1, coeff.Item2));
+        }
 
         return parameters;
     }

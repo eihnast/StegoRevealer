@@ -13,7 +13,7 @@ public class FanParameters
     public ImageHandler Image { get; set; }
 
     /// <summary>
-    /// Пороговое значение 
+    /// Пороговое значение
     /// </summary>
     public double Threshold { get; set; } = 3.401714170610843;
 

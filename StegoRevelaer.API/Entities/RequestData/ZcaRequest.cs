@@ -28,8 +28,8 @@ public class ZcaRequest : BaseAnalysisRequest
         parameters.Channels.Clear();
         parameters.Channels.AddRange(Channels);
 
-        parameters.BlockWidth = BlockWidth ?? imgHandler.Width;
-        parameters.BlockHeight = BlockHeight ?? 1;
+        parameters.BlockWidth = BlockWidth ?? 16;
+        parameters.BlockHeight = BlockHeight ?? 16;
 
         return parameters;
     }

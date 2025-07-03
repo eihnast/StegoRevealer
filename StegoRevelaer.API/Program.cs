@@ -30,7 +30,9 @@ public static class Program
             app.MapOpenApi();
         }
 
-        // app.UseHttpsRedirection();
+        if (config.HttpsRedirection)
+            app.UseHttpsRedirection();
+
         app.UseAuthorization();
         app.MapControllers();
 
