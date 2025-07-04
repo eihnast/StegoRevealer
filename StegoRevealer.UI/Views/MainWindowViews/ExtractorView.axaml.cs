@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
@@ -44,14 +45,25 @@ public partial class ExtractorView : UserControl
     }
 
 
-    private void StartExtraction_Click(object sender, RoutedEventArgs e)
+    private async void StartExtraction_Click(object sender, RoutedEventArgs e)
     {
+        StartExtraction.IsEnabled = false;  // Блокириуем кнопку запуска СА
+        LoadImageButton.IsEnabled = false;  // Блокируем кнопку выбора изображения
+        ParamsExpander.IsEnabled = false;  // Блокируем всю панель выбора методов
+        LoadingOverlay.IsVisible = true;
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
+
         _vm.ResetResults();
         ResetResultsExpander();
         _vm.StartExtraction();
 
         UpdateResults();
         _vm.IsParamsOpened = false;
+
+        LoadingOverlay.IsVisible = false;
+        LoadImageButton.IsEnabled = true;  // Снимаем блокировку кнопки выбора изображения
+        ParamsExpander.IsEnabled = true;  // Снимаем блокировку всей панели выбора методов
+        StartExtraction.IsEnabled = true;  // Снимаем блокировку кнопки запуска СА
     }
 
     private void UpdateResults()

@@ -336,6 +336,17 @@
 					Click="StartExtraction_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
 		</Grid>
 		<!-- / Внутренняя сетка -->
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="False" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="400" Height="40"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
 	</Grid>
 	<!-- / Внешняя сетка -->
 	
