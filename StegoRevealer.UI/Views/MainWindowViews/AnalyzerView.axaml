@@ -441,7 +441,7 @@
 										   DockPanel.Dock="Left"/>
 								<StackPanel Name="ResultsHandlerBlock" DockPanel.Dock="Left" Orientation="Horizontal" 
 											VerticalAlignment="Center" HorizontalAlignment="Right">
-									<Button Name="CopyAsTextBtn" Content="" Click="CopyAsTextBtn_Click">
+									<Button Name="CopyAsTextBtn" Click="CopyAsTextBtn_Click">
 										<PathIcon Data="{StaticResource IconCopyText}"/>
 										<ToolTip.Tip>
 											<StackPanel>
@@ -449,7 +449,7 @@
 											</StackPanel>
 										</ToolTip.Tip>
 									</Button>
-									<Button Name="CopyAsJsonBtn" Content="" Click="CopyAsJsonBtn_Click">
+									<Button Name="CopyAsJsonBtn" Click="CopyAsJsonBtn_Click">
 										<PathIcon Data="{StaticResource IconCopyJson}"/>
 										<ToolTip.Tip>
 											<StackPanel>
