@@ -118,350 +118,350 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AnalyzerTab.UsingMethods" xml:space="preserve">
-    <value>Applied Methods</value>
+    <value>روش‌های مورد استفاده</value>
   </data>
   <data name="AnalyzerTab.MethodsExpander" xml:space="preserve">
-    <value>Steganalysis Methods</value>
+    <value>روش‌های استگوانالیز</value>
   </data>
   <data name="AnalyzerTab.ResultsExpander" xml:space="preserve">
-    <value>Steganalysis Results</value>
+    <value>نتایج استگوانالیز</value>
   </data>
   <data name="Common.ChooseImage" xml:space="preserve">
-    <value>Select Image</value>
+    <value>انتخاب تصویر</value>
   </data>
   <data name="Common.ImageNotSelected" xml:space="preserve">
-    <value>No Image Selected</value>
+    <value>هیچ تصویری انتخاب نشده است</value>
   </data>
   <data name="Common.Off" xml:space="preserve">
-    <value>Off</value>
+    <value>خاموش</value>
   </data>
   <data name="Common.On" xml:space="preserve">
-    <value>On</value>
+    <value>روشن</value>
   </data>
   <data name="Common.Start" xml:space="preserve">
-    <value>Start</value>
+    <value>شروع</value>
   </data>
   <data name="ExtractorTab.KzhaHided" xml:space="preserve">
-    <value>Koch–Zhao Hidden Data</value>
+    <value>دادهٔ پنهان با روش کوچ–ژائو</value>
   </data>
   <data name="ExtractorTab.LsbHided" xml:space="preserve">
-    <value>LSB Hidden Data</value>
+    <value>دادهٔ پنهان در LSB</value>
   </data>
   <data name="ExtractorTab.ParametersExpander" xml:space="preserve">
-    <value>Extraction Parameters</value>
+    <value>پارامترهای استخراج</value>
   </data>
   <data name="ExtractorTab.ResultsExpander" xml:space="preserve">
-    <value>Extraction Results</value>
+    <value>نتایج استخراج</value>
   </data>
   <data name="InfoTab.AboutText" xml:space="preserve">
-    <value>Stego Revealer is a software suite for performing steganalysis and working with steganographic methods of hiding and extracting information.
+    <value>‏Stego Revealer یک مجموعه نرم‌افزاری برای انجام استگوانالیز و کار با روش‌های استگانوگرافی جهت مخفی‌سازی و استخراج اطلاعات است.
 
-Available steganalysis methods:
-    - Comprehensive Steganalysis Method;
-    - Chi-Square Attack (CSA);
-    - Regular-Singular (RS) Analysis;
-    - Sample Pair Analysis (SPA);
-    - Fast Additive Noise (FAN, HCF-COM) Method;
-    - Zhilkin’s Compression Analysis (ZCA);
-    - Sequential Koch–Zhao Embedding Analysis (CKZhA).
+روش‌های موجود استگوانالیز:
+    - روش جامع استگوانالیز؛
+    - آزمون خی-دو (CSA)؛
+    - تحلیل RS (Regular-Singular)؛
+    - تحلیل جفت نمونه (SPA)؛
+    - روش نویز افزوده سریع (FAN, HCF-COM)؛
+    - تحلیل فشرده‌سازی ژیلکین (ZCA)؛
+    - تحلیل جاسازی پی‌درپی کوچ–ژائو (CKZhA).
 
-Available steganographic extraction methods:
-    - LSB Method;
-    - Koch–Zhao Method.
+روش‌های موجود برای استخراج اطلاعات:
+    - روش LSB؛
+    - روش کوچ–ژائو.
 
-Developer: Iaroslav Grachev
-Scientific Advisor: V. G. Sidorenko</value>
+توسعه‌دهنده: یاروسلاو گراچف
+راهنمای علمی: و. گ. سیدورنکو</value>
   </data>
   <data name="Methods.ChiSqrMethod" xml:space="preserve">
-    <value>Chi-Square Attack Method</value>
+    <value>روش خی-دو (حمله Chi-Square)</value>
   </data>
   <data name="Methods.ComplexMethod" xml:space="preserve">
-    <value>Comprehensive Steganalysis Method</value>
+    <value>روش جامع استگوانالیز</value>
   </data>
   <data name="Methods.FanMethod" xml:space="preserve">
-    <value>Fast Additive Noise (HCF-COM) Method</value>
+    <value>روش نویز افزوده سریع (HCF-COM)</value>
   </data>
   <data name="Methods.KzhaMethod" xml:space="preserve">
-    <value>Sequential Koch–Zhao Steganalysis</value>
+    <value>استگوانالیز پی‌درپی کوچ–ژائو</value>
   </data>
   <data name="Methods.RsMethod" xml:space="preserve">
-    <value>Regular-Singular (RS) Method</value>
+    <value>روش RS (Regular-Singular)</value>
   </data>
   <data name="Methods.SpaMethod" xml:space="preserve">
-    <value>Sample Pair Analysis (SPA) Method</value>
+    <value>روش SPA (تحلیل جفت نمونه)</value>
   </data>
   <data name="Methods.ZcaMethod" xml:space="preserve">
-    <value>Zhilkin’s Compression Analysis (ZCA)</value>
+    <value>روش فشرده‌سازی ژیلکین (ZCA)</value>
   </data>
   <data name="SettingsTab.Logging" xml:space="preserve">
-    <value>Logging</value>
+    <value>ثبت رویدادها</value>
   </data>
   <data name="Tabs.Analyzer" xml:space="preserve">
-    <value>Steganalyzer</value>
+    <value>استگوانالیزر</value>
   </data>
   <data name="Tabs.Extractor" xml:space="preserve">
-    <value>Stegano Decoder</value>
+    <value>استگانودیکودر</value>
   </data>
   <data name="Tabs.Hider" xml:space="preserve">
-    <value>Stegano Encoder</value>
+    <value>استگانواکودر</value>
   </data>
   <data name="Common.Params" xml:space="preserve">
-    <value>Parameters</value>
+    <value>تنظیمات</value>
   </data>
   <data name="AnalyzerTab.Results.ComplexMethodTitle" xml:space="preserve">
-    <value>Embedding Detected by Comprehensive Steganalysis</value>
+    <value>جاسازی شناسایی شده توسط روش استگوانالیز جامع</value>
   </data>
   <data name="AnalyzerTab.Results.UndefinedResult" xml:space="preserve">
-    <value>Cannot Determine</value>
+    <value>قابل تشخیص نیست</value>
   </data>
   <data name="AnalyzerTab.Results.NotAnalyzedResult" xml:space="preserve">
-    <value>Analysis Not Performed</value>
+    <value>تحلیل انجام نشد</value>
   </data>
   <data name="AnalyzerTab.Results.CsaMethodTitle" xml:space="preserve">
-    <value>Embedding Rate Evaluation (Chi-Square Method)</value>
+    <value>ارزیابی نرخ جاسازی با روش خی-دو (Chi-Square)</value>
   </data>
   <data name="AnalyzerTab.Results.RsMethodTitle" xml:space="preserve">
-    <value>Embedding Rate Evaluation (RS Method)</value>
+    <value>ارزیابی نرخ جاسازی با روش RS</value>
   </data>
   <data name="AnalyzerTab.Results.SpaMethodTitle" xml:space="preserve">
-    <value>Embedding Rate Evaluation (SPA Method)</value>
+    <value>ارزیابی نرخ جاسازی با روش SPA</value>
   </data>
   <data name="AnalyzerTab.Results.ZcaMethodTitle" xml:space="preserve">
-    <value>Embedding Detected by Zhilkin’s Compression Analysis</value>
+    <value>جاسازی شناسایی شده با تحلیل فشرده‌سازی ژیلکین</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.FoundInterval" xml:space="preserve">
-    <value>Suspicious Interval Detected by Koch–Zhao Steganalysis</value>
+    <value>بازه مشکوک توسط استگوانالیز کوچ–ژائو شناسایی شد</value>
   </data>
   <data name="AnalyzerTab.Results.JointDecisionTitle" xml:space="preserve">
-    <value>Joint Decision</value>
+    <value>نتیجه‌گیری مشترک</value>
   </data>
   <data name="AnalyzerTab.Results.FanMethodTitle" xml:space="preserve">
-    <value>Embedding Detected by FAN (HCF-COM) Analysis</value>
+    <value>جاسازی شناسایی شده با روش FAN (HCF-COM)</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.BitsNum" xml:space="preserve">
-    <value>Number of Hidden Bits</value>
+    <value>تعداد بیت‌های اطلاعات پنهان</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.Indexes" xml:space="preserve">
-    <value>Block Indices of Suspicious Interval</value>
+    <value>شناسه بلوک‌های بازه مشکوک</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.Threshold" xml:space="preserve">
-    <value>Estimated Embedding Threshold</value>
+    <value>آستانه تخمینی جاسازی</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.Coeffs" xml:space="preserve">
-    <value>Estimated Embedding Coefficients</value>
+    <value>ضرایب جاسازی تخمینی</value>
   </data>
   <data name="AnalyzerTab.Results.KzchaMethod.ExtractedData" xml:space="preserve">
-    <value>Extracted Information</value>
+    <value>اطلاعات استخراج شده</value>
   </data>
   <data name="AnalyzerTab.Results.NoData" xml:space="preserve">
-    <value>No Data</value>
+    <value>داده‌ای موجود نیست</value>
   </data>
   <data name="AnalyzerTab.Results.NoHiding" xml:space="preserve">
-    <value>None</value>
+    <value>وجود ندارد</value>
   </data>
   <data name="Methods.Stats" xml:space="preserve">
-    <value>Image Statistical Characteristics</value>
+    <value>ویژگی‌های آماری تصویر</value>
   </data>
   <data name="Stats.Noise" xml:space="preserve">
-    <value>Noise Level</value>
+    <value>سطح نویز</value>
   </data>
   <data name="Stats.Sharpness" xml:space="preserve">
-    <value>Sharpness Level</value>
+    <value>سطح وضوح</value>
   </data>
   <data name="Stats.Contrast" xml:space="preserve">
-    <value>Contrast Level</value>
+    <value>سطح کنتراست</value>
   </data>
   <data name="Stats.Blur" xml:space="preserve">
-    <value>Blur Level</value>
+    <value>سطح تاری</value>
   </data>
   <data name="Stats.Entropy.Shennon" xml:space="preserve">
-    <value>Shannon Entropy</value>
+    <value>آنتروپی شانون</value>
   </data>
   <data name="Stats.Entropy.Renyi" xml:space="preserve">
-    <value>Rényi Entropy</value>
+    <value>آنتروپی رنی</value>
   </data>
   <data name="Stats.Entropy.Tsallis" xml:space="preserve">
-    <value>Tsallis Entropy</value>
+    <value>آنتروپی تسالیس</value>
   </data>
   <data name="Stats.Entropy.Vaida" xml:space="preserve">
-    <value>Vajda Entropy</value>
+    <value>آنتروپی واید</value>
   </data>
   <data name="Stats.Entropy.Havard" xml:space="preserve">
-    <value>Havarda–Charvat Entropy</value>
+    <value>آنتروپی هاوارد–چاروات</value>
   </data>
   <data name="Common.ElapseTime" xml:space="preserve">
-    <value>Elapsed Time</value>
+    <value>زمان صرف‌شده</value>
   </data>
   <data name="AnalyzerTab.Results.CopyResults" xml:space="preserve">
-    <value>Copy Results</value>
+    <value>کپی نتایج</value>
   </data>
   <data name="ExtractorTab.ExtractionParams" xml:space="preserve">
-    <value>Extraction Parameters</value>
+    <value>پارامترهای استخراج</value>
   </data>
   <data name="ExtractorTab.ExtractionParamsAndMethod" xml:space="preserve">
-    <value>Extraction Method and Parameters</value>
+    <value>روش و پارامترهای استخراج</value>
   </data>
   <data name="ExtractorTab.HidingLinear" xml:space="preserve">
-    <value>Sequential</value>
+    <value>پی‌درپی</value>
   </data>
   <data name="ExtractorTab.HidingRandom" xml:space="preserve">
-    <value>Pseudo-Random</value>
+    <value>شبه‌تصادفی</value>
   </data>
   <data name="ExtractorTab.RandomKey" xml:space="preserve">
-    <value>PRNG Key</value>
+    <value>کلید مولد اعداد شبه‌تصادفی</value>
   </data>
   <data name="ExtractorTab.StartIndex" xml:space="preserve">
-    <value>Start Index</value>
+    <value>اندیس شروع</value>
   </data>
   <data name="ExtractorTab.ByteLength" xml:space="preserve">
-    <value>Length (bytes)</value>
+    <value>طول (بایت)</value>
   </data>
   <data name="ExtractorTab.BlocksIndexes" xml:space="preserve">
-    <value>Block Indices</value>
+    <value>شناسه بلوک‌ها</value>
   </data>
   <data name="ExtractorTab.Threshold" xml:space="preserve">
-    <value>Threshold</value>
+    <value>آستانه</value>
   </data>
   <data name="ExtractorTab.ExtractedDataTitle" xml:space="preserve">
-    <value>Raw Extracted Data</value>
+    <value>داده‌های خام استخراج‌شده</value>
   </data>
   <data name="Common.OpenInEditor" xml:space="preserve">
-    <value>Open in Editor</value>
+    <value>باز کردن در ویرایشگر</value>
   </data>
   <data name="Common.SaveToFile" xml:space="preserve">
-    <value>Save to File</value>
+    <value>ذخیره در فایل</value>
   </data>
   <data name="Methods.JointDecisionMethod" xml:space="preserve">
-    <value>Joint Decision Method (CSA + RS)</value>
+    <value>روش نتیجه‌گیری مشترک (CSA + RS)</value>
   </data>
   <data name="JointAnalysis.RendomHiding" xml:space="preserve">
-    <value>pseudo-random embedding</value>
+    <value>جاسازی شبه‌تصادفی</value>
   </data>
   <data name="JointAnalysis.LinearHiding" xml:space="preserve">
-    <value>sequential embedding</value>
+    <value>جاسازی پی‌درپی</value>
   </data>
   <data name="JointAnalysis.RsEstimation" xml:space="preserve">
-    <value>RS estimation</value>
+    <value>برآورد RS</value>
   </data>
   <data name="JointAnalysis.CsaEstimation" xml:space="preserve">
-    <value>CSA estimation</value>
+    <value>برآورد CSA</value>
   </data>
   <data name="JointAnalysis.SectorsDescription" xml:space="preserve">
-    <value>Sector Description</value>
+    <value>توضیح بخش‌ها</value>
   </data>
   <data name="JointAnalysis.EmptyContainer" xml:space="preserve">
-    <value>Empty Container</value>
+    <value>کانتینر خالی</value>
   </data>
   <data name="JointAnalysis.ResultTitle" xml:space="preserve">
-    <value>Result of Joint Decision Method (CSA + RS)</value>
+    <value>نتیجه روش مشترک (CSA + RS)</value>
   </data>
   <data name="Params.Csa.Title" xml:space="preserve">
-    <value>Chi-Square Analysis Parameters</value>
+    <value>پارامترهای تحلیل خی-دو (CSA)</value>
   </data>
   <data name="Params.Rs.Title" xml:space="preserve">
-    <value>RS Analysis Parameters</value>
+    <value>پارامترهای تحلیل RS</value>
   </data>
   <data name="Params.Zca.Title" xml:space="preserve">
-    <value>ZCA Compression Analysis Parameters</value>
+    <value>پارامترهای روش فشرده‌سازی ژیلکین (ZCA)</value>
   </data>
   <data name="Params.Fan.Title" xml:space="preserve">
-    <value>FAN (HCF-COM) Analysis Parameters</value>
+    <value>پارامترهای روش FAN (HCF-COM)</value>
   </data>
   <data name="Params.Spa.Title" xml:space="preserve">
-    <value>SPA Analysis Parameters</value>
+    <value>پارامترهای تحلیل SPA</value>
   </data>
   <data name="Params.Kzha.Title" xml:space="preserve">
-    <value>Koch–Zhao Analysis Parameters</value>
+    <value>پارامترهای روش کوچ–ژائو</value>
   </data>
   <data name="Params.ChannelsChoosing" xml:space="preserve">
-    <value>Select Channels for Analysis</value>
+    <value>انتخاب کانال‌های مورد تحلیل</value>
   </data>
   <data name="Params.Channels.Red" xml:space="preserve">
-    <value>Red Channel</value>
+    <value>کانال قرمز</value>
   </data>
   <data name="Params.Channels.Blue" xml:space="preserve">
-    <value>Blue Channel</value>
+    <value>کانال آبی</value>
   </data>
   <data name="Params.Channels.Green" xml:space="preserve">
-    <value>Green Channel</value>
+    <value>کانال سبز</value>
   </data>
   <data name="Params.TraverseType.Title" xml:space="preserve">
-    <value>Pixel Traversal Type</value>
+    <value>نوع پیمایش پیکسل‌ها</value>
   </data>
   <data name="Params.TraverseType.Vertical" xml:space="preserve">
-    <value>Vertical</value>
+    <value>عمودی</value>
   </data>
   <data name="Params.TraverseType.Horizontal" xml:space="preserve">
-    <value>Horizontal</value>
+    <value>افقی</value>
   </data>
   <data name="Params.Blocks.Width" xml:space="preserve">
-    <value>Block Width</value>
+    <value>عرض بلوک</value>
   </data>
   <data name="Params.Blocks.Height" xml:space="preserve">
-    <value>Block Height</value>
+    <value>ارتفاع بلوک</value>
   </data>
   <data name="Params.Csa.PValueThreshold" xml:space="preserve">
-    <value>pValue Threshold</value>
+    <value>آستانه pValue</value>
   </data>
   <data name="Params.Csa.Vizualize" xml:space="preserve">
-    <value>Visualize Hidden Data Area</value>
+    <value>نمایش ناحیه داده‌های مخفی</value>
   </data>
   <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
-    <value>Exclude Pairs with Zero Expected Frequency</value>
+    <value>نادیده گرفتن جفت‌ها با فراوانی صفر</value>
   </data>
   <data name="Params.Csa.UsePreviousCnums" xml:space="preserve">
-    <value>Use Accumulation Mode</value>
+    <value>استفاده از حالت تجمعی</value>
   </data>
   <data name="Params.Csa.UseUnifiedCategories" xml:space="preserve">
-    <value>Unify Low-Frequency Categories</value>
+    <value>ترکیب دسته‌های کم‌فراوانی</value>
   </data>
   <data name="Params.Csa.UnifyingThreshold" xml:space="preserve">
-    <value>Category Unification Threshold</value>
+    <value>آستانه ترکیب دسته‌ها</value>
   </data>
   <data name="Params.Rs.FlippingMask" xml:space="preserve">
-    <value>Flipping Mask</value>
+    <value>ماسک فلیپینگ</value>
   </data>
   <data name="Params.Spa.Direction.Title" xml:space="preserve">
-    <value>Select Analysis Direction</value>
+    <value>انتخاب جهت تحلیل</value>
   </data>
   <data name="Params.Spa.Direction.Horizontal" xml:space="preserve">
-    <value>Horizontal</value>
+    <value>افقی</value>
   </data>
   <data name="Params.Spa.Direction.Vertical" xml:space="preserve">
-    <value>Vertical</value>
+    <value>عمودی</value>
   </data>
   <data name="Params.Spa.Direction.Diagonal" xml:space="preserve">
-    <value>Diagonal</value>
+    <value>مورب</value>
   </data>
   <data name="Params.Spa.UseDoubleDirection" xml:space="preserve">
-    <value>Use Double Pass</value>
+    <value>استفاده از دو گذر</value>
   </data>
   <data name="Params.Fan.ComThreshold" xml:space="preserve">
-    <value>Mahalanobis Distance Threshold (Center of Mass, COM)</value>
+    <value>آستانه فاصله ماهالانوبیس (مرکز جرم، COM)</value>
   </data>
   <data name="Params.Kzha.AutoExtract" xml:space="preserve">
-    <value>Automatically Extract Information</value>
+    <value>استخراج خودکار اطلاعات</value>
   </data>
   <data name="Params.Kzha.CutThreshold" xml:space="preserve">
-    <value>Suspicious Values Threshold</value>
+    <value>آستانه مقادیر مشکوک</value>
   </data>
   <data name="Params.Kzha.MinThreshold" xml:space="preserve">
-    <value>Minimum Considered Embedding Threshold</value>
+    <value>حداقل آستانه جاسازی در نظر گرفته شده</value>
   </data>
   <data name="Params.Kzha.SelectedCoeffs" xml:space="preserve">
-    <value>Selected Coefficients</value>
+    <value>ضرایب انتخاب‌شده</value>
   </data>
   <data name="Params.Kzha.AvailableCoeffs" xml:space="preserve">
-    <value>Available Coefficients</value>
+    <value>ضرایب موجود</value>
   </data>
   <data name="Params.Zca.RatioThreshold" xml:space="preserve">
-    <value>Compression Ratio Threshold</value>
+    <value>آستانه نسبت فشرده‌سازی</value>
   </data>
   <data name="Params.Zca.OverallCompression" xml:space="preserve">
-    <value>Analyze Entirely (All Channels Combined)</value>
+    <value>تحلیل کامل (همه کانال‌ها با هم)</value>
   </data>
   <data name="Params.Zca.CompressMethod.Title" xml:space="preserve">
-    <value>Select Compression Method</value>
+    <value>انتخاب روش فشرده‌سازی</value>
   </data>
   <data name="Params.Zca.CompressMethod.Zip" xml:space="preserve">
     <value>ZIP</value>
@@ -473,48 +473,48 @@ Scientific Advisor: V. G. Sidorenko</value>
     <value>BZIP2</value>
   </data>
   <data name="Common.Ms" xml:space="preserve">
-    <value>ms</value>
+    <value>میلی‌ثانیه</value>
   </data>
   <data name="AnalyzerTab.Results.NotAnalyzedResultLower" xml:space="preserve">
-    <value>analysis not performed</value>
+    <value>تحلیل انجام نشد</value>
   </data>
   <data name="AnalyzerTab.Results.NoDataLower" xml:space="preserve">
-    <value>no data</value>
+    <value>داده‌ای موجود نیست</value>
   </data>
   <data name="AnalyzerTab.Results.NoHidingLower" xml:space="preserve">
-    <value>none</value>
+    <value>وجود ندارد</value>
   </data>
   <data name="AnalyzerTab.Results.FanMethodEstimation" xml:space="preserve">
-    <value>Embedding Rate Evaluation (FAN, HCF-COM Method)</value>
+    <value>ارزیابی نرخ جاسازی با روش FAN (HCF-COM)</value>
   </data>
   <data name="AnalyzerTab.Results.HidingDetected" xml:space="preserve">
-    <value>detected</value>
+    <value>شناسایی شد</value>
   </data>
   <data name="AnalyzerTab.Results.HidingNotDetected" xml:space="preserve">
-    <value>not detected</value>
+    <value>شناسایی نشد</value>
   </data>
   <data name="Common.Yes" xml:space="preserve">
-    <value>yes</value>
+    <value>بله</value>
   </data>
   <data name="Common.No" xml:space="preserve">
-    <value>no</value>
+    <value>خیر</value>
   </data>
   <data name="Common.WasError" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>خطا رخ داد</value>
   </data>
   <data name="SettingsTab.Language" xml:space="preserve">
-    <value>Language</value>
+    <value>زبان</value>
   </data>
   <data name="Common.Image.Width" xml:space="preserve">
-    <value>Width</value>
+    <value>عرض</value>
   </data>
   <data name="Common.Image.Height" xml:space="preserve">
-    <value>Height</value>
+    <value>ارتفاع</value>
   </data>
   <data name="Methods.ComplexMethodTipText" xml:space="preserve">
-    <value>Evaluation using a trained binary classifier on feature set: CSA, RS, CKZhA estimates, quality metrics, number of pixels</value>
+    <value>ارزیابی با استفاده از یک دسته‌بند دودویی آموزش‌دیده بر اساس ویژگی‌ها: برآوردهای CSA، RS، CKZhA، معیارهای کیفیت، تعداد پیکسل‌ها</value>
   </data>
   <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
-    <value>The displayed text above has been filtered: control and replacement characters have been removed</value>
+    <value>متن نمایش داده شده فیلتر شده است: نویسه‌های کنترلی و جایگزین حذف شدند</value>
   </data>
 </root>

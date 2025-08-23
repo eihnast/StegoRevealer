@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using StegoRevealer.Common;
@@ -31,6 +32,8 @@ public partial class ExtractorView : UserControl
 
         MessageNullElapsedTime = "0 мс" + _vm.L["Common.Ms"];
 
+        SetImagePathText();
+
         if (_vm.LinearModeSelected)
             SetupFieldsForLinearMode();
         else if (_vm.RandomModeSelected)
@@ -42,7 +45,10 @@ public partial class ExtractorView : UserControl
     {
         _vm.ResetResults();
         ResetResultsExpander();  // При попытке загрузке изображения в любом случае сбрасываем форму результатов
+        ResetImagePathText();
+
         await _vm.TryLoadImage();
+        SetImagePathText();
     }
 
 
@@ -186,4 +192,33 @@ public partial class ExtractorView : UserControl
     }
 
     private async void SaveExtractedText_Click(object? sender, RoutedEventArgs e) => await _vm.TrySaveExtractedText();
+
+    private void SetImagePathText()
+    {
+        if (string.IsNullOrEmpty(_vm.ImagePath))
+            ResetImagePathText();
+        else
+            BindImagePathText();
+    }
+    private void RemoveImagePathBinding() => BindingOperations.GetBindingExpressionBase(ImagePathLabel, TextBox.TextProperty)?.Dispose();
+    private void ResetImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "L[Common.ImageNotSelected]",
+            Mode = BindingMode.TwoWay
+        });
+    }
+    private void BindImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "ImagePath",
+            Mode = BindingMode.TwoWay
+        });
+    }
 }

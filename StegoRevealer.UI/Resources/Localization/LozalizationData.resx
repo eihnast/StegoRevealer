@@ -505,4 +505,16 @@
   <data name="SettingsTab.Language" xml:space="preserve">
     <value>Язык</value>
   </data>
+  <data name="Common.Image.Width" xml:space="preserve">
+    <value>Ширина</value>
+  </data>
+  <data name="Common.Image.Height" xml:space="preserve">
+    <value>Высота</value>
+  </data>
+  <data name="Methods.ComplexMethodTipText" xml:space="preserve">
+    <value>Оценка на основе обученного бинарного классификатора для набора признаков: оценка CSA, RS, CKZhA, оценки качества, количество пикселей</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
+    <value>Демонстрируемый выше текст отфильтрован: исключены управляющие и заменяющие символы</value>
+  </data>
 </root>

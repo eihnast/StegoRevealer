@@ -22,9 +22,6 @@ namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
 public class ExtractorViewModel : MainWindowViewModelBaseChild
 {
-    // Стандартные значения текстовых полей
-    private const string ImageNotSelectedText = "Изображение не выбрано";
-
     // Параметры извлечения
     private LsbParameters? _lsbParameters = null;
     private KochZhaoParameters? _kzhParameters = null;
@@ -39,10 +36,10 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         set
         {
             this.RaiseAndSetIfChanged(ref _imagePath, value);
-            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !value.Equals(ImageNotSelectedText);
+            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrEmpty(value);
         }
     }
-    private string _imagePath = ImageNotSelectedText;
+    private string _imagePath = string.Empty;
 
     /// <summary>
     /// Загружено ли изображение для анализа
@@ -422,6 +419,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         catch 
         {
             Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+            ImagePath = string.Empty;
         }
 
         return false;
@@ -438,6 +436,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
+            Logger.LogInfo($"Loading new image for extraction: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -446,6 +445,10 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             {
                 TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
+            }
+            else
+            {
+                ImagePath = string.Empty;
             }
         }
 
@@ -632,7 +635,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     // Сбрасывает данные об изображении и результатах
     private void ResetImageAndResults()
     {
-        ImagePath = ImageNotSelectedText;
+        ImagePath = string.Empty;
         DrawedImage = null;
         ResetResults();
 

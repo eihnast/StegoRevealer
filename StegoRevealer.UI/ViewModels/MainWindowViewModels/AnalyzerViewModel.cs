@@ -40,9 +40,6 @@ namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
 public class AnalyzerViewModel : MainWindowViewModelBaseChild
 {
-    // Стандартные значения текстовых полей
-    private const string ImageNotSelectedText = "Изображение не выбрано";
-
     // Параметры методов стегоанализа
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
@@ -64,10 +61,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         set
         {
             this.RaiseAndSetIfChanged(ref _imagePath, value);
-            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !value.Equals(ImageNotSelectedText);
+            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrEmpty(value);
         }
     }
-    private string _imagePath = ImageNotSelectedText;
+    private string _imagePath = string.Empty;
 
     /// <summary>
     /// Загружено ли изображение для анализа
@@ -518,6 +515,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         catch (Exception ex)
         {
             Logger.LogError($"Error while creating image handler for '{path}': {ex.Message}");
+            ImagePath = string.Empty;
         }
 
         return false;
@@ -543,6 +541,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             {
                 TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
+            }
+            else
+            {
+                ImagePath = string.Empty;
             }
         }
 
@@ -709,7 +711,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     // Сбрасывает данные об изображении и результатах
     private void ResetImageAndResults()
     {
-        ImagePath = ImageNotSelectedText;
+        ImagePath = string.Empty;
         DrawedImage = null;
         ResetResults();
 

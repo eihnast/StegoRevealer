@@ -33,11 +33,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Resources\Localization\LozalizationData.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>LozalizationData.resx</DependentUpon>
-		</Compile>
 		<Compile Update="Views\MainWindowViews\AnalyzerView.axaml.cs">
 			<DependentUpon>AnalyzerView.axaml</DependentUpon>
 		</Compile>

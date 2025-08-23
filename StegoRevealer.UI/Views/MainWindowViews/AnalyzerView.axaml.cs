@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -52,6 +53,8 @@ public partial class AnalyzerView : UserControl
         MessageNullElapsedTime = Constants.ResultsDefaults.NullElapsedTime + " " + _vm.L["Common.Ms"];
         IsHidingDecisionCannotBeCalculated = _vm.L["AnalyzerTab.Results.UndefinedResult"];
 
+        SetImagePathText();
+
         // Установка текста блоков результатов
         AutoDetectionResultDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.ComplexMethodTitle"]);
         ChiFullnessDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.CsaMethodTitle"]);
@@ -72,14 +75,16 @@ public partial class AnalyzerView : UserControl
         StatResultsContrastDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Contrast"]);
         StatResultsEntropyShennonDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Entropy.Shennon"]);
         StatResultsEntropyRenyiDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Entropy.Renyi"]);
-        ElapsedTimeLabel.Text = Common.Tools.AddColon(_vm.L["Common.Ms"]);
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
     {
         _vm.ResetResults();
         ResetResultsExpander();  // При попытке загрузке изображения в любом случае сбрасываем форму результатов
+        ResetImagePathText();
+
         await _vm.TryLoadImage();
+        SetImagePathText();
     }
 
 
@@ -376,4 +381,33 @@ public partial class AnalyzerView : UserControl
     private async void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsTextToClipboard();
 
     private async void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsJsonToClipboard();
+
+    private void SetImagePathText()
+    {
+        if (string.IsNullOrEmpty(_vm.ImagePath))
+            ResetImagePathText();
+        else
+            BindImagePathText();
+    }
+    private void RemoveImagePathBinding() => BindingOperations.GetBindingExpressionBase(ImagePathLabel, TextBox.TextProperty)?.Dispose();
+    private void ResetImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "L[Common.ImageNotSelected]",
+            Mode = BindingMode.TwoWay
+        });
+    }
+    private void BindImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "ImagePath",
+            Mode = BindingMode.TwoWay
+        });
+    }
 }

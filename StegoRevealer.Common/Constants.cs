@@ -44,6 +44,11 @@ public static class Constants
     public static Dictionary<string, string> Languages = new Dictionary<string, string>()
     {
         { "ru-RU", "Русский" },
-        { "en-US", "English" }
+        { "en-US", "English" },
+        { "fa-IR", "فارسی" },
+        { "zh-CN", "简体中文" },
+        { "ar", "العربية" },
+        { "fr-FR", "Français" },
+        { "es-ES", "Español" },
     };
 }

@@ -46,7 +46,7 @@
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
 				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
-					<TextBox Text="Ширина:"
+					<TextBox Text="{Binding L[Common.Image.Width]}:"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -56,7 +56,7 @@
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
-					<TextBox Text="Высота:" Margin="30 0 0 0"
+					<TextBox Text="{Binding L[Common.Image.Height]}:" Margin="30 0 0 0"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
