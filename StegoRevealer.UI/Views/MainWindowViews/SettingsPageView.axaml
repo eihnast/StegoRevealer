@@ -14,34 +14,55 @@
 	<!-- Внешняя сетка -->
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 		  ColumnDefinitions="*,3*,*">
-		<Grid Margin="0 30 0 0" Grid.Column="1" ColumnDefinitions="*,60"
+		<StackPanel Grid.Column="1">
+			<Grid Margin="0 30 0 0" ColumnDefinitions="*,60"
 			  HorizontalAlignment="Stretch" VerticalAlignment="Top">
-			<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-					MinHeight="60" CornerRadius="10" Grid.Column="0"
-					Background="{StaticResource SrDark}"
-					BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
-				<DockPanel LastChildFill="True" Margin="20 0 20 0"
-						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-					<ToggleSwitch Name="SettingsLoggingSwitch"
-								  HorizontalAlignment="Center" VerticalAlignment="Center"
-								  DockPanel.Dock="Right"
-								  FontSize="16"
-								  IsChecked="{Binding Path=SettingLoggingEnabled}"
-								  OnContent="Вкл" OffContent="Выкл"/>
-					<TextBlock Text="Логирование"
-							   FontSize="16"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"
-							   DockPanel.Dock="Left"/>
-				</DockPanel>
-			</Border>
-			<Button Name="OpenLogsFolderBtn" Click="OpenLogsFolderBtn_Click"
-				    Grid.Column="1" Margin="2 0 0 0"
-					HorizontalAlignment="Left" VerticalAlignment="Center"
-					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-					MinHeight="50" MinWidth="50">
-				<PathIcon Data="{StaticResource IconFolder}"/>
-			</Button>
-		</Grid>
+				<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						MinHeight="60" CornerRadius="10" Grid.Column="0"
+						Background="{StaticResource SrDark}"
+						BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+					<DockPanel LastChildFill="True" Margin="20 0 20 0"
+							   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+						<ToggleSwitch Name="SettingsLoggingSwitch"
+									  HorizontalAlignment="Center" VerticalAlignment="Center"
+									  DockPanel.Dock="Right"
+									  FontSize="16"
+									  IsChecked="{Binding Path=SettingLoggingEnabled}"
+									  OnContent="{Binding L[Common.On]}" OffContent="{Binding L[Common.Off]}"/>
+						<TextBlock Text="{Binding L[SettingsTab.Logging]}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"
+								   DockPanel.Dock="Left"/>
+					</DockPanel>
+				</Border>
+				<Button Name="OpenLogsFolderBtn" Click="OpenLogsFolderBtn_Click"
+						Grid.Column="1" Margin="2 0 0 0"
+						HorizontalAlignment="Left" VerticalAlignment="Center"
+						HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+						MinHeight="50" MinWidth="50">
+					<PathIcon Data="{StaticResource IconFolder}"/>
+				</Button>
+			</Grid>
+			<Grid Margin="0 10 0 0" ColumnDefinitions="*"
+				  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+				<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						MinHeight="60" CornerRadius="10" Grid.Column="0"
+						Background="{StaticResource SrDark}"
+						BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+					<DockPanel LastChildFill="True" Margin="20 0 20 0"
+							   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+						<TextBlock Text="{Binding L[SettingsTab.Language]}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"
+								   DockPanel.Dock="Left"/>
+						<ComboBox Name="SettingsLanguageComboBox" MinWidth="300" MinHeight="40"
+								  HorizontalAlignment="Right" VerticalAlignment="Center"
+								  DockPanel.Dock="Right" SelectionChanged="SettingsLanguageComboBox_SelectionChanged"
+								  FontSize="16" ItemsSource="{Binding Path=Languages}"/>
+					</DockPanel>
+				</Border>
+			</Grid>
+		</StackPanel>
 	</Grid>
 	<!-- / Внешняя сетка -->
 

@@ -7,14 +7,13 @@ using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
 public partial class ExtractorView : UserControl
 {
     // Стандартные сообщения и заглушки
-    private const string MessageNullElapsedTime = "0 мс";
+    private string MessageNullElapsedTime = "0 мс";
 
 
     private ExtractorViewModel _vm = null!;
@@ -29,6 +28,8 @@ public partial class ExtractorView : UserControl
     {
         _vm = CommonTools.GetViewModel<ExtractorViewModel>(this.DataContext);
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
+
+        MessageNullElapsedTime = "0 мс" + _vm.L["Common.Ms"];
 
         if (_vm.LinearModeSelected)
             SetupFieldsForLinearMode();

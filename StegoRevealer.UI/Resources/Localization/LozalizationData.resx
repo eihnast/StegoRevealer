@@ -1,0 +1,508 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnalyzerTab.UsingMethods" xml:space="preserve">
+    <value>Используемые методы</value>
+  </data>
+  <data name="AnalyzerTab.MethodsExpander" xml:space="preserve">
+    <value>Методы стегоанализа</value>
+  </data>
+  <data name="AnalyzerTab.ResultsExpander" xml:space="preserve">
+    <value>Результаты стегоанализа</value>
+  </data>
+  <data name="Common.ChooseImage" xml:space="preserve">
+    <value>Выбор изображения</value>
+  </data>
+  <data name="Common.ImageNotSelected" xml:space="preserve">
+    <value>Изображение не выбрано</value>
+  </data>
+  <data name="Common.Off" xml:space="preserve">
+    <value>Выкл</value>
+  </data>
+  <data name="Common.On" xml:space="preserve">
+    <value>Вкл</value>
+  </data>
+  <data name="Common.Start" xml:space="preserve">
+    <value>Запуск</value>
+  </data>
+  <data name="ExtractorTab.KzhaHided" xml:space="preserve">
+    <value>Скрытое по Коха-Жао</value>
+  </data>
+  <data name="ExtractorTab.LsbHided" xml:space="preserve">
+    <value>Скрытое в НЗБ</value>
+  </data>
+  <data name="ExtractorTab.ParametersExpander" xml:space="preserve">
+    <value>Параметры извлечения</value>
+  </data>
+  <data name="ExtractorTab.ResultsExpander" xml:space="preserve">
+    <value>Результаты извлечения</value>
+  </data>
+  <data name="InfoTab.AboutText" xml:space="preserve">
+    <value>            Stego Revealer - программный комплекс, предназначенный для осуществления стегоанализа и работы со стеганографическими методами скрытия и извлечения информации.
+            
+            Доступные методы стегоанализа:
+                - методика комплексного стегоанализа;
+                - метод оценки по критерию Хи-Квадрат (Chi-Square Attack, CSA);
+                - метод Regular-Singular (RS);
+                - метод Sample Pair Analysis (SPA);
+                - метод Fast Additive Noise (FAN, HCF-COM);
+                - метод анализа сжатия по Жилкину (ZCA);
+                - стегоанализ последовательного встраивания по Коха-Жао (CKZhA).
+    
+            Доступные стеганографические методы извлечения информации:
+                - метод НЗБ;
+                - метод Коха-Жао.
+    
+            Разработчик: Грачев Я.Л.
+            Научный руководитель: Сидоренко В.Г.</value>
+  </data>
+  <data name="Methods.ChiSqrMethod" xml:space="preserve">
+    <value>Метод Хи-квадрат (Chi-Square Attack)</value>
+  </data>
+  <data name="Methods.ComplexMethod" xml:space="preserve">
+    <value>Методика комплексного стегоанализа</value>
+  </data>
+  <data name="Methods.FanMethod" xml:space="preserve">
+    <value>Метод Fast Additive Noise (HCF-COM)</value>
+  </data>
+  <data name="Methods.KzhaMethod" xml:space="preserve">
+    <value>Стегоанализ последовательного Коха-Жао</value>
+  </data>
+  <data name="Methods.RsMethod" xml:space="preserve">
+    <value>Метод Regular-Singular</value>
+  </data>
+  <data name="Methods.SpaMethod" xml:space="preserve">
+    <value>Метод Sample Pair Analysis</value>
+  </data>
+  <data name="Methods.ZcaMethod" xml:space="preserve">
+    <value>Метод анализа сжатия по Жилкину</value>
+  </data>
+  <data name="SettingsTab.Logging" xml:space="preserve">
+    <value>Логирование</value>
+  </data>
+  <data name="Tabs.Analyzer" xml:space="preserve">
+    <value>Стегоанализатор</value>
+  </data>
+  <data name="Tabs.Extractor" xml:space="preserve">
+    <value>Стеганодекодер</value>
+  </data>
+  <data name="Tabs.Hider" xml:space="preserve">
+    <value>Стеганокодер</value>
+  </data>
+  <data name="Common.Params" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="AnalyzerTab.Results.ComplexMethodTitle" xml:space="preserve">
+    <value>Встраивание согласно методике комплексного стегоанализа</value>
+  </data>
+  <data name="AnalyzerTab.Results.UndefinedResult" xml:space="preserve">
+    <value>невозможно определить</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResult" xml:space="preserve">
+    <value>Анализ не проводился</value>
+  </data>
+  <data name="AnalyzerTab.Results.CsaMethodTitle" xml:space="preserve">
+    <value>Оценка заполненности по методу Хи-квадрат</value>
+  </data>
+  <data name="AnalyzerTab.Results.RsMethodTitle" xml:space="preserve">
+    <value>Оценка заполненности по методу RS</value>
+  </data>
+  <data name="AnalyzerTab.Results.SpaMethodTitle" xml:space="preserve">
+    <value>Оценка заполненности по методу SPA</value>
+  </data>
+  <data name="AnalyzerTab.Results.ZcaMethodTitle" xml:space="preserve">
+    <value>Встраивание по методу анализа сжатия по Жилкину</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.FoundInterval" xml:space="preserve">
+    <value>Обнаружен подозрительный интервал при стегоанализе Коха-Жао</value>
+  </data>
+  <data name="AnalyzerTab.Results.JointDecisionTitle" xml:space="preserve">
+    <value>Совместный вывод</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodTitle" xml:space="preserve">
+    <value>Встраивание по методу анализа FAN (HCF-COM)</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.BitsNum" xml:space="preserve">
+    <value>Количество бит скрытой информации</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Indexes" xml:space="preserve">
+    <value>Индексы блоков подозрительного интервала</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Threshold" xml:space="preserve">
+    <value>Предполагаемый порог встраивания</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Coeffs" xml:space="preserve">
+    <value>Коэффициенты предполагаемого встраивания</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.ExtractedData" xml:space="preserve">
+    <value>Извлечённая информация</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoData" xml:space="preserve">
+    <value>Нет данных</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHiding" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="Methods.Stats" xml:space="preserve">
+    <value>Статистические характеристики изображения</value>
+  </data>
+  <data name="Stats.Noise" xml:space="preserve">
+    <value>Уровень шума</value>
+  </data>
+  <data name="Stats.Sharpness" xml:space="preserve">
+    <value>Уровень резкости</value>
+  </data>
+  <data name="Stats.Contrast" xml:space="preserve">
+    <value>Уровень контраста</value>
+  </data>
+  <data name="Stats.Blur" xml:space="preserve">
+    <value>Уровень размытости</value>
+  </data>
+  <data name="Stats.Entropy.Shennon" xml:space="preserve">
+    <value>Энтропия Шеннона</value>
+  </data>
+  <data name="Stats.Entropy.Renyi" xml:space="preserve">
+    <value>Энтропия Реньи</value>
+  </data>
+  <data name="Stats.Entropy.Tsallis" xml:space="preserve">
+    <value>Энтропия Цаллиса</value>
+  </data>
+  <data name="Stats.Entropy.Vaida" xml:space="preserve">
+    <value>Энтропия Вайда</value>
+  </data>
+  <data name="Stats.Entropy.Havard" xml:space="preserve">
+    <value>Энтропия Хаварда-Чарвата</value>
+  </data>
+  <data name="Common.ElapseTime" xml:space="preserve">
+    <value>Затрачено времени</value>
+  </data>
+  <data name="AnalyzerTab.Results.CopyResults" xml:space="preserve">
+    <value>Копировать результаты</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParams" xml:space="preserve">
+    <value>Параметры извлечения</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParamsAndMethod" xml:space="preserve">
+    <value>Способ и параметры извлечения</value>
+  </data>
+  <data name="ExtractorTab.HidingLinear" xml:space="preserve">
+    <value>Последовательно</value>
+  </data>
+  <data name="ExtractorTab.HidingRandom" xml:space="preserve">
+    <value>Псевдослучайно</value>
+  </data>
+  <data name="ExtractorTab.RandomKey" xml:space="preserve">
+    <value>Ключ ГПСЧ</value>
+  </data>
+  <data name="ExtractorTab.StartIndex" xml:space="preserve">
+    <value>Стартовый индекс</value>
+  </data>
+  <data name="ExtractorTab.ByteLength" xml:space="preserve">
+    <value>Длина (байт)</value>
+  </data>
+  <data name="ExtractorTab.BlocksIndexes" xml:space="preserve">
+    <value>Индексы блоков</value>
+  </data>
+  <data name="ExtractorTab.Threshold" xml:space="preserve">
+    <value>Порог</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataTitle" xml:space="preserve">
+    <value>Необработанные извлечённые данные</value>
+  </data>
+  <data name="Common.OpenInEditor" xml:space="preserve">
+    <value>Открыть в редакторе</value>
+  </data>
+  <data name="Common.SaveToFile" xml:space="preserve">
+    <value>Сохранить в файл</value>
+  </data>
+  <data name="Methods.JointDecisionMethod" xml:space="preserve">
+    <value>Методика формирования вывода при совместном применении методов CSA и RS</value>
+  </data>
+  <data name="JointAnalysis.RendomHiding" xml:space="preserve">
+    <value>псевдослучайное встраивание</value>
+  </data>
+  <data name="JointAnalysis.LinearHiding" xml:space="preserve">
+    <value>последовательное встраивание</value>
+  </data>
+  <data name="JointAnalysis.RsEstimation" xml:space="preserve">
+    <value>оценка по RS</value>
+  </data>
+  <data name="JointAnalysis.CsaEstimation" xml:space="preserve">
+    <value>оценка по CSA</value>
+  </data>
+  <data name="JointAnalysis.SectorsDescription" xml:space="preserve">
+    <value>Описание секторов</value>
+  </data>
+  <data name="JointAnalysis.EmptyContainer" xml:space="preserve">
+    <value>Пустой контейнер</value>
+  </data>
+  <data name="JointAnalysis.ResultTitle" xml:space="preserve">
+    <value>Результат методики формирования вывода при совместном применении методов CSA и RS</value>
+  </data>
+  <data name="Params.Csa.Title" xml:space="preserve">
+    <value>Параметры стегоанализа по критерию Хи-квадрат</value>
+  </data>
+  <data name="Params.Rs.Title" xml:space="preserve">
+    <value>Параметры стегоанализа методом Regular-Singular</value>
+  </data>
+  <data name="Params.Zca.Title" xml:space="preserve">
+    <value>Параметры метода анализа сжатия по Жилкину</value>
+  </data>
+  <data name="Params.Fan.Title" xml:space="preserve">
+    <value>Параметры стегоанализа метода Fast Additive Noise (HCF-COM)</value>
+  </data>
+  <data name="Params.Spa.Title" xml:space="preserve">
+    <value>Параметры стегоанализа методом Sample Pair Analysis</value>
+  </data>
+  <data name="Params.Kzha.Title" xml:space="preserve">
+    <value>Параметры стегоанализа метода Коха-Жао</value>
+  </data>
+  <data name="Params.ChannelsChoosing" xml:space="preserve">
+    <value>Выбор анализируемых каналов</value>
+  </data>
+  <data name="Params.Channels.Red" xml:space="preserve">
+    <value>Красный канал</value>
+  </data>
+  <data name="Params.Channels.Blue" xml:space="preserve">
+    <value>Синий канал</value>
+  </data>
+  <data name="Params.Channels.Green" xml:space="preserve">
+    <value>Зелёный канал</value>
+  </data>
+  <data name="Params.TraverseType.Title" xml:space="preserve">
+    <value>Выбор обхода массива пикселей</value>
+  </data>
+  <data name="Params.TraverseType.Vertical" xml:space="preserve">
+    <value>Вертикальный</value>
+  </data>
+  <data name="Params.TraverseType.Horizontal" xml:space="preserve">
+    <value>Горизонтальный</value>
+  </data>
+  <data name="Params.Blocks.Width" xml:space="preserve">
+    <value>Ширина блока</value>
+  </data>
+  <data name="Params.Blocks.Height" xml:space="preserve">
+    <value>Высота блока</value>
+  </data>
+  <data name="Params.Csa.PValueThreshold" xml:space="preserve">
+    <value>Порог pValue</value>
+  </data>
+  <data name="Params.Csa.Vizualize" xml:space="preserve">
+    <value>Визуализировать область скрытой&amp;#10;информации</value>
+  </data>
+  <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
+    <value>Не учитывать пары с нулевой&amp;#10;ожидаемой частотой</value>
+  </data>
+  <data name="Params.Csa.UsePreviousCnums" xml:space="preserve">
+    <value>Использовать режим накопления</value>
+  </data>
+  <data name="Params.Csa.UseUnifiedCategories" xml:space="preserve">
+    <value>Объединять низкочастотные категории</value>
+  </data>
+  <data name="Params.Csa.UnifyingThreshold" xml:space="preserve">
+    <value>Порог объединения категорий</value>
+  </data>
+  <data name="Params.Rs.FlippingMask" xml:space="preserve">
+    <value>Маска флиппинга</value>
+  </data>
+  <data name="Params.Spa.Direction.Title" xml:space="preserve">
+    <value>Выбор направления анализа</value>
+  </data>
+  <data name="Params.Spa.Direction.Horizontal" xml:space="preserve">
+    <value>Горизонтальное</value>
+  </data>
+  <data name="Params.Spa.Direction.Vertical" xml:space="preserve">
+    <value>Вертикальное</value>
+  </data>
+  <data name="Params.Spa.Direction.Diagonal" xml:space="preserve">
+    <value>Диагональное</value>
+  </data>
+  <data name="Params.Spa.UseDoubleDirection" xml:space="preserve">
+    <value>Использовать двойной проход</value>
+  </data>
+  <data name="Params.Fan.ComThreshold" xml:space="preserve">
+    <value>Порог дистанции Махаланобиса центра масс (COM)</value>
+  </data>
+  <data name="Params.Kzha.AutoExtract" xml:space="preserve">
+    <value>Автоматически извлекать информацию</value>
+  </data>
+  <data name="Params.Kzha.CutThreshold" xml:space="preserve">
+    <value>Порог подозрительных значений</value>
+  </data>
+  <data name="Params.Kzha.MinThreshold" xml:space="preserve">
+    <value>Минимальный учитываемый&amp;#10;порог скрытия</value>
+  </data>
+  <data name="Params.Kzha.SelectedCoeffs" xml:space="preserve">
+    <value>Выбранные коэффициенты</value>
+  </data>
+  <data name="Params.Kzha.AvailableCoeffs" xml:space="preserve">
+    <value>Доступные коэффициенты</value>
+  </data>
+  <data name="Params.Zca.RatioThreshold" xml:space="preserve">
+    <value>Порог коэффициента сжатия</value>
+  </data>
+  <data name="Params.Zca.OverallCompression" xml:space="preserve">
+    <value>Анализировать целиком (по всем каналам вместе)</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Title" xml:space="preserve">
+    <value>Выбор метода сжатия</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Zip" xml:space="preserve">
+    <value>ZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Gzip" xml:space="preserve">
+    <value>GZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Bzip2" xml:space="preserve">
+    <value>BZIP2</value>
+  </data>
+  <data name="Common.Ms" xml:space="preserve">
+    <value>мс</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResultLower" xml:space="preserve">
+    <value>анализ не проводился</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoDataLower" xml:space="preserve">
+    <value>нет данных</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHidingLower" xml:space="preserve">
+    <value>отсутствует</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodEstimation" xml:space="preserve">
+    <value>Оценка заполненности по методу FAN (HCF-COM)</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingDetected" xml:space="preserve">
+    <value>обнаружено</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingNotDetected" xml:space="preserve">
+    <value>не обнаружено</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>да</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>нет</value>
+  </data>
+  <data name="Common.WasError" xml:space="preserve">
+    <value>произошла ошибка</value>
+  </data>
+  <data name="SettingsTab.Language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+</root>

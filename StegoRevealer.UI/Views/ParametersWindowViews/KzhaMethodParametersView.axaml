@@ -16,7 +16,7 @@
 			  ColumnDefinitions="*,*" RowDefinitions="40,Auto,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры стегоанализа метода Коха-Жао"
+			<Label Name="TitleLabel" Content="{Binding L[Params.Kzha.Title]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"
@@ -26,7 +26,7 @@
 
 			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
 						HorizontalAlignment="Center">
-				<CheckBox Name="IsTryToExtractChecked" Content="Автоматически извлекать информацию"
+				<CheckBox Name="IsTryToExtractChecked" Content="{Binding L[Params.Kzha.AutoExtract]}"
 						  IsChecked="{Binding Path=TryToExtract}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
@@ -34,7 +34,7 @@
 
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="Порог подозрительных значений:"
+					<Label Content="{Binding L[Params.Kzha.CutThreshold]}:"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -50,7 +50,7 @@
 
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="Минимальный учитываемый&#10;порог скрытия:"
+					<Label Content="{Binding L[Params.Kzha.MinThreshold]}:"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Center"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -67,16 +67,16 @@
 
 			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0"
 						HorizontalAlignment="Center">
-				<Label Content="Выбор обхода массива"
+				<Label Content="{Binding L[Params.TraverseType.Title]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
                        Background="{x:Null}" BorderBrush="{x:Null}"/>
-				<RadioButton Name="TraverseChoice_Horizontal" Content="Горизонтальный"
+				<RadioButton Name="TraverseChoice_Horizontal" Content="{Binding L[Params.TraverseType.Horizontal]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
 							 IsChecked="{Binding Path=TraverseHorizontal}"
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-				<RadioButton Name="TraverseChoice_Vertical" Content="Вертикальный"
+				<RadioButton Name="TraverseChoice_Vertical" Content="{Binding L[Params.TraverseType.Vertical]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
@@ -84,19 +84,19 @@
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
 
 				<!-- Выбор каналов -->
-				<Label Content="Выбор анализируемых каналов"
+				<Label Content="{Binding L[Params.ChannelsChoosing]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
 					   Margin="0 20 0 0"
                        Background="{x:Null}" BorderBrush="{x:Null}" />
-				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+				<ToggleButton Name="IsChannelChecked_Red" Content="{Binding L[Params.Channels.Red]}"
 							  IsChecked="{Binding Path=ChannelRedChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+				<ToggleButton Name="IsChannelChecked_Green" Content="{Binding L[Params.Channels.Green]}"
 							  IsChecked="{Binding Path=ChannelGreenChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+				<ToggleButton Name="IsChannelChecked_Blue" Content="{Binding L[Params.Channels.Blue]}"
 							  IsChecked="{Binding Path=ChannelBlueChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
@@ -107,7 +107,7 @@
 						Margin="0 15 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Center">
 				<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
 							Margin="0 0 10 0">
-					<Label Content="Выбранные коэффициенты"
+					<Label Content="{Binding L[Params.Kzha.SelectedCoeffs]}"
 						   FontSize="13" Foreground="#FFE0E0E0"
 						   Background="{x:Null}" BorderBrush="{x:Null}" />
 					<ListBox Name="SelectedCoeffsListBox" Classes="CoeffsList"
@@ -116,7 +116,7 @@
 				</StackPanel>
 				<StackPanel Orientation="Vertical" HorizontalAlignment="Center"
 							Margin="10 0 0 0">
-					<Label Content="Доступные коэффициенты"
+					<Label Content="{Binding L[Params.Kzha.AvailableCoeffs]}"
 						   FontSize="13" Foreground="#FFE0E0E0"
 						   Background="{x:Null}" BorderBrush="{x:Null}" />
 					<ListBox Name="AvailableCoeffsListBox" Classes="CoeffsList"

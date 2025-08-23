@@ -16,7 +16,7 @@
 			  ColumnDefinitions="*,*" RowDefinitions="40,Auto,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры стегоанализа метода Fast Additive Noise (HCF-COM)"
+			<Label Name="TitleLabel" Content="{Binding L[Params.Fan.Title]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"
@@ -28,7 +28,7 @@
 						HorizontalAlignment="Center">
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="Порог дистанции Махаланобиса центра масс (COM):"
+					<Label Content="{Binding L[Params.Fan.ComThreshold]}:"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"

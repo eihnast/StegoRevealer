@@ -40,4 +40,10 @@ public static class Constants
         public static string NotDetected => "не обнаружено";
         public static string WasFatalError => "произошла ошибка";
     }
+
+    public static Dictionary<string, string> Languages = new Dictionary<string, string>()
+    {
+        { "ru-RU", "Русский" },
+        { "en-US", "English" }
+    };
 }

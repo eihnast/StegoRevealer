@@ -1,4 +1,7 @@
-﻿using System.Reactive;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reactive;
+using System.Reflection;
 using ReactiveUI;
 using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
@@ -20,6 +23,8 @@ public class SettingsPageViewModel : MainWindowViewModelBaseChild
             this.RaiseAndSetIfChanged(ref _settingLoggingEnabled, value);
         }
     }
+
+    public List<string> Languages { get; } = Constants.Languages.Select(x => x.Value).ToList();
 
 
     public SettingsPageViewModel(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList) { }

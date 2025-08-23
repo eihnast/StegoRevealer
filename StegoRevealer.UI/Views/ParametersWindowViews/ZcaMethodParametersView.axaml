@@ -16,7 +16,7 @@
 			  ColumnDefinitions="*,*" RowDefinitions="40,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры метода анализа сжатия по Жилкину"
+			<Label Name="TitleLabel" Content="{Binding L[Params.Zca.Title]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"
@@ -27,7 +27,7 @@
 			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
 						HorizontalAlignment="Center">
 				
-				<Label Content="Порог коэффициента сжатия"
+				<Label Content="{Binding L[Params.Zca.RatioThreshold]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
 					   Margin="0 0 0 0"
                        Background="{x:Null}" BorderBrush="{x:Null}"
@@ -37,29 +37,29 @@
 						 MinWidth="150" Margin="5 5 20 0" HorizontalContentAlignment="Center"
 						 KeyDown="FilterForPositiveDouble_KeyDown"/>
 
-				<CheckBox Name="IsUseOverallCompression" Content="Анализировать целиком (по всем каналам вместе)"
+				<CheckBox Name="IsUseOverallCompression" Content="{Binding L[Params.Zca.OverallCompression]}"
 						  IsChecked="{Binding Path=UseOverallCompression}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
 						  Margin="0 20 0 0"/>
 				
-				<Label Content="Выбор метода сжатия"
+				<Label Content="{Binding L[Params.Zca.CompressMethod.Title]}"
 					   Margin="0 20 0 0"
 					   FontSize="13" Foreground="#FFE0E0E0"
                        Background="{x:Null}" BorderBrush="{x:Null}"/>
-				<RadioButton Name="CompressingAlgorithmChoice_Zip" Content="ZIP"
+				<RadioButton Name="CompressingAlgorithmChoice_Zip" Content="{Binding L[Params.Zca.CompressMethod.Zip]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
 							 IsChecked="{Binding Path=CompressingAlgorithmZip}"
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-				<RadioButton Name="CompressingAlgorithmChoice_GZip" Content="GZIP"
+				<RadioButton Name="CompressingAlgorithmChoice_GZip" Content="{Binding L[Params.Zca.CompressMethod.Gzip]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
 							 IsChecked="{Binding Path=CompressingAlgorithmGZip}"
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-				<RadioButton Name="CompressingAlgorithmChoice_BZip2" Content="BZIP2"
+				<RadioButton Name="CompressingAlgorithmChoice_BZip2" Content="{Binding L[Params.Zca.CompressMethod.Bzip2]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="CompressingAlgorithmGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
@@ -67,35 +67,35 @@
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
 
 				<!-- Выбор каналов -->
-				<Label Content="Выбор анализируемых каналов"
+				<Label Content="{Binding L[Params.ChannelsChoosing]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
 					   Margin="0 20 0 0"
                        Background="{x:Null}" BorderBrush="{x:Null}" />
-				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+				<ToggleButton Name="IsChannelChecked_Red" Content="{Binding L[Params.Channels.Red]}"
 							  IsChecked="{Binding Path=ChannelRedChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+				<ToggleButton Name="IsChannelChecked_Green" Content="{Binding L[Params.Channels.Green]}"
 							  IsChecked="{Binding Path=ChannelGreenChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+				<ToggleButton Name="IsChannelChecked_Blue" Content="{Binding L[Params.Channels.Blue]}"
 							  IsChecked="{Binding Path=ChannelBlueChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
 			</StackPanel>
 
 			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0">
-				<Label Content="Выбор обхода массива"
+				<Label Content="{Binding L[Params.TraverseType.Title]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
                        Background="{x:Null}" BorderBrush="{x:Null}"/>
-				<RadioButton Name="TraverseChoice_Horizontal" Content="Горизонтальный"
+				<RadioButton Name="TraverseChoice_Horizontal" Content="{Binding L[Params.TraverseType.Horizontal]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
 							 IsChecked="{Binding Path=TraverseHorizontal}"
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-				<RadioButton Name="TraverseChoice_Vertical" Content="Вертикальный"
+				<RadioButton Name="TraverseChoice_Vertical" Content="{Binding L[Params.TraverseType.Vertical]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
@@ -103,7 +103,7 @@
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
 
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="Ширина блока:"
+					<Label Content="{Binding L[Params.Blocks.Width]}:"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -117,7 +117,7 @@
 							 KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="Высота блока:"
+					<Label Content="{Binding L[Params.Blocks.Height]}:"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"

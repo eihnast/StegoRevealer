@@ -5,6 +5,7 @@ using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels;
 using StegoRevealer.UI.Windows;
+using System.Globalization;
 
 namespace StegoRevealer.UI;
 
@@ -17,6 +18,13 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Logger.LogInfo("Setting localization");
+        string langCode = Configurator.Settings.Language;
+        if (string.IsNullOrEmpty(langCode) || !Constants.Languages.ContainsKey(langCode))
+            langCode = "ru-RU";
+        CultureInfo.CurrentUICulture = new CultureInfo(langCode);
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture;
+
         Logger.LogInfo("Creating App logic");
         var mainWindowVm = new MainWindowViewModel();
 
