@@ -334,7 +334,7 @@
   <data name="Methods.JointDecisionMethod" xml:space="preserve">
     <value>روش نتیجه‌گیری مشترک (CSA + RS)</value>
   </data>
-  <data name="JointAnalysis.RendomHiding" xml:space="preserve">
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
     <value>جاسازی شبه‌تصادفی</value>
   </data>
   <data name="JointAnalysis.LinearHiding" xml:space="preserve">

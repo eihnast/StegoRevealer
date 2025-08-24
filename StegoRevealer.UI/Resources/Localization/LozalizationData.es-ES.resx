@@ -315,7 +315,7 @@ Director científico: V. G. Sidorenko</value>
   <data name="Methods.JointDecisionMethod" xml:space="preserve">
     <value>Método de conclusión conjunta (CSA + RS)</value>
   </data>
-  <data name="JointAnalysis.RendomHiding" xml:space="preserve">
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
     <value>inserción pseudoaleatoria</value>
   </data>
   <data name="JointAnalysis.LinearHiding" xml:space="preserve">

@@ -18,7 +18,7 @@
 
 			<Label Name="TitleLabel" Content="{Binding L[Methods.JointDecisionMethod]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
-				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+				   Grid.Column="0" Grid.Row="0"
                    Background="{x:Null}" BorderBrush="{x:Null}"
                    VerticalAlignment="Center" VerticalContentAlignment="Center"
 				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
@@ -31,28 +31,28 @@
 					<Label Content="Сектор O.1" Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="14"
 						   HorizontalAlignment="Center" VerticalAlignment="Top" DockPanel.Dock="Top"/>
 					<cmp:RsCsaO1Graph Name="RsCsaGraphO1" Width="300" Height="300" VerticalAlignment="Top" DockPanel.Dock="Top"/>
-					<Label Content="{Binding L[JointAnalysis.SectorsDescription]}:" Foreground="#FFE0E0E0" FontSize="14" Margin="0 5 0 0"
+					<Label Content="{Binding L[JointAnalysis.SectorsDescription], StringFormat='{}{0}:'}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 5 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
 					<Label Content="O.1 - {Binding L[JointAnalysis.EmptyContainer]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
-					<Label Content="O.2 - p ≈ {Binding L[JointAnalysis.RsEstimation]}, {Binding L[JointAnalysis.RendomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+					<Label Content="O.2 - p ≈ {Binding L[JointAnalysis.RsEstimation]}, {Binding L[JointAnalysis.RandomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
 					<Label Content="O.3 - p ≈ {Binding L[JointAnalysis.CsaEstimation]}, {Binding L[JointAnalysis.LinearHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
-					<Label Content="O.4 - p ≈ {Binding L[JointAnalysis.RsEstimation]}, {Binding L[JointAnalysis.RendomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+					<Label Content="O.4 - p ≈ {Binding L[JointAnalysis.RsEstimation]}, {Binding L[JointAnalysis.RandomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
-					<Label Content="O.5 - p > 80%, {Binding L[JointAnalysis.RendomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+					<Label Content="O.5 - p > 80%, {Binding L[JointAnalysis.RandomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
 					<Label Content="O.6 - p ≈ 100%, {Binding L[JointAnalysis.LinearHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
-					<Label Content="O.7 - p ≈ 100%, {Binding L[JointAnalysis.RendomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
+					<Label Content="O.7 - p ≈ 100%, {Binding L[JointAnalysis.RandomHiding]}" Foreground="#FFE0E0E0" FontSize="14" Margin="0 0 0 0"
 						   HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Top" TextBlock.TextWrapping="Wrap"/>
 				</DockPanel>
 			</StackPanel>
 
-			<StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0 0 0 0"
+			<StackPanel Grid.Column="0" Grid.Row="2" Margin="0 0 0 0"
 						Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
-				<Label Content="{Binding L[JointAnalysis.ResultTitle]}:"
+				<Label Content="{Binding L[JointAnalysis.ResultTitle], StringFormat='{}{0}:'}"
 					   Foreground="#FFE0E0E0" FontSize="14"
 					   Background="{x:Null}" BorderBrush="{x:Null}" TextBlock.TextWrapping="Wrap"
 					   VerticalAlignment="Top" VerticalContentAlignment="Top"

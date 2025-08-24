@@ -334,7 +334,7 @@ Scientific Advisor: V. G. Sidorenko</value>
   <data name="Methods.JointDecisionMethod" xml:space="preserve">
     <value>Joint Decision Method (CSA + RS)</value>
   </data>
-  <data name="JointAnalysis.RendomHiding" xml:space="preserve">
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
     <value>pseudo-random embedding</value>
   </data>
   <data name="JointAnalysis.LinearHiding" xml:space="preserve">

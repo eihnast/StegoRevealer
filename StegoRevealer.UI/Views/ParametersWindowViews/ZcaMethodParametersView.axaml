@@ -103,7 +103,7 @@
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
 
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="{Binding L[Params.Blocks.Width]}:"
+					<Label Content="{Binding L[Params.Blocks.Width], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -117,7 +117,7 @@
 							 KeyDown="FilterForPositiveInteger_KeyDown"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="{Binding L[Params.Blocks.Height]}:"
+					<Label Content="{Binding L[Params.Blocks.Height], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"

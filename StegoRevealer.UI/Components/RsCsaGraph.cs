@@ -28,6 +28,9 @@ public class RsCsaGraph : Control
         var height = Bounds.Height;
 
         using var skSurface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
+        if (skSurface is null)
+            return;
+
         var canvas = skSurface.Canvas;
         canvas.Clear(CommonTools.MapToSkiaColor(BackgroundBrush.Color));
 

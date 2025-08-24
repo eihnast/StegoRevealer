@@ -592,9 +592,9 @@ namespace StegoRevealer.UI.Resources.Localization {
         /// <summary>
         ///   Ищет локализованную строку, похожую на псевдослучайное встраивание.
         /// </summary>
-        public static string JointAnalysis_RendomHiding {
+        public static string JointAnalysis_RandomHiding {
             get {
-                return ResourceManager.GetString("JointAnalysis.RendomHiding", resourceCulture);
+                return ResourceManager.GetString("JointAnalysis.RandomHiding", resourceCulture);
             }
         }
         

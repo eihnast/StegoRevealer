@@ -315,7 +315,7 @@
   <data name="Methods.JointDecisionMethod" xml:space="preserve">
     <value>CSA+RS 联合结论方法</value>
   </data>
-  <data name="JointAnalysis.RendomHiding" xml:space="preserve">
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
     <value>伪随机嵌入</value>
   </data>
   <data name="JointAnalysis.LinearHiding" xml:space="preserve">

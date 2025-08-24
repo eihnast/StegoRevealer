@@ -34,7 +34,7 @@
 
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="{Binding L[Params.Kzha.CutThreshold]}:"
+					<Label Content="{Binding L[Params.Kzha.CutThreshold], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -50,7 +50,7 @@
 
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="{Binding L[Params.Kzha.MinThreshold]}:"
+					<Label Content="{Binding L[Params.Kzha.MinThreshold], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Center"
                            Background="{x:Null}" BorderBrush="{x:Null}"

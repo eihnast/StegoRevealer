@@ -46,7 +46,7 @@
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
 				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
-					<TextBox Text="{Binding L[Common.Image.Width]}:"
+					<TextBox Text="{Binding L[Common.Image.Width], StringFormat='{}{0}:'}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -56,7 +56,7 @@
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
-					<TextBox Text="{Binding L[Common.Image.Height]}:" Margin="30 0 0 0"
+					<TextBox Text="{Binding L[Common.Image.Height], StringFormat='{}{0}:'}" Margin="30 0 0 0"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -261,7 +261,7 @@
 						<DockPanel DockPanel.Dock="Bottom" Margin="0 15 0 0" VerticalAlignment="Stretch">
 							<StackPanel DockPanel.Dock="Right" Orientation="Vertical"
 										HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-								<TextBlock Text="{Binding L[ExtractorTab.ExtractedDataTitle]}:"
+								<TextBlock Text="{Binding L[ExtractorTab.ExtractedDataTitle], StringFormat='{}{0}:'}"
 										   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 										   TextWrapping="Wrap" TextAlignment="Center"/>
 								<StackPanel Orientation="Horizontal" Margin="10 5 0 0"
@@ -283,7 +283,7 @@
 						</DockPanel>
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
-							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime]}: "
+							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
 									   FontStyle="Italic" TextDecorations=""
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
