@@ -26,7 +26,7 @@
 
 			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
 						HorizontalAlignment="Center">
-				<CheckBox Name="IsVisualizeChecked" Content="{Binding L[Params.Csa.Vizualize]}" 
+				<CheckBox Name="IsVisualizeChecked" Content="{Binding L[Params.Csa.Visualize]}" 
 						  IsChecked="{Binding Path=Visualize}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0" 
 						  Foreground="#FFE6E6E6" FontSize="12" 
@@ -41,13 +41,13 @@
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
 						  Margin="0 5 0 0"/>
-				<CheckBox Name="IsUseUnifiedCathegoriesChecked" Content="{Binding L[Params.Csa.UseUnifiedCategories]}"
-						  IsChecked="{Binding Path=UseUnifiedCathegories}"
+				<CheckBox Name="IsUseUnifiedCategoriesChecked" Content="{Binding L[Params.Csa.UseUnifiedCategories]}"
+						  IsChecked="{Binding Path=UseUnifiedCategories}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
 						  Margin="0 5 0 0"/>
 				
-				<DockPanel Name="UnifyingCathegoriesThresholdGroup" 
+				<DockPanel Name="UnifyingCategoriesThresholdGroup" 
 						   LastChildFill="True" 
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
 					<Label Content="{Binding L[Params.Csa.UnifyingThreshold], StringFormat='{}{0}:'}" 
@@ -55,8 +55,8 @@
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<TextBox Name="UnifyingCathegoriesThreshold"
-							Text="{Binding Path=UnifyingCathegoriesThresholdValue}"
+					<TextBox Name="UnifyingCategoriesThreshold"
+							Text="{Binding Path=UnifyingCategoriesThresholdValue}"
 							FontSize="12"
 							MinWidth="80" MinHeight="25" MaxHeight="25"
 							Padding="8 1 8 1" Margin="5 0 0 0"

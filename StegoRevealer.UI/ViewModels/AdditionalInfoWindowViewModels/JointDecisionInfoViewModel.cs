@@ -90,28 +90,28 @@ public class JointDecisionInfoViewModel : AdditionalInfoWindowViewModelBaseChild
         switch (zone)
         {
             case 1:
-                result = "Сектор О.1: Скрытое сообщение не обнаружено, контейнер пуст";
+                result = L["JointAnalysis.Decisions.O1"];
                 break;
             case 2:
-                result = $"Сектор О.2: Сообщение занимает около {rs:0}%, встраивание псевдослучайное";
+                result = string.Format(L["JointAnalysis.Decisions.O2"], rs);
                 break;
             case 3:
-                result = $"Сектор О.3: Сообщение занимает около {csa:0}%, встраивание последовательное";
+                result = string.Format(L["JointAnalysis.Decisions.O3"], csa);
                 break;
             case 4:
-                result = $"Сектор О.4: Сообщение занимает около {rs:0}%, встраивание псевдослучайное";
+                result = string.Format(L["JointAnalysis.Decisions.O4"], rs);
                 break;
             case 5:
-                result = $"Сектор О.5: Сообщение занимает не менее 80%, встраивание псевдослучайное";
+                result = L["JointAnalysis.Decisions.O5"];
                 break;
             case 6:
-                result = "Сектор О.6: Сообщение занимает около 100%, встраивание последовательное";
+                result = L["JointAnalysis.Decisions.O6"];
                 break;
             case 7:
-                result = "Сектор О.7: Сообщение занимает около 100%, встраивание псевдослучайное";
+                result = L["JointAnalysis.Decisions.O7"];
                 break;
             default:
-                result = "Однозначного вывода сделать нельзя, точка не попадает ни в один из секторов";
+                result = L["JointAnalysis.Decisions.Undefined"];
                 break;
         }
 

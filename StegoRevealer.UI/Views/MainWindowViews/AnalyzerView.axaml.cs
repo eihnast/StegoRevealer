@@ -258,11 +258,11 @@ public partial class AnalyzerView : UserControl
         if ((results.MethodChiSqrState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors) && 
             (results.MethodRsState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors))
         {
-            JointDesicionOpenBtn.IsVisible = true;
+            JointDecisionOpenBtn.IsVisible = true;
         }
         else
         {
-            JointDesicionOpenBtn.IsVisible = false;
+            JointDecisionOpenBtn.IsVisible = false;
         }
     }
 
@@ -308,7 +308,7 @@ public partial class AnalyzerView : UserControl
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
-    private async void JointDesicionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+    private async void JointDecisionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         await _vm.OpenJointDecisionWindow();
 
 

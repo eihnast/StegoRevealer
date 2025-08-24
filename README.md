@@ -112,8 +112,8 @@ StegoRevealer предоставляет графический пользова
 | `UseUnitedCnum`                | `bool`           | Считать ли общее количество интенсивности цветов без учёта канала | `true`                 |
 | `UsePreviousCnums`             | `bool`           | Использовать ли режим подсчёта с накоплением                      | `true`                 |
 | `ExcludeZeroPairs`             | `bool`           | Исключать ли из анализа пары, где ожидаемая частота цвета = 0     | `true`                 |
-| `UseUnifiedCathegories`        | `bool`           | Объединять ли низкочастотные категории                            | `true`                 |
-| `UnifyingCathegoriesThreshold` | `int`            | Верхний порог частот для объединения                              | 4                      |
+| `UseUnifiedCategories`        | `bool`           | Объединять ли низкочастотные категории                            | `true`                 |
+| `UnifyingCategoriesThreshold` | `int`            | Верхний порог частот для объединения                              | 4                      |
 | `Threshold`                    | `double`         | Порог значения p-value                                            | 0.95                   |
 | `Channels`                     | Массив каналов   | Анализируемые каналы                                              | `Red`, `Green`, `Blue` |
 | `BlockWidth`                   | `int`            | Ширина анализируемого блока                                       | Ширина изображения     |

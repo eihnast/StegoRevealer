@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -403,7 +406,7 @@ Scientific Advisor: V. G. Sidorenko</value>
   <data name="Params.Csa.PValueThreshold" xml:space="preserve">
     <value>pValue Threshold</value>
   </data>
-  <data name="Params.Csa.Vizualize" xml:space="preserve">
+  <data name="Params.Csa.Visualize" xml:space="preserve">
     <value>Visualize Hidden Data Area</value>
   </data>
   <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
@@ -516,5 +519,32 @@ Scientific Advisor: V. G. Sidorenko</value>
   </data>
   <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
     <value>The displayed text above has been filtered: control and replacement characters have been removed</value>
+  </data>
+  <data name="JointAnalysis.O1SectorTitle" xml:space="preserve">
+    <value>Sector O.1</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O1" xml:space="preserve">
+    <value>Sector O.1: No hidden message detected, container is empty</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O2" xml:space="preserve">
+    <value>Sector O.2: The message occupies about {0:0}%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O3" xml:space="preserve">
+    <value>Sector O.3: The message occupies about {0:0}%, embedding is sequential</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O4" xml:space="preserve">
+    <value>Sector O.4: The message occupies about {0:0}%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O5" xml:space="preserve">
+    <value>Sector O.5: The message occupies at least 80%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O6" xml:space="preserve">
+    <value>Sector O.6: The message occupies about 100%, embedding is sequential</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O7" xml:space="preserve">
+    <value>Sector O.7: The message occupies about 100%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.Undefined" xml:space="preserve">
+    <value>No definite conclusion can be drawn, the point does not fall into any sector</value>
   </data>
 </root>

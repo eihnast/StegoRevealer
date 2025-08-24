@@ -136,7 +136,7 @@ public class SteganalysisProcessor
         var outputStr = new StringBuilder();
         outputStr.AppendLine($"Результаты стегоанализа изображения '{imgName}'");
 
-        outputStr.AppendLine(Constants.ResultsNames.HidingDesicionDetection + " " +
+        outputStr.AppendLine(Constants.ResultsNames.HidingDecisionDetection + " " +
             (result.ComplexSaMethodResults is null
             ? Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated
             : (result.ComplexSaMethodResults.IsHidingDetected ? Constants.ResultsDefaults.Detected.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));

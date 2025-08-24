@@ -403,7 +403,7 @@
   <data name="Params.Csa.PValueThreshold" xml:space="preserve">
     <value>Порог pValue</value>
   </data>
-  <data name="Params.Csa.Vizualize" xml:space="preserve">
+  <data name="Params.Csa.Visualize" xml:space="preserve">
     <value>Визуализировать область скрытой&amp;#10;информации</value>
   </data>
   <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
@@ -516,5 +516,32 @@
   </data>
   <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
     <value>Демонстрируемый выше текст отфильтрован: исключены управляющие и заменяющие символы</value>
+  </data>
+  <data name="JointAnalysis.O1SectorTitle" xml:space="preserve">
+    <value>Сектор O.1</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O1" xml:space="preserve">
+    <value>Сектор О.1: Скрытое сообщение не обнаружено, контейнер пуст</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O2" xml:space="preserve">
+    <value>Сектор О.2: Сообщение занимает около {0:0}%, встраивание псевдослучайное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O3" xml:space="preserve">
+    <value>Сектор О.3: Сообщение занимает около {0:0}%, встраивание последовательное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O4" xml:space="preserve">
+    <value>Сектор О.4: Сообщение занимает около {0:0}%, встраивание псевдослучайное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O5" xml:space="preserve">
+    <value>Сектор О.5: Сообщение занимает не менее 80%, встраивание псевдослучайное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O6" xml:space="preserve">
+    <value>Сектор О.6: Сообщение занимает около 100%, встраивание последовательное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O7" xml:space="preserve">
+    <value>Сектор О.7: Сообщение занимает около 100%, встраивание псевдослучайное</value>
+  </data>
+  <data name="JointAnalysis.Decisions.Undefined" xml:space="preserve">
+    <value>Однозначного вывода сделать нельзя, точка не попадает ни в один из секторов</value>
   </data>
 </root>

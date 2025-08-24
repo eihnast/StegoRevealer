@@ -80,11 +80,11 @@ public class AdditionalInfoWindowViewModel : ViewModelBase
 
     public void OpenJointDecisionInfo(ChiSquareResult csaRes, RsResult rsRes)
     {
-        var jointDesicionVm = GetOrCreateViewModel(typeof(JointDecisionInfoViewModel)) as JointDecisionInfoViewModel;
-        if (jointDesicionVm is not null)
+        var jointDecisionVm = GetOrCreateViewModel(typeof(JointDecisionInfoViewModel)) as JointDecisionInfoViewModel;
+        if (jointDecisionVm is not null)
         {
-            CurrentViewModel = jointDesicionVm;
-            jointDesicionVm.ProcessResults(csaRes, rsRes);
+            CurrentViewModel = jointDecisionVm;
+            jointDecisionVm.ProcessResults(csaRes, rsRes);
         }
     }
 }

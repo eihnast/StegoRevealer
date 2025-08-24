@@ -322,6 +322,24 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Высота.
+        /// </summary>
+        public static string Common_Image_Height {
+            get {
+                return ResourceManager.GetString("Common.Image.Height", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ширина.
+        /// </summary>
+        public static string Common_Image_Width {
+            get {
+                return ResourceManager.GetString("Common.Image.Width", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Изображение не выбрано.
         /// </summary>
         public static string Common_ImageNotSelected {
@@ -435,6 +453,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string ExtractorTab_ByteLength {
             get {
                 return ResourceManager.GetString("ExtractorTab.ByteLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Демонстрируемый выше текст отфильтрован: исключены управляющие и заменяющие символы.
+        /// </summary>
+        public static string ExtractorTab_ExtractedDataDisclaimer {
+            get {
+                return ResourceManager.GetString("ExtractorTab.ExtractedDataDisclaimer", resourceCulture);
             }
         }
         
@@ -572,6 +599,78 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.1: Скрытое сообщение не обнаружено, контейнер пуст.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O1 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.2: Сообщение занимает около {0:0}%, встраивание псевдослучайное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O2 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.3: Сообщение занимает около {0:0}%, встраивание последовательное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O3 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.4: Сообщение занимает около {0:0}%, встраивание псевдослучайное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O4 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.5: Сообщение занимает не менее 80%, встраивание псевдослучайное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O5 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.6: Сообщение занимает около 100%, встраивание последовательное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O6 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор О.7: Сообщение занимает около 100%, встраивание псевдослучайное.
+        /// </summary>
+        public static string JointAnalysis_Decisions_O7 {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.O7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Однозначного вывода сделать нельзя, точка не попадает ни в один из секторов.
+        /// </summary>
+        public static string JointAnalysis_Decisions_Undefined {
+            get {
+                return ResourceManager.GetString("JointAnalysis.Decisions.Undefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Пустой контейнер.
         /// </summary>
         public static string JointAnalysis_EmptyContainer {
@@ -586,6 +685,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string JointAnalysis_LinearHiding {
             get {
                 return ResourceManager.GetString("JointAnalysis.LinearHiding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сектор O.1.
+        /// </summary>
+        public static string JointAnalysis_O1SectorTitle {
+            get {
+                return ResourceManager.GetString("JointAnalysis.O1SectorTitle", resourceCulture);
             }
         }
         
@@ -640,6 +748,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string Methods_ComplexMethod {
             get {
                 return ResourceManager.GetString("Methods.ComplexMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Оценка на основе обученного бинарного классификатора для набора признаков: оценка CSA, RS, CKZhA, оценки качества, количество пикселей.
+        /// </summary>
+        public static string Methods_ComplexMethodTipText {
+            get {
+                return ResourceManager.GetString("Methods.ComplexMethodTipText", resourceCulture);
             }
         }
         
@@ -817,9 +934,9 @@ namespace StegoRevealer.UI.Resources.Localization {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Визуализировать область скрытой&amp;#10;информации.
         /// </summary>
-        public static string Params_Csa_Vizualize {
+        public static string Params_Csa_Visualize {
             get {
-                return ResourceManager.GetString("Params.Csa.Vizualize", resourceCulture);
+                return ResourceManager.GetString("Params.Csa.Visualize", resourceCulture);
             }
         }
         

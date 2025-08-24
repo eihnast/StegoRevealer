@@ -39,7 +39,7 @@
 						</ToolTip.Tip>
 					</TextBox>
 				</DockPanel>
-				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+				<Image Name="ImagePreview" Source="{Binding Path=DrawnImageSource}"
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
@@ -220,13 +220,13 @@
 												   DockPanel.Dock="Left"/>
 									</DockPanel>
 									
-									<Button Name="JointDesicionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
+									<Button Name="JointDecisionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
 											HorizontalAlignment="Center" VerticalAlignment="Center"
 											HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
 											Padding="5 10 5 10" Content="{Binding L[AnalyzerTab.Results.JointDecisionTitle]}" TextBlock.TextWrapping="WrapWithOverflow"
 											TextBlock.TextAlignment="Center" IsVisible="False"
 											ToolTip.ShowOnDisabled="True" ToolTip.Placement="Pointer"
-											Click="JointDesicionOpenBtn_Click">
+											Click="JointDecisionOpenBtn_Click">
 										<ToolTip.Tip>
 											<StackPanel>
 												<TextBlock FontSize="15" Text="{Binding L[Methods.JointDecisionMethod]}"/>
@@ -410,7 +410,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyRenyiBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="{Binding L[Stats.Entropy.Renyi]} (α = 1,1): "
+								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="{Binding L[Stats.Entropy.Renyi], StringFormat='{}{0} (α = 1,1):'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -453,7 +453,7 @@
 										<PathIcon Data="{StaticResource IconCopyJson}"/>
 										<ToolTip.Tip>
 											<StackPanel>
-												<TextBlock FontSize="15" Text="{Binding L[AnalyzerTab.Results.CopyResults]} (raw JSON)"/>
+												<TextBlock FontSize="15" Text="{Binding L[AnalyzerTab.Results.CopyResults], StringFormat='{}{0} (raw JSON)'}"/>
 											</StackPanel>
 										</ToolTip.Tip>
 									</Button>

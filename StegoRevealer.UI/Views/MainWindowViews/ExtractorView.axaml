@@ -41,7 +41,7 @@
 						</ToolTip.Tip>
 					</TextBox>
 				</DockPanel>
-				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+				<Image Name="ImagePreview" Source="{Binding Path=DrawnImageSource}"
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>

@@ -289,24 +289,24 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработчик текущего отображаемого изображения (может не соответствовать изначально выбранному)
     /// </summary>
-    public ImageHandler? DrawedImage
+    public ImageHandler? DrawnImage
     {
-        get => _drawedImage;
+        get => _drawnImage;
         set
         {
-            _drawedImage = value;
-            if (_drawedImage is not null)
-                DrawedImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
+            _drawnImage = value;
+            if (_drawnImage is not null)
+                DrawnImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawnImage);
             else
-                DrawedImageSource = null;
+                DrawnImageSource = null;
         }
     }
-    private ImageHandler? _drawedImage;
+    private ImageHandler? _drawnImage;
 
     /// <summary>
     /// Источник текущего отображаемого изображения
     /// </summary>
-    public Bitmap? DrawedImageSource
+    public Bitmap? DrawnImageSource
     {
         get => _drawedImageSource;
         private set => this.RaiseAndSetIfChanged(ref _drawedImageSource, value);
@@ -664,7 +664,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         // Вывод визуализированного изображения
         if (chiRes is not null && (_chiSquareParameters?.Visualize ?? false))
-            DrawedImage = chiRes?.Image;
+            DrawnImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
         CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, fanRes, kzhaRes, zcaRes, statmRes, complexRes, results.ElapsedTime);
@@ -695,7 +695,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public void DrawCurrentImage()
     {
         if (CurrentImage is not null)
-            DrawedImage = CurrentImage;
+            DrawnImage = CurrentImage;
     }
 
     /// <summary>
@@ -712,7 +712,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     private void ResetImageAndResults()
     {
         ImagePath = string.Empty;
-        DrawedImage = null;
+        DrawnImage = null;
         ResetResults();
 
         if (CurrentImage is not null)
@@ -741,7 +741,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
 
         var results = new StringBuilder();
-        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection) + GetResultStringByState(CurrentResults.ComplexMethodState, CurrentResults.IsHidingDetected));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.HidingDecisionDetection) + GetResultStringByState(CurrentResults.ComplexMethodState, CurrentResults.IsHidingDetected));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + GetResultStringByState(CurrentResults.MethodChiSqrState, CurrentResults.ChiSqrMessageRelativeVolume));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + GetResultStringByState(CurrentResults.MethodRsState, CurrentResults.RsMessageRelativeVolume));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.SpaValue) + GetResultStringByState(CurrentResults.MethodSpaState, CurrentResults.SpaMessageRelativeVolume));

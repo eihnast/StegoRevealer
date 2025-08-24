@@ -339,16 +339,16 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработчик текущего отображаемого изображения (может не соответствовать изначально выбранному)
     /// </summary>
-    public ImageHandler? DrawedImage
+    public ImageHandler? DrawnImage
     {
         get => _drawedImage;
         set
         {
             _drawedImage = value;
             if (_drawedImage is not null)
-                DrawedImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
+                DrawnImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
             else
-                DrawedImageSource = null;
+                DrawnImageSource = null;
         }
     }
     private ImageHandler? _drawedImage;
@@ -356,7 +356,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Источник текущего отображаемого изображения
     /// </summary>
-    public Bitmap? DrawedImageSource
+    public Bitmap? DrawnImageSource
     {
         get => _drawedImageSource;
         private set => this.RaiseAndSetIfChanged(ref _drawedImageSource, value);
@@ -623,7 +623,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public void DrawCurrentImage()
     {
         if (CurrentImage is not null)
-            DrawedImage = CurrentImage;
+            DrawnImage = CurrentImage;
     }
 
     /// <summary>
@@ -636,7 +636,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     private void ResetImageAndResults()
     {
         ImagePath = string.Empty;
-        DrawedImage = null;
+        DrawnImage = null;
         ResetResults();
 
         if (CurrentImage is not null)
