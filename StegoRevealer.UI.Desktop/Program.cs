@@ -56,6 +56,7 @@ public static class Program
             Configurator.SaveConfig();
             TempManager.Instance.DeleteImageHandlers();
             TempManager.Instance.DeleteTempImages();
+            TempManager.Instance.DeleteTempFiles();
             Logger.LogError("Stego Revealer closed due to an error");
         }
     }

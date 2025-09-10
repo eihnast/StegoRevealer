@@ -574,6 +574,123 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Выбрать файл данных.
+        /// </summary>
+        public static string HiderTab_ChooseData {
+            get {
+                return ResourceManager.GetString("HiderTab.ChooseData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Выбор скрываемых данных.
+        /// </summary>
+        public static string HiderTab_ChooseDataTitle {
+            get {
+                return ResourceManager.GetString("HiderTab.ChooseDataTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Последовательно.
+        /// </summary>
+        public static string HiderTab_HideLinear {
+            get {
+                return ResourceManager.GetString("HiderTab.HideLinear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Псевдослучайно.
+        /// </summary>
+        public static string HiderTab_HideRandom {
+            get {
+                return ResourceManager.GetString("HiderTab.HideRandom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Параметры встраивания.
+        /// </summary>
+        public static string HiderTab_HiderParams {
+            get {
+                return ResourceManager.GetString("HiderTab.HiderParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Способ и параметры встраивания.
+        /// </summary>
+        public static string HiderTab_HiderParamsAndMethod {
+            get {
+                return ResourceManager.GetString("HiderTab.HiderParamsAndMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Метод Коха-Жао.
+        /// </summary>
+        public static string HiderTab_MethodKochZhao {
+            get {
+                return ResourceManager.GetString("HiderTab.MethodKochZhao", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Метод НЗБ.
+        /// </summary>
+        public static string HiderTab_MethodLsb {
+            get {
+                return ResourceManager.GetString("HiderTab.MethodLsb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ключ ГПСЧ.
+        /// </summary>
+        public static string HiderTab_RandomKey {
+            get {
+                return ResourceManager.GetString("HiderTab.RandomKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Отменить выбор файла данных.
+        /// </summary>
+        public static string HiderTab_RemoveLoadedData {
+            get {
+                return ResourceManager.GetString("HiderTab.RemoveLoadedData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Изображение со встраиванием.
+        /// </summary>
+        public static string HiderTab_Results_CoveredImageName {
+            get {
+                return ResourceManager.GetString("HiderTab.Results.CoveredImageName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Стартовый индекс.
+        /// </summary>
+        public static string HiderTab_StartIndex {
+            get {
+                return ResourceManager.GetString("HiderTab.StartIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Порог.
+        /// </summary>
+        public static string HiderTab_Threshold {
+            get {
+                return ResourceManager.GetString("HiderTab.Threshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на             Stego Revealer - программный комплекс, предназначенный для осуществления стегоанализа и работы со стеганографическими методами скрытия и извлечения информации.
         ///            
         ///            Доступные методы стегоанализа:

@@ -680,5 +680,6 @@ public class SteganalysysController : ControllerBase
         image.CloseHandler();
         TempManager.Instance.ForgetHandler(image);
         TempManager.Instance.DeleteTempImages(onlyWithoutHandlers: true, writeToLog: false);
+        TempManager.Instance.DeleteTempFiles(writeToLog: false);
     }
 }

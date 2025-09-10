@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         Configurator.SaveConfig();
         TempManager.Instance.DeleteImageHandlers();
         TempManager.Instance.DeleteTempImages();
+        TempManager.Instance.DeleteTempFiles();
     }
 
     private void UpdateHeaderBtnSelection(Button selectedBtn)

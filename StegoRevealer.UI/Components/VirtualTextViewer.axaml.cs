@@ -99,9 +99,14 @@ public partial class VirtualTextViewer : UserControl
         this.PointerReleased += OnPointerReleased;
         this.PointerMoved += OnPointerMoved;
 
+        //this.AttachedToVisualTree += (_, _) =>
+        //{
+        //    _scrollViewer.GetObservable(BoundsProperty).Subscribe(_ => RecalculateMetricsAndUpdate());
+        //    Focus();
+        //};
         this.AttachedToVisualTree += (_, _) =>
         {
-            _scrollViewer.GetObservable(BoundsProperty).Subscribe(_ => RecalculateMetricsAndUpdate());
+            _scrollViewer.GetObservable(ScrollViewer.ViewportProperty).Subscribe(async _ => await RecalculateMetricsAndUpdate());
             Focus();
         };
 
@@ -114,7 +119,16 @@ public partial class VirtualTextViewer : UserControl
 
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
-    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e) => UpdateVisibleText();
+    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        var maxY = Math.Max(0, (_virtualContainer?.Height ?? 0) - (_scrollViewer?.Viewport.Height ?? 0));
+        if (_scrollViewer?.Offset.Y > maxY)
+            _scrollViewer.Offset = _scrollViewer.Offset.WithY(maxY);
+        if (_scrollViewer?.Offset.Y < 0)
+            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
+
+        UpdateVisibleText();
+    }
 
     public async Task SetText(string text)
     {
@@ -124,37 +138,59 @@ public partial class VirtualTextViewer : UserControl
         _selectAllMode = false;
         _visualLines.Clear();
 
+        _scrollViewer.Offset = default;
+        _textHost.Margin = new Thickness(0);
+
         _loadingOverlay.IsVisible = true;
 
-        var layout = new TextLayout(
-            _fullText,
-            new Typeface(_textBlock.FontFamily),
-            _textBlock.FontSize,
-            Brushes.Black,
-            TextAlignment.Left,
-            TextWrapping.Wrap,
-            null, null,
-            FlowDirection.LeftToRight,
-            _textBlock.Bounds.Width,
-            double.PositiveInfinity);
+        //var layout = new TextLayout(
+        //    _fullText,
+        //    new Typeface(_textBlock.FontFamily),
+        //    _textBlock.FontSize,
+        //    Brushes.Black,
+        //    TextAlignment.Left,
+        //    TextWrapping.Wrap,
+        //    null, null,
+        //    FlowDirection.LeftToRight,
+        //    GetWrappingWidth(),  // _textBlock.Bounds.Width,
+        //    double.PositiveInfinity);
 
-        await Task.Run(() =>
+        //await Task.Run(() =>
+        //{
+        //    var lines = layout.TextLines
+        //        .Select(line => (line.FirstTextSourceIndex, line.Length))
+        //        .ToList();
+
+        //    Dispatcher.UIThread.Invoke(() =>
+        //    {
+        //        _visualLines = lines;
+        //        // _virtualContainer.Height = _visualLines.Count * _lineHeight;
+        //        ApplyVirtualContainerSize();
+        //        ResetScrollAndLayout();  // UpdateVisibleText();
+        //        ClampAndResetScrollThenUpdate();
+        //        _loadingOverlay.IsVisible = false;
+        //    });
+        //});
+
+        _visualLines = CalculateVisualLines(_fullText);
+        await ApplyVirtualContainerSize();
+        await ResetScrollAndLayout();
+        ClampAndResetScrollThenUpdate();
+
+        _loadingOverlay.IsVisible = _visualLines.Count > _linesVisible * 2;
+
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            var lines = layout.TextLines
-                .Select(line => (line.FirstTextSourceIndex, line.Length))
-                .ToList();
-
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                _visualLines = lines;
-                _virtualContainer.Height = _visualLines.Count * _lineHeight;
-                UpdateVisibleText();
-                _loadingOverlay.IsVisible = false;
-            });
-        });
+            _visualLines = CalculateVisualLines(_fullText);
+            await ApplyVirtualContainerSize();
+            await ResetScrollAndLayout();
+            // второй «подчищающий» сброс — теперь уже с финальными Extent/Viewport
+            ClampAndResetScrollThenUpdate();
+            _loadingOverlay.IsVisible = false;
+        }, DispatcherPriority.Render);
     }
 
-    private void RecalculateMetricsAndUpdate()
+    private async Task RecalculateMetricsAndUpdate()
     {
         var viewport = _scrollViewer.Viewport;
         if (viewport.Width <= 0 || viewport.Height <= 0)
@@ -164,9 +200,11 @@ public partial class VirtualTextViewer : UserControl
         _linesVisible = Math.Max(1, (int)(viewport.Height / _lineHeight));
 
         _visualLines = CalculateVisualLines(_fullText);
-        _virtualContainer.Height = _visualLines.Count * _lineHeight;
+        // _virtualContainer.Height = _visualLines.Count * _lineHeight;
+        await ApplyVirtualContainerSize();
 
-        UpdateVisibleText();
+        await ResetScrollAndLayout();  // UpdateVisibleText();
+        ClampAndResetScrollThenUpdate();
     }
 
     private List<(int start, int length)> CalculateVisualLines(string text)
@@ -184,7 +222,7 @@ public partial class VirtualTextViewer : UserControl
             TextWrapping.Wrap,
             null, null,
             FlowDirection.LeftToRight,
-            _textBlock.Bounds.Width,
+            GetWrappingWidth(),  // _textBlock.Bounds.Width,
             double.PositiveInfinity);
 
         foreach (var line in layout.TextLines)
@@ -200,7 +238,13 @@ public partial class VirtualTextViewer : UserControl
     private void UpdateVisibleText()
     {
         if (_visualLines.Count == 0)
+        {
+            _textHost.Margin = new Thickness(0);
+            _textBlock.Inlines?.Clear();
+            if (!string.IsNullOrEmpty(_fullText))
+                _textBlock.Inlines?.Add(new Run(_fullText));
             return;
+        }
 
         int scrollLine = (int)(_scrollViewer.Offset.Y / _lineHeight);
         scrollLine = Math.Clamp(scrollLine, 0, Math.Max(0, _visualLines.Count - 1));
@@ -213,10 +257,20 @@ public partial class VirtualTextViewer : UserControl
 
         string visible = _fullText.Substring(firstChar, Math.Min(totalLength, _fullText.Length - firstChar));
 
+        if (visible.Length == 0 && !string.IsNullOrEmpty(_fullText))
+        {
+            _textHost.Margin = new Thickness(0);
+            _textBlock.Inlines?.Clear();
+            _textBlock.Inlines?.Add(new Run(_fullText));
+            return;
+        }
+
         if (string.Concat(_textBlock.Inlines?.OfType<Run>().Select(r => r.Text) ?? Enumerable.Empty<string>()) == visible && !_selectAllMode && _selectionStart == -1)
             return; // пропускаем, если текст тот же и нет выделения
 
-        _textHost.Margin = new Thickness(0, scrollLine * _lineHeight, 0, 0);
+        // _textHost.Margin = new Thickness(0, scrollLine * _lineHeight, 0, 0);
+        var needMargin = _visualLines.Count > _linesVisible;
+        _textHost.Margin = new Thickness(0, needMargin ? scrollLine * _lineHeight : 0, 0, 0);
         _textBlock.Inlines?.Clear();
 
         if (_selectAllMode || (_selectionStart >= 0 && _selectionEnd >= 0))
@@ -334,7 +388,7 @@ public partial class VirtualTextViewer : UserControl
             TextWrapping.Wrap,
             null, null,
             FlowDirection.LeftToRight,
-            _textBlock.Bounds.Width,
+            GetWrappingWidth(),  // _textBlock.Bounds.Width,
             double.PositiveInfinity);
 
         var hit = layout.HitTestPoint(point);
@@ -343,5 +397,75 @@ public partial class VirtualTextViewer : UserControl
         int scrollLine = (int)(_scrollViewer.Offset.Y / _lineHeight);
         int firstChar = _visualLines[Math.Clamp(scrollLine, 0, _visualLines.Count - 1)].start;
         return firstChar + localIndex;
+    }
+
+    private async Task ApplyVirtualContainerSize()
+    {
+        var contentHeight = _visualLines.Count * _lineHeight;
+
+        var viewportH = _scrollViewer?.Viewport.Height ?? 0;
+        var minH = Math.Max(this.MinHeight, viewportH);
+
+        _virtualContainer.MinHeight = minH;
+        _virtualContainer.Height = Math.Max(contentHeight, minH);
+
+        _virtualContainer.InvalidateMeasure();
+        _virtualContainer.InvalidateArrange();
+        await ForceLayoutAsync();
+    }
+
+    private async Task ResetScrollAndLayout()
+    {
+        if (_scrollViewer != null)
+            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
+
+        if (_textHost != null)
+            _textHost.Margin = new Thickness(0);
+
+        _virtualContainer?.InvalidateMeasure();
+        _virtualContainer?.InvalidateArrange();
+        _scrollViewer?.InvalidateMeasure();
+        _scrollViewer?.InvalidateArrange();
+        InvalidateVisual();
+        await ForceLayoutAsync();
+
+        UpdateVisibleText();
+    }
+
+    private double GetWrappingWidth()
+    {
+        var w = _scrollViewer?.Viewport.Width ?? 0;
+        if (w <= 0) w = _scrollViewer?.Bounds.Width ?? 0;
+        if (w <= 0) w = this.Bounds.Width;
+        if (w <= 0) w = this.Width;
+        if (double.IsNaN(w) || w <= 0) w = 800; // безопасный fallback
+        return w;
+    }
+
+    private void ClampAndResetScrollThenUpdate()
+    {
+        var maxY = Math.Max(0, (_virtualContainer?.Height ?? 0) - (_scrollViewer?.Viewport.Height ?? 0));
+        if (double.IsInfinity(maxY) || double.IsNaN(maxY))
+            maxY = 0;
+
+        if (_scrollViewer is null)
+            return;
+
+        var y = _scrollViewer.Offset.Y;
+        if (y > maxY || y < 0) y = 0;
+        _scrollViewer.Offset = _scrollViewer.Offset.WithY(y);
+
+        Dispatcher.UIThread.Post(async () =>
+        {
+            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
+            _textHost.Margin = new Thickness(0);
+            await ForceLayoutAsync();
+            UpdateVisibleText();
+        }, DispatcherPriority.Render);
+    }
+
+    private static async Task ForceLayoutAsync()
+    {
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
     }
 }

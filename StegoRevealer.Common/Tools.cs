@@ -1,10 +1,11 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using SharpCompress.Common;
+using SkiaSharp;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
-using StegoRevealer.StegoCore.ImageHandlerLib;
-using SkiaSharp;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace StegoRevealer.Common;
 
@@ -57,8 +58,8 @@ public static class Tools
     {
         if (File.Exists(filePath))
         {
-            string tempFileName = useGuid ? Guid.NewGuid().ToString() : Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
-            string newPath = Path.Combine(GetOrCreateTempDirPath(), tempFileName + Path.GetExtension(filePath));
+            string tempFileName = CreateTempFilenameWithoutExt(useGuid);
+            string newPath = CreateTempPath(tempFileName + Path.GetExtension(filePath));
 
             try
             {
@@ -75,6 +76,10 @@ public static class Tools
 
         return null;
     }
+
+    public static string CreateTempFilenameWithoutExt(bool useGuid = false) => 
+        useGuid ? Guid.NewGuid().ToString() : Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
+    public static string CreateTempPath(string fileName) => Path.Combine(GetOrCreateTempDirPath(), fileName);
 
     public static bool TryDeleteTempFile(string filePath)
     {

@@ -30,7 +30,7 @@ public partial class ExtractorView : UserControl
         _vm = CommonTools.GetViewModel<ExtractorViewModel>(this.DataContext);
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
 
-        MessageNullElapsedTime = "0 мс" + _vm.L["Common.Ms"];
+        MessageNullElapsedTime = "0 " + _vm.L["Common.Ms"];
 
         SetImagePathText();
 
@@ -84,9 +84,10 @@ public partial class ExtractorView : UserControl
 
             // Вывод результатов на форму
             _ = ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            Dispatcher.UIThread.Post(() => { ExtractedMessage.UpdateLayout(); });
 
             // Затрачено времени
-            ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
+            ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " " + _vm.L["Common.Ms"];
         }
     }
 

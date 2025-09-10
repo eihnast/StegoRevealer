@@ -5,12 +5,14 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using SkiaSharp;
 using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib;
+using StegoRevealer.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +21,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Tools;
 
@@ -224,5 +227,24 @@ public static class CommonTools
         {
             Logger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
         }
+    }
+
+    public static async Task<string> ChooseSingleFile(Visual? window, IEnumerable<FilePickerFileType> fileTypes, string dialogTitle = "Выбор файла")
+    {
+        var topLevel = TopLevel.GetTopLevel(window);
+        if (topLevel is null)
+            return string.Empty;
+
+        string path = string.Empty;
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = dialogTitle,
+            AllowMultiple = false,
+            FileTypeFilter = fileTypes.ToArray()
+        });
+
+        if (files is not null && files.Count > 0)
+            path = files[0].Path.LocalPath;
+        return path;
     }
 }

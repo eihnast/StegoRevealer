@@ -48,6 +48,7 @@ public static class Program
             ApiConfigurator.SaveConfig();
             TempManager.Instance.DeleteImageHandlers();
             TempManager.Instance.DeleteTempImages();
+            TempManager.Instance.DeleteTempFiles();
             Logger.LogInfo("StegoRevelaer API stopped successfully.");
 
             ClosingOperationsExecuted = true;

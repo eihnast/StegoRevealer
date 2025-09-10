@@ -9,6 +9,7 @@ public interface IHider
     /// Запуск скрытия информации
     /// </summary>
     /// <param name="data">Скрываемая информация</param>
+    /// <param name="newImagePath">Полный путь к новому файлу изображения со встраиванием</param>
     public IHideResult Hide(string? data, string? newImagePath = null);
 
     /// <summary>
@@ -16,5 +17,6 @@ public interface IHider
     /// </summary>
     /// <param name="parameters">Параметры</param>
     /// <param name="data">Скрываемая информация</param>
+    /// <param name="newImagePath">Полный путь к новому файлу изображения со встраиванием</param>
     public IHideResult Hide(IParams parameters, string? data, string? newImagePath = null);
 }

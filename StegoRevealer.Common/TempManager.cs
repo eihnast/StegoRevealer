@@ -32,13 +32,17 @@ public class TempManager
     }
 
 
-    private readonly List<TempImage> _tempImages = new List<TempImage>();
+    private readonly List<TempFile> _tempImages = new List<TempFile>();
+    private readonly List<TempFile> _tempFiles = new List<TempFile>();
     private readonly List<ImageHandler> _openedHandlers = new List<ImageHandler>();
 
-    public void RememberTempImage(string originalPath, string tempPath) => _tempImages.Add(new TempImage { OriginalPath = originalPath, TempPath = tempPath });
+    public void RememberTempImage(string originalPath, string tempPath) => _tempImages.Add(new TempFile { OriginalPath = originalPath, TempPath = tempPath });
+    public void RememberTempFile(string originalPath, string tempPath) => _tempFiles.Add(new TempFile { OriginalPath = originalPath, TempPath = tempPath });
 
     public string? GetOriginalImageByTemp(string tempImgName) => 
         _tempImages.FirstOrDefault(img => Path.GetFileNameWithoutExtension(img.TempPath).Equals(tempImgName, StringComparison.OrdinalIgnoreCase))?.OriginalPath;
+    public string? GetOriginalFileByTemp(string tempFileName) =>
+        _tempFiles.FirstOrDefault(img => Path.GetFileNameWithoutExtension(img.TempPath).Equals(tempFileName, StringComparison.OrdinalIgnoreCase))?.OriginalPath;
 
     public void RememberHandler(ImageHandler imageHandler) => _openedHandlers.Add(imageHandler);
     public void ForgetHandler(ImageHandler imageHandler) => _openedHandlers.Remove(imageHandler);
@@ -91,5 +95,36 @@ public class TempManager
 
         Logger.LogInfo("All saved image handlers closed");
         _openedHandlers.Clear();
+    }
+
+    public void DeleteTempFiles(bool withRetry = true, bool writeToLog = true)
+    {
+        var notDeleted = new List<string>();
+        var processingFiles = _tempImages.Where(img => File.Exists(img.TempPath));
+
+        foreach (var tempFile in processingFiles)
+        {
+            try
+            {
+                File.Delete(tempFile.TempPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error wile deleting temp file: " + ex.Message);
+                notDeleted.Add(tempFile.TempPath);
+            }
+        }
+
+        if (withRetry && notDeleted.Count > 0)
+        {
+            Logger.LogWarning("Trying to retry deleting temp files");
+            DeleteTempFiles(false);
+        }
+        else
+        {
+            if (writeToLog)
+                Logger.LogInfo("Temp files deleted");
+            _tempImages.Clear();
+        }
     }
 }

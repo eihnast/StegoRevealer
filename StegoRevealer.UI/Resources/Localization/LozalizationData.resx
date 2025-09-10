@@ -544,4 +544,43 @@
   <data name="JointAnalysis.Decisions.Undefined" xml:space="preserve">
     <value>Однозначного вывода сделать нельзя, точка не попадает ни в один из секторов</value>
   </data>
+  <data name="HiderTab.HiderParams" xml:space="preserve">
+    <value>Параметры встраивания</value>
+  </data>
+  <data name="HiderTab.HiderParamsAndMethod" xml:space="preserve">
+    <value>Способ и параметры встраивания</value>
+  </data>
+  <data name="HiderTab.MethodLsb" xml:space="preserve">
+    <value>Метод НЗБ</value>
+  </data>
+  <data name="HiderTab.MethodKochZhao" xml:space="preserve">
+    <value>Метод Коха-Жао</value>
+  </data>
+  <data name="HiderTab.HideLinear" xml:space="preserve">
+    <value>Последовательно</value>
+  </data>
+  <data name="HiderTab.HideRandom" xml:space="preserve">
+    <value>Псевдослучайно</value>
+  </data>
+  <data name="HiderTab.RandomKey" xml:space="preserve">
+    <value>Ключ ГПСЧ</value>
+  </data>
+  <data name="HiderTab.StartIndex" xml:space="preserve">
+    <value>Стартовый индекс</value>
+  </data>
+  <data name="HiderTab.Threshold" xml:space="preserve">
+    <value>Порог</value>
+  </data>
+  <data name="HiderTab.ChooseData" xml:space="preserve">
+    <value>Выбрать файл данных</value>
+  </data>
+  <data name="HiderTab.ChooseDataTitle" xml:space="preserve">
+    <value>Выбор скрываемых данных</value>
+  </data>
+  <data name="HiderTab.RemoveLoadedData" xml:space="preserve">
+    <value>Отменить выбор файла данных</value>
+  </data>
+  <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
+    <value>Изображение со встраиванием</value>
+  </data>
 </root>

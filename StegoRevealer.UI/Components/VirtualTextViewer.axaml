@@ -1,14 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="StegoRevealer.UI.Components.VirtualTextViewer"
-			 Focusable="True"
-			 Background="{Binding Background, RelativeSource={RelativeSource Self}}">
+			 Focusable="True">
 	<Grid>
 		<!-- Слой текста -->
 		<ScrollViewer Name="PART_ScrollViewer"
 					  VerticalScrollBarVisibility="Auto"
-					  HorizontalScrollBarVisibility="Disabled">
-			<Grid Name="PART_VirtualContainer">
+					  HorizontalScrollBarVisibility="Disabled"
+					  MinHeight="{Binding MinHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
+			<Grid Name="PART_VirtualContainer"
+				  Background="{Binding ContentBackground, RelativeSource={RelativeSource AncestorType=UserControl}}">
 				<Grid ColumnDefinitions="*,18" RowDefinitions="*">
 					<Border Name="PART_TextHost"
 							HorizontalAlignment="Stretch"
