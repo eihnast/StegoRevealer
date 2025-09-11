@@ -628,6 +628,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Изображение со встраиванием отображено на левой панели.
+        /// </summary>
+        public static string HiderTab_ImageInLeftPanelInfo {
+            get {
+                return ResourceManager.GetString("HiderTab.ImageInLeftPanelInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Метод Коха-Жао.
         /// </summary>
         public static string HiderTab_MethodKochZhao {
@@ -669,6 +678,24 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string HiderTab_Results_CoveredImageName {
             get {
                 return ResourceManager.GetString("HiderTab.Results.CoveredImageName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Результаты встраивания.
+        /// </summary>
+        public static string HiderTab_ResultsExpander {
+            get {
+                return ResourceManager.GetString("HiderTab.ResultsExpander", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Сохранить сформированное изображение со встраиванием.
+        /// </summary>
+        public static string HiderTab_SaveCoveredImage {
+            get {
+                return ResourceManager.GetString("HiderTab.SaveCoveredImage", resourceCulture);
             }
         }
         

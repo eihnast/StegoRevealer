@@ -26,10 +26,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="TestData\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Update="TestData\blur_common_g0.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
@@ -131,6 +127,9 @@
 		</None>
 		<None Update="TestData\HandlerCloningTest.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="TestData\image0a.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="TestData\image0.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

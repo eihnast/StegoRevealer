@@ -583,4 +583,13 @@
   <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
     <value>Изображение со встраиванием</value>
   </data>
+  <data name="HiderTab.ResultsExpander" xml:space="preserve">
+    <value>Результаты встраивания</value>
+  </data>
+  <data name="HiderTab.ImageInLeftPanelInfo" xml:space="preserve">
+    <value>Изображение со встраиванием отображено на левой панели</value>
+  </data>
+  <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
+    <value>Сохранить сформированное изображение со встраиванием</value>
+  </data>
 </root>

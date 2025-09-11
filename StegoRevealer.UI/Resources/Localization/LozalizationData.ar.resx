@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -545,42 +548,52 @@
     <value>لا يمكن التوصل إلى استنتاج حاسم، النقطة لا تقع في أي قطاع</value>
   </data>
   <data name="HiderTab.HiderParams" xml:space="preserve">
-    <value />
+    <value>معلمات الإخفاء</value>
   </data>
   <data name="HiderTab.HiderParamsAndMethod" xml:space="preserve">
-    <value />
+    <value>طريقة ومعلمات الإخفاء</value>
   </data>
   <data name="HiderTab.MethodLsb" xml:space="preserve">
-    <value />
+    <value>طريقة LSB</value>
   </data>
   <data name="HiderTab.MethodKochZhao" xml:space="preserve">
-    <value />
+    <value>طريقة كوتش-تشاو</value>
   </data>
   <data name="HiderTab.HideLinear" xml:space="preserve">
-    <value />
+    <value>تسلسلي</value>
   </data>
   <data name="HiderTab.HideRandom" xml:space="preserve">
-    <value />
+    <value>شبه عشوائي</value>
   </data>
   <data name="HiderTab.RandomKey" xml:space="preserve">
-    <value />
+    <value>مفتاح PRNG</value>
   </data>
   <data name="HiderTab.StartIndex" xml:space="preserve">
-    <value />
+    <value>الفهرس الابتدائي</value>
   </data>
   <data name="HiderTab.Threshold" xml:space="preserve">
-    <value />
+    <value>العتبة</value>
   </data>
   <data name="HiderTab.ChooseData" xml:space="preserve">
-    <value />
+    <value>اختيار ملف بيانات</value>
   </data>
   <data name="HiderTab.ChooseDataTitle" xml:space="preserve">
-    <value />
+    <value>اختر البيانات للإخفاء</value>
   </data>
   <data name="HiderTab.RemoveLoadedData" xml:space="preserve">
-    <value />
+    <value>إلغاء اختيار ملف البيانات</value>
   </data>
   <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
-    <value />
+    <value>الصورة مع الإخفاء</value>
   </data>
+  <data name="HiderTab.ResultsExpander" xml:space="preserve">
+    <value>نتائج الإخفاء</value>
+  </data>
+  <data name="HiderTab.ImageInLeftPanelInfo" xml:space="preserve">
+    <value>الصورة مع الإخفاء معروضة في اللوحة اليسرى</value>
+  </data>
+  <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
+    <value>حفظ الصورة المولدة مع الإخفاء</value>
+  </data>
+
 </root>

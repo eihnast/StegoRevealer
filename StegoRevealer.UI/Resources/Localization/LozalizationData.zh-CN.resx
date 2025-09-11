@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -545,42 +548,52 @@
     <value>无法得出明确结论，该点不属于任何区域</value>
   </data>
   <data name="HiderTab.HiderParams" xml:space="preserve">
-    <value />
+    <value>嵌入参数</value>
   </data>
   <data name="HiderTab.HiderParamsAndMethod" xml:space="preserve">
-    <value />
+    <value>嵌入方法与参数</value>
   </data>
   <data name="HiderTab.MethodLsb" xml:space="preserve">
-    <value />
+    <value>LSB 方法</value>
   </data>
   <data name="HiderTab.MethodKochZhao" xml:space="preserve">
-    <value />
+    <value>Koch-Zhao 方法</value>
   </data>
   <data name="HiderTab.HideLinear" xml:space="preserve">
-    <value />
+    <value>顺序</value>
   </data>
   <data name="HiderTab.HideRandom" xml:space="preserve">
-    <value />
+    <value>伪随机</value>
   </data>
   <data name="HiderTab.RandomKey" xml:space="preserve">
-    <value />
+    <value>PRNG 密钥</value>
   </data>
   <data name="HiderTab.StartIndex" xml:space="preserve">
-    <value />
+    <value>起始索引</value>
   </data>
   <data name="HiderTab.Threshold" xml:space="preserve">
-    <value />
+    <value>阈值</value>
   </data>
   <data name="HiderTab.ChooseData" xml:space="preserve">
-    <value />
+    <value>选择数据文件</value>
   </data>
   <data name="HiderTab.ChooseDataTitle" xml:space="preserve">
-    <value />
+    <value>选择要隐藏的数据</value>
   </data>
   <data name="HiderTab.RemoveLoadedData" xml:space="preserve">
-    <value />
+    <value>取消选择数据文件</value>
   </data>
   <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
-    <value />
+    <value>嵌入后的图像</value>
   </data>
+  <data name="HiderTab.ResultsExpander" xml:space="preserve">
+    <value>嵌入结果</value>
+  </data>
+  <data name="HiderTab.ImageInLeftPanelInfo" xml:space="preserve">
+    <value>嵌入后的图像显示在左侧面板中</value>
+  </data>
+  <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
+    <value>保存生成的嵌入图像</value>
+  </data>
+
 </root>

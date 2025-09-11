@@ -37,6 +37,23 @@ public class HidingExtractionTests
     }
 
     [TestMethod]
+    public void HidingExtractionLsb_WhithFewData()
+    {
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "image0a.png");
+        var lsbHider = new LsbHider(new ImageHandler(imagePath));
+
+        string data = "Data";
+
+        var resultPath = lsbHider.Hide(data).GetResultPath();
+        Assert.IsFalse(string.IsNullOrEmpty(resultPath));
+
+        var lsbExtractor = new LsbExtractor(new ImageHandler(resultPath));
+
+        var extractedData = lsbExtractor.Extract().GetResultData();
+        Assert.IsTrue(extractedData?.StartsWith(data), $"Extracted data must starts with '{data}', but was '{extractedData?[..10]}'");
+    }
+
+    [TestMethod]
     public void HidingExtractionLsb_Random()
     {
         string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "image1.png");

@@ -59,12 +59,18 @@ public partial class HiderView : UserControl
         if (await _vm.TryLoadData())
         {
             RemoveLoadedData.IsVisible = true;
+            _vm.HasLoadedDataFile = true;
+        }
+        else
+        {
+            _vm.HasLoadedDataFile = false;
         }
     }
 
     private void RemoveLoadedData_Click(object? sender, RoutedEventArgs e)
     {
         RemoveLoadedData.IsVisible = false;
+        _vm.HasLoadedDataFile = true;
         _vm.ResetDataFile();
     }
 
@@ -209,4 +215,6 @@ public partial class HiderView : UserControl
             Mode = BindingMode.TwoWay
         });
     }
+
+    private async void SaveCoveredImage_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.TrySaveCoveredImage();
 }

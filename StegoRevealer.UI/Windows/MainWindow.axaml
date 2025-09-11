@@ -50,7 +50,7 @@
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
 						<Button Name="HiderBtn" Content="{Binding L[Tabs.Hider]}" Classes="HeaderBtn"
 								ClickMode="Press" Click="HiderBtn_Click"/>
-						<Rectangle Margin="0 3 0 0" Height="1" Fill="Gray"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
 						<Button Name="ExtractorBtn" Content="{Binding L[Tabs.Extractor]}" Classes="HeaderBtn"

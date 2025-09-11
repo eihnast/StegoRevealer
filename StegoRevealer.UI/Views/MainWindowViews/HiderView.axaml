@@ -204,14 +204,10 @@
 							<!-- / Параметры для метода Коха-Жао -->
 
 							<!-- Выбор скрываемых данных -->
-							<StackPanel Name="HidingData" Orientation="Vertical"
-										Grid.Column="0" Grid.Row="3"
-										Margin="0 5 0 0"
-										HorizontalAlignment="Stretch">
+							<Grid Name="HidingData" Grid.Column="0" Grid.Row="3"
+								  Margin="0 5 0 0" HorizontalAlignment="Stretch" RowDefinitions="Auto,*">
 								
-								<!--<Label Content="{Binding L[HiderTab.ChooseDataTitle]}" HorizontalAlignment="Center"/>-->
-								
-								<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+								<DockPanel HorizontalAlignment="Stretch" LastChildFill="True" Grid.Row="0">
 									<Button Name="LoadDataButton" Content="{Binding L[HiderTab.ChooseData]}"
 											DockPanel.Dock="Left"
 											Height="30" Padding="15 0" Margin="0"
@@ -238,13 +234,19 @@
 										</ToolTip.Tip>
 									</TextBox>
 								</DockPanel>
+
+								<Border Grid.Row="1">
+									<TextBox Name="HidingTextTb" Text="{Binding DataToHide}" 
+											 MinHeight="150" DockPanel.Dock="Top"
+											 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+											 HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+											 IsEnabled="{Binding !HasLoadedDataFile}"
+											 AcceptsReturn="True" TextWrapping="Wrap"
+											 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+											 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+								</Border>
 								
-								<TextBox Name="HidingTextTb" 
-										 MinHeight="150" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-										 HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
-										 IsVisible="{Binding Path=!HasLoadedDataFile}"/>
-								
-							</StackPanel>
+							</Grid>
 							<!-- / Выбор скрываемых данных -->
 
 						</Grid>
@@ -259,7 +261,7 @@
 						   RelativePanel.AlignLeftWithPanel="True"/>
 
 				<!-- Экспандер результатов -->
-				<Expander Name="ResultsExpander" Header="{Binding L[ExtractorTab.ResultsExpander]}"
+				<Expander Name="ResultsExpander" Header="{Binding L[HiderTab.ResultsExpander]}"
 						  IsExpanded="{Binding Path=!IsParamsOpened}"
 						  Expanded="ResultsExpander_Expanded"
 						  Collapsed="ResultsExpander_Collapsed"
@@ -270,7 +272,7 @@
 						  RelativePanel.AlignLeftWithPanel="True"
 						  IsEnabled="{Binding Path=HasResults}">
 					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-							   LastChildFill="True">
+							   LastChildFill="False">
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
 							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
@@ -281,15 +283,31 @@
 									   FontStyle="Italic" TextAlignment="Left"
 									   Height="25" Margin="20 0 0 0"/>
 						</StackPanel>
-						<StackPanel Name="CoveredImagePath" Orientation="Horizontal"
-									DockPanel.Dock="Bottom" Margin="0 15 0 0">
-							<TextBlock Name="CoveredImageLabel" Text="{Binding L[HiderTab.Results.CoveredImageName], StringFormat='{}{0}:'} "
-									   FontStyle="Italic" TextDecorations=""
+						<DockPanel DockPanel.Dock="Top" Margin="0 15 0 0" LastChildFill="True">
+							<TextBlock Name="CoveredImageLabel"
+									   Text="{Binding L[HiderTab.Results.CoveredImageName], StringFormat='{}{0}:'}"
+									   DockPanel.Dock="Left"
+									   Margin="0 0 8 0"
+									   VerticalAlignment="Top"/>
+							<TextBlock Name="CoveredImageValue"
+									   Text="{Binding CoveredImagePath}"
+									   TextWrapping="WrapWithOverflow"
+									   TextAlignment="Left"/>
+						</DockPanel>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+									DockPanel.Dock="Top" Margin="0 5 0 0">
+							<TextBlock Text="{Binding L[HiderTab.ImageInLeftPanelInfo]}"
+									   FontStyle="Italic" TextDecorations="" FontFamily="10"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
-							<TextBlock Name="CoveredImageValue" Text=""
-									   FontStyle="Italic" TextAlignment="Left"
-									   Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<StackPanel DockPanel.Dock="Top"
+									Orientation="Horizontal" Margin="0 15 0 0"
+									HorizontalAlignment="Center">
+							<Button Name="SaveCoveredImage" Content="{Binding L[HiderTab.SaveCoveredImage]}"
+									Padding="10 10 10 10" Margin="0 0 3 0"
+									Background="{StaticResource SrDarkLight}"
+									Click="SaveCoveredImage_Click"/>
 						</StackPanel>
 					</DockPanel>
 				</Expander>
@@ -303,7 +321,7 @@
 					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
 					HorizontalAlignment="Center"
 					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-					Click="StartHiding_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
+					Click="StartHiding_Click" IsEnabled="{Binding Path=HasDataForHiding}"/>
 		</Grid>
 		<!-- / Внутренняя сетка -->
 

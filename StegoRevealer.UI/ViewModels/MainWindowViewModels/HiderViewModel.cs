@@ -1,9 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using Accord.Math;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
 using SharpCompress.Common;
 using StegoRevealer.Common;
+using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
+using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods;
@@ -53,12 +56,16 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     private string _dataPath = string.Empty;
 
     /// <summary>
-    /// Данные для скрытия
+    /// Данные для скрытия (из текстового поля)
     /// </summary>
     public string DataToHide
     {
         get => _dataToHide;
-        set => this.RaiseAndSetIfChanged(ref _dataToHide, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _dataToHide, value);
+            UpdateHasDataForHiding();
+        }
     }
     private string _dataToHide = string.Empty;
 
@@ -73,14 +80,28 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     private string _loadedDataToHide = string.Empty;
 
     /// <summary>
-    /// Загружено ли изображение для анализа
+    /// Загружено ли изображение для встраивания
     /// </summary>
     public bool HasLoadedImage
     {
         get => _hasLoadedImage;
-        set => this.RaiseAndSetIfChanged(ref _hasLoadedImage, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _hasLoadedImage, value);
+            UpdateHasDataForHiding();
+        }
     }
     private bool _hasLoadedImage = false;
+
+    /// <summary>
+    /// Загружены ли все необходимые данные для встраивания
+    /// </summary>
+    public bool HasDataForHiding
+    {
+        get => _hasDataForHiding;
+        set => this.RaiseAndSetIfChanged(ref _hasDataForHiding, value);
+    }
+    private bool _hasDataForHiding = false;
 
     /// <summary>
     /// Загружен ли файл данных для скрытия
@@ -88,7 +109,11 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     public bool HasLoadedDataFile
     {
         get => _hasLoadedDataFile;
-        set => this.RaiseAndSetIfChanged(ref _hasLoadedDataFile, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _hasLoadedDataFile, value);
+            UpdateHasDataForHiding();
+        }
     }
     private bool _hasLoadedDataFile = false;
 
@@ -378,7 +403,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         CurrentResults = new HidingResultsDto
         {
             ElapsedTime = 1234,
-            NewFilePath = "C:\\Temp\\new_image.png"
+            NewFilePath = "C:\\Temp\\LongDirNameForTestingTextWrapping\\new_image.png"
         };
     }
 
@@ -570,12 +595,32 @@ public class HiderViewModel : MainWindowViewModelBaseChild
 
         Logger.LogInfo("Hiding operations completed");
         timer.Stop();  // Остановка таймера
-
         results.ElapsedTime = timer.ElapsedMilliseconds;
 
-        CurrentResults = results;
+        ProcessAnalysisResults(results);
+
         Logger.LogInfo("Results of hiding:\n" + Logger.Separator
-            + $"\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
+            + $"\nElapsed time = {CurrentResults?.ElapsedTime}\n" + Logger.Separator);
+    }
+
+    /// <summary>
+    /// Обработка результатов встраивания
+    /// </summary>
+    private void ProcessAnalysisResults(HidingResultsDto? results)
+    {
+        if (results is null)
+        {
+            ResetResults();
+            return;
+        }
+
+        CurrentResults = results;
+
+        // Вывод нового изображения
+        if (!string.IsNullOrEmpty(results.NewFilePath))
+        {
+            DrawnImage = new ImageHandler(results.NewFilePath);
+        }
     }
 
     public void UpdateParameters()
@@ -611,6 +656,34 @@ public class HiderViewModel : MainWindowViewModelBaseChild
                 _kzhParameters.Threshold = KzThresholdValue;
 
             // KzIndexFirst и KzIndexSecond не имеют значения, если задан KzSeed!
+        }
+    }
+
+
+    /// <summary>
+    /// Осуществляет сохранение изображения со встраиванием
+    /// </summary>
+    public async Task TrySaveCoveredImage()
+    {
+        var topLevel = TopLevel.GetTopLevel(_mainWindowViewModel.MainWindow);
+        if (topLevel is null || string.IsNullOrEmpty(CurrentResults?.NewFilePath))
+            return;
+
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Сохранить изображение",
+            FileTypeChoices = new FilePickerFileType[]
+            {
+                new("Image files") { Patterns = new[] { "*.png", "*.bmp" }, MimeTypes = new[] { "*/*" } }
+            },
+            DefaultExtension = Path.GetExtension(CurrentResults?.NewFilePath),
+            SuggestedFileName = Path.GetFileNameWithoutExtension(ImagePath) + "Covered"
+        });
+
+        if (file is not null)
+        {
+            File.Copy(CurrentResults!.NewFilePath, file.Path.LocalPath, true);
+            Logger.LogInfo($"Saved covered image file: '{file.Path.LocalPath}'");
         }
     }
 
@@ -696,4 +769,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
 
         return LoadedDataToHide;
     }
+
+    private void UpdateHasDataForHiding() =>
+        HasDataForHiding = HasLoadedImage && (HasLoadedDataFile || !string.IsNullOrEmpty(DataToHide));
 }
