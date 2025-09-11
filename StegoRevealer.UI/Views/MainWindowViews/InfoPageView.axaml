@@ -19,7 +19,7 @@
 			<TextBlock Text="Stego Revealer"
 					   FontSize="36" FontWeight="Bold"
 					   HorizontalAlignment="Center"/>
-			<TextBlock Text="{Binding Path=AboutMessage}"
+			<TextBlock Text="{Binding L[InfoTab.AboutText]}"
 					   Margin="0 20 0 0"
 					   TextAlignment="Left" FontSize="20" TextWrapping="Wrap"
 					   HorizontalAlignment="Stretch"/>
