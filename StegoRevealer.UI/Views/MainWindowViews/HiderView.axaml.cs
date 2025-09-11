@@ -70,7 +70,7 @@ public partial class HiderView : UserControl
     private void RemoveLoadedData_Click(object? sender, RoutedEventArgs e)
     {
         RemoveLoadedData.IsVisible = false;
-        _vm.HasLoadedDataFile = true;
+        _vm.HasLoadedDataFile = false;
         _vm.ResetDataFile();
     }
 

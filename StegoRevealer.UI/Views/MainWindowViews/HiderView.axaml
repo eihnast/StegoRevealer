@@ -171,7 +171,7 @@
 
 							<!-- Параметры для метода Коха-Жао -->
 							<Grid Name="KzhParamsGrid" IsVisible="{Binding Path=MethodKzSelected}"
-								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40,40"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40"
 								  Grid.Column="0" Grid.Row="2" Margin="0 5 0 0">
 
 								<Label Content="{Binding L[HiderTab.RandomKey]}"
@@ -179,7 +179,7 @@
 									   Grid.Row="0" Grid.Column="1"/>
 								<Label Content="{Binding L[HiderTab.Threshold]}"
 									   Classes="ExtractorParamsLabel"
-									   Grid.Row="2" Grid.Column="1"/>
+									   Grid.Row="1" Grid.Column="1"/>
 
 								<TextBox Name="KzhParamsGrid_RandomSeed"
 										 Classes="ExtractorParamsTextBox"
@@ -188,7 +188,7 @@
 										 IsEnabled="{Binding Path=KzRandomSeedSelected}"/>
 								<TextBox Name="KzhParamsGrid_Threshold"
 										 Classes="ExtractorParamsTextBox"
-										 Grid.Row="2" Grid.Column="2"
+										 Grid.Row="1" Grid.Column="2"
                                          Text="{Binding Path=KzThresholdValue}"
 										 IsEnabled="{Binding Path=KzThresholdSelected}"/>
 
@@ -197,7 +197,7 @@
 										  IsChecked="{Binding Path=KzRandomSeedSelected}"
                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 								<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
-										  Grid.Row="2" Grid.Column="3"
+										  Grid.Row="1" Grid.Column="3"
 										  IsChecked="{Binding Path=KzThresholdSelected}"
                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 							</Grid>
