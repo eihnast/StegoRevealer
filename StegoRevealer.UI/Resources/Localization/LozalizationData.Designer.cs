@@ -313,6 +313,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Изображение со встраиванием.
+        /// </summary>
+        public static string Common_CoveredImageTitle {
+            get {
+                return ResourceManager.GetString("Common.CoveredImageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Затрачено времени.
         /// </summary>
         public static string Common_ElapseTime {
@@ -345,6 +354,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string Common_ImageNotSelected {
             get {
                 return ResourceManager.GetString("Common.ImageNotSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Загруженное изображение.
+        /// </summary>
+        public static string Common_LoadedImageTitle {
+            get {
+                return ResourceManager.GetString("Common.LoadedImageTitle", resourceCulture);
             }
         }
         

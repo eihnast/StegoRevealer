@@ -1,12 +1,8 @@
-﻿using Accord.Math;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
-using SharpCompress.Common;
 using StegoRevealer.Common;
-using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
-using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods;
@@ -458,7 +454,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
-            Logger.LogInfo($"Loading new image for extraction: '{path}' copying to Temp");
+            Logger.LogInfo($"Loading new image for hiding: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -599,6 +595,10 @@ public class HiderViewModel : MainWindowViewModelBaseChild
 
         ProcessAnalysisResults(results);
 
+        // При встраивании изменяются значения в обработчике, и он содержит версию со встраиванием (которая сохраняется как результат встраивания)
+        // Т.к. обработчик управляется из ViewModel и сохранён в Temp, нужно его фактически пересоздать для отображения оригинального изображения
+        ReloadCurrentImageHandler();
+
         Logger.LogInfo("Results of hiding:\n" + Logger.Separator
             + $"\nElapsed time = {CurrentResults?.ElapsedTime}\n" + Logger.Separator);
     }
@@ -619,8 +619,27 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         // Вывод нового изображения
         if (!string.IsNullOrEmpty(results.NewFilePath))
         {
-            DrawnImage = new ImageHandler(results.NewFilePath);
+            TempManager.Instance.RememberTempImage(results.NewFilePath, results.NewFilePath);
+            CurrentResults.CoveredImageHandler = new ImageHandler(results.NewFilePath);
+            TempManager.Instance.RememberHandler(CurrentResults.CoveredImageHandler);
+            SwitchToCoveredImage();
         }
+    }
+
+    private void ReloadCurrentImageHandler()
+    {
+        if (CurrentImage is null)
+            return;
+
+        var imgTempPath = CurrentImage.ImgPath;
+
+        TempManager.Instance.ForgetHandler(CurrentImage);
+        CurrentImage.CloseHandler();
+
+        CurrentImage = new ImageHandler(imgTempPath);
+        TempManager.Instance.RememberHandler(CurrentImage);
+
+        Logger.LogInfo($"Handler of original image '{imgTempPath}' was reloaded after hiding completed");
     }
 
     public void UpdateParameters()
@@ -694,13 +713,18 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     public void DrawCurrentImage()
     {
         if (CurrentImage is not null)
-            DrawnImage = CurrentImage;
+            SwitchToLoadedImage();
     }
 
     /// <summary>
-    /// Сброс результатов извлечения
+    /// Сброс результатов встраивания
     /// </summary>
-    public void ResetResults() => CurrentResults = null;
+    public void ResetResults()
+    {
+        if (CurrentResults?.CoveredImageHandler is not null)
+            TempManager.Instance.ForgetHandler(CurrentResults.CoveredImageHandler);
+        CurrentResults = null;
+    }
 
 
     // Сбрасывает данные об изображении и результатах
@@ -772,4 +796,16 @@ public class HiderViewModel : MainWindowViewModelBaseChild
 
     private void UpdateHasDataForHiding() =>
         HasDataForHiding = HasLoadedImage && (HasLoadedDataFile || !string.IsNullOrEmpty(DataToHide));
+
+    public void SwitchToLoadedImage()
+    {
+        DrawnImage = CurrentImage;
+    }
+    public void SwitchToCoveredImage()
+    {
+        if (!HasResults || CurrentResults is null || CurrentResults.CoveredImageHandler is null)
+            return;
+
+        DrawnImage = CurrentResults.CoveredImageHandler;
+    }
 }

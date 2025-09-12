@@ -592,4 +592,10 @@
   <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
     <value>Сохранить сформированное изображение со встраиванием</value>
   </data>
+  <data name="Common.LoadedImageTitle" xml:space="preserve">
+    <value>Загруженное изображение</value>
+  </data>
+  <data name="Common.CoveredImageTitle" xml:space="preserve">
+    <value>Изображение со встраиванием</value>
+  </data>
 </root>

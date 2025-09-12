@@ -67,6 +67,20 @@
 							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
 				</DockPanel>
+				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasResults}" LastChildFill="False">
+					<Button Name="LoadedImageBtn" Content="{Binding L[Common.LoadedImageTitle]}"
+							DockPanel.Dock="Left"
+							Height="30" Padding="15 0" Margin="0 0 10 0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="LoadedImageBtn_Click"/>
+					<Button Name="CoveredImageBtn" Content="{Binding L[Common.CoveredImageTitle]}"
+							DockPanel.Dock="Right"
+							Height="30" Padding="15 0" Margin="10 0 0 0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="CoveredImageBtn_Click"/>
+				</DockPanel>
 			</StackPanel>
 			<!-- / Левая панель выбора изображения -->
 

@@ -217,4 +217,7 @@ public partial class HiderView : UserControl
     }
 
     private async void SaveCoveredImage_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.TrySaveCoveredImage();
+
+    private void LoadedImageBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.SwitchToLoadedImage();
+    private void CoveredImageBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.SwitchToCoveredImage();
 }

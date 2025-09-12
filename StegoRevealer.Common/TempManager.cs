@@ -100,7 +100,7 @@ public class TempManager
     public void DeleteTempFiles(bool withRetry = true, bool writeToLog = true)
     {
         var notDeleted = new List<string>();
-        var processingFiles = _tempImages.Where(img => File.Exists(img.TempPath));
+        var processingFiles = _tempFiles.Where(img => File.Exists(img.TempPath));
 
         foreach (var tempFile in processingFiles)
         {
@@ -124,7 +124,7 @@ public class TempManager
         {
             if (writeToLog)
                 Logger.LogInfo("Temp files deleted");
-            _tempImages.Clear();
+            _tempFiles.Clear();
         }
     }
 }
