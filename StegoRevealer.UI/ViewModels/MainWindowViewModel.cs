@@ -102,6 +102,12 @@ public class MainWindowViewModel : ViewModelBase
         if (vm is not null)
             CurrentViewModel = vm;
     }
+    public void TurnToApiLauncher()
+    {
+        var vm = GetOrCreateViewModel(typeof(ApiLauncherViewModel)) as ApiLauncherViewModel;
+        if (vm is not null)
+            CurrentViewModel = vm;
+    }
 
     public async Task CopyToClipboard(string text)
     {
