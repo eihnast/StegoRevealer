@@ -322,7 +322,7 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Использовать перенаправление на HTTPS.
+        ///   Ищет локализованную строку, похожую на Перенаправление на HTTPS.
         /// </summary>
         public static string ApiLauncherTab_Config_HttpsRedirection {
             get {

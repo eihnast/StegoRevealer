@@ -1,6 +1,4 @@
-﻿using static StegoRevealer.Common.Logger;
-
-namespace StegoRevealer.Common;
+﻿namespace StegoRevealer.Common;
 
 public static class Constants
 {

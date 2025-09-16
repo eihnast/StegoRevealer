@@ -14,8 +14,6 @@ public class ApiHost
     {
         LogsPush = logsPush;
 
-        ApiLogger.LogInfo("Starting StegoRevelaer API...");
-
         var config = ApiConfigurator.Instance.ApiConfig;
         var builder = WebApplication.CreateBuilder();
 
@@ -25,6 +23,7 @@ public class ApiHost
             // builder.Logging.ClearProviders();
             builder.Logging.AddProvider(new SrLoggerProvider(LogsPush));
         }
+        ApiLogger.DefaultLogger = builder.Logging.Services.BuildServiceProvider().GetService<ILoggerFactory>()?.CreateLogger("ApiHost");
 
         builder.WebHost.UseUrls(config.HttpAddress, config.HttpsAddress);
 
@@ -33,6 +32,8 @@ public class ApiHost
             .AddApplicationPart(typeof(ApiHost).Assembly)
             .AddControllersAsServices();
         builder.Services.AddOpenApi();
+
+        ApiLogger.LogInfo("Starting StegoRevelaer API...");
 
         var app = builder.Build();
         ApiLogger.LogInfo("Building StegoRevelaer API Host...");

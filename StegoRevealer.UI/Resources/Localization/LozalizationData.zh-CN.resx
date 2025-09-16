@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -599,21 +602,22 @@
     <value>含嵌入的图像</value>
   </data>
   <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
-    <value />
+    <value>启动 API</value>
   </data>
   <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
-    <value />
+    <value>停止 API</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpAddress" xml:space="preserve">
-    <value />
+    <value>HTTP 地址</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpsAddress" xml:space="preserve">
-    <value />
+    <value>HTTPS 地址</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
-    <value />
+    <value>使用 HTTPS 重定向</value>
   </data>
   <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
-    <value />
+    <value>API 配置</value>
   </data>
+
 </root>

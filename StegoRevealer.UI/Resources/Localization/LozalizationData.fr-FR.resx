@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -599,21 +602,22 @@ Directeur scientifique : V. G. Sidorenko</value>
     <value>Image avec insertion</value>
   </data>
   <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
-    <value />
+    <value>Démarrer l’API</value>
   </data>
   <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
-    <value />
+    <value>Arrêter l’API</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpAddress" xml:space="preserve">
-    <value />
+    <value>Adresse HTTP</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpsAddress" xml:space="preserve">
-    <value />
+    <value>Adresse HTTPS</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
-    <value />
+    <value>Utiliser la redirection vers HTTPS</value>
   </data>
   <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
-    <value />
+    <value>Configuration de l’API</value>
   </data>
+
 </root>
