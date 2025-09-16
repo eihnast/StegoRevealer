@@ -22,7 +22,7 @@ public class ApiHost
         // Логирование
         if (LogsPush is not null)
         {
-            builder.Logging.ClearProviders();
+            // builder.Logging.ClearProviders();
             builder.Logging.AddProvider(new SrLoggerProvider(LogsPush));
         }
 

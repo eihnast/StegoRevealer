@@ -19,7 +19,8 @@
 			  ColumnDefinitions="*,30,2*" RowDefinitions="*,80">
 
 			<!-- Левая панель настроек API -->
-			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+			<StackPanel Name="SettingsPanel"
+						Orientation="Vertical" HorizontalAlignment="Stretch"
 						Grid.Column="0" Grid.Row="0">
 				<TextBlock Text="{Binding L[ApiLauncherTab.Config.Title]}"
 						   FontSize="22" HorizontalAlignment="Center" Margin="0 20 0 0"/>
@@ -83,17 +84,17 @@
 			</StackPanel>
 			<!-- / Левая панель настроек API -->
 
-			<!-- Левая панель настроек API -->
+			<!-- Правая панель с логами API -->
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
 						Grid.Column="2" Grid.Row="0">
 				<TextBox Name="LogsTb" Text="{Binding Logs}"
 						 AcceptsReturn="True" IsReadOnly="True"
-						 FontFamily="Consolas, Menlo, monospace" FontSize="11"
+						 FontFamily="Consolas, Menlo, monospace" FontSize="12"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
 						 MinHeight="300" TextWrapping="WrapWithOverflow"
 						 TextAlignment="Left" VerticalContentAlignment="Top"/>
 			</StackPanel>
-			<!-- / Левая панель настроек API -->
+			<!-- / Правая панель с логами API -->
 
 			<Button Name="LaunchApiBtn" Content="{Binding Path=LaunchBtnLabel}"
 					FontSize="24" FontWeight="Bold"

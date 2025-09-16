@@ -29,9 +29,15 @@ public partial class ApiLauncherView : UserControl
         await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
 
         if (_vm.IsApiLaunched)
+        {
             await _vm.StopApi();
+            SettingsPanel.IsEnabled = true;
+        }
         else
+        {
+            SettingsPanel.IsEnabled = false;
             await _vm.LaunchApi();
+        }
 
         LoadingOverlay.IsVisible = false;
         LaunchApiBtn.IsEnabled = true;
