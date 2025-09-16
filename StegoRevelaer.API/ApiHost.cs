@@ -1,4 +1,5 @@
-﻿using StegoRevealer.Common;
+﻿using Microsoft.Extensions.Logging;
+using StegoRevealer.Common;
 using StegoRevelaer.API.Services;
 
 namespace StegoRevelaer.API;
@@ -7,12 +8,23 @@ public class ApiHost
 {
     private CancellationTokenSource? _apiCts;
 
-    public ApiHost()
+    private Action<string>? LogsPush;
+
+    public ApiHost(Action<string>? logsPush = null)
     {
+        LogsPush = logsPush;
+
         ApiLogger.LogInfo("Starting StegoRevelaer API...");
 
         var config = ApiConfigurator.Instance.ApiConfig;
         var builder = WebApplication.CreateBuilder();
+
+        // Логирование
+        if (LogsPush is not null)
+        {
+            builder.Logging.ClearProviders();
+            builder.Logging.AddProvider(new SrLoggerProvider(LogsPush));
+        }
 
         builder.WebHost.UseUrls(config.HttpAddress, config.HttpsAddress);
 

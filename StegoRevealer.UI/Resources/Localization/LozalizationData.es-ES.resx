@@ -604,4 +604,16 @@ Director científico: V. G. Sidorenko</value>
   <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
     <value />
   </data>
+  <data name="ApiLauncherTab.Config.HttpAddress" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsAddress" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
+    <value />
+  </data>
 </root>

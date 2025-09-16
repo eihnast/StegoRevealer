@@ -16,7 +16,84 @@
 
 		<!-- Внутренняя сетка -->
 		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
-			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
+			  ColumnDefinitions="*,30,2*" RowDefinitions="*,80">
+
+			<!-- Левая панель настроек API -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+						Grid.Column="0" Grid.Row="0">
+				<TextBlock Text="{Binding L[ApiLauncherTab.Config.Title]}"
+						   FontSize="22" HorizontalAlignment="Center" Margin="0 20 0 0"/>
+				<Grid Margin="0 10 0 0" ColumnDefinitions="*"
+					  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+					<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							MinHeight="60" CornerRadius="10" Grid.Column="0"
+							Background="{StaticResource SrDark}"
+							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+						<StackPanel Orientation="Vertical" Margin="20 10 20 10"
+								    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpAddress]}"
+									   FontSize="16"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							<TextBox Name="ApiParams_HttpAddress" Margin="0 5 0 0"
+									 Classes="ExtractorParamsTextBox"
+									 HorizontalContentAlignment="Center"
+                                     Text="{Binding Path=ConfigHttpAddressValue}"/>
+						</StackPanel>
+					</Border>
+				</Grid>
+				<Grid Margin="0 10 0 0" ColumnDefinitions="*"
+					  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+					<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							MinHeight="60" CornerRadius="10" Grid.Column="0"
+							Background="{StaticResource SrDark}"
+							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+						<StackPanel Orientation="Vertical" Margin="20 10 20 10"
+								    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpsAddress]}"
+									   FontSize="16"
+									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							<TextBox Name="ApiParams_HttpsAddress" Margin="0 5 0 0"
+									 Classes="ExtractorParamsTextBox"
+									 HorizontalContentAlignment="Center"
+                                     Text="{Binding Path=ConfigHttpsAddressValue}"/>
+						</StackPanel>
+					</Border>
+				</Grid>
+				<Grid Margin="0 10 0 0" ColumnDefinitions="*"
+					  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+					<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							MinHeight="60" CornerRadius="10" Grid.Column="0"
+							Background="{StaticResource SrDark}"
+							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
+						<DockPanel LastChildFill="True" Margin="20 0 20 0"
+							   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+							<ToggleSwitch Name="ConfigHttpsRedirectionSwitch"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  DockPanel.Dock="Right"
+										  FontSize="16"
+										  IsChecked="{Binding Path=ConfigHttpsRedirectionEnabled}"
+										  OnContent="{Binding L[Common.On]}" OffContent="{Binding L[Common.Off]}"/>
+							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpsRedirection]}"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"
+									   DockPanel.Dock="Left"/>
+						</DockPanel>
+					</Border>
+				</Grid>
+			</StackPanel>
+			<!-- / Левая панель настроек API -->
+
+			<!-- Левая панель настроек API -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+						Grid.Column="2" Grid.Row="0">
+				<TextBox Name="LogsTb" Text="{Binding Logs}"
+						 AcceptsReturn="True" IsReadOnly="True"
+						 FontFamily="Consolas, Menlo, monospace" FontSize="11"
+						 ScrollViewer.VerticalScrollBarVisibility="Auto"
+						 MinHeight="300" TextWrapping="WrapWithOverflow"
+						 TextAlignment="Left" VerticalContentAlignment="Top"/>
+			</StackPanel>
+			<!-- / Левая панель настроек API -->
 
 			<Button Name="LaunchApiBtn" Content="{Binding Path=LaunchBtnLabel}"
 					FontSize="24" FontWeight="Bold"

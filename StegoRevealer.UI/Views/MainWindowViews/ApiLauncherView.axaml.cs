@@ -3,9 +3,6 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
-using StegoRevelaer.API;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 

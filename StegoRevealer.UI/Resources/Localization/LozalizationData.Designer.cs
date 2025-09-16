@@ -304,6 +304,42 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Адрес HTTP.
+        /// </summary>
+        public static string ApiLauncherTab_Config_HttpAddress {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.Config.HttpAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Адрес HTTPS.
+        /// </summary>
+        public static string ApiLauncherTab_Config_HttpsAddress {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.Config.HttpsAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Использовать перенаправление на HTTPS.
+        /// </summary>
+        public static string ApiLauncherTab_Config_HttpsRedirection {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.Config.HttpsRedirection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Конфигурация API.
+        /// </summary>
+        public static string ApiLauncherTab_Config_Title {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.Config.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Запустить API.
         /// </summary>
         public static string ApiLauncherTab_LaunchBtn_Start {
