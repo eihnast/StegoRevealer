@@ -13,7 +13,7 @@
 
 	<!-- Внешняя сетка -->
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-		  ColumnDefinitions="*,3*,*">
+		  ColumnDefinitions="*,4*,*">
 		<StackPanel Margin="0 30 0 0" Grid.Column="1"
 					HorizontalAlignment="Stretch" VerticalAlignment="Top">
 			<TextBlock Text="Stego Revealer"
