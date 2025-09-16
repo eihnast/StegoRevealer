@@ -20,4 +20,9 @@ public partial class ApiLauncherView : UserControl
     {
         _vm = CommonTools.GetViewModel<ApiLauncherViewModel>(this.DataContext);
     }
+
+    private async void StartServer_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
 }

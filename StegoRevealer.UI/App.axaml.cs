@@ -18,19 +18,19 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        Logger.LogInfo("Setting localization");
+        CommonLogger.LogInfo("Setting localization");
         string langCode = Configurator.Settings.Language;
         if (string.IsNullOrEmpty(langCode) || !Constants.Languages.ContainsKey(langCode))
             langCode = "ru-RU";
         CultureInfo.CurrentUICulture = new CultureInfo(langCode);
         CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture;
 
-        Logger.LogInfo("Creating App logic");
+        CommonLogger.LogInfo("Creating App logic");
         var mainWindowVm = new MainWindowViewModel();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Logger.LogInfo("Creating main window");
+            CommonLogger.LogInfo("Creating main window");
 
             var mainWindow = new MainWindow { DataContext = mainWindowVm };
             desktop.MainWindow = mainWindow;
@@ -38,6 +38,6 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
-        Logger.LogInfo("Initialization completed");
+        CommonLogger.LogInfo("Initialization completed");
     }
 }

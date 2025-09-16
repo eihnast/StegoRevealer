@@ -47,8 +47,10 @@ public class TempManager
     public void RememberHandler(ImageHandler imageHandler) => _openedHandlers.Add(imageHandler);
     public void ForgetHandler(ImageHandler imageHandler) => _openedHandlers.Remove(imageHandler);
 
-    public void DeleteTempImages(bool withRetry = true, bool onlyWithoutHandlers = false, bool writeToLog = true)
+    public void DeleteTempImages(bool withRetry = true, bool onlyWithoutHandlers = false, bool writeToLog = true, ILoggerService? logger = null)
     {
+        logger ??= CommonLogger.Instance;
+
         var notDeleted = new List<string>();
         var processingImages = _tempImages.Where(img => File.Exists(img.TempPath) &&
                                                 (!onlyWithoutHandlers || !_openedHandlers.Any(h => h.ImgPath.Equals(img.TempPath, StringComparison.OrdinalIgnoreCase))));
@@ -61,26 +63,28 @@ public class TempManager
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error wile deleting temp image: " + ex.Message);
+                logger.Log(Constants.LogMessageType.Error, "Error wile deleting temp image: " + ex.Message);
                 notDeleted.Add(tempImage.TempPath);
             }
         }
 
         if (withRetry && notDeleted.Count > 0)
         {
-            Logger.LogWarning("Trying to retry deleting temp images");
+            logger.Log(Constants.LogMessageType.Warning, "Trying to retry deleting temp images");
             DeleteTempImages(false);
         }
         else
         {
             if (writeToLog)
-                Logger.LogInfo("Temp image files deleted");
+                logger.Log(Constants.LogMessageType.Info, "Temp image files deleted");
             _tempImages.Clear();
         }
     }
 
-    public void DeleteImageHandlers()
+    public void DeleteImageHandlers(ILoggerService? logger = null)
     {
+        logger ??= CommonLogger.Instance;
+
         foreach (var imageHandler in _openedHandlers)
         {
             try
@@ -89,16 +93,18 @@ public class TempManager
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error wile closing opened image handler: " + ex.Message);
+                logger.Log(Constants.LogMessageType.Error, "Error wile closing opened image handler: " + ex.Message);
             }
         }
 
-        Logger.LogInfo("All saved image handlers closed");
+        logger.Log(Constants.LogMessageType.Info, "All saved image handlers closed");
         _openedHandlers.Clear();
     }
 
-    public void DeleteTempFiles(bool withRetry = true, bool writeToLog = true)
+    public void DeleteTempFiles(bool withRetry = true, bool writeToLog = true, ILoggerService? logger = null)
     {
+        logger ??= CommonLogger.Instance;
+
         var notDeleted = new List<string>();
         var processingFiles = _tempFiles.Where(img => File.Exists(img.TempPath));
 
@@ -110,20 +116,20 @@ public class TempManager
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error wile deleting temp file: " + ex.Message);
+                logger.Log(Constants.LogMessageType.Error, "Error wile deleting temp file: " + ex.Message);
                 notDeleted.Add(tempFile.TempPath);
             }
         }
 
         if (withRetry && notDeleted.Count > 0)
         {
-            Logger.LogWarning("Trying to retry deleting temp files");
+            logger.Log(Constants.LogMessageType.Warning, "Trying to retry deleting temp files");
             DeleteTempFiles(false);
         }
         else
         {
             if (writeToLog)
-                Logger.LogInfo("Temp files deleted");
+                logger.Log(Constants.LogMessageType.Info, "Temp files deleted");
             _tempFiles.Clear();
         }
     }

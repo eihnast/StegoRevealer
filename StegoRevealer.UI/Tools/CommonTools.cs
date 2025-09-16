@@ -220,12 +220,12 @@ public static class CommonTools
             }
             else
             {
-                Logger.LogError("Not supported OS for folder openin method");
+                CommonLogger.LogError("Not supported OS for folder openin method");
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
+            CommonLogger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
         }
     }
 

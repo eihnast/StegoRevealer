@@ -67,7 +67,7 @@ public static class Tools
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                CommonLogger.LogError(ex.Message);
                 return null;
             }
 
@@ -96,7 +96,7 @@ public static class Tools
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex.Message);
+                    CommonLogger.LogError(ex.Message);
                     return false;
                 }
 

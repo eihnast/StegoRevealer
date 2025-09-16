@@ -19,7 +19,7 @@ public static class Program
     {
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-        Logger.LogInfo("Starting Stego Revealer App");
+        CommonLogger.LogInfo("Starting Stego Revealer App");
 
         // Запуск в режиме интерфейса командной строки
         if (args.Length > 0)
@@ -28,7 +28,7 @@ public static class Program
             if (isWindows)
                 WinConsole.ConnectConsole();
             
-            Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
+            CommonLogger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
             CommandLineParser.HandleCommand(args).Wait();
 
             if (isWindows)
@@ -48,7 +48,7 @@ public static class Program
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         var ex = e.ExceptionObject as Exception;
-        Logger.LogError(ex is null ? "Unknown error" : ex.Message);
+        CommonLogger.LogError(ex is null ? "Unknown error" : ex.Message);
 
         if (e.IsTerminating)
         {
@@ -57,7 +57,7 @@ public static class Program
             TempManager.Instance.DeleteImageHandlers();
             TempManager.Instance.DeleteTempImages();
             TempManager.Instance.DeleteTempFiles();
-            Logger.LogError("Stego Revealer closed due to an error");
+            CommonLogger.LogError("Stego Revealer closed due to an error");
         }
     }
 

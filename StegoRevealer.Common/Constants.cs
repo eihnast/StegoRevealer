@@ -1,4 +1,6 @@
-﻿namespace StegoRevealer.Common;
+﻿using static StegoRevealer.Common.Logger;
+
+namespace StegoRevealer.Common;
 
 public static class Constants
 {
@@ -51,4 +53,20 @@ public static class Constants
         { "fr-FR", "Français" },
         { "es-ES", "Español" },
     };
+
+    public static Dictionary<LogMessageType, string> LogPrefixDictionary = new Dictionary<LogMessageType, string>()
+    {
+        { LogMessageType.Info, "[Info] " },
+        { LogMessageType.Warning, "[Warning] " },
+        { LogMessageType.Error, "[Error] " }
+    };
+
+    public enum LogMessageType
+    {
+        Info,
+        Warning,
+        Error
+    }
+
+    public static string LogSeparator => "------------------------------";
 }

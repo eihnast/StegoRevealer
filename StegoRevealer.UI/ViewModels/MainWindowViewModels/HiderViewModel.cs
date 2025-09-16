@@ -429,14 +429,14 @@ public class HiderViewModel : MainWindowViewModelBaseChild
             CurrentImage = new ImageHandler(path);
             TempManager.Instance.RememberHandler(CurrentImage);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах или создат объекты параметров, если их нет
-            Logger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
+            CommonLogger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
 
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
         catch
         {
-            Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+            CommonLogger.LogError($"Не удалось создать обработчик изображния '{path}'");
             ImagePath = string.Empty;
         }
 
@@ -454,7 +454,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
-            Logger.LogInfo($"Loading new image for hiding: '{path}' copying to Temp");
+            CommonLogger.LogInfo($"Loading new image for hiding: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -482,12 +482,12 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         {
             string data = await File.ReadAllTextAsync(path);
             LoadedDataToHide = data;
-            Logger.LogInfo($"Loaded new data for hiding: {path}");
+            CommonLogger.LogInfo($"Loaded new data for hiding: {path}");
             return true;
         }
         catch
         {
-            Logger.LogError($"Не удалось загрузить данные из файла '{path}'");
+            CommonLogger.LogError($"Не удалось загрузить данные из файла '{path}'");
             ResetDataFile();
         }
 
@@ -505,7 +505,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             DataPath = path;
-            Logger.LogInfo($"Loading new data file for hiding: '{path}' copying to Temp");
+            CommonLogger.LogInfo($"Loading new data file for hiding: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -555,11 +555,11 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     /// </summary>
     public async Task StartHiding()
     {
-        Logger.LogInfo("Starting hiding");
+        CommonLogger.LogInfo("Starting hiding");
         UpdateParameters();
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно встраивания
-        Logger.LogInfo("Starting hiding operations");
+        CommonLogger.LogInfo("Starting hiding operations");
 
         // Запуск
         if (_lsbParameters is null && _kzhParameters is null)
@@ -589,7 +589,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
             results.NewFilePath = hidingResult?.Path;
         }
 
-        Logger.LogInfo("Hiding operations completed");
+        CommonLogger.LogInfo("Hiding operations completed");
         timer.Stop();  // Остановка таймера
         results.ElapsedTime = timer.ElapsedMilliseconds;
 
@@ -599,8 +599,8 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         // Т.к. обработчик управляется из ViewModel и сохранён в Temp, нужно его фактически пересоздать для отображения оригинального изображения
         ReloadCurrentImageHandler();
 
-        Logger.LogInfo("Results of hiding:\n" + Logger.Separator
-            + $"\nElapsed time = {CurrentResults?.ElapsedTime}\n" + Logger.Separator);
+        CommonLogger.LogInfo("Results of hiding:\n" + Constants.LogSeparator
+            + $"\nElapsed time = {CurrentResults?.ElapsedTime}\n" + Constants.LogSeparator);
     }
 
     /// <summary>
@@ -639,7 +639,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         CurrentImage = new ImageHandler(imgTempPath);
         TempManager.Instance.RememberHandler(CurrentImage);
 
-        Logger.LogInfo($"Handler of original image '{imgTempPath}' was reloaded after hiding completed");
+        CommonLogger.LogInfo($"Handler of original image '{imgTempPath}' was reloaded after hiding completed");
     }
 
     public void UpdateParameters()
@@ -702,7 +702,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         if (file is not null)
         {
             File.Copy(CurrentResults!.NewFilePath, file.Path.LocalPath, true);
-            Logger.LogInfo($"Saved covered image file: '{file.Path.LocalPath}'");
+            CommonLogger.LogInfo($"Saved covered image file: '{file.Path.LocalPath}'");
         }
     }
 

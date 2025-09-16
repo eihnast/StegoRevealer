@@ -4,54 +4,15 @@ namespace StegoRevealer.Common;
 
 public class Logger : IDisposable
 {
-    // Описание синглтона
-    private static Logger? _instance;
-    private static readonly object _lock = new object();
-    public static Logger Instance
-    {
-        get
-        {
-            if (_instance is null)
-            {
-                lock (_lock)
-                {
-                    if (_instance is null)
-                        _instance = new Logger();
-                }
-            }
-            return _instance;
-        }
-    }
-
-    private static Stopwatch _timer = Stopwatch.StartNew();
     private const long MaxLogTime = 1000 * 60 * 60 * 2; // 2 часа
 
-    public static string LogName { get; private set; } = string.Empty;
-
-    public enum MessageType
-    {
-        Info,
-        Warning,
-        Error
-    }
-
-    private static Dictionary<MessageType, string> PrefixDictionary = new Dictionary<MessageType, string>()
-    {
-        { MessageType.Info, "[Info] " },
-        { MessageType.Warning, "[Warning] " },
-        { MessageType.Error, "[Error] " }
-    };
-
-    public static string FileSuffix { get; set; } = string.Empty;
+    public void Log(string message, Constants.LogMessageType type, bool lineFeed = true) => LogInner(message, type, lineFeed);
 
 
-    public static void Log(string message, MessageType type, bool lineFeed = true) => Instance.LogInner(message, type, lineFeed);
-    public static void LogInfo(string message) => Log(message, MessageType.Info);
-    public static void LogWarning(string message) => Log(message, MessageType.Warning);
-    public static void LogError(string message) => Log(message, MessageType.Error);
+    private Stopwatch _timer = Stopwatch.StartNew();
 
-
-    public static string Separator { get => "------------------------------"; }
+    public string LogName { get; private set; } = string.Empty;
+    public string FileSuffix { get; set; } = string.Empty;
 
 
     private bool _isDisposed = false;
@@ -80,8 +41,9 @@ public class Logger : IDisposable
     public bool CanLog { get => _logWriter is not null; }
     private bool _logWasCreated = false;
 
-    private Logger()
+    public Logger(string? fileSuffix = null)
     {
+        FileSuffix = string.IsNullOrEmpty(fileSuffix) ? string.Empty : fileSuffix;
         if (Configurator.Settings.IsLoggingEnabled)
             CreateLogWriter();
     }
@@ -128,7 +90,7 @@ public class Logger : IDisposable
             CloseLog();
             CheckSettingAndTryCreateLog();
 
-            LogInner($"This log is a continuation of the '{oldLogName}' (cut-off log time is {MaxLogTime} ms)", MessageType.Info, lineFeed: true);
+            LogInner($"This log is a continuation of the '{oldLogName}' (cut-off log time is {MaxLogTime} ms)", Constants.LogMessageType.Info, lineFeed: true);
         }
 
         if (_logWriter is not null)
@@ -156,13 +118,13 @@ public class Logger : IDisposable
         _logWasCreated = false;
     }
 
-    private void LogInner(string message, MessageType type, bool lineFeed)
+    private void LogInner(string message, Constants.LogMessageType type, bool lineFeed)
     {
         if (!Configurator.Settings.IsLoggingEnabled)
             return;
 
         string dateTimePrefix = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff ");
-        string typePrefix = PrefixDictionary[type];
+        string typePrefix = Constants.LogPrefixDictionary[type];
         WriteStringInLog(dateTimePrefix + typePrefix + message, lineFeed);
     }
 }

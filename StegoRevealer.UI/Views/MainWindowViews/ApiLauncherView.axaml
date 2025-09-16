@@ -13,8 +13,20 @@
 
 	<!-- Внешняя сетка -->
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		
-		
+
+		<!-- Внутренняя сетка -->
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
+			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
+
+			<Button Name="StartServer" Content="{Binding L[Common.Start]}"
+					FontSize="24" FontWeight="Bold"
+					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					Click="StartServer_Click"/>
+			
+		</Grid>
 		
 	</Grid>
 	<!-- / Внешняя сетка -->

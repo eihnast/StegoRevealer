@@ -13,6 +13,7 @@ using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevelaer.API.Entities.RequestData;
+using StegoRevelaer.API.Services;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevelaer.API.Controllers;
@@ -602,7 +603,7 @@ public class SteganalysysController : ControllerBase
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while loading image by url '{baseRequest.ImageUrl}': {ex.Message}");
+                    ApiLogger.LogError($"Error while loading image by url '{baseRequest.ImageUrl}': {ex.Message}");
                     return null;
                 }
 
@@ -622,13 +623,13 @@ public class SteganalysysController : ControllerBase
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while loading local image '{baseRequest.ImageUrl}': {ex.Message}");
+                    ApiLogger.LogError($"Error while loading local image '{baseRequest.ImageUrl}': {ex.Message}");
                     return null;
                 }
             }
             else
             {
-                Logger.LogError($"Error while loading image: cannot correctly handle ImageUrl");
+                ApiLogger.LogError($"Error while loading image: cannot correctly handle ImageUrl");
             }
 
             return null;
@@ -647,7 +648,7 @@ public class SteganalysysController : ControllerBase
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Error while loading base64 encoded image: {ex.Message}");
+                ApiLogger.LogError($"Error while loading base64 encoded image: {ex.Message}");
                 return null;
             }
 
@@ -664,12 +665,12 @@ public class SteganalysysController : ControllerBase
         {
             var handler = new ImageHandler(imgPath);
             TempManager.Instance.RememberHandler(handler);
-            Logger.LogInfo($"Loaded new image for steganalysis: {handler.ImgPath}");
+            ApiLogger.LogInfo($"Loaded new image for steganalysis: {handler.ImgPath}");
             return handler;
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Error while creating image handler for '{imgPath}': {ex.Message}");
+            ApiLogger.LogError($"Error while creating image handler for '{imgPath}': {ex.Message}");
         }
 
         return null;
@@ -679,7 +680,7 @@ public class SteganalysysController : ControllerBase
     {
         image.CloseHandler();
         TempManager.Instance.ForgetHandler(image);
-        TempManager.Instance.DeleteTempImages(onlyWithoutHandlers: true, writeToLog: false);
-        TempManager.Instance.DeleteTempFiles(writeToLog: false);
+        TempManager.Instance.DeleteTempImages(onlyWithoutHandlers: true, writeToLog: false, logger: ApiLogger.Instance);
+        TempManager.Instance.DeleteTempFiles(writeToLog: false, logger: ApiLogger.Instance);
     }
 }

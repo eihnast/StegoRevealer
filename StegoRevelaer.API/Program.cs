@@ -9,8 +9,7 @@ public static class Program
 
     public static void Main(string[] args)
     {
-        Logger.FileSuffix = "API";
-        Logger.LogInfo("Starting StegoRevelaer API...");
+        ApiLogger.LogInfo("Starting StegoRevelaer API...");
 
         var config = ApiConfigurator.Instance.ApiConfig;
         var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +20,7 @@ public static class Program
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
-        Logger.LogInfo("Building StegoRevelaer API Host...");
+        ApiLogger.LogInfo("Building StegoRevelaer API Host...");
 
         RegisterClosingOperations(app.Lifetime);
 
@@ -36,7 +35,7 @@ public static class Program
         app.UseAuthorization();
         app.MapControllers();
 
-        Logger.LogInfo($"StegoRevelaer API started at {DateTime.Now}.");
+        ApiLogger.LogInfo($"StegoRevelaer API started at {DateTime.Now}.");
         app.Run();
     }
 
@@ -44,12 +43,12 @@ public static class Program
     {
         if (!ClosingOperationsExecuted)
         {
-            Logger.LogInfo("StegoRevelaer API is stopping...");
+            ApiLogger.LogInfo("StegoRevelaer API is stopping...");
             ApiConfigurator.SaveConfig();
-            TempManager.Instance.DeleteImageHandlers();
-            TempManager.Instance.DeleteTempImages();
-            TempManager.Instance.DeleteTempFiles();
-            Logger.LogInfo("StegoRevelaer API stopped successfully.");
+            TempManager.Instance.DeleteImageHandlers(logger: ApiLogger.Instance);
+            TempManager.Instance.DeleteTempImages(logger: ApiLogger.Instance);
+            TempManager.Instance.DeleteTempFiles(logger: ApiLogger.Instance);
+            ApiLogger.LogInfo("StegoRevelaer API stopped successfully.");
 
             ClosingOperationsExecuted = true;
         }
