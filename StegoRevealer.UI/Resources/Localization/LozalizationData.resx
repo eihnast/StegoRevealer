@@ -611,7 +611,7 @@
     <value>Адрес HTTPS</value>
   </data>
   <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
-    <value>Использовать перенаправление на HTTPS</value>
+    <value>Перенаправление на HTTPS</value>
   </data>
   <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
     <value>Конфигурация API</value>

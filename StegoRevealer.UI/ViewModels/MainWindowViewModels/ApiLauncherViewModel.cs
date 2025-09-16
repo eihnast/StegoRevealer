@@ -18,11 +18,7 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
     public bool IsApiLaunched
     {
         get => _isApiLaunched;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _isApiLaunched, value);
-            LaunchBtnLabel = _isApiLaunched ? L["ApiLauncherTab.LaunchBtn.Stop"] : L["ApiLauncherTab.LaunchBtn.Start"];
-        }
+        set => this.RaiseAndSetIfChanged(ref _isApiLaunched, value);
     }
     private bool _isApiLaunched = false;
 

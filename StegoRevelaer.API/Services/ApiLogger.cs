@@ -49,10 +49,25 @@ public class ApiLogger : IDisposable, ILoggerService
         _isDisposed = true;
     }
     ~ApiLogger() => Dispose(false);
-    
-    public void Log(Constants.LogMessageType messageType, string message) => Instance.Logger.Log(message, messageType);
+
+    public void Log(Constants.LogMessageType messageType, string message)
+    {
+        Instance.Logger.Log(message, messageType);
+        DefaultLogger?.Log(MapLogLevel(messageType), message);
+    }
 
     public static void LogInfo(string message) => Instance.Log(Constants.LogMessageType.Info, message);
     public static void LogWarning(string message) => Instance.Log(Constants.LogMessageType.Warning, message);
     public static void LogError(string message) => Instance.Log(Constants.LogMessageType.Error, message);
+
+
+    public static ILogger? DefaultLogger { get; set; }
+
+    private static LogLevel MapLogLevel(Constants.LogMessageType messageType) => messageType switch
+    {
+        Constants.LogMessageType.Info => LogLevel.Information,
+        Constants.LogMessageType.Warning => LogLevel.Warning,
+        Constants.LogMessageType.Error => LogLevel.Error,
+        _ => LogLevel.Information
+    };
 }

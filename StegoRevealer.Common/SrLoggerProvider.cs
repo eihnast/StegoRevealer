@@ -30,7 +30,7 @@ public sealed class SrLoggerProvider : ILoggerProvider
             var msg = formatter(state, exception);
             if (string.IsNullOrEmpty(msg)) return;
 
-            var line = $"[{DateTime.Now:HH:mm:ss}] {logLevel,-11} {_category}: {msg}";
+            var line = $"[{DateTime.Now:HH:mm:ss}] [{logLevel,-11}] {_category}: {msg}";
             if (exception != null) line += Environment.NewLine + exception;
 
             _push(line);

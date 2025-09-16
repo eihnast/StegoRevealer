@@ -30,7 +30,7 @@
 							MinHeight="60" CornerRadius="10" Grid.Column="0"
 							Background="{StaticResource SrDark}"
 							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
-						<StackPanel Orientation="Vertical" Margin="20 10 20 10"
+						<StackPanel Orientation="Vertical" Margin="10 10 10 10"
 								    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpAddress]}"
 									   FontSize="16"
@@ -48,7 +48,7 @@
 							MinHeight="60" CornerRadius="10" Grid.Column="0"
 							Background="{StaticResource SrDark}"
 							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
-						<StackPanel Orientation="Vertical" Margin="20 10 20 10"
+						<StackPanel Orientation="Vertical" Margin="10 10 10 10"
 								    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpsAddress]}"
 									   FontSize="16"
@@ -66,12 +66,12 @@
 							MinHeight="60" CornerRadius="10" Grid.Column="0"
 							Background="{StaticResource SrDark}"
 							BorderBrush="{StaticResource SrDarkMiddle}" BorderThickness="2">
-						<DockPanel LastChildFill="True" Margin="20 0 20 0"
+						<DockPanel LastChildFill="True" Margin="10 0 10 0"
 							   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 							<ToggleSwitch Name="ConfigHttpsRedirectionSwitch"
 										  HorizontalAlignment="Center" VerticalAlignment="Center"
 										  DockPanel.Dock="Right"
-										  FontSize="16"
+										  FontSize="14"
 										  IsChecked="{Binding Path=ConfigHttpsRedirectionEnabled}"
 										  OnContent="{Binding L[Common.On]}" OffContent="{Binding L[Common.Off]}"/>
 							<TextBlock Text="{Binding L[ApiLauncherTab.Config.HttpsRedirection]}"
@@ -85,18 +85,19 @@
 			<!-- / Левая панель настроек API -->
 
 			<!-- Правая панель с логами API -->
-			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
-						Grid.Column="2" Grid.Row="0">
+			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+					   Grid.Column="2" Grid.Row="0">
 				<TextBox Name="LogsTb" Text="{Binding Logs}"
 						 AcceptsReturn="True" IsReadOnly="True"
 						 FontFamily="Consolas, Menlo, monospace" FontSize="12"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
 						 MinHeight="300" TextWrapping="WrapWithOverflow"
-						 TextAlignment="Left" VerticalContentAlignment="Top"/>
-			</StackPanel>
+						 TextAlignment="Left" VerticalContentAlignment="Top"
+						 VerticalAlignment="Stretch"/>
+			</DockPanel>
 			<!-- / Правая панель с логами API -->
 
-			<Button Name="LaunchApiBtn" Content="{Binding Path=LaunchBtnLabel}"
+			<Button Name="LaunchApiBtn" Content="{Binding L[ApiLauncherTab.LaunchBtn.Start]}"
 					FontSize="24" FontWeight="Bold"
 					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
 					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
