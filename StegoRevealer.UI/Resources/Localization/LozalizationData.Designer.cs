@@ -304,6 +304,24 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Запустить API.
+        /// </summary>
+        public static string ApiLauncherTab_LaunchBtn_Start {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.LaunchBtn.Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Остановить API.
+        /// </summary>
+        public static string ApiLauncherTab_LaunchBtn_Stop {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.LaunchBtn.Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Выбор изображения.
         /// </summary>
         public static string Common_ChooseImage {

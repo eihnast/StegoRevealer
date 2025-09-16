@@ -334,7 +334,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
 
     [Experimental]
-    public AnalyzerViewModel() : base() 
+    public AnalyzerViewModel() : base()
     {
         CreateDefaults();
     }

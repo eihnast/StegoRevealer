@@ -14,7 +14,6 @@ using StegoRevealer.StegoCore.CommonLib.Entities;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevelaer.API.Entities.RequestData;
 using StegoRevelaer.API.Services;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevelaer.API.Controllers;
 

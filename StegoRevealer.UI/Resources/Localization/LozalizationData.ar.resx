@@ -598,4 +598,10 @@
   <data name="Common.CoveredImageTitle" xml:space="preserve">
     <value>صورة مع إدراج</value>
   </data>
+  <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
+    <value />
+  </data>
 </root>

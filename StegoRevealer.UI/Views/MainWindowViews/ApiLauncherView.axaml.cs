@@ -1,7 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
+using StegoRevelaer.API;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -21,8 +25,18 @@ public partial class ApiLauncherView : UserControl
         _vm = CommonTools.GetViewModel<ApiLauncherViewModel>(this.DataContext);
     }
 
-    private async void StartServer_Click(object sender, RoutedEventArgs e)
+    private async void LaunchApiBtn_Click(object sender, RoutedEventArgs e)
     {
+        LaunchApiBtn.IsEnabled = false;
+        LoadingOverlay.IsVisible = true;
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
 
+        if (_vm.IsApiLaunched)
+            await _vm.StopApi();
+        else
+            await _vm.LaunchApi();
+
+        LoadingOverlay.IsVisible = false;
+        LaunchApiBtn.IsEnabled = true;
     }
 }

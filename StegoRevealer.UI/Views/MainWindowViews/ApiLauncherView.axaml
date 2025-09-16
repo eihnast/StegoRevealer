@@ -18,15 +18,27 @@
 		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
 			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
 
-			<Button Name="StartServer" Content="{Binding L[Common.Start]}"
+			<Button Name="LaunchApiBtn" Content="{Binding Path=LaunchBtnLabel}"
 					FontSize="24" FontWeight="Bold"
 					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
 					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
 					HorizontalAlignment="Center"
 					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-					Click="StartServer_Click"/>
+					Click="LaunchApiBtn_Click"/>
 			
 		</Grid>
+		<!-- / Внутренняя сетка -->
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="False" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="400" Height="40"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
 		
 	</Grid>
 	<!-- / Внешняя сетка -->

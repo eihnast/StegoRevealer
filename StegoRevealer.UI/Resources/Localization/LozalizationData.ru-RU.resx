@@ -598,4 +598,10 @@
   <data name="Common.CoveredImageTitle" xml:space="preserve">
     <value>Изображение со встраиванием</value>
   </data>
+  <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
+    <value>Запустить API</value>
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
+    <value>Остановить API</value>
+  </data>
 </root>

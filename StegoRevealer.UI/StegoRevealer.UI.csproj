@@ -30,6 +30,7 @@
 		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
 		<ProjectReference Include="..\StegoRevealer.StegoCore.DecisionModule\StegoRevealer.StegoCore.DecisionModule.csproj" />
 		<ProjectReference Include="..\StegoRevealer.StegoCore\StegoRevealer.StegoCore.csproj" />
+		<ProjectReference Include="..\StegoRevelaer.API\StegoRevelaer.API.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
