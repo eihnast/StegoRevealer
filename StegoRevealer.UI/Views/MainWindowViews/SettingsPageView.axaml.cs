@@ -27,6 +27,7 @@ public partial class SettingsPageView : UserControl
             lang = "Русский";
 
         SettingsLanguageComboBox.SelectedItem = lang;
+        VersionValue.Text = CommonTools.GetAppVersion();
     }
 
     private void OpenLogsFolderBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

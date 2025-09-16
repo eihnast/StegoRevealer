@@ -13,8 +13,8 @@
 
 	<!-- Внешняя сетка -->
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-		  ColumnDefinitions="*,3*,*">
-		<StackPanel Grid.Column="1">
+		  ColumnDefinitions="*,3*,*" RowDefinitions="*,80">
+		<StackPanel Grid.Row="0" Grid.Column="1">
 			<Grid Margin="0 30 0 0" ColumnDefinitions="*,60"
 			  HorizontalAlignment="Stretch" VerticalAlignment="Top">
 				<Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -62,6 +62,19 @@
 					</DockPanel>
 				</Border>
 			</Grid>
+		</StackPanel>
+
+		<StackPanel Grid.Row="1" Grid.Column="1" 
+					Orientation="Horizontal"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center">
+			<TextBlock Margin="0 20 0 0" Text="{Binding L[SettingsTab.Version], StringFormat='{}{0}:'}"
+					   TextAlignment="Center" FontSize="16" TextWrapping="Wrap"
+					   HorizontalAlignment="Stretch"/>
+			<TextBlock Name="VersionValue"
+					   Margin="5 20 0 0" Text=""
+					   TextAlignment="Center" FontSize="16" TextWrapping="Wrap"
+					   HorizontalAlignment="Stretch"/>
 		</StackPanel>
 	</Grid>
 	<!-- / Внешняя сетка -->

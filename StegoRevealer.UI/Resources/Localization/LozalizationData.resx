@@ -500,7 +500,7 @@
     <value>нет</value>
   </data>
   <data name="Common.WasError" xml:space="preserve">
-    <value>произошла ошибка</value>
+    <value>ошибка</value>
   </data>
   <data name="SettingsTab.Language" xml:space="preserve">
     <value>Язык</value>
@@ -615,5 +615,8 @@
   </data>
   <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
     <value>Конфигурация API</value>
+  </data>
+  <data name="SettingsTab.Version" xml:space="preserve">
+    <value>Версия приложения</value>
   </data>
 </root>

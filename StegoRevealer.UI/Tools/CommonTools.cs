@@ -247,4 +247,10 @@ public static class CommonTools
             path = files[0].Path.LocalPath;
         return path;
     }
+
+    public static string GetAppVersion()
+    {
+        var version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
+        return version?.ToString() ?? string.Empty;
+    }
 }

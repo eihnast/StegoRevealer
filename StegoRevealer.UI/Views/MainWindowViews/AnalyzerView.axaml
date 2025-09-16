@@ -201,12 +201,12 @@
 									  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
 									<DockPanel Name="ChiFullnessBlock" Grid.Row="0" Grid.Column="0"
-									   LastChildFill="True" Margin="0 10 0 0">
+											   LastChildFill="True" Margin="0 10 0 0">
 										<TextBlock Name="ChiFullnessDesc" Text="{Binding L[AnalyzerTab.Results.CsaMethodTitle], StringFormat='{}{0}:'} "
 												 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 												 HorizontalAlignment="Stretch"/>
 										<TextBlock Name="ChiFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
-												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0" TextWrapping="WrapWithOverflow"
 												   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
 									</DockPanel>
 

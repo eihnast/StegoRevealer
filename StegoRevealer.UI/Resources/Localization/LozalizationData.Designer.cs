@@ -493,7 +493,7 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на произошла ошибка.
+        ///   Ищет локализованную строку, похожую на ошибка.
         /// </summary>
         public static string Common_WasError {
             get {
@@ -1405,6 +1405,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         public static string SettingsTab_Logging {
             get {
                 return ResourceManager.GetString("SettingsTab.Logging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Версия приложения.
+        /// </summary>
+        public static string SettingsTab_Version {
+            get {
+                return ResourceManager.GetString("SettingsTab.Version", resourceCulture);
             }
         }
         

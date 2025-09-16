@@ -59,10 +59,7 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root"
-    xmlns=""
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -503,7 +500,7 @@ Director científico: V. G. Sidorenko</value>
     <value>No</value>
   </data>
   <data name="Common.WasError" xml:space="preserve">
-    <value>Ocurrió un error</value>
+    <value>error</value>
   </data>
   <data name="SettingsTab.Language" xml:space="preserve">
     <value>Idioma</value>
@@ -619,5 +616,7 @@ Director científico: V. G. Sidorenko</value>
   <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
     <value>Configuración de la API</value>
   </data>
-
+  <data name="SettingsTab.Version" xml:space="preserve">
+    <value />
+  </data>
 </root>
