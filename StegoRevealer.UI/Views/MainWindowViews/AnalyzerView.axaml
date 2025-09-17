@@ -99,7 +99,7 @@
 						<Grid Name="MethodsSelectGrid" IsEnabled="{Binding Path=HasLoadedImage}"
 							  Grid.Column="0" Grid.Row="1"
 							  Margin="20 10 20 10"
-							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30">
+							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30,30">
 
 							<CheckBox Name="IsComplexMethodChecked" Content="{Binding L[Methods.ComplexMethod]}"
 									  Classes="MethodTurnCheckbox"
@@ -152,10 +152,16 @@
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="5"
 									Click="MethodZcaParamsBtn_Click"/>
-							<CheckBox Name="IsMethodKzaChecked" Content="{Binding L[Methods.KzhaMethod]}"
-									  Classes="MethodTurnCheckbox"
-									  Grid.Column="0" Grid.Row="6"
-									  IsChecked="{Binding Path=MethodKzhaSelected}"/>
+							<DockPanel LastChildFill="True" Grid.Column="0" Grid.Row="6" Margin="0 0 5 5">
+								<Button Name="ShowKzhaHisto" DockPanel.Dock="Right"
+										Classes="MethodParametersBtn" Margin="0"
+										Click="ShowKzhaHisto_Click">
+									<PathIcon Data="{StaticResource IconHisto}"/>
+								</Button>
+								<CheckBox Name="IsMethodKzaChecked" Content="{Binding L[Methods.KzhaMethod]}"
+										  Classes="MethodTurnCheckbox" DockPanel.Dock="Left"
+										  IsChecked="{Binding Path=MethodKzhaSelected}"/>
+							</DockPanel>
 							<Button Name="MethodKzaParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="6"

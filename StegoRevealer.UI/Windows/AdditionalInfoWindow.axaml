@@ -20,6 +20,9 @@
 		<DataTemplate DataType="{x:Type viewmodels:JointDecisionInfoViewModel}">
 			<views:JointDecisionInfoView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:KzhaHistoInfoViewModel}">
+			<views:KzhaHistoInfoView/>
+		</DataTemplate>
 	</Window.DataTemplates>
 
 	<Design.DataContext>

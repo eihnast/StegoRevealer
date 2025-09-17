@@ -619,4 +619,10 @@ Director científico: V. G. Sidorenko</value>
   <data name="SettingsTab.Version" xml:space="preserve">
     <value />
   </data>
+  <data name="Histo.Title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Histo.ChooseCoeffs" xml:space="preserve">
+    <value />
+  </data>
 </root>

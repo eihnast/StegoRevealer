@@ -3,6 +3,8 @@ using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
 using StegoRevealer.StegoCore.ScMath;
+using StegoRevealer.StegoCore.StegoMethods;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -166,5 +168,41 @@ public static class FrequencyViewTools
             coefVal2 = -coefVal2;
 
         return (coefVal1, coefVal2);
+    }
+
+    /// <summary>
+    /// Формирует последовательность модулей разниц модулей указанных коэффициентов в блоках матриц ДКП
+    /// </summary>
+    public static IEnumerable<double> GetCSequence(IEnumerable<double[,]> dctBlocks, ScIndexPair indexes) =>
+        dctBlocks.Select(dctBlock => GetAbsDiff(dctBlock, indexes));
+
+    /// <summary>
+    /// Возвращает линейный список блоков матриц ДКП
+    /// </summary>
+    public static IEnumerable<double[,]> GetDctBlocks(ImageHandler img, BlocksTraverseOptions? traverseOptions = null, int blockSize = 8)
+    {
+        if (traverseOptions is null)
+            traverseOptions = new BlocksTraverseOptions(
+                channels: new UniqueList<ImgChannel> { ImgChannel.Blue },
+                startBlocks: new StartValues((ImgChannel.Blue, 0)),
+                traverseType: TraverseType.Horizontal,
+                interlaceChannels: false,
+                seed: null);
+
+        var blocks = new ImageBlocks(new ImageBlocksParameters(img, blockSize));
+        var iterator = BlocksTraverseHelper.GetForLinearAccessOneChannelBlocksIndexes(blocks, traverseOptions);
+
+        return iterator.Select(coords => DctBlock(img.ImgArray, blocks[coords.Y, coords.X], coords.ChannelId, blockSize));
+    }
+
+    /// <summary>
+    /// Считает модуль разницы модулей коэффициентов в блоке
+    /// </summary>
+    /// <param name="block">Блок</param>
+    /// <param name="coeffs">Индексы коэффициентов блока</param>
+    public static double GetAbsDiff(double[,] block, ScIndexPair coeffs)
+    {
+        (double value1, double value2) = (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
+        return Math.Abs(MathMethods.GetModulesDiff(value1, value2));
     }
 }

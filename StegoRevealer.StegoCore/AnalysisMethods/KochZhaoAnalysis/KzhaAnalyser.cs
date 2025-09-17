@@ -120,7 +120,7 @@ public class KzhaAnalyser
 
             var dctBlock = FrequencyViewTools.DctBlock(Params.Image.ImgArray, blockCoords, blockIndex.ChannelId, Params.BlockSize);
             foreach (var coeff in Params.AnalysisCoeffs)
-                cSequences[coeff].Add(GetAbsDiff(dctBlock, coeff));
+                cSequences[coeff].Add(FrequencyViewTools.GetAbsDiff(dctBlock, coeff));
         }
         
         // Создание массива задач
@@ -262,17 +262,6 @@ public class KzhaAnalyser
         kzParams.Threshold = analysisResult.Threshold > 1.0 ? analysisResult.Threshold - 1.0 : analysisResult.Threshold;
 
         return kzParams;
-    }
-
-    /// <summary>
-    /// Считает модуль разницы модулей коэффициентов в блоке
-    /// </summary>
-    /// <param name="block">Блок</param>
-    /// <param name="coeffs">Индексы коэффициентов блока</param>
-    private static double GetAbsDiff(double[,] block, ScIndexPair coeffs)
-    {
-        (double value1, double value2) = (block[coeffs.FirstIndex, coeffs.SecondIndex], block[coeffs.SecondIndex, coeffs.FirstIndex]);
-        return Math.Abs(MathMethods.GetModulesDiff(value1, value2));
     }
 
     /// <summary>

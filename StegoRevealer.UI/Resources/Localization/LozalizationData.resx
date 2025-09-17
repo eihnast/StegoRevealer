@@ -619,4 +619,10 @@
   <data name="SettingsTab.Version" xml:space="preserve">
     <value>Версия приложения</value>
   </data>
+  <data name="Histo.Title" xml:space="preserve">
+    <value>Гистограмма модулей разниц коэффициентов матриц ДКП</value>
+  </data>
+  <data name="Histo.ChooseCoeffs" xml:space="preserve">
+    <value>Пара коэффициентов</value>
+  </data>
 </root>

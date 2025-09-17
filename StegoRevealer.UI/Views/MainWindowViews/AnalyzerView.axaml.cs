@@ -410,4 +410,7 @@ public partial class AnalyzerView : UserControl
             Mode = BindingMode.TwoWay
         });
     }
+
+    private async void ShowKzhaHisto_Click(object? sender, RoutedEventArgs e) =>
+        await _vm.OpenKzhaHistoWindow();
 }

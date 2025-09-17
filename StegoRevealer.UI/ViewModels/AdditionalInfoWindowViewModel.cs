@@ -6,6 +6,7 @@ using StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels;
 using StegoRevealer.UI.Windows;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
+using StegoRevealer.StegoCore.ImageHandlerLib;
 
 namespace StegoRevealer.UI.ViewModels;
 
@@ -85,6 +86,16 @@ public class AdditionalInfoWindowViewModel : ViewModelBase
         {
             CurrentViewModel = jointDecisionVm;
             jointDecisionVm.ProcessResults(csaRes, rsRes);
+        }
+    }
+
+    public void OpenKzhaHistoInfo(ImageHandler img)
+    {
+        var kzhaHistoVm = GetOrCreateViewModel(typeof(KzhaHistoInfoViewModel)) as KzhaHistoInfoViewModel;
+        if (kzhaHistoVm is not null)
+        {
+            CurrentViewModel = kzhaHistoVm;
+            kzhaHistoVm.CreateFrequencyView(img);
         }
     }
 }

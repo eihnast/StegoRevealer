@@ -266,6 +266,37 @@ public class HidingExtractionTests
     }
 
     //[TestMethod]
+    //public void KochZhaoHidingExtractionLowThresholdTest()
+    //{
+    //    var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "imgForKz2.png");
+    //    var image = new ImageHandler(imagePath);
+    //    var kzHider = new KochZhaoHider(image);
+
+    //    kzHider.Params.Threshold = 25;
+    //    kzHider.Params.TraverseType = TraverseType.Horizontal;
+
+    //    string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 25.";
+    //    var hidingResult = kzHider.Hide(data, "customNameKzh");
+
+    //    var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
+
+    //    var kzExtractor = new KochZhaoExtractor(newImage);
+    //    kzExtractor.Params.Threshold = 20;
+
+    //    var extractionResult = kzExtractor.Extract();
+    //    var extractedData = extractionResult.GetResultData();
+    //    Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
+
+    //    var kzAnalayser = new KzhaAnalyser(newImage);
+    //    var saResult = kzAnalayser.Analyse();
+    //    string str = string.Empty;
+    //    foreach (var logEntry in saResult.LogRecords)
+    //        str += logEntry.ToString() + "\n";
+
+    //    Assert.IsTrue(saResult.ExtractedData?.StartsWith(data), str + $"data = {saResult.ExtractedData}");
+    //}
+
+    //[TestMethod]
     //public void KochZhaoHidingExtractionCommonTest2()
     //{
     //    var str = "\n";

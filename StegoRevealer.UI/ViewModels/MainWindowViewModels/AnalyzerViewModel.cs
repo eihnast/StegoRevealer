@@ -496,6 +496,25 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
     }
 
+    /// <summary>
+    /// Открытие модального окна гистограммы модулей разниц коэффициентов матриц ДКП
+    /// </summary>
+    public async Task OpenKzhaHistoWindow()
+    {
+        if (CurrentImage is null)
+        {
+            CommonLogger.LogWarning("No image for KZhA Histogram window, operation canceled");
+            return;
+        }
+
+        var additionalInfoVm = new AdditionalInfoWindowViewModel();
+        var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
+        additionalInfoVm.OpenKzhaHistoInfo(CurrentImage);
+
+        if (_mainWindowViewModel.MainWindow is not null)
+            await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+    }
+
 
     /// <summary>
     /// Создаёт обработчик изображения

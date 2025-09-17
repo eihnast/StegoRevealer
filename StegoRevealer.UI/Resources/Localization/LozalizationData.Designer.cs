@@ -790,6 +790,24 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Пара коэффициентов.
+        /// </summary>
+        public static string Histo_ChooseCoeffs {
+            get {
+                return ResourceManager.GetString("Histo.ChooseCoeffs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Гистограмма модулей разниц коэффициентов матриц ДКП.
+        /// </summary>
+        public static string Histo_Title {
+            get {
+                return ResourceManager.GetString("Histo.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на             Stego Revealer - программный комплекс, предназначенный для осуществления стегоанализа и работы со стеганографическими методами скрытия и извлечения информации.
         ///            
         ///            Доступные методы стегоанализа:
