@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using StegoRevealer.Common;
+﻿using StegoRevealer.Common;
 using StegoRevelaer.API.Services;
 
 namespace StegoRevelaer.API;

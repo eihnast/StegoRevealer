@@ -44,8 +44,7 @@ public class Logger : IDisposable
     public Logger(string? fileSuffix = null)
     {
         FileSuffix = string.IsNullOrEmpty(fileSuffix) ? string.Empty : fileSuffix;
-        if (Configurator.Settings.IsLoggingEnabled)
-            CreateLogWriter();
+        CreateLogWriter();
     }
 
     private void CreateLogWriter()
@@ -73,14 +72,14 @@ public class Logger : IDisposable
 
     private void CheckSettingAndTryCreateLog()
     {
-        if (_logWriter is null && Configurator.Settings.IsLoggingEnabled)
+        if (_logWriter is null)
             CreateLogWriter();
     }
 
     private void WriteStringInLog(string message, bool lineFeed)
     {
         if (_logWriter is null)
-            CheckSettingAndTryCreateLog();
+            CreateLogWriter();
         
         if (_timer.ElapsedMilliseconds >= MaxLogTime)
         {
@@ -120,9 +119,6 @@ public class Logger : IDisposable
 
     private void LogInner(string message, Constants.LogMessageType type, bool lineFeed)
     {
-        if (!Configurator.Settings.IsLoggingEnabled)
-            return;
-
         string dateTimePrefix = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff ");
         string typePrefix = Constants.LogPrefixDictionary[type];
         WriteStringInLog(dateTimePrefix + typePrefix + message, lineFeed);

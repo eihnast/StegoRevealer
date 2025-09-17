@@ -21,10 +21,10 @@ public class CommonLogger : IDisposable, ILoggerService
         }
     }
 
-    private Logger Logger;
+    private Logger? Logger;
     private CommonLogger()
     {
-        Logger = new Logger();
+        CheckAndSetLogger();
     }
 
 
@@ -48,9 +48,20 @@ public class CommonLogger : IDisposable, ILoggerService
     }
     ~CommonLogger() => Dispose(false);
 
-    public void Log(Constants.LogMessageType messageType, string message) => Instance.Logger.Log(message, messageType);
+    public void Log(Constants.LogMessageType messageType, string message)
+    {
+        CheckAndSetLogger();
+        if (Configurator.Settings.IsLoggingEnabled)
+            Instance.Logger?.Log(message, messageType);
+    }
 
     public static void LogInfo(string message) => Instance.Log(Constants.LogMessageType.Info, message);
     public static void LogWarning(string message) => Instance.Log(Constants.LogMessageType.Warning, message);
     public static void LogError(string message) => Instance.Log(Constants.LogMessageType.Error, message);
+
+    private void CheckAndSetLogger()
+    {
+        if (Logger is null && Configurator.Settings.IsLoggingEnabled)
+            Logger = new Logger();
+    }
 }

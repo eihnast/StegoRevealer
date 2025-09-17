@@ -18,6 +18,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        CommonLogger.LogInfo($"App version: {CommonTools.GetAppVersion()}");
         CommonLogger.LogInfo("Setting localization");
         string langCode = Configurator.Settings.Language;
         if (string.IsNullOrEmpty(langCode) || !Constants.Languages.ContainsKey(langCode))
