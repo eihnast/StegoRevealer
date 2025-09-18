@@ -26,4 +26,9 @@ public partial class KzhaHistoInfoView : UserControl
     {
         Histo.ResetZoom();
     }
+
+    private void BackPreviousZoomBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Histo.ZoomBack();
+    }
 }

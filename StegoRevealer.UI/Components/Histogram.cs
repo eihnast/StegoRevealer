@@ -1,11 +1,11 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Media;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
 
 namespace StegoRevealer.UI.Components;
 
@@ -15,7 +15,7 @@ public class Histogram : Control
         AvaloniaProperty.Register<Histogram, IList<double>?>(nameof(Values));
 
     public static readonly StyledProperty<int> BinCountProperty =
-        AvaloniaProperty.Register<Histogram, int>(nameof(BinCount), 0); // не используется в bar-режиме, оставлен на будущее
+        AvaloniaProperty.Register<Histogram, int>(nameof(BinCount), 0); // оставлен на будущее
 
     public static readonly StyledProperty<Thickness> PlotPaddingProperty =
         AvaloniaProperty.Register<Histogram, Thickness>(nameof(PlotPadding), new Thickness(40, 20, 20, 40));
@@ -38,18 +38,28 @@ public class Histogram : Control
         set => SetValue(PlotPaddingProperty, value);
     }
 
-    // -------- Зум: текущее окно индексов и история
+    // ---------- Зум: текущее окно индексов и история ----------
     private int _viewStart = 0;     // включительно
     private int _viewEnd = -1;      // включительно; -1 = весь массив
     private readonly Stack<(int start, int end)> _zoomHistory = new();
 
-    // -------- Прямоугольник области построения, нужен и при отрисовке, и в событиях мыши
+    // ---------- Прямоугольник области построения ----------
     private Rect _lastPlotRect;
 
-    // -------- Выделение мышью
+    // ---------- Выделение мышью ----------
     private bool _isDragging;
     private Point _dragStart;
     private Point _dragCurrent;
+
+    // ---------- КЭШИ кистей/перьев/шрифтов (создаются один раз) ----------
+    private readonly Typeface _typeface = new Typeface("Segoe UI");
+    private readonly IBrush _bg = Brushes.White;
+    private readonly Pen _axisPen = new Pen(Brushes.Black, 1);
+    private readonly Pen _zeroPen = new Pen(Brushes.Gray, 1) { DashStyle = new DashStyle(new double[] { 3, 3 }, 0) };
+    private readonly IBrush _barFill = new SolidColorBrush(Color.FromArgb(255, 70, 130, 180));
+    private readonly Pen _barStroke = new Pen(Brushes.Black, 1);
+    private readonly IBrush _selFill = new SolidColorBrush(Color.FromArgb(180, 30, 144, 255));
+    private readonly Pen _selPen = new Pen(Brushes.DodgerBlue, 1);
 
     static Histogram()
     {
@@ -62,7 +72,7 @@ public class Histogram : Control
         ClipToBounds = true;
     }
 
-    // Публичный метод для кнопки "Сброс"
+    // Публичный метод для кнопки «Сброс»
     public void ResetZoom()
     {
         _viewStart = 0;
@@ -71,7 +81,7 @@ public class Histogram : Control
         InvalidateVisual();
     }
 
-    // Опционально: шаг назад по стеку (если пригодится)
+    // Необязательное «шаг назад»
     public bool ZoomBack()
     {
         if (_zoomHistory.Count == 0) return false;
@@ -91,7 +101,7 @@ public class Histogram : Control
         if (rect.Width <= 0 || rect.Height <= 0)
             return;
 
-        context.FillRectangle(Brushes.White, rect);
+        context.FillRectangle(_bg, rect);
 
         var vals = Values?.Where(v => !double.IsNaN(v) && !double.IsInfinity(v)).ToArray();
         if (vals == null || vals.Length == 0)
@@ -124,12 +134,11 @@ public class Histogram : Control
             rect.Width - PlotPadding.Left - PlotPadding.Right,
             rect.Height - PlotPadding.Top - PlotPadding.Bottom);
 
-        _lastPlotRect = plot; // сохраним для событий мыши
+        _lastPlotRect = plot; // для событий мыши
 
         // Оси
-        var penAxis = new Pen(Brushes.Black, 1);
-        context.DrawLine(penAxis, new Point(plot.Left, plot.Bottom), new Point(plot.Right, plot.Bottom)); // X
-        context.DrawLine(penAxis, new Point(plot.Left, plot.Bottom), new Point(plot.Left, plot.Top));     // Y
+        context.DrawLine(_axisPen, new Point(plot.Left, plot.Bottom), new Point(plot.Right, plot.Bottom)); // X
+        context.DrawLine(_axisPen, new Point(plot.Left, plot.Bottom), new Point(plot.Left, plot.Top));     // Y
 
         // Преобразования
         double ValueToY(double v) => plot.Bottom - (v - yMin) / (yMax - yMin) * plot.Height;
@@ -139,26 +148,57 @@ public class Histogram : Control
         if (yMin < 0 && 0 < yMax)
         {
             var y0 = ValueToY(0);
-            context.DrawLine(new Pen(Brushes.Gray, 1, dashStyle: new DashStyle(new double[] { 3, 3 }, 0)),
-                new Point(plot.Left, y0), new Point(plot.Right, y0));
+            context.DrawLine(_zeroPen, new Point(plot.Left, y0), new Point(plot.Right, y0));
         }
 
-        // Столбики
+        // -------- LOD: если столбцов больше, чем пикселей по ширине, рисуем не больше 1 столбика на пиксель --------
+        bool useLod = count > plot.Width;
+        if (useLod)
+        {
+            int pixelCols = (int)Math.Ceiling(plot.Width);
+            if (pixelCols > 0)
+            {
+                double yBase = ValueToY(0);
+                for (int col = 0; col < pixelCols; col++)
+                {
+                    int idx = start + (int)((col / plot.Width) * count);
+                    if (idx > end) idx = end;
+
+                    double v = vals[idx];
+                    double y = ValueToY(v);
+                    double top = Math.Min(y, yBase);
+                    double height = Math.Abs(yBase - y);
+
+                    var bar = new Rect(
+                        plot.Left + col + 0.5,
+                        top,
+                        1.0, // ширина 1 пиксель
+                        Math.Max(1.0, height)
+                    );
+
+                    context.FillRectangle(_barFill, bar);
+                    // stroke не рисуем — смысла нет на 1px
+                }
+            }
+
+            // Подписи и прямоугольник выделения
+            DrawLabelsAndSelection(context, plot, start, end, yMin, yMax, ValueToY);
+            return; // LOD-ветка завершена
+        }
+
+        // -------- Обычная «толстая» отрисовка столбиков --------
         double pxBarW = plot.Width / count;
         double gap = Math.Min(2.0, pxBarW * 0.1);
         double barW = Math.Max(1.0, pxBarW - gap);
 
-        var barFill = new SolidColorBrush(Color.FromArgb(180, 70, 130, 180));
-        var barStroke = new Pen(Brushes.Black, 1);
-
-        double yBase = ValueToY(0);
+        double baseY = ValueToY(0);
 
         for (int i = start; i <= end; i++)
         {
             double v = vals[i];
             double y = ValueToY(v);
-            double top = Math.Min(y, yBase);
-            double height = Math.Abs(yBase - y);
+            double top = Math.Min(y, baseY);
+            double height = Math.Abs(baseY - y);
 
             var bar = new Rect(
                 IndexToX(i) + gap / 2.0 + 0.5,
@@ -167,40 +207,56 @@ public class Histogram : Control
                 Math.Max(1.0, height)
             );
 
-            context.FillRectangle(barFill, bar);
-            context.DrawRectangle(barStroke, bar);
+            context.FillRectangle(_barFill, bar);
+
+            // (3) stroke — только если столбик не слишком тонкий
+            if (barW >= 3.0)
+                context.DrawRectangle(_barStroke, bar);
         }
 
-        // Подписи краёв осей (без измерений, «карманы»)
+        // Подписи и прямоугольник выделения
+        DrawLabelsAndSelection(context, plot, start, end, yMin, yMax, ValueToY);
+    }
+
+    // Рисуем подписи краёв осей и выделение (общая часть для LOD/не LOD)
+    private void DrawLabelsAndSelection(
+        DrawingContext context,
+        Rect plot,
+        int start,
+        int end,
+        double yMin,
+        double yMax,
+        Func<double, double> valueToY)
+    {
+        // Подписи (без измерений — «карманы»)
         double fontSize = 12;
         double indent = fontSize / 2.0;
-        var typeface = new Typeface("Segoe UI");
 
         // X: левый индекс
-        var ftXLeft = new FormattedText(start.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+        var ftXLeft = new FormattedText(start.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
         context.DrawText(ftXLeft, new Point(plot.Left, plot.Bottom + 2));
 
         // X: правый индекс
         string ftXRightStr = end.ToString();
-        var ftXRight = new FormattedText(ftXRightStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+        var ftXRight = new FormattedText(ftXRightStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
         context.DrawText(ftXRight, new Point(plot.Right - ftXRightStr.Length * indent, plot.Bottom + 2));
 
         // Y: min
         string ftYMinStr = yMin.ToString("G4");
-        var ftYMin = new FormattedText(ftYMinStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+        var ftYMin = new FormattedText(ftYMinStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
         context.DrawText(ftYMin, new Point(plot.Left - 4 - ftYMinStr.Length * indent, plot.Bottom - fontSize));
 
         // Y: 0 (если попадает)
         if (yMin < 0 && 0 < yMax)
         {
             const string ftY0Str = "0";
-            var ftY0 = new FormattedText(ftY0Str, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
-            context.DrawText(ftY0, new Point(plot.Left - 4 - 2 * indent, ValueToY(0) - indent));
+            var ftY0 = new FormattedText(ftY0Str, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
+            context.DrawText(ftY0, new Point(plot.Left - 4 - 2 * indent, valueToY(0) - indent));
         }
 
         // Y: max
         string ftYMaxStr = yMax.ToString("G4");
-        var ftYMax = new FormattedText(ftYMaxStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
+        var ftYMax = new FormattedText(ftYMaxStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
         context.DrawText(ftYMax, new Point(plot.Left - 4 - ftYMaxStr.Length * indent, plot.Top - indent));
 
         // Прямоугольник выделения при drag
@@ -209,10 +265,8 @@ public class Histogram : Control
             var sel = GetSelectionRectClamped();
             if (sel.Width > 0)
             {
-                var selFill = new SolidColorBrush(Color.FromArgb(60, 30, 144, 255)); // полупрозрачный
-                var selPen = new Pen(Brushes.DodgerBlue, 1);
-                context.FillRectangle(selFill, sel);
-                context.DrawRectangle(selPen, sel);
+                context.FillRectangle(_selFill, sel);
+                context.DrawRectangle(_selPen, sel);
             }
         }
     }
@@ -230,7 +284,7 @@ public class Histogram : Control
         _isDragging = true;
         _dragStart = _dragCurrent = p;
         e.Pointer.Capture(this);
-        InvalidateVisual();
+        InvalidateVisual(); // (4) инвалидация только при реальном начале драга
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -239,7 +293,7 @@ public class Histogram : Control
         if (!_isDragging) return;
 
         _dragCurrent = e.GetPosition(this);
-        InvalidateVisual();
+        InvalidateVisual(); // (4) во время драга перерисовываем «резинку»
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
@@ -254,7 +308,6 @@ public class Histogram : Control
         // Порог — хотя бы 5 px по ширине
         if (sel.Width >= 5 && Values != null && Values.Count > 1)
         {
-            // Пересчёт выбранного пиксельного диапазона в индексы
             int n = Values.Count;
             int curStart = _viewStart;
             int curEnd = _viewEnd < 0 ? n - 1 : _viewEnd;
@@ -294,7 +347,7 @@ public class Histogram : Control
 
     private Rect GetSelectionRectClamped()
     {
-        // Ограничиваем выделение рамками области построения по X, игнорируем вертикаль (горизонтальный zoom)
+        // Ограничиваем выделение рамками области построения по X
         double x1 = Math.Clamp(_dragStart.X, _lastPlotRect.Left, _lastPlotRect.Right);
         double x2 = Math.Clamp(_dragCurrent.X, _lastPlotRect.Left, _lastPlotRect.Right);
         double left = Math.Min(x1, x2);

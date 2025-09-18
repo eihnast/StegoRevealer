@@ -44,12 +44,17 @@
 						   Values="{Binding CSequence}" BinCount="0" PlotPadding="48,16,24,40"/>
 
 			<!-- Оверлей с опциями управления гистограммой -->
-			<Border Name="HistoControlOverlay" ZIndex="1000" Grid.Row="2" Grid.Column="0"
+			<Border Name="HistoControlOverlay" Grid.Row="2" Grid.Column="0"
 					HorizontalAlignment="Right" VerticalAlignment="Top"
-					Margin="20">
-				<Grid RowDefinitions="*" ColumnDefinitions="*">
-					<Button Name="ResetZoomBtn"
+					Margin="20 -25 10 20" ZIndex="1000">
+				<Grid RowDefinitions="*" ColumnDefinitions="*,*">
+					<Button Name="BackPreviousZoomBtn" Margin="5 0 0 0"
 						    Grid.Column="0" Classes="ConrolBtn"
+							Click="BackPreviousZoomBtn_Click">
+						<PathIcon Data="{StaticResource IconZoomBack}"/>
+					</Button>
+					<Button Name="ResetZoomBtn" Margin="5 0 0 0"
+						    Grid.Column="1" Classes="ConrolBtn"
 							Click="ResetZoomBtn_Click">
 						<PathIcon Data="{StaticResource IconZoomOut}"/>
 					</Button>

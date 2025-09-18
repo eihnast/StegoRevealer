@@ -68,7 +68,6 @@
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
-		<Setter Property="ZIndex" Value="1000"/>
 	</Style>
 
 	<Style Selector="CheckBox.MethodTurnCheckbox">
