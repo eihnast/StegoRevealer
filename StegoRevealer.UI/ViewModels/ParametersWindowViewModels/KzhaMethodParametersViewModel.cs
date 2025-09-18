@@ -112,7 +112,7 @@ public class KzhaMethodParametersViewModel : ParametersWindowViewModelBaseChild,
         set => this.RaiseAndSetIfChanged(ref _cutCoefficientValue, value);
     }
 
-    private double _thresholdValue = 120.0;
+    private double _thresholdValue = 70.0;
     public double ThresholdValue
     {
         get => _thresholdValue;

@@ -245,7 +245,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _kzThresholdValue;
         set => this.RaiseAndSetIfChanged(ref _kzThresholdValue, value);
     }
-    private double _kzThresholdValue = 120.0;
+    private double _kzThresholdValue = 70.0;
 
     /// <summary>
     /// 

@@ -5,6 +5,7 @@ using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.AnalysisMethods.SamplePairAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 
@@ -302,5 +303,61 @@ public class StegoAnalysisTests
             if (fanResults[imgName].MahalanobisDistance is not null)
                 Assert.AreEqual(fanExpectedResults[imgName].MahalanobisDistance, Math.Round(fanResults[imgName].MahalanobisDistance!.Value, 4));
         }
+    }
+
+    [TestMethod]
+    public void KochZhaoEndToEndTest()
+    {
+        const string imgName = "imgForKz3.png";
+        const string coveredImgName = "imgForKz3_Hided.png";
+        const double hidingVolume = 0.31;
+        const double threshold = 70;  // Меньше 70 - ломается полностью правильное автоматическое извлечение при СА
+
+        string imgPath = Path.Combine(Helper.GetAssemblyDir(), "TestData", imgName);
+        var img = new ImageHandler(imgPath);
+
+        // Встраивание
+        var hider = new KochZhaoHider(img);
+
+        int bitsVolume = hider.Params.GetAvailableBlocksNum();
+        var dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz,.-?!";
+
+        int hidingBitsVolume = (int)((double)bitsVolume * hidingVolume / 8);
+        var rnd = new Random();
+        var hidingData = string.Join("", Enumerable.Repeat("A", hidingBitsVolume).Select(x => dict.ElementAt(rnd.Next(0, dict.Length))));
+
+        hider.Params.Threshold = threshold;
+        var hidingResult = hider.Hide(hidingData, coveredImgName);
+        var coveredImagePath = hidingResult.GetResultPath();
+
+        Assert.IsTrue(Path.GetFileName(coveredImagePath) == coveredImgName, 
+            $"Real covered filename: '{Path.GetFileName(coveredImagePath)}', expected: {coveredImgName}");
+        Assert.IsTrue(File.Exists(coveredImagePath), "Covered image file not exists");
+
+        // Проверка на извлечение
+        var coveredImg = new ImageHandler(coveredImagePath);
+
+        var extractor = new KochZhaoExtractor(coveredImg);
+        var extractionResult = extractor.Extract();
+
+        var extractionData = extractionResult.GetResultData();
+
+        Assert.IsFalse(string.IsNullOrEmpty(extractionData), "No extracted data");
+        Assert.IsTrue(extractionData.StartsWith(hidingData), $"Extracted data is \n'{extractionData}'\nBut hiding data is \n'{hidingData}'");
+
+        // Проверка на стегоанализ
+        var analyser = new KzhaAnalyser(coveredImg);
+        analyser.Params.TryToExtract = true;
+
+        var analysisResult = analyser.Analyse();
+        Assert.IsTrue(analysisResult.SuspiciousIntervalIsFound, "Suspicious interval is not found");
+        Assert.IsTrue(analysisResult.MethodSuccessful, "Method is not successful");
+
+        var autoExtractedData = analysisResult.ExtractedData;
+        Assert.IsFalse(string.IsNullOrEmpty(autoExtractedData), "No auto extracted data");
+        Assert.IsTrue(autoExtractedData.StartsWith(hidingData) || hidingData.StartsWith(autoExtractedData),
+            $"Auto extracted data is \n'{autoExtractedData}'\nBut hiding data is \n'{hidingData}'");
+
+        Console.WriteLine($"Got threshold '{analysisResult.Threshold}', real threshold '{threshold}'");
     }
 }

@@ -24,7 +24,7 @@ public class KochZhaoExtractor : IExtractor
         Params.StegoOperation = StegoOperationType.Extracting;
     }
 
-    public KochZhaoExtractor(ImageHandler img, int? seed = null, TraverseType traverseType = TraverseType.Horizontal, int threshold = 120)
+    public KochZhaoExtractor(ImageHandler img, int? seed = null, TraverseType traverseType = TraverseType.Horizontal, int threshold = 70)
     {
         Params = new KochZhaoParameters(img);
         Params.StegoOperation = StegoOperationType.Extracting;
@@ -117,10 +117,10 @@ public class KochZhaoExtractor : IExtractor
 
         // Извлечение бита
         bool? bit = null;  // Извлечение бита может быть неудачным
-        if (difference > Params.Threshold)
-            bit = false;
-        else if (difference < -Params.Threshold)
+        if (difference > 0)
             bit = true;
+        else if (difference < 0)
+            bit = false;
 
         return bit;
     }

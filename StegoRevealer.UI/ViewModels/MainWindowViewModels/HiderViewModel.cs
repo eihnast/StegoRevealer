@@ -257,7 +257,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         get => _kzThresholdValue;
         set => this.RaiseAndSetIfChanged(ref _kzThresholdValue, value);
     }
-    private double _kzThresholdValue = 120.0;
+    private double _kzThresholdValue = 70.0;
 
     /// <summary>
     /// Выбран ли порог для встраивания информации по Коха-Жао
@@ -638,6 +638,37 @@ public class HiderViewModel : MainWindowViewModelBaseChild
 
         CurrentImage = new ImageHandler(imgTempPath);
         TempManager.Instance.RememberHandler(CurrentImage);
+
+        if (_lsbParameters is not null)
+        {
+            var channels = _lsbParameters.Channels;
+            _lsbParameters = new LsbParameters(CurrentImage)
+            {
+                InterlaceChannels = _lsbParameters.InterlaceChannels,
+                LsbNum = _lsbParameters.LsbNum,
+                Seed = _lsbParameters.Seed,
+                StartPixels = _lsbParameters.StartPixels,
+                TraverseType = _lsbParameters.TraverseType
+            };
+            _lsbParameters.Channels.Clear();
+            _lsbParameters.Channels.AddRange(channels);
+        }    
+
+        if (_kzhParameters is not null)
+        {
+            var channels = _kzhParameters.Channels;
+            _kzhParameters = new KochZhaoParameters(CurrentImage)
+            {
+                HidingCoeffs = _kzhParameters.HidingCoeffs,
+                InterlaceChannels = _kzhParameters.InterlaceChannels,
+                Seed = _kzhParameters.Seed,
+                Threshold = _kzhParameters.Threshold,
+                TraverseType = _kzhParameters.TraverseType,
+                StartBlocks = _kzhParameters.StartBlocks
+            };
+            _kzhParameters.Channels.Clear();
+            _kzhParameters.Channels.AddRange(channels);
+        }
 
         CommonLogger.LogInfo($"Handler of original image '{imgTempPath}' was reloaded after hiding completed");
     }

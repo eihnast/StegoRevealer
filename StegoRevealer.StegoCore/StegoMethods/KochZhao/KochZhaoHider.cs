@@ -184,13 +184,9 @@ public class KochZhaoHider : IHider
     {
         var coefValues = FrequencyViewTools.GetBlockCoeffs(dctBlock, Params.HidingCoeffs);  // Значения коэффициентов
         var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
-        var newCoeffValues = coefValues;
 
         // Получение модифицированных значений коэффициентов
-        if (bit == false && difference <= Params.Threshold)
-            newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, Params.Threshold, true);
-        else if (bit == true && difference >= -Params.Threshold)
-            newCoeffValues = FrequencyViewTools.GetModifiedCoeffs(newCoeffValues, -Params.Threshold, false);
+        var newCoeffValues = FrequencyViewTools.GetModifiedCoeffsOriginal(coefValues, Params.Threshold, bit);
 
         // Изменение значений на новые в блоке
         (int coefInd1, int coefInd2) = Params.HidingCoeffs.AsTuple();

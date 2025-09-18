@@ -158,6 +158,9 @@
 		<None Update="TestData\imageBig.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="TestData\imgForKz3.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\imgForKz2.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
