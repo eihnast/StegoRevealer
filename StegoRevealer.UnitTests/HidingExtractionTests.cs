@@ -292,6 +292,29 @@ public class HidingExtractionTests
         Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
     }
 
+    //[TestMethod]
+    //public void KochZhaoHidingExtractionBadImageTest()
+    //{
+    //    int threshold = 15;
+
+    //    var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "kzhaBadImage.png");
+    //    var image = new ImageHandler(imagePath);
+    //    var kzHider = new KochZhaoHider(image);
+
+    //    kzHider.Params.Threshold = threshold;
+
+    //    string data = $"Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = {threshold}.";
+    //    var hidingResult = kzHider.Hide(data, "kzhaBadImageCovered.png");
+
+    //    var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
+
+    //    var kzExtractor = new KochZhaoExtractor(newImage);
+
+    //    var extractionResult = kzExtractor.Extract();
+    //    var extractedData = extractionResult.GetResultData();
+    //    Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
+    //}
+
     [TestMethod]
     public void KochZhaoHidingExtractionOneBitHidingTest()
     {
