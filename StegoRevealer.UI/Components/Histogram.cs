@@ -51,15 +51,19 @@ public class Histogram : Control
     private Point _dragStart;
     private Point _dragCurrent;
 
-    // ---------- КЭШИ кистей/перьев/шрифтов (создаются один раз) ----------
+    // ---------- Наведение мышью (направляющие) ----------
+    private Point? _hoverPoint; // пиксельные координаты курсора внутри контрола; null если вне области графика
+
+    // ---------- КЭШИ кистей/перьев/шрифтов ----------
     private readonly Typeface _typeface = new Typeface("Segoe UI");
     private readonly IBrush _bg = Brushes.White;
     private readonly Pen _axisPen = new Pen(Brushes.Black, 1);
     private readonly Pen _zeroPen = new Pen(Brushes.Gray, 1) { DashStyle = new DashStyle(new double[] { 3, 3 }, 0) };
-    private readonly IBrush _barFill = new SolidColorBrush(Color.FromArgb(255, 70, 130, 180));
+    private readonly IBrush _barFill = new SolidColorBrush(Color.FromArgb(180, 70, 130, 180));
     private readonly Pen _barStroke = new Pen(Brushes.Black, 1);
-    private readonly IBrush _selFill = new SolidColorBrush(Color.FromArgb(180, 30, 144, 255));
+    private readonly IBrush _selFill = new SolidColorBrush(Color.FromArgb(60, 30, 144, 255));
     private readonly Pen _selPen = new Pen(Brushes.DodgerBlue, 1);
+    private readonly Pen _guidePen = new Pen(Brushes.DimGray, 1) { DashStyle = new DashStyle(new double[] { 4, 4 }, 0) };
 
     static Histogram()
     {
@@ -145,11 +149,9 @@ public class Histogram : Control
         double IndexToX(int idx) => plot.Left + (idx - start) * (plot.Width / count);
 
         // Нулевая линия
+        var y0 = ValueToY(0);
         if (yMin < 0 && 0 < yMax)
-        {
-            var y0 = ValueToY(0);
             context.DrawLine(_zeroPen, new Point(plot.Left, y0), new Point(plot.Right, y0));
-        }
 
         // -------- LOD: если столбцов больше, чем пикселей по ширине, рисуем не больше 1 столбика на пиксель --------
         bool useLod = count > plot.Width;
@@ -158,7 +160,6 @@ public class Histogram : Control
             int pixelCols = (int)Math.Ceiling(plot.Width);
             if (pixelCols > 0)
             {
-                double yBase = ValueToY(0);
                 for (int col = 0; col < pixelCols; col++)
                 {
                     int idx = start + (int)((col / plot.Width) * count);
@@ -166,8 +167,8 @@ public class Histogram : Control
 
                     double v = vals[idx];
                     double y = ValueToY(v);
-                    double top = Math.Min(y, yBase);
-                    double height = Math.Abs(yBase - y);
+                    double top = Math.Min(y, y0);
+                    double height = Math.Abs(y0 - y);
 
                     var bar = new Rect(
                         plot.Left + col + 0.5,
@@ -177,12 +178,11 @@ public class Histogram : Control
                     );
 
                     context.FillRectangle(_barFill, bar);
-                    // stroke не рисуем — смысла нет на 1px
                 }
             }
 
-            // Подписи и прямоугольник выделения
-            DrawLabelsAndSelection(context, plot, start, end, yMin, yMax, ValueToY);
+            // Подписи, направляющие и прямоугольник выделения
+            DrawLabelsGuidesSelection(context, plot, start, end, yMin, yMax, y0, ValueToY);
             return; // LOD-ветка завершена
         }
 
@@ -191,14 +191,12 @@ public class Histogram : Control
         double gap = Math.Min(2.0, pxBarW * 0.1);
         double barW = Math.Max(1.0, pxBarW - gap);
 
-        double baseY = ValueToY(0);
-
         for (int i = start; i <= end; i++)
         {
             double v = vals[i];
             double y = ValueToY(v);
-            double top = Math.Min(y, baseY);
-            double height = Math.Abs(baseY - y);
+            double top = Math.Min(y, y0);
+            double height = Math.Abs(y0 - y);
 
             var bar = new Rect(
                 IndexToX(i) + gap / 2.0 + 0.5,
@@ -208,27 +206,26 @@ public class Histogram : Control
             );
 
             context.FillRectangle(_barFill, bar);
-
-            // (3) stroke — только если столбик не слишком тонкий
             if (barW >= 3.0)
                 context.DrawRectangle(_barStroke, bar);
         }
 
-        // Подписи и прямоугольник выделения
-        DrawLabelsAndSelection(context, plot, start, end, yMin, yMax, ValueToY);
+        // Подписи, направляющие и прямоугольник выделения
+        DrawLabelsGuidesSelection(context, plot, start, end, yMin, yMax, y0, ValueToY);
     }
 
-    // Рисуем подписи краёв осей и выделение (общая часть для LOD/не LOD)
-    private void DrawLabelsAndSelection(
+    // Подписи, направляющие (hover) и выделение (drag)
+    private void DrawLabelsGuidesSelection(
         DrawingContext context,
         Rect plot,
         int start,
         int end,
         double yMin,
         double yMax,
+        double y0,
         Func<double, double> valueToY)
     {
-        // Подписи (без измерений — «карманы»)
+        // --- Подписи (без измерений — «карманы») ---
         double fontSize = 12;
         double indent = fontSize / 2.0;
 
@@ -251,7 +248,7 @@ public class Histogram : Control
         {
             const string ftY0Str = "0";
             var ftY0 = new FormattedText(ftY0Str, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
-            context.DrawText(ftY0, new Point(plot.Left - 4 - 2 * indent, valueToY(0) - indent));
+            context.DrawText(ftY0, new Point(plot.Left - 4 - 2 * indent, y0 - indent));
         }
 
         // Y: max
@@ -259,7 +256,42 @@ public class Histogram : Control
         var ftYMax = new FormattedText(ftYMaxStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
         context.DrawText(ftYMax, new Point(plot.Left - 4 - ftYMaxStr.Length * indent, plot.Top - indent));
 
-        // Прямоугольник выделения при drag
+        // --- «Прицельные» направляющие и подписи у осей при наведении ---
+        if (_hoverPoint is Point hp && plot.Contains(hp))
+        {
+            // Горизонтальная (параллельно X) — от оси Y до курсора
+            var yH = Math.Clamp(hp.Y, plot.Top, plot.Bottom);
+            context.DrawLine(_guidePen, new Point(plot.Left, yH), new Point(Math.Clamp(hp.X, plot.Left, plot.Right), yH));
+
+            // Вертикальная (параллельно Y) — от оси X (нулевая линия, при необходимости клэмпим в рамки) до курсора
+            double yBaseClamped = Math.Clamp(y0, plot.Top, plot.Bottom);
+            var xV = Math.Clamp(hp.X, plot.Left, plot.Right);
+            context.DrawLine(_guidePen, new Point(xV, yBaseClamped), new Point(xV, yH));
+
+            // Значения у осей напротив пересечений
+            // 1) Подпись индекса на оси X
+            // Текущее окно: start..end, count = end-start+1
+            double rel = (xV - plot.Left) / Math.Max(1.0, plot.Width);
+            double idxD = start + rel * Math.Max(1, end - start + 1);
+            int idxNearest = Math.Clamp((int)Math.Round(idxD), start, end);
+
+            // Рисуем прямо под осью X около xV (немного смещение, чтобы не пересекаться с осью)
+            var idxStr = idxNearest.ToString();
+            var ftIdx = new FormattedText(idxStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
+
+            context.DrawText(ftIdx, new Point(
+                Math.Clamp(xV - idxStr.Length * indent * 0.5, plot.Left, plot.Right - 30),
+                plot.Bottom + 2));
+
+            // 2) Подпись значения на оси Y
+            double val = yMin + (plot.Bottom - yH) / Math.Max(1.0, plot.Height) * (yMax - yMin);
+            string valStr = val.ToString("G5");
+            var ftVal = new FormattedText(valStr, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, _typeface, fontSize, Brushes.Black);
+            // Рисуем слева от оси Y на уровне yH
+            context.DrawText(ftVal, new Point(plot.Left - 4 - valStr.Length * indent, yH - indent));
+        }
+
+        // --- Прямоугольник выделения при drag ---
         if (_isDragging)
         {
             var sel = GetSelectionRectClamped();
@@ -279,21 +311,44 @@ public class Histogram : Control
         if (Values == null || Values.Count == 0) return;
 
         var p = e.GetPosition(this);
+        // Начало выделения — только если внутри графика
         if (!_lastPlotRect.Contains(p)) return;
 
         _isDragging = true;
         _dragStart = _dragCurrent = p;
         e.Pointer.Capture(this);
-        InvalidateVisual(); // (4) инвалидация только при реальном начале драга
+        InvalidateVisual();
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (!_isDragging) return;
 
-        _dragCurrent = e.GetPosition(this);
-        InvalidateVisual(); // (4) во время драга перерисовываем «резинку»
+        var p = e.GetPosition(this);
+
+        // Обновляем «ховер» всегда (даже без драга), но инвалидируем только при реальном изменении
+        Point? newHover = _lastPlotRect.Contains(p) ? p : (Point?)null;
+        if (_hoverPoint != newHover)
+        {
+            _hoverPoint = newHover;
+            InvalidateVisual();
+        }
+
+        if (_isDragging)
+        {
+            _dragCurrent = p;
+            InvalidateVisual();
+        }
+    }
+
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        base.OnPointerExited(e);
+        if (_hoverPoint != null)
+        {
+            _hoverPoint = null;
+            InvalidateVisual();
+        }
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
