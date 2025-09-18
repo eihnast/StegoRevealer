@@ -628,4 +628,7 @@ Director científico: V. G. Sidorenko</value>
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>Todas las parejas de coeficientes</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>Histograma de magnitudes de diferencias de pares de coeficientes en la representación frecuencial de la matriz DCT</value>
+  </data>
 </root>

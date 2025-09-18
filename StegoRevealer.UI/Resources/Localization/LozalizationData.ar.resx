@@ -628,4 +628,7 @@
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>جميع أزواج المعاملات</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>مدرج تكراري لمقادير فروق أزواج معاملات مصفوفة DCT في التمثيل الترددي</value>
+  </data>
 </root>

@@ -628,4 +628,7 @@ Scientific Advisor: V. G. Sidorenko</value>
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>All coefficient pairs</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>Histogram of magnitude differences of coefficient pairs in DCT matrix frequency representation</value>
+  </data>
 </root>

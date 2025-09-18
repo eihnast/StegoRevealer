@@ -157,6 +157,11 @@
 										Classes="MethodParametersBtn" Margin="0"
 										Click="ShowKzhaHisto_Click">
 									<PathIcon Data="{StaticResource IconHisto}"/>
+									<ToolTip.Tip>
+										<StackPanel>
+											<TextBlock FontSize="15" Text="{Binding L[Histo.BtnToolTip]}"/>
+										</StackPanel>
+									</ToolTip.Tip>
 								</Button>
 								<CheckBox Name="IsMethodKzaChecked" Content="{Binding L[Methods.KzhaMethod]}"
 										  Classes="MethodTurnCheckbox" DockPanel.Dock="Left"

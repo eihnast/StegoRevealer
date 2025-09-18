@@ -628,4 +628,7 @@
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>Все пары коэффициентов</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>Гистограмма модулей разниц значений пар коэффициентов матриц ДКП частотного представления</value>
+  </data>
 </root>

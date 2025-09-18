@@ -790,6 +790,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Гистограмма модулей разниц значений пар коэффициентов матриц ДКП частотного представления.
+        /// </summary>
+        public static string Histo_BtnToolTip {
+            get {
+                return ResourceManager.GetString("Histo.BtnToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Пара коэффициентов.
         /// </summary>
         public static string Histo_ChooseCoeffs {

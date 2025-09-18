@@ -628,4 +628,7 @@
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>所有系数对</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>DCT 矩阵频域表示中系数对差值幅度直方图</value>
+  </data>
 </root>

@@ -628,4 +628,7 @@
   <data name="Histo.ShowAllPairs" xml:space="preserve">
     <value>همه جفت‌های ضرایب</value>
   </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>هیستوگرام قدر مطلق اختلاف مقادیر جفت‌های ضرایب در نمایش فرکانسی ماتریس DCT</value>
+  </data>
 </root>
