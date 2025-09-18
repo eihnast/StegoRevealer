@@ -41,6 +41,35 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
                                                          .Select(f => (ScIndexPair)f.GetValue(null)!)
                                                          .ToList();
 
+    public static List<ScIndexPair> DefaultIndexPairs { get; } = [HidingCoefficients.Coeff34, HidingCoefficients.Coeff35, HidingCoefficients.Coeff45];
+
+
+    private List<ScIndexPair> _showingPairs = DefaultIndexPairs;
+    public List<ScIndexPair> ShowingPairs
+    {
+        get => _showingPairs;
+        set => this.RaiseAndSetIfChanged(ref _showingPairs, value);
+    }
+
+    private bool _useOnlyDefaultPairs = true;
+    public bool UseOnlyDefaultPairs
+    {
+        get => _useOnlyDefaultPairs;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _useOnlyDefaultPairs, value);
+            if (value)
+            {
+                ShowingPairs = DefaultIndexPairs;
+                SelectedIndexPairIndex = 0;
+            }
+            else
+            {
+                ShowingPairs = IndexPairs;
+            }
+        }
+    }
+
     private double[] _cSequence = [];
     public double[] CSequence
     {
@@ -54,8 +83,16 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
         get => _selectedIndexPairIndex;
         set
         {
-            if (value >= 0 && value < IndexPairs.Count)
-                SelectedIndexPair = IndexPairs[value];
+            if (UseOnlyDefaultPairs)
+            {
+                if (value >= 0 && value < DefaultIndexPairs.Count)
+                    SelectedIndexPair = DefaultIndexPairs[value];
+            }
+            else
+            {
+                if (value >= 0 && value < IndexPairs.Count)
+                    SelectedIndexPair = IndexPairs[value];
+            }
             this.RaiseAndSetIfChanged(ref _selectedIndexPairIndex, value);
         }
     }

@@ -617,12 +617,15 @@ Directeur scientifique : V. G. Sidorenko</value>
     <value>Configuration de l’API</value>
   </data>
   <data name="SettingsTab.Version" xml:space="preserve">
-    <value />
+    <value>Version de l’application</value>
   </data>
   <data name="Histo.Title" xml:space="preserve">
-    <value />
+    <value>Histogramme des modules de différences des coefficients de la matrice DCT</value>
   </data>
   <data name="Histo.ChooseCoeffs" xml:space="preserve">
-    <value />
+    <value>Paire de coefficients</value>
+  </data>
+  <data name="Histo.ShowAllPairs" xml:space="preserve">
+    <value>Toutes les paires de coefficients</value>
   </data>
 </root>

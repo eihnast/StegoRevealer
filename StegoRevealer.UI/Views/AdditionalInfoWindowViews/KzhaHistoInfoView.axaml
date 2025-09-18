@@ -24,7 +24,7 @@
 				   Padding="0"/>
 
 			<Grid Name="ChooseCoeffsBlock" Grid.Column="0" Grid.Row="1"
-				  ColumnDefinitions="*,*" RowDefinitions="*"
+				  ColumnDefinitions="4*,*,4*" RowDefinitions="*"
 				  IsEnabled="{Binding Path=!IsLoadingProcess}"
 				  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 				<Label Name="ChooseCoeffsBlockDesc"
@@ -35,9 +35,15 @@
 				<ComboBox Name="ChooseCoeffsBlockValue" Grid.Column="1"
 				          Foreground="#FFE0E0E0" FontSize="20" MinHeight="40"
 						  HorizontalContentAlignment="Center" VerticalAlignment="Center"
-						  Margin="5 0 0 0" HorizontalAlignment="Left"
+						  HorizontalAlignment="Stretch"
+						  Margin="5 0 5 0"
 						  MinWidth="150" SelectedIndex="{Binding Path=SelectedIndexPairIndex}"
-						  ItemsSource="{Binding Path=IndexPairs}"/>
+						  ItemsSource="{Binding Path=ShowingPairs}"/>
+				<CheckBox Name="ShowAllPairs" Content="{Binding L[Histo.ShowAllPairs]}"
+						  Foreground="#FFE0E0E0" FontSize="20"
+						  Classes="ShowAllPairsCheckbox" Grid.Column="2"
+						  HorizontalAlignment="Left" Margin="10 0 0 0"
+						  IsChecked="{Binding Path=!UseOnlyDefaultPairs}"/>
 			</Grid>
 
 			<cmp:Histogram Name="Histo" Grid.Row="2" Grid.Column="0" Margin="10"

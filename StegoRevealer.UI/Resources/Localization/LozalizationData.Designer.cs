@@ -799,6 +799,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Все пары коэффициентов.
+        /// </summary>
+        public static string Histo_ShowAllPairs {
+            get {
+                return ResourceManager.GetString("Histo.ShowAllPairs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Гистограмма модулей разниц коэффициентов матриц ДКП.
         /// </summary>
         public static string Histo_Title {

@@ -617,12 +617,15 @@ Scientific Advisor: V. G. Sidorenko</value>
     <value>API Configuration</value>
   </data>
   <data name="SettingsTab.Version" xml:space="preserve">
-    <value />
+    <value>Application Version</value>
   </data>
   <data name="Histo.Title" xml:space="preserve">
-    <value />
+    <value>Histogram of DCT matrix coefficient difference magnitudes</value>
   </data>
   <data name="Histo.ChooseCoeffs" xml:space="preserve">
-    <value />
+    <value>Coefficient pair</value>
+  </data>
+  <data name="Histo.ShowAllPairs" xml:space="preserve">
+    <value>All coefficient pairs</value>
   </data>
 </root>

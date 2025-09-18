@@ -625,4 +625,7 @@
   <data name="Histo.ChooseCoeffs" xml:space="preserve">
     <value>Пара коэффициентов</value>
   </data>
+  <data name="Histo.ShowAllPairs" xml:space="preserve">
+    <value>Все пары коэффициентов</value>
+  </data>
 </root>
