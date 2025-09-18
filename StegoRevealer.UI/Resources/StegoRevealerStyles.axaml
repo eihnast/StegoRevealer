@@ -61,6 +61,16 @@
 		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
 	</Style>
 
+	<Style Selector="Button.ConrolBtn">
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="Margin" Value="0"/>
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
+		<Setter Property="ZIndex" Value="1000"/>
+	</Style>
+
 	<Style Selector="CheckBox.MethodTurnCheckbox">
 		<Setter Property="Foreground" Value="#fff"/>
 		<Setter Property="Height" Value="30"/>

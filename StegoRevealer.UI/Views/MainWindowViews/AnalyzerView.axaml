@@ -153,7 +153,7 @@
 									Grid.Column="1" Grid.Row="5"
 									Click="MethodZcaParamsBtn_Click"/>
 							<DockPanel LastChildFill="True" Grid.Column="0" Grid.Row="6" Margin="0 0 5 5">
-								<Button Name="ShowKzhaHisto" DockPanel.Dock="Right"
+								<Button Name="ShowKzhaHisto" DockPanel.Dock="Right" IsVisible="{Binding Path=HasLoadedImage}"
 										Classes="MethodParametersBtn" Margin="0"
 										Click="ShowKzhaHisto_Click">
 									<PathIcon Data="{StaticResource IconHisto}"/>

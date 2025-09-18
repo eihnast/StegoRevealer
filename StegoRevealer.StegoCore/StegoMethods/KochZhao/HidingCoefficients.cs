@@ -39,12 +39,12 @@ public static class HidingCoefficients
 
     //public static readonly ScIndexPair[] All =
     //{
-    //    Coeff12, Coeff13, Coeff14, Coeff15, Coeff16, Coeff17, Coeff18, 
-    //    Coeff23, Coeff24, Coeff25, Coeff26, Coeff27, Coeff28, 
-    //    Coeff34, Coeff35, Coeff36, Coeff37, Coeff38, 
-    //    Coeff45, Coeff46, Coeff47, Coeff48, 
-    //    Coeff56, Coeff57, Coeff58, 
-    //    Coeff67, Coeff68, 
+    //    Coeff12, Coeff13, Coeff14, Coeff15, Coeff16, Coeff17, Coeff18,
+    //    Coeff23, Coeff24, Coeff25, Coeff26, Coeff27, Coeff28,
+    //    Coeff34, Coeff35, Coeff36, Coeff37, Coeff38,
+    //    Coeff45, Coeff46, Coeff47, Coeff48,
+    //    Coeff56, Coeff57, Coeff58,
+    //    Coeff67, Coeff68,
     //    Coeff78
     //};
 }

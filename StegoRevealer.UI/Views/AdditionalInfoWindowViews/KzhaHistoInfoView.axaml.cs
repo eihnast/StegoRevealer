@@ -21,4 +21,9 @@ public partial class KzhaHistoInfoView : UserControl
         _vm = CommonTools.GetViewModel<KzhaHistoInfoViewModel>(this.DataContext);
         _vm.SelectedIndexPairIndex = 0;
     }
+
+    private void ResetZoomBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Histo.ResetZoom();
+    }
 }

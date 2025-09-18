@@ -16,14 +16,12 @@
 			  ColumnDefinitions="*" RowDefinitions="50,60,*"
 			  Margin="20 10 20 10">
 			
-			<TextBox Name="TitleLabel" Text="{Binding L[Histo.Title]}"
-				     Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="27"
-				     Grid.Column="0" Grid.Row="0"
-					 TextWrapping="WrapWithOverflow"
-				     Background="{x:Null}" BorderBrush="{x:Null}"
-				     VerticalAlignment="Center" VerticalContentAlignment="Center"
-				     HorizontalAlignment="Center" HorizontalContentAlignment="Center"
-				     Padding="0"/>
+			<Label Name="TitleLabel" Content="{Binding L[Histo.Title]}"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="27"
+				   Grid.Column="0" Grid.Row="0"
+				   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
 
 			<Grid Name="ChooseCoeffsBlock" Grid.Column="0" Grid.Row="1"
 				  ColumnDefinitions="*,*" RowDefinitions="*"
@@ -44,6 +42,20 @@
 
 			<cmp:Histogram Name="Histo" Grid.Row="2" Grid.Column="0" Margin="10"
 						   Values="{Binding CSequence}" BinCount="0" PlotPadding="48,16,24,40"/>
+
+			<!-- Оверлей с опциями управления гистограммой -->
+			<Border Name="HistoControlOverlay" ZIndex="1000" Grid.Row="2" Grid.Column="0"
+					HorizontalAlignment="Right" VerticalAlignment="Top"
+					Margin="20">
+				<Grid RowDefinitions="*" ColumnDefinitions="*">
+					<Button Name="ResetZoomBtn"
+						    Grid.Column="0" Classes="ConrolBtn"
+							Click="ResetZoomBtn_Click">
+						<PathIcon Data="{StaticResource IconZoomOut}"/>
+					</Button>
+				</Grid>
+			</Border>
+			<!-- / Оверлей с опциями управления гистограммой -->
 
 		</Grid>
 
