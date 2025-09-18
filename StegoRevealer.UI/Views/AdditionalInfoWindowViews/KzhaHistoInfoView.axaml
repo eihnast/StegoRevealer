@@ -24,15 +24,50 @@
 				   Padding="0"/>
 
 			<Grid Name="ChooseCoeffsBlock" Grid.Column="0" Grid.Row="1"
-				  ColumnDefinitions="4*,*,4*" RowDefinitions="*"
+				  ColumnDefinitions="2*,2*,*,4*" RowDefinitions="*"
 				  IsEnabled="{Binding Path=!IsLoadingProcess}"
 				  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				
+				<!-- Выбор способа обхода -->
+				<StackPanel Name="ChooseTraverseType" Orientation="Horizontal"
+							Grid.Column="0" Grid.Row="0"
+							Margin="0 0 0 0" Height="40"
+							HorizontalAlignment="Center">
+					<ToggleButton Name="HorizontalTraverseChoice"
+								  Classes="SelectorToggleButtonMini"
+								  IsChecked="{Binding Path=!IsVerticalTraverseSelected}"
+								  Checked="SetHorizontalTraverse" Unchecked="SetVerticalTraverse">
+						<ToggleButton.Content>
+							<TextBlock Text="{Binding L[Params.TraverseType.Horizontal]}"/>
+						</ToggleButton.Content>
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding L[Histo.TraverseTooltipHorizontal]}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</ToggleButton>
+					<ToggleButton Name="VerticalTraverseChoice"
+								  Classes="SelectorToggleButtonMini"
+								  IsChecked="{Binding Path=IsVerticalTraverseSelected}"
+								  Checked="SetVerticalTraverse" Unchecked="SetHorizontalTraverse">
+						<ToggleButton.Content>
+							<TextBlock Text="{Binding L[Params.TraverseType.Vertical]}"/>
+						</ToggleButton.Content>
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding L[Histo.TraverseTooltipVertical]}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</ToggleButton>
+				</StackPanel>
+				<!-- / Выбор способа обхода -->
+				
 				<Label Name="ChooseCoeffsBlockDesc"
 				       Foreground="#FFE0E0E0" FontSize="20"
 					   HorizontalAlignment="Right" VerticalAlignment="Center"
-					   Margin="0 0 5 0" Grid.Column="0"
+					   Margin="0 0 5 0" Grid.Column="1"
 					   Content="{Binding L[Histo.ChooseCoeffs]}"/>
-				<ComboBox Name="ChooseCoeffsBlockValue" Grid.Column="1"
+				<ComboBox Name="ChooseCoeffsBlockValue" Grid.Column="2"
 				          Foreground="#FFE0E0E0" FontSize="20" MinHeight="40"
 						  HorizontalContentAlignment="Center" VerticalAlignment="Center"
 						  HorizontalAlignment="Stretch"
@@ -41,7 +76,7 @@
 						  ItemsSource="{Binding Path=ShowingPairs}"/>
 				<CheckBox Name="ShowAllPairs" Content="{Binding L[Histo.ShowAllPairs]}"
 						  Foreground="#FFE0E0E0" FontSize="20"
-						  Classes="ShowAllPairsCheckbox" Grid.Column="2"
+						  Classes="ShowAllPairsCheckbox" Grid.Column="3"
 						  HorizontalAlignment="Left" Margin="10 0 0 0"
 						  IsChecked="{Binding Path=!UseOnlyDefaultPairs}"/>
 			</Grid>

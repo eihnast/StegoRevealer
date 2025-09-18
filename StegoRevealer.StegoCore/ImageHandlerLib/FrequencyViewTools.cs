@@ -286,13 +286,17 @@ public static class FrequencyViewTools
     /// <summary>
     /// Возвращает линейный список блоков матриц ДКП
     /// </summary>
-    public static IEnumerable<double[,]> GetDctBlocks(ImageHandler img, BlocksTraverseOptions? traverseOptions = null, int blockSize = 8)
+    public static IEnumerable<double[,]> GetDctBlocks(
+        ImageHandler img, 
+        BlocksTraverseOptions? traverseOptions = null, 
+        int blockSize = 8, 
+        TraverseType traverseType = TraverseType.Horizontal)
     {
         if (traverseOptions is null)
             traverseOptions = new BlocksTraverseOptions(
                 channels: new UniqueList<ImgChannel> { ImgChannel.Blue },
                 startBlocks: new StartValues((ImgChannel.Blue, 0)),
-                traverseType: TraverseType.Horizontal,
+                traverseType: traverseType,
                 interlaceChannels: false,
                 seed: null);
 

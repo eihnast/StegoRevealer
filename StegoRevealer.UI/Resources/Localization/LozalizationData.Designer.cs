@@ -826,6 +826,24 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Выбор способа обхода матрицы пикселей (блоков пикселей): по строкам.
+        /// </summary>
+        public static string Histo_TraverseTooltipHorizontal {
+            get {
+                return ResourceManager.GetString("Histo.TraverseTooltipHorizontal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Выбор способа обхода матрицы пикселей (блоков пикселей): по столбцам.
+        /// </summary>
+        public static string Histo_TraverseTooltipVertical {
+            get {
+                return ResourceManager.GetString("Histo.TraverseTooltipVertical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на             Stego Revealer - программный комплекс, предназначенный для осуществления стегоанализа и работы со стеганографическими методами скрытия и извлечения информации.
         ///            
         ///            Доступные методы стегоанализа:

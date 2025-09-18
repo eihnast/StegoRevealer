@@ -7,6 +7,7 @@ using StegoRevealer.UI.Windows;
 using StegoRevealer.StegoCore.AnalysisMethods.ChiSquareAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.ViewModels;
 
@@ -89,13 +90,13 @@ public class AdditionalInfoWindowViewModel : ViewModelBase
         }
     }
 
-    public void OpenKzhaHistoInfo(ImageHandler img)
+    public async Task OpenKzhaHistoInfo(ImageHandler img)
     {
         var kzhaHistoVm = GetOrCreateViewModel(typeof(KzhaHistoInfoViewModel)) as KzhaHistoInfoViewModel;
         if (kzhaHistoVm is not null)
         {
             CurrentViewModel = kzhaHistoVm;
-            kzhaHistoVm.CreateFrequencyView(img);
+            await kzhaHistoVm.CreateFrequencyView(img);
         }
     }
 }

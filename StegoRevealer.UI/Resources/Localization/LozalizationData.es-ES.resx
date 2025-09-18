@@ -631,4 +631,10 @@ Director científico: V. G. Sidorenko</value>
   <data name="Histo.BtnToolTip" xml:space="preserve">
     <value>Histograma de magnitudes de diferencias de pares de coeficientes en la representación frecuencial de la matriz DCT</value>
   </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>Selección del método de recorrido de la matriz de píxeles (bloques de píxeles): por filas</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>Selección del método de recorrido de la matriz de píxeles (bloques de píxeles): por columnas</value>
+  </data>
 </root>

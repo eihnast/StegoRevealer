@@ -631,4 +631,10 @@ Directeur scientifique : V. G. Sidorenko</value>
   <data name="Histo.BtnToolTip" xml:space="preserve">
     <value>Histogramme des modules de différences des paires de coefficients dans la représentation fréquentielle de la matrice DCT</value>
   </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>Sélection du mode de parcours de la matrice de pixels (blocs de pixels) : par lignes</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>Sélection du mode de parcours de la matrice de pixels (blocs de pixels) : par colonnes</value>
+  </data>
 </root>

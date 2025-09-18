@@ -140,6 +140,19 @@
 		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
 	</Style>
 
+	<Style Selector="ToggleButton.SelectorToggleButtonMini">
+		<Setter Property="Foreground" Value="#FFE6E6E6"/>
+		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="Padding" Value="10 0 10 0"/>
+		<Setter Property="MinWidth" Value="100"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+	</Style>
+	<Style Selector="ToggleButton.SelectorToggleButtonMini[IsChecked=false]">
+		<Setter Property="Background" Value="{StaticResource SrDarkLight}"/>
+	</Style>
+
 	<Style Selector="Label.ExtractorParamsLabel">
 		<Setter Property="FontSize" Value="14"/>
 		<Setter Property="Foreground" Value="#FFE0E0E0"/>

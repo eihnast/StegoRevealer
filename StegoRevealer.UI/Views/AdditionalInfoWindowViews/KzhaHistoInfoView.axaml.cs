@@ -31,4 +31,15 @@ public partial class KzhaHistoInfoView : UserControl
     {
         Histo.ZoomBack();
     }
+
+    private async void SetHorizontalTraverse(object? sender, RoutedEventArgs e)
+    {
+        if (_vm is not null)
+            await _vm.SetHorizontalTraverse();
+    }
+    private async void SetVerticalTraverse(object? sender, RoutedEventArgs e)
+    {
+        if (_vm is not null)
+            await _vm.SetVerticalTraverse();
+    }
 }

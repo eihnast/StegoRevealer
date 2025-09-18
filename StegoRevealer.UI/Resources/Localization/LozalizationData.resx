@@ -631,4 +631,10 @@
   <data name="Histo.BtnToolTip" xml:space="preserve">
     <value>Гистограмма модулей разниц значений пар коэффициентов матриц ДКП частотного представления</value>
   </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>Выбор способа обхода матрицы пикселей (блоков пикселей): по строкам</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>Выбор способа обхода матрицы пикселей (блоков пикселей): по столбцам</value>
+  </data>
 </root>

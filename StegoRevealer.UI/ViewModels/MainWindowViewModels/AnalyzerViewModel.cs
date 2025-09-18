@@ -509,7 +509,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         var additionalInfoVm = new AdditionalInfoWindowViewModel();
         var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
-        additionalInfoVm.OpenKzhaHistoInfo(CurrentImage);
+        await additionalInfoVm.OpenKzhaHistoInfo(CurrentImage);
 
         if (_mainWindowViewModel.MainWindow is not null)
             await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);

@@ -631,4 +631,10 @@
   <data name="Histo.BtnToolTip" xml:space="preserve">
     <value>مدرج تكراري لمقادير فروق أزواج معاملات مصفوفة DCT في التمثيل الترددي</value>
   </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>اختيار طريقة اجتياز مصفوفة البكسلات (أو كتل البكسلات): حسب الصفوف</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>اختيار طريقة اجتياز مصفوفة البكسلات (أو كتل البكسلات): حسب الأعمدة</value>
+  </data>
 </root>

@@ -631,4 +631,10 @@
   <data name="Histo.BtnToolTip" xml:space="preserve">
     <value>هیستوگرام قدر مطلق اختلاف مقادیر جفت‌های ضرایب در نمایش فرکانسی ماتریس DCT</value>
   </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>انتخاب روش پیمایش ماتریس پیکسل‌ها (بلوک‌های پیکسلی): به‌صورت سطری</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>انتخاب روش پیمایش ماتریس پیکسل‌ها (بلوک‌های پیکسلی): به‌صورت ستونی</value>
+  </data>
 </root>

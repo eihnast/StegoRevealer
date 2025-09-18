@@ -1,5 +1,6 @@
 ﻿using Avalonia.Threading;
 using ReactiveUI;
+using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
@@ -20,18 +21,19 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
 {
     public KzhaHistoInfoViewModel(AdditionalInfoWindowViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
     {
-        _dctBlocks = [];
+        _cachedDCTBlocks = [];
     }
 
     [Experimental]
     public KzhaHistoInfoViewModel() : base()
     {
-        _dctBlocks = [];
+        _cachedDCTBlocks = [];
     }
 
-
-    private List<double[,]> _dctBlocks { get; set; }
-    private readonly ConcurrentDictionary<ScIndexPair, double[]> _cachedCSequences = new();
+    private ImageHandler? _img;
+    private readonly ConcurrentDictionary<ScIndexPair, double[]> _cachedHorizontalCSequences = new();
+    private readonly ConcurrentDictionary<ScIndexPair, double[]> _cachedVerticalCSequences = new();
+    private readonly ConcurrentDictionary<TraverseType, List<double[,]>> _cachedDCTBlocks = new();
 
     private CancellationTokenSource? _loadCts;
 
@@ -42,6 +44,14 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
                                                          .ToList();
 
     public static List<ScIndexPair> DefaultIndexPairs { get; } = [HidingCoefficients.Coeff34, HidingCoefficients.Coeff35, HidingCoefficients.Coeff45];
+
+
+    private bool _isVerticalTraverseSelected = false;
+    public bool IsVerticalTraverseSelected
+    {
+        get => _isVerticalTraverseSelected;
+        set => this.RaiseAndSetIfChanged(ref _isVerticalTraverseSelected, value);
+    }
 
 
     private List<ScIndexPair> _showingPairs = DefaultIndexPairs;
@@ -116,10 +126,10 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
     }
 
 
-    public void CreateFrequencyView(ImageHandler img)
+    public async Task CreateFrequencyView(ImageHandler img)
     {
-        _dctBlocks = FrequencyViewTools.GetDctBlocks(img).ToList();
-        _cachedCSequences.Clear();
+        _img = img;
+        await SetHorizontalTraverse();
     }
 
     private async Task RedrawHistoAsync(ScIndexPair? indexPair)
@@ -136,15 +146,18 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
         {
             IsLoadingProcess = true;
 
-            if (!_cachedCSequences.TryGetValue(indexPair.Value, out var cachedCSequence))
+            var actualCSequences = IsVerticalTraverseSelected ? _cachedVerticalCSequences : _cachedHorizontalCSequences;
+            if (!actualCSequences.TryGetValue(indexPair.Value, out var cachedCSequence))
             {
                 cachedCSequence = await Task.Run(() =>
                 {
-                    var computed = FrequencyViewTools.GetCSequence(_dctBlocks, indexPair.Value);
+                    var computed = FrequencyViewTools.GetCSequence(
+                        IsVerticalTraverseSelected ? _cachedDCTBlocks[TraverseType.Vertical] : _cachedDCTBlocks[TraverseType.Horizontal], 
+                        indexPair.Value);
                     return computed.ToArray();
                 }, ct);
 
-                _cachedCSequences.TryAdd(indexPair.Value, cachedCSequence);
+                actualCSequences.TryAdd(indexPair.Value, cachedCSequence);
             }
 
             ct.ThrowIfCancellationRequested();
@@ -160,5 +173,49 @@ public class KzhaHistoInfoViewModel : AdditionalInfoWindowViewModelBaseChild
             if (!ct.IsCancellationRequested)
                 IsLoadingProcess = false;
         }
+    }
+
+    public async Task SetHorizontalTraverse()
+    {
+        if (_img is null)
+            return;
+
+        IsLoadingProcess = true;
+
+        if (!_cachedDCTBlocks.TryGetValue(TraverseType.Horizontal, out var dctBlocks))
+        {
+            dctBlocks = await Task.Run(() =>
+            {
+                var dctBlocks = FrequencyViewTools.GetDctBlocks(_img, traverseType: TraverseType.Horizontal).ToList();
+                return dctBlocks;
+            });
+            _cachedDCTBlocks.TryAdd(TraverseType.Horizontal, dctBlocks);
+        }
+
+        _ = RedrawHistoAsync(SelectedIndexPair);
+
+        IsLoadingProcess = false;
+    }
+
+    public async Task SetVerticalTraverse()
+    {
+        if (_img is null)
+            return;
+
+        IsLoadingProcess = true;
+
+        if (!_cachedDCTBlocks.TryGetValue(TraverseType.Vertical, out var dctBlocks))
+        {
+            dctBlocks = await Task.Run(() =>
+            {
+                var dctBlocks = FrequencyViewTools.GetDctBlocks(_img, traverseType: TraverseType.Vertical).ToList();
+                return dctBlocks;
+            });
+            _cachedDCTBlocks.TryAdd(TraverseType.Vertical, dctBlocks);
+        }
+
+        _ = RedrawHistoAsync(SelectedIndexPair);
+
+        IsLoadingProcess = false;
     }
 }
