@@ -788,10 +788,9 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     private void SetImagePreviewSizes()
     {
         var actualSize = GetWindowSize();
-        ImagePreviewMaxHeight = Math.Max(0, actualSize.Height - 60 - 80 - 40 - 30);
+        ImagePreviewMaxHeight = Math.Max(0, actualSize.Height - 60 - 15 - 40 - 10 - 10 - 40 - 30 - 80);
         ImagePreviewMaxWidth = Math.Max(0, (actualSize.Width - 20 - 30) / 2);
     }
-
 
     public void SelectLsbMethod()
     {

@@ -8,6 +8,7 @@ using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
@@ -62,7 +63,7 @@ public partial class ExtractorView : UserControl
 
         _vm.ResetResults();
         ResetResultsExpander();
-        _vm.StartExtraction();
+        await Task.Run(_vm.StartExtraction);
 
         UpdateResults();
         _vm.IsParamsOpened = false;
