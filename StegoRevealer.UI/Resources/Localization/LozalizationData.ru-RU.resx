@@ -404,10 +404,10 @@
     <value>Порог pValue</value>
   </data>
   <data name="Params.Csa.Visualize" xml:space="preserve">
-    <value>Визуализировать область скрытой&amp;#10;информации</value>
+    <value>Визуализировать область скрытой информации</value>
   </data>
   <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
-    <value>Не учитывать пары с нулевой&amp;#10;ожидаемой частотой</value>
+    <value>Не учитывать пары с нулевой ожидаемой частотой</value>
   </data>
   <data name="Params.Csa.UsePreviousCnums" xml:space="preserve">
     <value>Использовать режим накопления</value>
@@ -446,7 +446,7 @@
     <value>Порог подозрительных значений</value>
   </data>
   <data name="Params.Kzha.MinThreshold" xml:space="preserve">
-    <value>Минимальный учитываемый&amp;#10;порог скрытия</value>
+    <value>Минимальный учитываемый порог скрытия</value>
   </data>
   <data name="Params.Kzha.SelectedCoeffs" xml:space="preserve">
     <value>Выбранные коэффициенты</value>

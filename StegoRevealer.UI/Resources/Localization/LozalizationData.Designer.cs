@@ -1148,7 +1148,7 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Не учитывать пары с нулевой&amp;#10;ожидаемой частотой.
+        ///   Ищет локализованную строку, похожую на Не учитывать пары с нулевой ожидаемой частотой.
         /// </summary>
         public static string Params_Csa_ExcludeZeroPairs {
             get {
@@ -1202,7 +1202,7 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Визуализировать область скрытой&amp;#10;информации.
+        ///   Ищет локализованную строку, похожую на Визуализировать область скрытой информации.
         /// </summary>
         public static string Params_Csa_Visualize {
             get {
@@ -1256,7 +1256,7 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Минимальный учитываемый&amp;#10;порог скрытия.
+        ///   Ищет локализованную строку, похожую на Минимальный учитываемый порог скрытия.
         /// </summary>
         public static string Params_Kzha_MinThreshold {
             get {
