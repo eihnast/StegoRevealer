@@ -89,6 +89,8 @@ public partial class ExtractorView : UserControl
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " " + _vm.L["Common.Ms"];
+
+            ExtractedMessage.ScrollToTop();
         }
     }
 
