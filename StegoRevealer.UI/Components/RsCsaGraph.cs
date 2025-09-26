@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using SkiaSharp;
 using StegoRevealer.UI.Tools;
+using System;
 
 namespace StegoRevealer.UI.Components;
 
@@ -13,11 +14,56 @@ public class RsCsaGraph : Control
     private double? _rsValue = null;
     private double? _csaValue = null;
 
+    public RsCsaGraph()
+    {
+        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
+        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch;
+    }
+
     public void SetPoint(double rs, double csa)
     {
         _rsValue = rs;
         _csaValue = csa;
         InvalidateVisual();  // Перерисовать компонент
+    }
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        var w = double.IsNaN(Width) ? availableSize.Width : Width;
+        var h = double.IsNaN(Height) ? availableSize.Height : Height;
+
+        if (double.IsInfinity(w) && double.IsInfinity(h))
+        {
+            var s = 200; // дефолт
+            s = (int)Math.Clamp(s, Math.Max(MinWidth, MinHeight), Math.Min(MaxWidth, MaxHeight));
+            return new Size(s, s);
+        }
+
+        if (double.IsInfinity(w)) w = h;
+        if (double.IsInfinity(h)) h = w;
+
+        var side = Math.Min(w, h);
+
+        var minSide = Math.Max(MinWidth, MinHeight);
+        var maxSide = Math.Min(MaxWidth, MaxHeight);
+        if (double.IsInfinity(maxSide)) maxSide = double.MaxValue;
+
+        side = Math.Clamp(side, minSide, maxSide);
+
+        return new Size(side, side);
+    }
+
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        var side = Math.Min(finalSize.Width, finalSize.Height);
+
+        var minSide = Math.Max(MinWidth, MinHeight);
+        var maxSide = Math.Min(MaxWidth, MaxHeight);
+        if (double.IsInfinity(maxSide)) maxSide = double.MaxValue;
+
+        side = Math.Clamp(side, minSide, maxSide);
+
+        return new Size(side, side);
     }
 
     public override void Render(DrawingContext context)
@@ -26,6 +72,9 @@ public class RsCsaGraph : Control
 
         var width = Bounds.Width;
         var height = Bounds.Height;
+        var minSize = Math.Min(width, height);
+        width = minSize;
+        height = minSize;
 
         using var skSurface = SKSurface.Create(new SKImageInfo((int)width, (int)height));
         if (skSurface is null)
@@ -169,7 +218,7 @@ public class RsCsaGraph : Control
         using var skiaImage = snapshot.Encode(SKEncodedImageFormat.Png, 100);
         using var stream = skiaImage.AsStream();
         var bitmap = new Avalonia.Media.Imaging.Bitmap(stream);
-        var destRect = new Rect(0, 0, Bounds.Width, Bounds.Height);
+        var destRect = new Rect(0, 0, width, height);
         var sourceRect = new Rect(0, 0, bitmap.PixelSize.Width, bitmap.PixelSize.Height);
         context.DrawImage(bitmap, sourceRect, destRect);
     }

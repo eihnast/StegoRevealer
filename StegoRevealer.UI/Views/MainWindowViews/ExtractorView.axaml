@@ -33,7 +33,7 @@
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 HorizontalAlignment="Stretch"
-							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
 						<ToolTip.Tip>
 							<StackPanel>
 								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
@@ -301,7 +301,7 @@
 						<cmp:VirtualTextViewer Name="ExtractedMessage"
 								 Classes="ExtractedText"
 								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
-								 TextWrapping="Wrap" FontSize="12"
+								 FontSize="12" EnableSanitization="True"
 								 Background="{StaticResource SrDarkMiddle}" ContentBackground="{StaticResource SrDark}"
 								 IsEnabled="{Binding Path=HasResults}"
 								 MinHeight="300" />

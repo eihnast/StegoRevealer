@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
 			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="900"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="700"
              x:Class="StegoRevealer.UI.Views.AdditionalInfoWindowViews.KzhaHistoInfoView">
 
 	<Design.DataContext>

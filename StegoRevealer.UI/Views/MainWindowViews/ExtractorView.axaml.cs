@@ -84,7 +84,7 @@ public partial class ExtractorView : UserControl
                 return;
 
             // Вывод результатов на форму
-            _ = ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
             Dispatcher.UIThread.Post(() => { ExtractedMessage.UpdateLayout(); });
 
             // Затрачено времени
@@ -123,7 +123,7 @@ public partial class ExtractorView : UserControl
         _vm.IsParamsOpened = true;
 
         // Сброс формы результатов
-        _ = ExtractedMessage.SetText(string.Empty);
+        ExtractedMessage.SetText(string.Empty);
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
 

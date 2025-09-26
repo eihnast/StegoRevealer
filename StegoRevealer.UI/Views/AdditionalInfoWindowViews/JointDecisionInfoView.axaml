@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
 			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="900"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="700"
              x:Class="StegoRevealer.UI.Views.AdditionalInfoWindowViews.JointDecisionInfoView">
 
 	<Design.DataContext>
@@ -13,7 +13,7 @@
 
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			  ColumnDefinitions="*" RowDefinitions="40,700,50"
+			  ColumnDefinitions="*" RowDefinitions="40,*,60"
 			  Margin="20 10 20 10">
 
 			<Label Name="TitleLabel" Content="{Binding L[Methods.JointDecisionMethod]}"
@@ -24,9 +24,9 @@
 				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
 				   Padding="0"/>
 
-			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 0 0" Height="700"
-						Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-				<cmp:RsCsaGraph Name="RsCsaGraphFull" Width="700" Height="700"/>
+			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 0 0"
+						Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+				<cmp:RsCsaGraph Name="RsCsaGraphFull" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
 				<DockPanel Width="400" Height="700" Margin="10 0 0 0" LastChildFill="True" VerticalAlignment="Top">
 					<Label Content="{Binding L[JointAnalysis.O1SectorTitle]}" Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="14"
 						   HorizontalAlignment="Center" VerticalAlignment="Top" DockPanel.Dock="Top"/>
@@ -71,7 +71,7 @@
 				</DockPanel>
 			</StackPanel>
 
-			<StackPanel Grid.Column="0" Grid.Row="2" Margin="0 0 0 0"
+			<StackPanel Grid.Column="0" Grid.Row="2" Margin="0 0 0 10"
 						Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
 				<Label Content="{Binding L[JointAnalysis.ResultTitle], StringFormat='{}{0}:'}"
 					   Foreground="#FFE0E0E0" FontSize="14"

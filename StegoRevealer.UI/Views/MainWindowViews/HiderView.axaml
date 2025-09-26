@@ -33,7 +33,7 @@
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 HorizontalAlignment="Stretch"
-							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
 						<ToolTip.Tip>
 							<StackPanel>
 								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>

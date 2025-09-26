@@ -1,471 +1,614 @@
-﻿using Avalonia;
+﻿// VirtualTextViewer.axaml.cs
+// Добавлено:
+//  • Ctrl+A — выделение всего текста (в фокусе компонента).
+//  • I-Beam курсор над текстом (PointerEntered/PointerExited).
+// Остальное — без изменений, включая фиксы визуализации выделения на bi-di/RTL строках.
+
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using Avalonia.Media;
-using Avalonia.Controls.Documents;
 using Avalonia.Media.TextFormatting;
+using AvaloniaEdit.Utils;
+using StegoRevealer.Common;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using StegoRevealer.StegoCore.CommonLib.Exceptions;
+using System.Globalization;
+using System.Linq;
 
-namespace StegoRevealer.UI.Components;
-
-public partial class VirtualTextViewer : UserControl
+namespace StegoRevealer.UI.Components
 {
-    private ScrollViewer _scrollViewer;
-    private Grid _virtualContainer;
-    private Border _textHost;
-    private TextBlock _textBlock;
-    private Border _loadingOverlay;
-
-    private string _fullText = string.Empty;
-    private int _selectionStart = -1;
-    private int _selectionEnd = -1;
-    private bool _selectAllMode = false;
-    private bool _isDragging = false;
-
-    private List<(int start, int length)> _visualLines = new();
-    private double _lineHeight = 16;
-    private int _linesVisible = 25;
-
-    private DispatcherTimer _autoScrollTimer;
-    private Point _lastPointerPosition;
-
-    public int ChunkSize { get; set; } = 10000;
-
-    public static readonly StyledProperty<TextWrapping> TextWrappingProperty =
-        AvaloniaProperty.Register<VirtualTextViewer, TextWrapping>(nameof(TextWrapping));
-
-    public new static readonly StyledProperty<bool> IsEnabledProperty =
-        AvaloniaProperty.Register<VirtualTextViewer, bool>(nameof(IsEnabled), true);
-
-    public new static readonly StyledProperty<double> FontSizeProperty =
-        AvaloniaProperty.Register<VirtualTextViewer, double>(nameof(FontSize), 12);
-
-    public static readonly new StyledProperty<IBrush?> BackgroundProperty =
-        AvaloniaProperty.Register<VirtualTextViewer, IBrush?>(nameof(Background));
-
-    public static readonly StyledProperty<IBrush?> ContentBackgroundProperty =
-        AvaloniaProperty.Register<VirtualTextViewer, IBrush?>(nameof(ContentBackground));
-
-    public TextWrapping TextWrapping
+    public partial class VirtualTextViewer : UserControl
     {
-        get => GetValue(TextWrappingProperty);
-        set => SetValue(TextWrappingProperty, value);
-    }
+        public static readonly StyledProperty<IBrush?> ContentBackgroundProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, IBrush?>(nameof(ContentBackground), Brushes.Transparent);
 
-    public new bool IsEnabled
-    {
-        get => GetValue(IsEnabledProperty);
-        set => SetValue(IsEnabledProperty, value);
-    }
+        public static readonly StyledProperty<Thickness> ContentPaddingProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, Thickness>(nameof(ContentPadding), new Thickness(6, 6, 6, 6));
 
-    public new double FontSize
-    {
-        get => GetValue(FontSizeProperty);
-        set => SetValue(FontSizeProperty, value);
-    }
+        public static readonly StyledProperty<double> RightPaddingForScrollbarProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, double>(nameof(RightPaddingForScrollbar), 30d);
 
-    public new IBrush? Background
-    {
-        get => GetValue(BackgroundProperty);
-        set => SetValue(BackgroundProperty, value);
-    }
+        public static readonly StyledProperty<bool> EnableSanitizationProperty =
+            AvaloniaProperty.Register<VirtualTextViewer, bool>(nameof(EnableSanitization), false);
 
-    public IBrush? ContentBackground
-    {
-        get => GetValue(ContentBackgroundProperty);
-        set => SetValue(ContentBackgroundProperty, value);
-    }
-
-    public VirtualTextViewer()
-    {
-        InitializeComponent();
-
-        _scrollViewer = this.FindControl<ScrollViewer>("PART_ScrollViewer") ?? throw new NullValueException("Missing PART_ScrollViewer");
-        _virtualContainer = this.FindControl<Grid>("PART_VirtualContainer") ?? throw new NullValueException("Missing PART_VirtualContainer");
-        _textHost = this.FindControl<Border>("PART_TextHost") ?? throw new NullValueException("Missing PART_TextHost");
-        _textBlock = this.FindControl<TextBlock>("PART_TextBlock") ?? throw new NullValueException("Missing PART_TextBlock");
-        _loadingOverlay = this.FindControl<Border>("PART_LoadingOverlay") ?? throw new NullValueException("Missing PART_LoadingOverlay");
-
-        _scrollViewer.ScrollChanged += OnScrollChanged;
-        this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
-        this.PointerPressed += OnPointerPressed;
-        this.PointerReleased += OnPointerReleased;
-        this.PointerMoved += OnPointerMoved;
-
-        //this.AttachedToVisualTree += (_, _) =>
-        //{
-        //    _scrollViewer.GetObservable(BoundsProperty).Subscribe(_ => RecalculateMetricsAndUpdate());
-        //    Focus();
-        //};
-        this.AttachedToVisualTree += (_, _) =>
+        public IBrush? ContentBackground
         {
-            _scrollViewer.GetObservable(ScrollViewer.ViewportProperty).Subscribe(async _ => await RecalculateMetricsAndUpdate());
-            Focus();
-        };
-
-        _autoScrollTimer = new DispatcherTimer
+            get => GetValue(ContentBackgroundProperty);
+            set => SetValue(ContentBackgroundProperty, value);
+        }
+        public Thickness ContentPadding
         {
-            Interval = TimeSpan.FromMilliseconds(50)
-        };
-        _autoScrollTimer.Tick += (_, _) => HandleAutoScroll();
-    }
-
-    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
-
-    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
-    {
-        var maxY = Math.Max(0, (_virtualContainer?.Height ?? 0) - (_scrollViewer?.Viewport.Height ?? 0));
-        if (_scrollViewer?.Offset.Y > maxY)
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(maxY);
-        if (_scrollViewer?.Offset.Y < 0)
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
-
-        UpdateVisibleText();
-    }
-
-    public async Task SetText(string text)
-    {
-        _fullText = text ?? string.Empty;
-        _selectionStart = -1;
-        _selectionEnd = -1;
-        _selectAllMode = false;
-        _visualLines.Clear();
-
-        _scrollViewer.Offset = default;
-        _textHost.Margin = new Thickness(0);
-
-        _loadingOverlay.IsVisible = true;
-
-        //var layout = new TextLayout(
-        //    _fullText,
-        //    new Typeface(_textBlock.FontFamily),
-        //    _textBlock.FontSize,
-        //    Brushes.Black,
-        //    TextAlignment.Left,
-        //    TextWrapping.Wrap,
-        //    null, null,
-        //    FlowDirection.LeftToRight,
-        //    GetWrappingWidth(),  // _textBlock.Bounds.Width,
-        //    double.PositiveInfinity);
-
-        //await Task.Run(() =>
-        //{
-        //    var lines = layout.TextLines
-        //        .Select(line => (line.FirstTextSourceIndex, line.Length))
-        //        .ToList();
-
-        //    Dispatcher.UIThread.Invoke(() =>
-        //    {
-        //        _visualLines = lines;
-        //        // _virtualContainer.Height = _visualLines.Count * _lineHeight;
-        //        ApplyVirtualContainerSize();
-        //        ResetScrollAndLayout();  // UpdateVisibleText();
-        //        ClampAndResetScrollThenUpdate();
-        //        _loadingOverlay.IsVisible = false;
-        //    });
-        //});
-
-        _visualLines = CalculateVisualLines(_fullText);
-        await ApplyVirtualContainerSize();
-        await ResetScrollAndLayout();
-        ClampAndResetScrollThenUpdate();
-
-        _loadingOverlay.IsVisible = _visualLines.Count > _linesVisible * 2;
-
-        await Dispatcher.UIThread.InvokeAsync(async () =>
+            get => GetValue(ContentPaddingProperty);
+            set => SetValue(ContentPaddingProperty, value);
+        }
+        public double RightPaddingForScrollbar
         {
-            _visualLines = CalculateVisualLines(_fullText);
-            await ApplyVirtualContainerSize();
-            await ResetScrollAndLayout();
-            // второй «подчищающий» сброс — теперь уже с финальными Extent/Viewport
-            ClampAndResetScrollThenUpdate();
-            _loadingOverlay.IsVisible = false;
-        }, DispatcherPriority.Render);
-    }
-
-    private async Task RecalculateMetricsAndUpdate()
-    {
-        var viewport = _scrollViewer.Viewport;
-        if (viewport.Width <= 0 || viewport.Height <= 0)
-            return;
-
-        _lineHeight = FontSize + 2;
-        _linesVisible = Math.Max(1, (int)(viewport.Height / _lineHeight));
-
-        _visualLines = CalculateVisualLines(_fullText);
-        // _virtualContainer.Height = _visualLines.Count * _lineHeight;
-        await ApplyVirtualContainerSize();
-
-        await ResetScrollAndLayout();  // UpdateVisibleText();
-        ClampAndResetScrollThenUpdate();
-    }
-
-    private List<(int start, int length)> CalculateVisualLines(string text)
-    {
-        var lines = new List<(int start, int length)>();
-        if (string.IsNullOrEmpty(text))
-            return lines;
-
-        var layout = new TextLayout(
-            text,
-            new Typeface(_textBlock.FontFamily),
-            _textBlock.FontSize,
-            Brushes.Black,
-            TextAlignment.Left,
-            TextWrapping.Wrap,
-            null, null,
-            FlowDirection.LeftToRight,
-            GetWrappingWidth(),  // _textBlock.Bounds.Width,
-            double.PositiveInfinity);
-
-        foreach (var line in layout.TextLines)
+            get => GetValue(RightPaddingForScrollbarProperty);
+            set => SetValue(RightPaddingForScrollbarProperty, value);
+        }
+        public bool EnableSanitization
         {
-            int start = line.FirstTextSourceIndex;
-            int length = line.Length;
-            lines.Add((start, length));
+            get => GetValue(EnableSanitizationProperty);
+            set => SetValue(EnableSanitizationProperty, value);
         }
 
-        return lines;
-    }
+        private readonly ScrollViewer _scrollViewer;
+        private readonly Border _host;
+        private readonly TextCanvas _canvas;
 
-    private void UpdateVisibleText()
-    {
-        if (_visualLines.Count == 0)
+        private string _rawText = string.Empty;
+        private string _fullText = string.Empty;
+        private TextLayout? _layout;
+
+        private double _wrapWidth;
+        private double _layoutWrapWidth;
+        private double _contentHeight;
+
+        private readonly List<(int start, int length)> _visualLines = new();
+        private readonly List<double> _lineOffsets = new();
+        private readonly List<double> _lineHeights = new();
+
+        private int _selectionStart = -1;
+        private int _selectionEnd = -1;
+        private bool _isSelecting;
+        private bool _selectAllMode;
+
+        public VirtualTextViewer()
         {
-            _textHost.Margin = new Thickness(0);
-            _textBlock.Inlines?.Clear();
-            if (!string.IsNullOrEmpty(_fullText))
-                _textBlock.Inlines?.Add(new Run(_fullText));
-            return;
-        }
+            Focusable = true;
 
-        int scrollLine = (int)(_scrollViewer.Offset.Y / _lineHeight);
-        scrollLine = Math.Clamp(scrollLine, 0, Math.Max(0, _visualLines.Count - 1));
+            _canvas = new TextCanvas(this);
 
-        int totalLength = 0;
-        int firstChar = _visualLines[scrollLine].start;
-
-        for (int i = scrollLine; i < Math.Min(scrollLine + _linesVisible, _visualLines.Count); i++)
-            totalLength += _visualLines[i].length;
-
-        string visible = _fullText.Substring(firstChar, Math.Min(totalLength, _fullText.Length - firstChar));
-
-        if (visible.Length == 0 && !string.IsNullOrEmpty(_fullText))
-        {
-            _textHost.Margin = new Thickness(0);
-            _textBlock.Inlines?.Clear();
-            _textBlock.Inlines?.Add(new Run(_fullText));
-            return;
-        }
-
-        if (string.Concat(_textBlock.Inlines?.OfType<Run>().Select(r => r.Text) ?? Enumerable.Empty<string>()) == visible && !_selectAllMode && _selectionStart == -1)
-            return; // пропускаем, если текст тот же и нет выделения
-
-        // _textHost.Margin = new Thickness(0, scrollLine * _lineHeight, 0, 0);
-        var needMargin = _visualLines.Count > _linesVisible;
-        _textHost.Margin = new Thickness(0, needMargin ? scrollLine * _lineHeight : 0, 0, 0);
-        _textBlock.Inlines?.Clear();
-
-        if (_selectAllMode || (_selectionStart >= 0 && _selectionEnd >= 0))
-        {
-            int globalStart = _selectAllMode ? 0 : Math.Min(_selectionStart, _selectionEnd);
-            int globalEnd = _selectAllMode ? _fullText.Length : Math.Max(_selectionStart, _selectionEnd);
-
-            int localStart = globalStart - firstChar;
-            int localEnd = globalEnd - firstChar;
-
-            int safeStart = Math.Clamp(Math.Min(localStart, localEnd), 0, visible.Length);
-            int safeEnd = Math.Clamp(Math.Max(localStart, localEnd), 0, visible.Length);
-            int safeLength = Math.Max(0, safeEnd - safeStart);
-
-            string before = visible.Substring(0, safeStart);
-            string selected = visible.Substring(safeStart, safeLength);
-            string after = visible.Substring(safeStart + safeLength);
-
-            if (!string.IsNullOrEmpty(before))
-                _textBlock.Inlines?.Add(new Run(before));
-            if (!string.IsNullOrEmpty(selected))
-                _textBlock.Inlines?.Add(new Run(selected) { Background = Brushes.LightBlue });
-            if (!string.IsNullOrEmpty(after))
-                _textBlock.Inlines?.Add(new Run(after));
-        }
-        else
-        {
-            _textBlock.Inlines?.Add(new Run(visible));
-        }
-    }
-
-    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        _isDragging = true;
-        _lastPointerPosition = e.GetPosition(this);
-        int index = GetCharIndexFromPoint(e.GetPosition(_textBlock));
-        _selectionStart = _selectionEnd = index;
-        _selectAllMode = false;
-        _autoScrollTimer.Start();
-        UpdateVisibleText();
-    }
-
-    private void OnPointerMoved(object? sender, PointerEventArgs e)
-    {
-        if (_isDragging)
-        {
-            _lastPointerPosition = e.GetPosition(this);
-            int index = GetCharIndexFromPoint(e.GetPosition(_textBlock));
-            _selectionEnd = index;
-            UpdateVisibleText();
-        }
-    }
-
-    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        _isDragging = false;
-        _autoScrollTimer.Stop();
-    }
-
-    private async void OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
-        {
-            if (e.Key == Key.A)
+            _host = new Border
             {
-                _selectionStart = 0;
-                _selectionEnd = _fullText.Length;
-                _selectAllMode = true;
-                UpdateVisibleText();
-                e.Handled = true;
-            }
-            else if (e.Key == Key.C)
+                Background = Brushes.Transparent,
+                Child = _canvas,
+                Padding = new Thickness(ContentPadding.Left, ContentPadding.Top,
+                                        ContentPadding.Right + RightPaddingForScrollbar, ContentPadding.Bottom)
+            };
+
+            _scrollViewer = new ScrollViewer
             {
-                var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
-                int start = Math.Min(_selectionStart, _selectionEnd);
-                int end = Math.Max(_selectionStart, _selectionEnd);
-                if (start >= 0 && end > start && clipboard != null)
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                Content = _host
+            };
+
+            Content = _scrollViewer;
+
+            // Подписки
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(ContentBackgroundProperty),
+                b => _host.Background = b);
+
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(ContentPaddingProperty),
+                pad =>
                 {
-                    await clipboard.SetTextAsync(_fullText.Substring(start, end - start));
+                    _host.Padding = new Thickness(pad.Left, pad.Top, pad.Right + RightPaddingForScrollbar, pad.Bottom);
+                    RecalculateLayoutAndUpdate();
+                });
+
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(RightPaddingForScrollbarProperty),
+                r =>
+                {
+                    var p = ContentPadding;
+                    _host.Padding = new Thickness(p.Left, p.Top, Math.Max(0, p.Right + r), p.Bottom);
+                    RecalculateLayoutAndUpdate();
+                });
+
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(EnableSanitizationProperty),
+                _ => ReflowTextOnly());
+
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(FontFamilyProperty),
+                _ => RecalculateLayoutAndUpdate());
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(FontSizeProperty),
+                _ => RecalculateLayoutAndUpdate());
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(ForegroundProperty),
+                _ => RecalculateLayoutAndUpdate());
+
+            global::System.ObservableExtensions.Subscribe(
+                _scrollViewer.GetObservable(ScrollViewer.ViewportProperty),
+                _ => RecalculateLayoutAndUpdate());
+            global::System.ObservableExtensions.Subscribe(
+                this.GetObservable(BoundsProperty),
+                _ => RecalculateLayoutAndUpdate());
+
+            _scrollViewer.ScrollChanged += (_, __) => _canvas.InvalidateVisual();
+
+            _canvas.PointerPressed += OnPointerPressed;
+            _canvas.PointerMoved += OnPointerMoved;
+            _canvas.PointerReleased += OnPointerReleased;
+            _canvas.PointerCaptureLost += (_, __) => _isSelecting = false;
+
+            // Курсор I-Beam над текстом
+            _canvas.PointerEntered += (_, __) => _canvas.Cursor = new Cursor(StandardCursorType.Ibeam);
+            _canvas.PointerExited += (_, __) => _canvas.Cursor = new Cursor(StandardCursorType.Arrow);
+
+            // Хоткеи
+            AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+        }
+
+        public void SetText(string text)
+        {
+            _rawText = text ?? string.Empty;
+            ReflowTextOnly();
+        }
+        public string Text => _fullText;
+
+        public void SelectAll()
+        {
+            _selectAllMode = true;
+            _selectionStart = 0;
+            _selectionEnd = _fullText.Length;
+            _canvas.SetSelectionRects(BuildSelectionBands());
+        }
+        public void ClearSelection()
+        {
+            _selectAllMode = false;
+            _selectionStart = _selectionEnd = -1;
+            _canvas.SetSelectionRects(Array.Empty<Rect>());
+        }
+
+        // ===== Санитизация =====
+        private static readonly HashSet<int> ZeroWidthCp = new()
+        {
+            0x200B,0x200C,0x200D,0x200E,0x200F, // ZWSP/ZWNJ/ZWJ/LRM/RLM
+            0x2029, 0x2060, 0xFEFF,            // PS, WJ, ZWNBSP/BOM
+            0xFE00,0xFE01,0xFE02,0xFE03,0xFE04,0xFE05,0xFE06,0xFE07,0xFE08,0xFE09,0xFE0A,0xFE0B,0xFE0C,0xFE0D,0xFE0E,0xFE0F, // variation selectors
+            0x061C,                             // ARABIC LETTER MARK
+            0x202A,0x202B,0x202C,0x202D,0x202E, // LRE/RLE/PDF/LRO/RLO
+            0x2066,0x2067,0x2068,0x2069         // LRI/RLI/FSI/PDI
+        };
+        private static bool IsAllowedCtrl(char c) => c is '\r' or '\n' or '\t';
+
+        private static string Sanitize(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return string.Empty;
+            var list = new List<char>(s.Length);
+            for (int i = 0; i < s.Length; i++)
+            {
+                int cp = char.ConvertToUtf32(s, i);
+                if (cp > 0xFFFF) i++;
+
+                char c = (cp <= 0xFFFF) ? (char)cp : '\uFFFD';
+                if (c == '\uFFFD') continue;
+
+                var cat = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (char.IsControl(c) && !IsAllowedCtrl(c)) continue;
+                if (ZeroWidthCp.Contains(cp)) continue;
+                if ((cp & 0xFFFE) == 0xFFFE || (cp >= 0xFDD0 && cp <= 0xFDEF)) continue; // noncharacters
+
+                list.Add(c);
+            }
+            return new string(list.ToArray());
+        }
+
+        private void ReflowTextOnly()
+        {
+            _fullText = EnableSanitization ? Sanitize(_rawText) : _rawText;
+
+            _selectionStart = _selectionEnd = -1;
+            _selectAllMode = false;
+
+            RecalculateLayoutAndUpdate();
+        }
+
+        // ===== Разметка =====
+        private Typeface CurrentTypeface => new Typeface(FontFamily, FontStyle.Normal, FontWeight.Normal);
+
+        private double GetWrappingWidth()
+        {
+            double w = _host.Bounds.Width;
+            if (double.IsNaN(w) || w <= 0) w = _scrollViewer.Viewport.Width;
+            if (double.IsNaN(w) || w <= 0) w = Bounds.Width;
+            if (double.IsNaN(w) || w <= 0) w = Width;
+            if (double.IsNaN(w) || w <= 0) w = 800;
+
+            var pad = _host.Padding;
+            var bt = _host.BorderThickness;
+            w -= (pad.Left + pad.Right + bt.Left + bt.Right);
+            return Math.Max(1, w);
+        }
+
+        private void RecalculateLayoutAndUpdate()
+        {
+            _wrapWidth = GetWrappingWidth();
+            _layoutWrapWidth = _wrapWidth + 10;
+
+            if (string.IsNullOrEmpty(_fullText))
+            {
+                _layout = null;
+                _visualLines.Clear();
+                _lineOffsets.Clear();
+                _lineHeights.Clear();
+                _contentHeight = 0;
+
+                _canvas.SetContext(_layout, _host.Padding, _contentHeight);
+                _canvas.SetSelectionRects(Array.Empty<Rect>());
+                _canvas.InvalidateMeasure();
+                _canvas.InvalidateVisual();
+                return;
+            }
+
+            _layout = new TextLayout(
+                _fullText,
+                CurrentTypeface,
+                FontSize > 0 ? FontSize : 16,
+                Foreground ?? Brushes.White,
+                TextAlignment.Left,
+                TextWrapping.Wrap,
+                null, null,
+                FlowDirection.LeftToRight,
+                _layoutWrapWidth,
+                double.PositiveInfinity);
+
+            _visualLines.Clear();
+            _lineOffsets.Clear();
+            _lineHeights.Clear();
+
+            double y = 0;
+            foreach (var tl in _layout.TextLines)
+            {
+                if (tl.Length == 0) continue; // служебная пустая строка — пропускаем
+
+                _visualLines.Add((tl.FirstTextSourceIndex, tl.Length));
+                _lineOffsets.Add(y);
+                _lineHeights.Add(tl.Height);
+                y += tl.Height;
+            }
+
+            _contentHeight = (_lineOffsets.Count > 0) ? _lineOffsets[^1] + _lineHeights[^1] : 0;
+
+            _canvas.SetContext(_layout, _host.Padding, _contentHeight);
+            _canvas.SetSelectionRects(BuildSelectionBands());
+
+            _canvas.InvalidateMeasure();
+            _canvas.InvalidateVisual();
+        }
+
+        private int GetScrollLineFromOffset(double y)
+        {
+            if (_lineOffsets.Count == 0) return 0;
+            int lo = 0, hi = _lineOffsets.Count - 1, ans = 0;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) / 2;
+                if (_lineOffsets[mid] <= y) { ans = mid; lo = mid + 1; }
+                else hi = mid - 1;
+            }
+            return ans;
+        }
+
+        private (int a, int b) GetSelectionRange()
+        {
+            if (_selectAllMode) return (0, _fullText.Length);
+            if (_selectionStart < 0 || _selectionEnd < 0 || _selectionStart == _selectionEnd)
+                return (-1, -1);
+
+            int a = Math.Max(0, Math.Min(_selectionStart, _selectionEnd));
+            int b = Math.Min(_fullText.Length, Math.Max(_selectionStart, _selectionEnd));
+            if (b <= a) return (-1, -1);
+            return (a, b);
+        }
+
+        private static bool IsZeroWidthOrFormat(char c)
+        {
+            var cat = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (cat == UnicodeCategory.NonSpacingMark || cat == UnicodeCategory.Format)
+                return true; // Mn/Cf — не задают геометрию
+
+            int cp = char.ConvertToUtf32(c.ToString(), 0);
+            if (cp > 0xFFFF) return true;
+            if (char.IsControl(c) && c != '\r' && c != '\n' && c != '\t') return true;
+            return ZeroWidthCp.Contains(cp);
+        }
+
+        private static (bool ok, double xMin, double xMax) RectUnion(IReadOnlyList<Rect> rects, double clampMin, double clampMax, double inflate)
+        {
+            double minX = double.PositiveInfinity;
+            double maxX = double.NegativeInfinity;
+            for (int i = 0; i < rects.Count; i++)
+            {
+                var r = rects[i];
+                if (r.Width <= 0) continue;
+                double x1 = Math.Max(clampMin, r.X - inflate);
+                double x2 = Math.Min(clampMax, r.X + r.Width + inflate);
+                if (x2 <= x1) continue;
+                if (x1 < minX) minX = x1;
+                if (x2 > maxX) maxX = x2;
+            }
+            if (!double.IsFinite(minX) || !double.IsFinite(maxX) || maxX <= minX)
+                return (false, 0, 0);
+            return (true, minX, maxX);
+        }
+
+        private (bool ok, double xMin, double xMax) TryGetEdgeBandForLine(int ia, int ib)
+        {
+            // первый видимый кластер слева
+            for (int i = ia; i < ib; i++)
+            {
+                char c = _fullText[i];
+                if (IsZeroWidthOrFormat(c)) continue;
+
+                var r1 = _layout!.HitTestTextRange(i, 1);
+                var u1 = RectUnion(r1.ToList(), 0, _layoutWrapWidth, 0.25);
+                if (!u1.ok) continue;
+
+                // последний видимый кластер справа
+                for (int j = ib - 1; j >= ia; j--)
+                {
+                    char c2 = _fullText[j];
+                    if (IsZeroWidthOrFormat(c2)) continue;
+
+                    var r2 = _layout!.HitTestTextRange(j, 1);
+                    var u2 = RectUnion(r2.ToList(), 0, _layoutWrapWidth, 0.25);
+                    if (!u2.ok) continue;
+
+                    double x1 = Math.Min(u1.xMin, u2.xMin);
+                    double x2 = Math.Max(u1.xMax, u2.xMax);
+                    if (x2 - x1 < 0.5) x2 = x1 + 0.5;
+                    return (true, x1, x2);
+                }
+                // не выходим — пробуем следующий i
+            }
+            return (false, 0, 0);
+        }
+
+        private IReadOnlyList<Rect> BuildSelectionBands()
+        {
+            if (_layout is null || string.IsNullOrEmpty(_fullText) || _visualLines.Count == 0)
+                return Array.Empty<Rect>();
+
+            var (selA, selB) = GetSelectionRange();
+            if (selA < 0) return Array.Empty<Rect>();
+
+            var bands = new List<Rect>();
+
+            for (int li = 0; li < _visualLines.Count; li++)
+            {
+                var (ls, len) = _visualLines[li];
+                int le = ls + len;
+
+                int ia = Math.Max(ls, selA);
+                int ib = Math.Min(le, selB);
+                if (ib <= ia) continue;
+
+                // ширина фактического текста строки
+                var rectsLine = _layout.HitTestTextRange(ls, len);
+                var uLine = RectUnion(rectsLine.ToList(), 0, _layoutWrapWidth, 0);
+                double lineMin = uLine.ok ? uLine.xMin : 0;
+                double lineMax = uLine.ok ? uLine.xMax : _layoutWrapWidth;
+
+                // 1) попытка по краям (первый/последний видимый кластер)
+                var edge = TryGetEdgeBandForLine(ia, ib);
+                double x1, x2;
+                if (edge.ok)
+                {
+                    x1 = edge.xMin;
+                    x2 = edge.xMax;
+                }
+                else
+                {
+                    // 2) fallback: объединяем прямоугольники выбранного диапазона
+                    var rectsSel = _layout.HitTestTextRange(ia, ib - ia);
+                    var uSel = RectUnion(rectsSel.ToList(), 0, _layoutWrapWidth, 0.25);
+                    if (uSel.ok)
+                    {
+                        x1 = uSel.xMin;
+                        x2 = uSel.xMax;
+                    }
+                    else
+                    {
+                        // 3) fallback: вся строка
+                        x1 = Math.Max(0, lineMin - 0.25);
+                        x2 = Math.Min(_layoutWrapWidth, lineMax + 0.25);
+                    }
+                }
+
+                // «Прилипание» к краям строки, если диапазон совпадает с её началом/концом
+                if (ia == ls && uLine.ok)
+                    x1 = Math.Min(x1, Math.Max(0, lineMin - 0.25));
+                if (ib == le && uLine.ok)
+                    x2 = Math.Max(x2, Math.Min(_layoutWrapWidth, lineMax + 0.25));
+
+                bands.Add(new Rect(x1, _lineOffsets[li], Math.Max(0.5, x2 - x1), _lineHeights[li]));
+            }
+
+            return bands;
+        }
+
+        private int GetCharIndexFromPoint(Point pInCanvas)
+        {
+            if (_layout is null || string.IsNullOrEmpty(_fullText))
+                return 0;
+
+            var pad = _host.Padding;
+
+            double yInFull = pInCanvas.Y - pad.Top;
+            double xInFull = pInCanvas.X - pad.Left;
+
+            if (xInFull < 0) xInFull = 0;
+            if (xInFull > _layoutWrapWidth) xInFull = _layoutWrapWidth;
+
+            double totalHeight = _contentHeight;
+            if (yInFull < 0) yInFull = 0;
+            if (yInFull > totalHeight - 0.001) yInFull = Math.Max(0, totalHeight - 0.001);
+
+            int lineIdx = GetScrollLineFromOffset(yInFull);
+            lineIdx = Math.Clamp(lineIdx, 0, Math.Max(0, _visualLines.Count - 1));
+
+            var (lineStart, lineLen) = _visualLines[lineIdx];
+            int lineEndExclusive = lineStart + lineLen;
+
+            var hit = _layout.HitTestPoint(new Point(xInFull, yInFull));
+            int index = hit.TextPosition + (hit.IsTrailing ? 1 : 0);
+
+            if (index > lineEndExclusive) index = lineEndExclusive;
+            if (index < lineStart) index = lineStart;
+
+            return Math.Clamp(index, 0, _fullText.Length);
+        }
+
+        private async void OnKeyDown(object? sender, KeyEventArgs e)
+        {
+            // Ctrl+C — копирование
+            if (e.Key == Key.C && (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control)
+            {
+                string? selected = GetSelectedText();
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    var tl = TopLevel.GetTopLevel(this);
+                    if (tl?.Clipboard != null)
+                    {
+                        try { await tl.Clipboard.SetTextAsync(selected); } catch { /* ignore */ }
+                    }
+                    e.Handled = true;
+                }
+            }
+            // Ctrl+A — выделить всё
+            else if (e.Key == Key.A && (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control)
+            {
+                if (!string.IsNullOrEmpty(_fullText))
+                {
+                    SelectAll();
                     e.Handled = true;
                 }
             }
         }
-    }
 
-    private void HandleAutoScroll()
-    {
-        if (!_isDragging) return;
-
-        double margin = 10;
-        double speed = 20;
-
-        if (_lastPointerPosition.Y < margin)
+        private string? GetSelectedText()
         {
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(Math.Max(0, _scrollViewer.Offset.Y - speed));
+            if (_fullText.Length == 0) return null;
+            if (_selectAllMode) return _fullText;
+            if (_selectionStart < 0 || _selectionEnd < 0 || _selectionStart == _selectionEnd) return null;
+
+            int a = Math.Max(0, Math.Min(_selectionStart, _selectionEnd));
+            int b = Math.Min(_fullText.Length, Math.Max(_selectionStart, _selectionEnd));
+            return (b > a) ? _fullText.Substring(a, b - a) : null;
         }
-        else if (_lastPointerPosition.Y > _scrollViewer.Bounds.Height - margin)
+
+        private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(_scrollViewer.Offset.Y + speed);
+            if (string.IsNullOrEmpty(_fullText)) return;
+
+            Focus();
+            _canvas.Focus();
+
+            _isSelecting = true;
+            _canvas.CapturePointer(e.Pointer);
+
+            var p = e.GetPosition(_canvas);
+            int idx = GetCharIndexFromPoint(p);
+
+            _selectionStart = idx;
+            _selectionEnd = idx;
+            _selectAllMode = false;
+
+            _canvas.SetSelectionRects(BuildSelectionBands());
+            e.Handled = true;
         }
-    }
 
-    private int GetCharIndexFromPoint(Point point)
-    {
-        string visibleText = string.Concat(_textBlock.Inlines?.OfType<Run>().Select(r => r.Text) ?? Enumerable.Empty<string>());
-        if (string.IsNullOrEmpty(visibleText))
-            return 0;
-
-        var layout = new TextLayout(
-            visibleText,
-            new Typeface(_textBlock.FontFamily),
-            _textBlock.FontSize,
-            Brushes.Black,
-            TextAlignment.Left,
-            TextWrapping.Wrap,
-            null, null,
-            FlowDirection.LeftToRight,
-            GetWrappingWidth(),  // _textBlock.Bounds.Width,
-            double.PositiveInfinity);
-
-        var hit = layout.HitTestPoint(point);
-        int localIndex = hit.TextPosition;
-
-        int scrollLine = (int)(_scrollViewer.Offset.Y / _lineHeight);
-        int firstChar = _visualLines[Math.Clamp(scrollLine, 0, _visualLines.Count - 1)].start;
-        return firstChar + localIndex;
-    }
-
-    private async Task ApplyVirtualContainerSize()
-    {
-        var contentHeight = _visualLines.Count * _lineHeight;
-
-        var viewportH = _scrollViewer?.Viewport.Height ?? 0;
-        var minH = Math.Max(this.MinHeight, viewportH);
-
-        _virtualContainer.MinHeight = minH;
-        _virtualContainer.Height = Math.Max(contentHeight, minH);
-
-        _virtualContainer.InvalidateMeasure();
-        _virtualContainer.InvalidateArrange();
-        await ForceLayoutAsync();
-    }
-
-    private async Task ResetScrollAndLayout()
-    {
-        if (_scrollViewer != null)
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
-
-        if (_textHost != null)
-            _textHost.Margin = new Thickness(0);
-
-        _virtualContainer?.InvalidateMeasure();
-        _virtualContainer?.InvalidateArrange();
-        _scrollViewer?.InvalidateMeasure();
-        _scrollViewer?.InvalidateArrange();
-        InvalidateVisual();
-        await ForceLayoutAsync();
-
-        UpdateVisibleText();
-    }
-
-    private double GetWrappingWidth()
-    {
-        var w = _scrollViewer?.Viewport.Width ?? 0;
-        if (w <= 0) w = _scrollViewer?.Bounds.Width ?? 0;
-        if (w <= 0) w = this.Bounds.Width;
-        if (w <= 0) w = this.Width;
-        if (double.IsNaN(w) || w <= 0) w = 800; // безопасный fallback
-        return w;
-    }
-
-    private void ClampAndResetScrollThenUpdate()
-    {
-        var maxY = Math.Max(0, (_virtualContainer?.Height ?? 0) - (_scrollViewer?.Viewport.Height ?? 0));
-        if (double.IsInfinity(maxY) || double.IsNaN(maxY))
-            maxY = 0;
-
-        if (_scrollViewer is null)
-            return;
-
-        var y = _scrollViewer.Offset.Y;
-        if (y > maxY || y < 0) y = 0;
-        _scrollViewer.Offset = _scrollViewer.Offset.WithY(y);
-
-        Dispatcher.UIThread.Post(async () =>
+        private void OnPointerMoved(object? sender, PointerEventArgs e)
         {
-            _scrollViewer.Offset = _scrollViewer.Offset.WithY(0);
-            _textHost.Margin = new Thickness(0);
-            await ForceLayoutAsync();
-            UpdateVisibleText();
-        }, DispatcherPriority.Render);
-    }
+            if (!_isSelecting || string.IsNullOrEmpty(_fullText)) return;
 
-    private static async Task ForceLayoutAsync()
-    {
-        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
+            var p = e.GetPosition(_canvas);
+            int idx = GetCharIndexFromPoint(p);
+            if (idx != _selectionEnd)
+            {
+                _selectionEnd = idx;
+                _canvas.SetSelectionRects(BuildSelectionBands());
+            }
+        }
+
+        private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            _isSelecting = false;
+            _canvas.ReleasePointerCapture(e.Pointer);
+        }
+
+        private sealed class TextCanvas : Control
+        {
+            private readonly VirtualTextViewer _owner;
+            private TextLayout? _layout;
+            private Thickness _padding;
+            private double _contentHeight;
+            private IReadOnlyList<Rect> _selRects = Array.Empty<Rect>();
+            private readonly IBrush _selectionFill = new SolidColorBrush(Color.FromArgb(0x66, 0xC0, 0xE0, 0xFF));
+
+            public TextCanvas(VirtualTextViewer owner) => _owner = owner;
+
+            public void SetContext(TextLayout? layout, Thickness padding, double contentHeight)
+            {
+                _layout = layout;
+                _padding = padding;
+                _contentHeight = Math.Max(0, contentHeight);
+                InvalidateMeasure();
+                InvalidateVisual();
+            }
+
+            public void SetSelectionRects(IReadOnlyList<Rect> rects)
+            {
+                _selRects = rects ?? Array.Empty<Rect>();
+                InvalidateVisual();
+            }
+
+            protected override Size MeasureOverride(Size availableSize)
+            {
+                double w = double.IsFinite(availableSize.Width) ? availableSize.Width : 0;
+                double h = _contentHeight;
+                if (h < 0) h = 0;
+                return new Size(w, h);
+            }
+
+            public override void Render(DrawingContext context)
+            {
+                base.Render(context);
+                if (_layout is null) return;
+
+                var pad = _padding;
+
+                if (_selRects.Count > 0)
+                {
+                    foreach (var r in _selRects)
+                    {
+                        var rr = new Rect(r.X + pad.Left, r.Y + pad.Top, r.Width, r.Height);
+                        if (rr.Width > 0.1 && rr.Height > 0.1)
+                            context.FillRectangle(_selectionFill, rr);
+                    }
+                }
+
+                _layout.Draw(context, new Point(pad.Left, pad.Top));
+            }
+        }
     }
 }

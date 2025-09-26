@@ -31,7 +31,7 @@
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 HorizontalAlignment="Stretch"
-							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
 						<ToolTip.Tip>
 							<StackPanel>
 								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
@@ -338,7 +338,9 @@
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<TextBox Name="KzhaExtractedDataValue" Text="" DockPanel.Dock="Top"
-									 TextAlignment="Left" TextWrapping="Wrap"
+									 TextAlignment="Left" TextWrapping="Wrap" 
+									 ScrollViewer.VerticalScrollBarVisibility="Visible"
+									 ScrollViewer.AllowAutoHide="True"
 									 Height="150" Margin="30 0 15 0"
 									 VerticalContentAlignment="Top"
 									 IsVisible="False"/>
