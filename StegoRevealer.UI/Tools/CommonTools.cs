@@ -61,10 +61,31 @@ public static class CommonTools
         var symbolsArray = rawString.Select(c => IsBadSymbol(c) ? symb : c).ToArray();
         return new string(symbolsArray);
     }
-    public static string FilterBadSymbols(string rawString)
+    public static string FilterBadSymbols(string rawString, bool useSimpleFiltration = false)
     {
-        var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�')).ToArray();
-        return new string(symbolsArray);
+        string result = string.Empty;
+
+        if (useSimpleFiltration)
+        {
+            var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�')).ToArray();
+            result = new string(symbolsArray);
+        }
+        else
+        {
+            var filteringOptions = new TextSanitizer.Options()
+            {
+                AllowTab = true,
+                KeepPrivateUse = false,
+                KeepVariationSelectors = false,
+                KeepBidiMarks = false,
+                CollapseSpaces = false,
+                NormalizeCRLFtoLF = true,
+                Normalization = System.Text.NormalizationForm.FormC
+            };
+            result = TextSanitizer.FilterBadSymbols(rawString, filteringOptions);
+        }
+
+        return result;
     }
 
     private static char[] AllowedSymbols = new char[] { '\r', '\n' };
