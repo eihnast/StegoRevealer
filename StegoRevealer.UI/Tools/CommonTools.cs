@@ -65,24 +65,34 @@ public static class CommonTools
     {
         string result = string.Empty;
 
+        if (!useSimpleFiltration)
+        {
+            try
+            {
+                var filteringOptions = new TextSanitizer.Options()
+                {
+                    AllowTab = true,
+                    KeepPrivateUse = false,
+                    KeepVariationSelectors = false,
+                    KeepBidiMarks = false,
+                    CollapseSpaces = false,
+                    NormalizeCRLFtoLF = true,
+                    Normalization = System.Text.NormalizationForm.FormC
+                };
+                result = TextSanitizer.FilterBadSymbols(rawString, filteringOptions);
+            }
+            catch (Exception ex)
+            {
+                CommonLogger.LogError($"Error while text sanitization: {ex.Message}");
+                result = rawString;
+                useSimpleFiltration = true;
+            }
+        }
+
         if (useSimpleFiltration)
         {
-            var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�')).ToArray();
+            var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�') && !c.Equals('޸')).ToArray();
             result = new string(symbolsArray);
-        }
-        else
-        {
-            var filteringOptions = new TextSanitizer.Options()
-            {
-                AllowTab = true,
-                KeepPrivateUse = false,
-                KeepVariationSelectors = false,
-                KeepBidiMarks = false,
-                CollapseSpaces = false,
-                NormalizeCRLFtoLF = true,
-                Normalization = System.Text.NormalizationForm.FormC
-            };
-            result = TextSanitizer.FilterBadSymbols(rawString, filteringOptions);
         }
 
         return result;

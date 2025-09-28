@@ -220,4 +220,9 @@ public partial class HiderView : UserControl
 
     private void LoadedImageBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.SwitchToLoadedImage();
     private void CoveredImageBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _vm.SwitchToCoveredImage();
+
+    private void FilterForInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
+    private void FilterForDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
+    private void FilterForPositiveInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
+    private void FilterForPositiveDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
 }

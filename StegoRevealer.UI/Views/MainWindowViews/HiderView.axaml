@@ -165,12 +165,14 @@
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="0" Grid.Column="2"
                                          Text="{Binding Path=LsbRandomSeedValue}"
-										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"/>
+										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"/>
 								<TextBox Name="LsbParamsGrid_StartIndex"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="1" Grid.Column="2"
                                          Text="{Binding Path=LsbStartIndexValue}"
-										 IsEnabled="{Binding Path=LsbStartIndexSelected}"/>
+										 IsEnabled="{Binding Path=LsbStartIndexSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"/>
 
 								<CheckBox Name="LsbParamsGrid_RandomSeedCheckBox"
 										  Grid.Row="0" Grid.Column="3"
@@ -199,12 +201,14 @@
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="0" Grid.Column="2"
                                          Text="{Binding Path=KzRandomSeedValue}"
-										 IsEnabled="{Binding Path=KzRandomSeedSelected}"/>
+										 IsEnabled="{Binding Path=KzRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"/>
 								<TextBox Name="KzhParamsGrid_Threshold"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="1" Grid.Column="2"
                                          Text="{Binding Path=KzThresholdValue}"
-										 IsEnabled="{Binding Path=KzThresholdSelected}"/>
+										 IsEnabled="{Binding Path=KzThresholdSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"/>
 
 								<CheckBox Name="KzhParamsGrid_RandomSeedCheckBox"
 										  Grid.Row="0" Grid.Column="3"
