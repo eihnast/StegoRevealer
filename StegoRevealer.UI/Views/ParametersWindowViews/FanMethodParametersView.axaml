@@ -39,7 +39,9 @@
 							 MinWidth="150" MinHeight="25" MaxHeight="25"
 							 Padding="8 1 8 1" Margin="10 0 0 0"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveDouble_KeyDown"/>
+							 KeyDown="FilterForPositiveDouble_KeyDown"
+							 TextInput="FilterForPositiveDouble_TextInput"
+							 PastingFromClipboard="FilterForPositiveDouble_PastingFromClipboard"/>
 				</DockPanel>
 			</StackPanel>
 

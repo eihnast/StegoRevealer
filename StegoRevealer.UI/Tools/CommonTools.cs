@@ -188,6 +188,9 @@ public static class CommonTools
     private static List<Key> AllowedDigitKeys = new List<Key>() { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
     private const Key DoubleSeparatorKey = Key.OemComma;
     private const Key MinusKey = Key.OemMinus;
+    private static List<char> AllowedDigitKeysChars = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private const char DoubleSeparatorKeyChar = ',';
+    private const char MinusKeyChar = '-';
     public static void FilterInput(TextBox textBox, KeyEventArgs e, FilterInputStrategy strategy)
     {
         if (strategy is FilterInputStrategy.AllowAll)
@@ -219,12 +222,83 @@ public static class CommonTools
             }
         }
     }
+    public static void FilterInput(TextBox textBox, TextInputEventArgs e, FilterInputStrategy strategy)
+    {
+        if (strategy is FilterInputStrategy.AllowAll || e.Text is null)
+            return;
+
+        bool allAllowed = true;
+        foreach (var c in e.Text)
+        {
+            if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble
+                or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
+            {
+                // Проверяем ввод числа
+                if (!AllowedDigitKeysChars.Contains(c))
+                {
+                    // При вводе числа разрешён минус
+                    if (c == MinusKeyChar)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble)
+                            && textBox.CaretIndex == 0 && (!textBox.Text?.Contains('-') ?? true))
+                            continue;
+                    }
+
+                    // При вводе числа разрешён ввод разделителя дробной части
+                    if (c == DoubleSeparatorKeyChar)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowDouble or FilterInputStrategy.AllowPositiveDouble)
+                            && (textBox.CaretIndex > 0 && (!textBox.Text?.Contains(',') ?? true)))
+                            continue;
+                    }
+
+                    allAllowed = false;
+                    break;
+                }
+            }
+        }
+
+        if (allAllowed)
+            return;
+        e.Handled = true;
+    }
     public static void FilterInput(object? sender, KeyEventArgs e, FilterInputStrategy strategy)
     {
         var tb = sender as TextBox;
         if (tb is null)
             return;
         FilterInput(tb, e, strategy);
+    }
+    public static void FilterInput(object? sender, TextInputEventArgs e, FilterInputStrategy strategy)
+    {
+        var tb = sender as TextBox;
+        if (tb is null)
+            return;
+        FilterInput(tb, e, strategy);
+    }
+    public async static Task FilterInput(object? sender, RoutedEventArgs e, FilterInputStrategy strategy)
+    {
+        var topLevel = TopLevel.GetTopLevel(sender as TextBox);
+        if (topLevel?.Clipboard is not null)
+        {
+            string? text = await topLevel.Clipboard.GetTextAsync();
+            if (!string.IsNullOrEmpty(text))
+            {
+                var args = new TextInputEventArgs()
+                {
+                    Source = sender,
+                    Text = text,
+                    Handled = false
+                };
+                FilterInput(sender, args, FilterInputStrategy.AllowPositiveDouble);
+                if (args.Handled)
+                    e.Handled = true;
+                else
+                    return;
+            }
+        }
+
+        e.Handled = true;
     }
 
     public static SKColor MapToSkiaColor(Color color) =>
@@ -284,4 +358,6 @@ public static class CommonTools
         var version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
         return version?.ToString() ?? string.Empty;
     }
+
+
 }

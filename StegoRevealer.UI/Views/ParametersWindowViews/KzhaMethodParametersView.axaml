@@ -45,7 +45,9 @@
 							 MinWidth="80" MinHeight="25" MaxHeight="25"
 							 Padding="8 1 8 1" Margin="10 0 0 0"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveDouble_KeyDown"/>
+							 KeyDown="FilterForPositiveDouble_KeyDown"
+							 TextInput="FilterForPositiveDouble_TextInput"
+							 PastingFromClipboard="FilterForPositiveDouble_PastingFromClipboard"/>
 				</DockPanel>
 
 				<DockPanel LastChildFill="True"
@@ -61,7 +63,9 @@
 							 MinWidth="80" MinHeight="25" MaxHeight="25"
 							 Padding="8 1 8 1" Margin="10 0 0 0"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForDouble_KeyDown"/>
+							 KeyDown="FilterForDouble_KeyDown"
+							 TextInput="FilterForDouble_TextInput"
+							 PastingFromClipboard="FilterForDouble_PastingFromClipboard"/>
 				</DockPanel>
 			</StackPanel>
 
