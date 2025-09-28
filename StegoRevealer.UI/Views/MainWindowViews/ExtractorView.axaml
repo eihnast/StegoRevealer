@@ -23,7 +23,7 @@
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
 						Grid.Column="0" Grid.Row="0">
 				<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
-					<Button Name="LoadImageButton" Content="Выбор изображения"
+					<Button Name="LoadImageButton" Content="{Binding L[Common.ChooseImage]}"
 							DockPanel.Dock="Left"
 							Height="40" Padding="15 0" Margin="0"
 							VerticalAlignment="Center" HorizontalAlignment="Stretch"
@@ -33,7 +33,7 @@
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 HorizontalAlignment="Stretch"
-							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
 						<ToolTip.Tip>
 							<StackPanel>
 								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
@@ -41,12 +41,12 @@
 						</ToolTip.Tip>
 					</TextBox>
 				</DockPanel>
-				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+				<Image Name="ImagePreview" Source="{Binding Path=DrawnImageSource}"
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
 				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
-					<TextBox Text="Ширина:"
+					<TextBox Text="{Binding L[Common.Image.Width], StringFormat='{}{0}:'}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -56,7 +56,7 @@
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
-					<TextBox Text="Высота:" Margin="30 0 0 0"
+					<TextBox Text="{Binding L[Common.Image.Height], StringFormat='{}{0}:'}" Margin="30 0 0 0"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -76,7 +76,7 @@
 						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
 				<!-- Экспандер выбора параметров извлечения -->
-				<Expander Name="ParamsExpander" Header="Параметры извлечения"
+				<Expander Name="ParamsExpander" Header="{Binding L[ExtractorTab.ExtractionParams]}"
 						  Classes="RightPanelParamsExpander"
 						  IsExpanded="{Binding Path=IsParamsOpened}"
 						  Expanded="ParamsExpander_Expanded"
@@ -89,7 +89,7 @@
 						  IsEnabled="True">
 					<Grid ColumnDefinitions="*" RowDefinitions="50,*">
 
-						<Label Content="Способ и параметры извлечения"
+						<Label Content="{Binding L[ExtractorTab.ExtractionParamsAndMethod]}"
 							   FontFamily="Arial" FontWeight="Bold" FontSize="18"
 							   Foreground="#FFECECEC"
 							   Grid.Column="0" Grid.Row="0"
@@ -108,11 +108,11 @@
 										Grid.Column="0" Grid.Row="0"
 										Margin="0 0 0 0" Height="40" 
 										HorizontalAlignment="Center">
-								<ToggleButton Name="MethodChoice_Lsb" Content="Скрытое в НЗБ"
+								<ToggleButton Name="MethodChoice_Lsb" Content="{Binding L[ExtractorTab.LsbHided]}"
 											  Classes="SelectorToggleButton"
 											  IsChecked="{Binding Path=MethodLsbSelected}"
 											  Checked="SetLsbMethod" Unchecked="SetKzMethod"/>
-								<ToggleButton Name="MethodChoice_Kzh" Content="Скрытое по Коха-Жао"
+								<ToggleButton Name="MethodChoice_Kzh" Content="{Binding L[ExtractorTab.KzhaHided]}"
 											  Classes="SelectorToggleButton"
 											  IsChecked="{Binding Path=MethodKzSelected}"
 											  Checked="SetKzMethod" Unchecked="SetLsbMethod"/>
@@ -124,11 +124,11 @@
 										Grid.Column="0" Grid.Row="1"
 										Margin="0 15 0 0" Height="40"
 										HorizontalAlignment="Center">
-								<ToggleButton Name="HidewayChoice_Linear" Content="Последовательно"
+								<ToggleButton Name="HidewayChoice_Linear" Content="{Binding L[ExtractorTab.HidingLinear]}"
 											  Classes="SelectorToggleButton"
 											  IsChecked="{Binding Path=LinearModeSelected}"
 											  Checked="SetLinearMode" Unchecked="SetRandomMode"/>
-								<ToggleButton Name="HidewayChoice_Random" Content="Псевдослучайно"
+								<ToggleButton Name="HidewayChoice_Random" Content="{Binding L[ExtractorTab.HidingRandom]}"
 											  Classes="SelectorToggleButton"
 											  IsChecked="{Binding Path=RandomModeSelected}"
 											  Checked="SetRandomMode" Unchecked="SetLinearMode"/>
@@ -140,13 +140,13 @@
 								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40,40"
 								  Grid.Column="0" Grid.Row="2" Margin="0 15 0 0">
 
-								<Label Content="Ключ ГПСЧ"
+								<Label Content="{Binding L[ExtractorTab.RandomKey]}"
 									   Classes="ExtractorParamsLabel"
 									   Grid.Row="0" Grid.Column="1"/>
-								<Label Content="Стартовый индекс"
+								<Label Content="{Binding L[ExtractorTab.StartIndex]}"
 									   Classes="ExtractorParamsLabel"
 									   Grid.Row="1" Grid.Column="1"/>
-								<Label Content="Длина (байт)"
+								<Label Content="{Binding L[ExtractorTab.ByteLength]}"
 									   Classes="ExtractorParamsLabel"
 									   Grid.Row="2" Grid.Column="1"/>
 
@@ -154,17 +154,26 @@
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="0" Grid.Column="2"
                                          Text="{Binding Path=LsbRandomSeedValue}"
-										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"/>
+										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 								<TextBox Name="LsbParamsGrid_StartIndex"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="1" Grid.Column="2"
                                          Text="{Binding Path=LsbStartIndexValue}"
-										 IsEnabled="{Binding Path=LsbStartIndexSelected}"/>
+										 IsEnabled="{Binding Path=LsbStartIndexSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 								<TextBox Name="LsbParamsGrid_ByteLength"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="2" Grid.Column="2"
                                          Text="{Binding Path=LsbByteLengthValue}"
-										 IsEnabled="{Binding Path=LsbByteLengthSelected}"/>
+										 IsEnabled="{Binding Path=LsbByteLengthSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 
 								<CheckBox Name="LsbParamsGrid_RandomSeedCheckBox"
 										  Grid.Row="0" Grid.Column="3"
@@ -183,41 +192,50 @@
 
 							<!-- Параметры для метода Коха-Жао -->
 							<Grid Name="KzhParamsGrid" IsVisible="{Binding Path=MethodKzSelected}"
-								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40,40"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40"
 								  Grid.Column="0" Grid.Row="2" Margin="0 15 0 0">
 
-								<Label Content="Ключ ГПСЧ"
+								<Label Content="{Binding L[ExtractorTab.RandomKey]}"
 									   Classes="ExtractorParamsLabel"
 									   Grid.Row="0" Grid.Column="1"/>
-								<Label Content="Индексы блоков"
+								<Label Content="{Binding L[ExtractorTab.BlocksIndexes]}"
 									   Classes="ExtractorParamsLabel"
 									   Grid.Row="1" Grid.Column="1"/>
-								<Label Content="Порог"
+								<!--<Label Content="{Binding L[ExtractorTab.Threshold]}"
 									   Classes="ExtractorParamsLabel"
-									   Grid.Row="2" Grid.Column="1"/>
+									   Grid.Row="2" Grid.Column="1"/>-->
 
 								<TextBox Name="KzhParamsGrid_RandomSeed"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="0" Grid.Column="2"
                                          Text="{Binding Path=KzRandomSeedValue}"
-										 IsEnabled="{Binding Path=KzRandomSeedSelected}"/>
+										 IsEnabled="{Binding Path=KzRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 								<StackPanel Orientation="Horizontal"
 											Grid.Row="1" Grid.Column="2"
 											HorizontalAlignment="Stretch">
 									<TextBox Name="KzhParamsGrid_IndexFirst"
 											 Classes="ExtractorParamsTextBox"
 											 Text="{Binding Path=KzIndexFirstValue}"
-											 IsEnabled="{Binding Path=KzIndexesSelected}"/>
+											 IsEnabled="{Binding Path=KzIndexesSelected}"
+											 KeyDown="FilterForPositiveInteger_KeyDown"
+											 TextInput="FilterForPositiveInteger_TextInput"
+											 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 									<TextBox Name="KzhParamsGrid_IndexSecond"
 											 Classes="ExtractorParamsTextBox"
 											 Text="{Binding Path=KzIndexSecondValue}"
-											 IsEnabled="{Binding Path=KzIndexesSelected}"/>
+											 IsEnabled="{Binding Path=KzIndexesSelected}"
+											 KeyDown="FilterForPositiveInteger_KeyDown"
+											 TextInput="FilterForPositiveInteger_TextInput"
+											 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 								</StackPanel>
-								<TextBox Name="KzhParamsGrid_Threshold"
+								<!--<TextBox Name="KzhParamsGrid_Threshold"
 										 Classes="ExtractorParamsTextBox"
 										 Grid.Row="2" Grid.Column="2"
                                          Text="{Binding Path=KzThresholdValue}"
-										 IsEnabled="{Binding Path=KzThresholdSelected}"/>
+										 IsEnabled="{Binding Path=KzThresholdSelected}"/>-->
 								
 								<CheckBox Name="KzhParamsGrid_RandomSeedCheckBox"
 										  Grid.Row="0" Grid.Column="3"
@@ -227,10 +245,10 @@
 										  Grid.Row="1" Grid.Column="3"
 										  IsChecked="{Binding Path=KzIndexesSelected}"
                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-								<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
+								<!--<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
 										  Grid.Row="2" Grid.Column="3"
 										  IsChecked="{Binding Path=KzThresholdSelected}"
-                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
 							</Grid>
 							<!-- / Параметры для метода Коха-Жао -->
 
@@ -246,7 +264,7 @@
 						   RelativePanel.AlignLeftWithPanel="True"/>
 
 				<!-- Экспандер результатов -->
-				<Expander Name="ResultsExpander" Header="Результаты извлечения"
+				<Expander Name="ResultsExpander" Header="{Binding L[ExtractorTab.ResultsExpander]}"
 						  IsExpanded="{Binding Path=!IsParamsOpened}"
 						  Expanded="ResultsExpander_Expanded"
 						  Collapsed="ResultsExpander_Collapsed"
@@ -261,29 +279,29 @@
 						<DockPanel DockPanel.Dock="Bottom" Margin="0 15 0 0" VerticalAlignment="Stretch">
 							<StackPanel DockPanel.Dock="Right" Orientation="Vertical"
 										HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-								<TextBlock Text="Необработанные извлечённые данные:"
+								<TextBlock Text="{Binding L[ExtractorTab.ExtractedDataTitle], StringFormat='{}{0}:'}"
 										   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 										   TextWrapping="Wrap" TextAlignment="Center"/>
 								<StackPanel Orientation="Horizontal" Margin="10 5 0 0"
 											HorizontalAlignment="Center">
-									<Button Name="OpenExtractedText" Content="Открыть в редакторе"
+									<Button Name="OpenExtractedText" Content="{Binding L[Common.OpenInEditor]}"
 											Padding="10 10 10 10" Margin="0 0 3 0"
 											Background="{StaticResource SrDarkLight}"
 											Click="OpenExtractedText_Click"/>
-									<Button Name="SaveExtractedText" Content="Сохранить в файл"
+									<Button Name="SaveExtractedText" Content="{Binding L[Common.SaveToFile]}"
 											Padding="10 10 10 10" Margin="3 0 0 0"
 											Background="{StaticResource SrDarkLight}"
 											Click="SaveExtractedText_Click"/>
 								</StackPanel>
 							</StackPanel>
-							<TextBlock Text="Демонстрируемый выше текст отфильтрован: исключены управляющие и заменяющие символы"
+							<TextBlock Text="{Binding L[ExtractorTab.ExtractedDataDisclaimer]}"
 									   DockPanel.Dock="Left" TextWrapping="Wrap"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"
 									   FontSize="12" TextAlignment="Center"/>
 						</DockPanel>
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
-							<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
+							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
 									   FontStyle="Italic" TextDecorations=""
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
@@ -301,7 +319,7 @@
 						<cmp:VirtualTextViewer Name="ExtractedMessage"
 								 Classes="ExtractedText"
 								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
-								 TextWrapping="Wrap" FontSize="12"
+								 FontSize="12" EnableSanitization="True"
 								 Background="{StaticResource SrDarkMiddle}" ContentBackground="{StaticResource SrDark}"
 								 IsEnabled="{Binding Path=HasResults}"
 								 MinHeight="300" />
@@ -327,7 +345,7 @@
 			</RelativePanel>
 			<!-- / Правая панель выбора параметров извлечения и результатов -->
 
-			<Button Name="StartExtraction" Content="Запуск"
+			<Button Name="StartExtraction" Content="{Binding L[Common.Start]}"
 					FontSize="24" FontWeight="Bold"
 					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
 					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
@@ -336,6 +354,17 @@
 					Click="StartExtraction_Click" IsEnabled="{Binding Path=HasLoadedImage}"/>
 		</Grid>
 		<!-- / Внутренняя сетка -->
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="False" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="400" Height="40"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
 	</Grid>
 	<!-- / Внешняя сетка -->
 	

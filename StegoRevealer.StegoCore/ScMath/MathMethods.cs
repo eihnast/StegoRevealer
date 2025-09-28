@@ -112,7 +112,7 @@ public static class MathMethods
     }
 
     /// <summary>
-    /// Вычисление разницы модулей
+    /// Вычисление разницы модулей (|val1| - |val2|)
     /// </summary>
     public static double GetModulesDiff(double val1, double val2)
     {
@@ -120,7 +120,7 @@ public static class MathMethods
     }
 
     /// <summary>
-    /// Вычисление разницы модулей
+    /// Вычисление разницы модулей (|val1| - |val2|)
     /// </summary>
     public static double GetModulesDiff((double val1, double val2) values)
     {

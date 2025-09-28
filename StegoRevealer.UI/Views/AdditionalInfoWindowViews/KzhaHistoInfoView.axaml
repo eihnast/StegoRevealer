@@ -1,0 +1,122 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
+			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="700"
+             x:Class="StegoRevealer.UI.Views.AdditionalInfoWindowViews.KzhaHistoInfoView">
+
+	<Design.DataContext>
+		<vm:KzhaHistoInfoViewModel/>
+	</Design.DataContext>
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			  ColumnDefinitions="*" RowDefinitions="50,60,*"
+			  Margin="20 10 20 10">
+			
+			<Label Name="TitleLabel" Content="{Binding L[Histo.Title]}"
+				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="27"
+				   Grid.Column="0" Grid.Row="0"
+				   VerticalAlignment="Center" VerticalContentAlignment="Center"
+				   HorizontalAlignment="Center" HorizontalContentAlignment="Center"
+				   Padding="0"/>
+
+			<Grid Name="ChooseCoeffsBlock" Grid.Column="0" Grid.Row="1"
+				  ColumnDefinitions="2*,2*,*,4*" RowDefinitions="*"
+				  IsEnabled="{Binding Path=!IsLoadingProcess}"
+				  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				
+				<!-- Выбор способа обхода -->
+				<StackPanel Name="ChooseTraverseType" Orientation="Horizontal"
+							Grid.Column="0" Grid.Row="0"
+							Margin="0 0 0 0" Height="40"
+							HorizontalAlignment="Center">
+					<ToggleButton Name="HorizontalTraverseChoice"
+								  Classes="SelectorToggleButtonMini"
+								  IsChecked="{Binding Path=!IsVerticalTraverseSelected}"
+								  Checked="SetHorizontalTraverse" Unchecked="SetVerticalTraverse">
+						<ToggleButton.Content>
+							<TextBlock Text="{Binding L[Params.TraverseType.Horizontal]}"/>
+						</ToggleButton.Content>
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding L[Histo.TraverseTooltipHorizontal]}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</ToggleButton>
+					<ToggleButton Name="VerticalTraverseChoice"
+								  Classes="SelectorToggleButtonMini"
+								  IsChecked="{Binding Path=IsVerticalTraverseSelected}"
+								  Checked="SetVerticalTraverse" Unchecked="SetHorizontalTraverse">
+						<ToggleButton.Content>
+							<TextBlock Text="{Binding L[Params.TraverseType.Vertical]}"/>
+						</ToggleButton.Content>
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding L[Histo.TraverseTooltipVertical]}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</ToggleButton>
+				</StackPanel>
+				<!-- / Выбор способа обхода -->
+				
+				<Label Name="ChooseCoeffsBlockDesc"
+				       Foreground="#FFE0E0E0" FontSize="20"
+					   HorizontalAlignment="Right" VerticalAlignment="Center"
+					   Margin="0 0 5 0" Grid.Column="1"
+					   Content="{Binding L[Histo.ChooseCoeffs]}"/>
+				<ComboBox Name="ChooseCoeffsBlockValue" Grid.Column="2"
+				          Foreground="#FFE0E0E0" FontSize="20" MinHeight="40"
+						  HorizontalContentAlignment="Center" VerticalAlignment="Center"
+						  HorizontalAlignment="Stretch"
+						  Margin="5 0 5 0"
+						  MinWidth="150" SelectedIndex="{Binding Path=SelectedIndexPairIndex}"
+						  ItemsSource="{Binding Path=ShowingPairs}"/>
+				<CheckBox Name="ShowAllPairs" Content="{Binding L[Histo.ShowAllPairs]}"
+						  Foreground="#FFE0E0E0" FontSize="20"
+						  Classes="ShowAllPairsCheckbox" Grid.Column="3"
+						  HorizontalAlignment="Left" Margin="10 0 0 0"
+						  IsChecked="{Binding Path=!UseOnlyDefaultPairs}"/>
+			</Grid>
+
+			<cmp:Histogram Name="Histo" Grid.Row="2" Grid.Column="0" Margin="10"
+						   Values="{Binding CSequence}" BinCount="0" PlotPadding="48,16,24,40"/>
+
+			<!-- Оверлей с опциями управления гистограммой -->
+			<Border Name="HistoControlOverlay" Grid.Row="2" Grid.Column="0"
+					HorizontalAlignment="Right" VerticalAlignment="Top"
+					Margin="20 -25 10 20" ZIndex="1000">
+				<Grid RowDefinitions="*" ColumnDefinitions="*,*">
+					<Button Name="BackPreviousZoomBtn" Margin="5 0 0 0"
+						    Grid.Column="0" Classes="ConrolBtn"
+							Click="BackPreviousZoomBtn_Click">
+						<PathIcon Data="{StaticResource IconZoomBack}"/>
+					</Button>
+					<Button Name="ResetZoomBtn" Margin="5 0 0 0"
+						    Grid.Column="1" Classes="ConrolBtn"
+							Click="ResetZoomBtn_Click">
+						<PathIcon Data="{StaticResource IconZoomOut}"/>
+					</Button>
+				</Grid>
+			</Border>
+			<!-- / Оверлей с опциями управления гистограммой -->
+
+		</Grid>
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="{Binding Path=IsLoadingProcess}" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="600" Height="50"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
+		<!-- / Оверлей с анимацией загрузки -->
+		
+	</Grid>
+
+</UserControl>

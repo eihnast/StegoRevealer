@@ -112,6 +112,8 @@ public class LsbHider : IHider
 
         int basketSize = 512;  // Цветовых байт в пачке
         int basketsCount = colorBytesIndexes.Count / basketSize;  // Оставшиеся будут добавлены в последнюю пачку
+        if (basketsCount == 0)
+            basketsCount++;
         var basketsTasks = new Task[basketsCount];
         for (int i = 0; i < basketsCount; i++)
         {

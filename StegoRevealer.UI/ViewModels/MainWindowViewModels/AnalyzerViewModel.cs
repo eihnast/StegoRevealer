@@ -40,9 +40,6 @@ namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
 public class AnalyzerViewModel : MainWindowViewModelBaseChild
 {
-    // Стандартные значения текстовых полей
-    private const string ImageNotSelectedText = "Изображение не выбрано";
-
     // Параметры методов стегоанализа
     private ChiSquareParameters? _chiSquareParameters = null;
     private RsParameters? _rsParameters = null;
@@ -64,10 +61,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         set
         {
             this.RaiseAndSetIfChanged(ref _imagePath, value);
-            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !value.Equals(ImageNotSelectedText);
+            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrEmpty(value);
         }
     }
-    private string _imagePath = ImageNotSelectedText;
+    private string _imagePath = string.Empty;
 
     /// <summary>
     /// Загружено ли изображение для анализа
@@ -292,24 +289,24 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработчик текущего отображаемого изображения (может не соответствовать изначально выбранному)
     /// </summary>
-    public ImageHandler? DrawedImage
+    public ImageHandler? DrawnImage
     {
-        get => _drawedImage;
+        get => _drawnImage;
         set
         {
-            _drawedImage = value;
-            if (_drawedImage is not null)
-                DrawedImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
+            _drawnImage = value;
+            if (_drawnImage is not null)
+                DrawnImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawnImage);
             else
-                DrawedImageSource = null;
+                DrawnImageSource = null;
         }
     }
-    private ImageHandler? _drawedImage;
+    private ImageHandler? _drawnImage;
 
     /// <summary>
     /// Источник текущего отображаемого изображения
     /// </summary>
-    public Bitmap? DrawedImageSource
+    public Bitmap? DrawnImageSource
     {
         get => _drawedImageSource;
         private set => this.RaiseAndSetIfChanged(ref _drawedImageSource, value);
@@ -337,7 +334,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     }
 
     [Experimental]
-    public AnalyzerViewModel() : base() 
+    public AnalyzerViewModel() : base()
     {
         CreateDefaults();
     }
@@ -410,7 +407,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (parameters is null)
             return;
 
-        Logger.LogInfo($"Opening parameters window for steganalysis method {AnalysisMethod}");
+        CommonLogger.LogInfo($"Opening parameters window for steganalysis method {AnalysisMethod}");
 
         var receivedParameters = new ParametersStorage();
         var parametersVm = new ParametersWindowViewModel(parameters, receivedParameters);
@@ -422,7 +419,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (receivedParameters.Parameters is null)
             return;
 
-        Logger.LogInfo($"Received parameters for stegoanalysis method {AnalysisMethod}");
+        CommonLogger.LogInfo($"Received parameters for stegoanalysis method {AnalysisMethod}");
 
         switch (AnalysisMethod)
         {
@@ -431,7 +428,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var chiParamsDto = receivedParameters.Parameters as IParamsDto<ChiSquareParameters>;
                     chiParamsDto?.FillParameters(ref _chiSquareParameters);
-                    Logger.LogInfo("Received ChiSquare method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
+                    CommonLogger.LogInfo("Received ChiSquare method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ChiSqrParamsDto));
                 }
                 break;
             case AnalysisMethod.RegularSingular:
@@ -439,7 +436,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var rsParamsDto = receivedParameters.Parameters as IParamsDto<RsParameters>;
                     rsParamsDto?.FillParameters(ref _rsParameters);
-                    Logger.LogInfo("Received Regular-Singular method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
+                    CommonLogger.LogInfo("Received Regular-Singular method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as RsParamsDto));
                 }
                 break;
             case AnalysisMethod.Spa:
@@ -447,7 +444,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var spaParamsDto = receivedParameters.Parameters as IParamsDto<SpaParameters>;
                     spaParamsDto?.FillParameters(ref _spaParameters);
-                    Logger.LogInfo("Received SPA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as SpaParamsDto));
+                    CommonLogger.LogInfo("Received SPA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as SpaParamsDto));
                 }
                 break;
             case AnalysisMethod.Fan:
@@ -455,7 +452,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var fanParamsDto = receivedParameters.Parameters as IParamsDto<FanParameters>;
                     fanParamsDto?.FillParameters(ref _fanParameters);
-                    Logger.LogInfo("Received FAN method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as FanParamsDto));
+                    CommonLogger.LogInfo("Received FAN method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as FanParamsDto));
                 }
                 break;
             case AnalysisMethod.Zca:
@@ -463,7 +460,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var zcaParamsDto = receivedParameters.Parameters as IParamsDto<ZcaParameters>;
                     zcaParamsDto?.FillParameters(ref _zcaParameters);
-                    Logger.LogInfo("Received ZCA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ZcaParamsDto));
+                    CommonLogger.LogInfo("Received ZCA method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as ZcaParamsDto));
                 }
                 break;
             case AnalysisMethod.KochZhaoAnalysis:
@@ -471,7 +468,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
                 {
                     var kzhaParamsDto = receivedParameters.Parameters as IParamsDto<KzhaParameters>;
                     kzhaParamsDto?.FillParameters(ref _kzhaParameters);
-                    Logger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
+                    CommonLogger.LogInfo("Received Koch-Zhao Analysis method parameters are: \n" + Common.Tools.GetFormattedJson(receivedParameters.Parameters as KzhaParamsDto));
                 }
                 break;
         }
@@ -487,13 +484,32 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         if (csaResult is null || rsResult is null)
         {
-            Logger.LogWarning("No results for joint decision window, operation canceled");
+            CommonLogger.LogWarning("No results for joint decision window, operation canceled");
             return;
         }
 
         var additionalInfoVm = new AdditionalInfoWindowViewModel();
         var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
         additionalInfoVm.OpenJointDecisionInfo(csaResult, rsResult);
+
+        if (_mainWindowViewModel.MainWindow is not null)
+            await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
+    }
+
+    /// <summary>
+    /// Открытие модального окна гистограммы модулей разниц коэффициентов матриц ДКП
+    /// </summary>
+    public async Task OpenKzhaHistoWindow()
+    {
+        if (CurrentImage is null)
+        {
+            CommonLogger.LogWarning("No image for KZhA Histogram window, operation canceled");
+            return;
+        }
+
+        var additionalInfoVm = new AdditionalInfoWindowViewModel();
+        var additionalInfoWindow = new AdditionalInfoWindow() { DataContext = additionalInfoVm };
+        await additionalInfoVm.OpenKzhaHistoInfo(CurrentImage);
 
         if (_mainWindowViewModel.MainWindow is not null)
             await additionalInfoWindow.ShowDialog(_mainWindowViewModel.MainWindow);
@@ -510,14 +526,15 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             CurrentImage = new ImageHandler(path);
             TempManager.Instance.RememberHandler(CurrentImage);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах методов или создат объекты параметров, если их нет
-            Logger.LogInfo($"Loaded new image for steganalysis: {CurrentImage.ImgPath}");
+            CommonLogger.LogInfo($"Loaded new image for steganalysis: {CurrentImage.ImgPath}");
 
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Error while creating image handler for '{path}': {ex.Message}");
+            CommonLogger.LogError($"Error while creating image handler for '{path}': {ex.Message}");
+            ImagePath = string.Empty;
         }
 
         return false;
@@ -534,7 +551,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
-            Logger.LogInfo($"Loading new image for steganalysis: '{path}' copying to Temp");
+            CommonLogger.LogInfo($"Loading new image for steganalysis: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -543,6 +560,10 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             {
                 TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
+            }
+            else
+            {
+                ImagePath = string.Empty;
             }
         }
 
@@ -581,11 +602,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public async Task StartAnalysis()
     {
         var image = TempManager.Instance.GetOriginalImageByTemp(CurrentImage?.ImgName ?? string.Empty);
-        Logger.LogInfo($"Started new steganalysis operation from UI for image '{image}'");
+        CommonLogger.LogInfo($"Started new steganalysis operation from UI for image '{image}'");
         if (!ActiveMethods.Any(m => m.Value))
         {
             DrawCurrentImage();
-            Logger.LogWarning("No active steganalysis methods, operation canceled");
+            CommonLogger.LogWarning("No active steganalysis methods, operation canceled");
             return;
         }
 
@@ -596,7 +617,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Fatal error while executing analysis joint analysis operation: [{ex.GetType().Name}] {ex.Message}");
+            CommonLogger.LogError($"Fatal error while executing analysis joint analysis operation: [{ex.GetType().Name}] {ex.Message}");
         }
 
         // Возврат текущего изображения в превью, если визуализированное не вернулось из методов СА - пока что только Хи-квадрат
@@ -606,7 +627,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         ProcessAnalysisResults(result);
 
-        Logger.LogInfo("Steganalysis operation completed");
+        CommonLogger.LogInfo("Steganalysis operation completed");
     }
 
     private async Task<JointAnalysisResult> AnalysisOperationExecute()
@@ -631,7 +652,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
         if (ActiveMethods[AnalysisMethod.Complex] && _complexSaParameters is not null)
             jointAnalysisParams.ComplexSaMethodParameters = _complexSaParameters;
 
-        Logger.LogInfo("Starting steganalysis algorithms");
+        CommonLogger.LogInfo("Starting steganalysis algorithms");
 
         var result = await JointAnalysisStarter.Start(jointAnalysisParams);
         return result;
@@ -662,11 +683,11 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
 
         // Вывод визуализированного изображения
         if (chiRes is not null && (_chiSquareParameters?.Visualize ?? false))
-            DrawedImage = chiRes?.Image;
+            DrawnImage = chiRes?.Image;
 
         // Обновление текущих сохранённых результатов
         CurrentResults = new SteganalysisResultsDto(chiRes, rsRes, spaRes, fanRes, kzhaRes, zcaRes, statmRes, complexRes, results.ElapsedTime);
-        Logger.LogInfo("Steganalysis operaions info:\n"
+        CommonLogger.LogInfo("Steganalysis operaions info:\n"
             + (chiRes is null ? string.Empty : "\tChi-Square Attack result = " + Common.Tools.GetFormattedJson(chiRes, true))
             + (rsRes is null ? string.Empty : "\n\tRegular-Singular result = " + Common.Tools.GetFormattedJson(rsRes, true))
             + (spaRes is null ? string.Empty : "\n\tSample Pair Analysis result = " + Common.Tools.GetFormattedJson(spaRes, true))
@@ -693,7 +714,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     public void DrawCurrentImage()
     {
         if (CurrentImage is not null)
-            DrawedImage = CurrentImage;
+            DrawnImage = CurrentImage;
     }
 
     /// <summary>
@@ -709,8 +730,8 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
     // Сбрасывает данные об изображении и результатах
     private void ResetImageAndResults()
     {
-        ImagePath = ImageNotSelectedText;
-        DrawedImage = null;
+        ImagePath = string.Empty;
+        DrawnImage = null;
         ResetResults();
 
         if (CurrentImage is not null)
@@ -739,7 +760,7 @@ public class AnalyzerViewModel : MainWindowViewModelBaseChild
             return;
 
         var results = new StringBuilder();
-        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection) + GetResultStringByState(CurrentResults.ComplexMethodState, CurrentResults.IsHidingDetected));
+        results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.HidingDecisionDetection) + GetResultStringByState(CurrentResults.ComplexMethodState, CurrentResults.IsHidingDetected));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue) + GetResultStringByState(CurrentResults.MethodChiSqrState, CurrentResults.ChiSqrMessageRelativeVolume));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.RsValue) + GetResultStringByState(CurrentResults.MethodRsState, CurrentResults.RsMessageRelativeVolume));
         results.AppendLine(Common.Tools.AddColon(Constants.ResultsNames.SpaValue) + GetResultStringByState(CurrentResults.MethodSpaState, CurrentResults.SpaMessageRelativeVolume));

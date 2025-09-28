@@ -1,0 +1,640 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnalyzerTab.UsingMethods" xml:space="preserve">
+    <value>使用的方法</value>
+  </data>
+  <data name="AnalyzerTab.MethodsExpander" xml:space="preserve">
+    <value>隐写分析方法</value>
+  </data>
+  <data name="AnalyzerTab.ResultsExpander" xml:space="preserve">
+    <value>隐写分析结果</value>
+  </data>
+  <data name="Common.ChooseImage" xml:space="preserve">
+    <value>选择图像</value>
+  </data>
+  <data name="Common.ImageNotSelected" xml:space="preserve">
+    <value>未选择图像</value>
+  </data>
+  <data name="Common.Off" xml:space="preserve">
+    <value>关</value>
+  </data>
+  <data name="Common.On" xml:space="preserve">
+    <value>开</value>
+  </data>
+  <data name="Common.Start" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="ExtractorTab.KzhaHided" xml:space="preserve">
+    <value>Koch–Zhao 隐藏数据</value>
+  </data>
+  <data name="ExtractorTab.LsbHided" xml:space="preserve">
+    <value>LSB 隐藏数据</value>
+  </data>
+  <data name="ExtractorTab.ParametersExpander" xml:space="preserve">
+    <value>提取参数</value>
+  </data>
+  <data name="ExtractorTab.ResultsExpander" xml:space="preserve">
+    <value>提取结果</value>
+  </data>
+  <data name="InfoTab.AboutText" xml:space="preserve">
+    <value>Stego Revealer 是一个用于执行隐写分析并处理隐写方法以隐藏和提取信息的软件套件。
+
+可用的隐写分析方法:
+    - 综合隐写分析方法;
+    - 卡方检验攻击 (Chi-Square, CSA);
+    - RS 分析 (Regular-Singular);
+    - 样本对分析 (SPA);
+    - 快速加性噪声方法 (FAN, HCF-COM);
+    - Zhilkin 压缩分析 (ZCA);
+    - Koch–Zhao 顺序嵌入分析 (CKZhA).
+
+可用的隐写数据提取方法:
+    - LSB 方法;
+    - Koch–Zhao 方法.
+
+开发者: Iaroslav Grachev
+学术指导: V. G. Sidorenko</value>
+  </data>
+  <data name="Methods.ChiSqrMethod" xml:space="preserve">
+    <value>卡方检验方法 (Chi-Square 攻击)</value>
+  </data>
+  <data name="Methods.ComplexMethod" xml:space="preserve">
+    <value>综合隐写分析方法</value>
+  </data>
+  <data name="Methods.FanMethod" xml:space="preserve">
+    <value>快速加性噪声方法 (HCF-COM)</value>
+  </data>
+  <data name="Methods.KzhaMethod" xml:space="preserve">
+    <value>顺序 Koch–Zhao 隐写分析</value>
+  </data>
+  <data name="Methods.RsMethod" xml:space="preserve">
+    <value>RS 方法</value>
+  </data>
+  <data name="Methods.SpaMethod" xml:space="preserve">
+    <value>SPA 方法 (样本对分析)</value>
+  </data>
+  <data name="Methods.ZcaMethod" xml:space="preserve">
+    <value>Zhilkin 压缩分析方法 (ZCA)</value>
+  </data>
+  <data name="SettingsTab.Logging" xml:space="preserve">
+    <value>日志记录</value>
+  </data>
+  <data name="Tabs.Analyzer" xml:space="preserve">
+    <value>隐写分析器</value>
+  </data>
+  <data name="Tabs.Extractor" xml:space="preserve">
+    <value>隐写解码器</value>
+  </data>
+  <data name="Tabs.Hider" xml:space="preserve">
+    <value>隐写编码器</value>
+  </data>
+  <data name="Common.Params" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="AnalyzerTab.Results.ComplexMethodTitle" xml:space="preserve">
+    <value>通过综合隐写分析检测到的嵌入</value>
+  </data>
+  <data name="AnalyzerTab.Results.UndefinedResult" xml:space="preserve">
+    <value>无法确定</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResult" xml:space="preserve">
+    <value>未进行分析</value>
+  </data>
+  <data name="AnalyzerTab.Results.CsaMethodTitle" xml:space="preserve">
+    <value>基于卡方方法的嵌入率评估</value>
+  </data>
+  <data name="AnalyzerTab.Results.RsMethodTitle" xml:space="preserve">
+    <value>基于RS方法的嵌入率评估</value>
+  </data>
+  <data name="AnalyzerTab.Results.SpaMethodTitle" xml:space="preserve">
+    <value>基于SPA方法的嵌入率评估</value>
+  </data>
+  <data name="AnalyzerTab.Results.ZcaMethodTitle" xml:space="preserve">
+    <value>基于Zhilkin压缩分析检测到的嵌入</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.FoundInterval" xml:space="preserve">
+    <value>通过Koch–Zhao隐写分析检测到可疑区间</value>
+  </data>
+  <data name="AnalyzerTab.Results.JointDecisionTitle" xml:space="preserve">
+    <value>联合结论</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodTitle" xml:space="preserve">
+    <value>基于FAN (HCF-COM) 分析检测到的嵌入</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.BitsNum" xml:space="preserve">
+    <value>隐藏信息的比特数</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Indexes" xml:space="preserve">
+    <value>可疑区间的块索引</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Threshold" xml:space="preserve">
+    <value>估计的嵌入阈值</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Coeffs" xml:space="preserve">
+    <value>估计的嵌入系数</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.ExtractedData" xml:space="preserve">
+    <value>提取的信息</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoData" xml:space="preserve">
+    <value>无数据</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHiding" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Methods.Stats" xml:space="preserve">
+    <value>图像统计特征</value>
+  </data>
+  <data name="Stats.Noise" xml:space="preserve">
+    <value>噪声水平</value>
+  </data>
+  <data name="Stats.Sharpness" xml:space="preserve">
+    <value>清晰度水平</value>
+  </data>
+  <data name="Stats.Contrast" xml:space="preserve">
+    <value>对比度水平</value>
+  </data>
+  <data name="Stats.Blur" xml:space="preserve">
+    <value>模糊度水平</value>
+  </data>
+  <data name="Stats.Entropy.Shennon" xml:space="preserve">
+    <value>香农熵</value>
+  </data>
+  <data name="Stats.Entropy.Renyi" xml:space="preserve">
+    <value>Rényi 熵</value>
+  </data>
+  <data name="Stats.Entropy.Tsallis" xml:space="preserve">
+    <value>Tsallis 熵</value>
+  </data>
+  <data name="Stats.Entropy.Vaida" xml:space="preserve">
+    <value>Vajda 熵</value>
+  </data>
+  <data name="Stats.Entropy.Havard" xml:space="preserve">
+    <value>Havarda–Charvat 熵</value>
+  </data>
+  <data name="Common.ElapseTime" xml:space="preserve">
+    <value>耗时</value>
+  </data>
+  <data name="AnalyzerTab.Results.CopyResults" xml:space="preserve">
+    <value>复制结果</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParams" xml:space="preserve">
+    <value>提取参数</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParamsAndMethod" xml:space="preserve">
+    <value>提取方式和参数</value>
+  </data>
+  <data name="ExtractorTab.HidingLinear" xml:space="preserve">
+    <value>顺序</value>
+  </data>
+  <data name="ExtractorTab.HidingRandom" xml:space="preserve">
+    <value>伪随机</value>
+  </data>
+  <data name="ExtractorTab.RandomKey" xml:space="preserve">
+    <value>伪随机数生成器密钥</value>
+  </data>
+  <data name="ExtractorTab.StartIndex" xml:space="preserve">
+    <value>起始索引</value>
+  </data>
+  <data name="ExtractorTab.ByteLength" xml:space="preserve">
+    <value>长度 (字节)</value>
+  </data>
+  <data name="ExtractorTab.BlocksIndexes" xml:space="preserve">
+    <value>块索引</value>
+  </data>
+  <data name="ExtractorTab.Threshold" xml:space="preserve">
+    <value>阈值</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataTitle" xml:space="preserve">
+    <value>原始提取数据</value>
+  </data>
+  <data name="Common.OpenInEditor" xml:space="preserve">
+    <value>在编辑器中打开</value>
+  </data>
+  <data name="Common.SaveToFile" xml:space="preserve">
+    <value>保存到文件</value>
+  </data>
+  <data name="Methods.JointDecisionMethod" xml:space="preserve">
+    <value>CSA+RS 联合结论方法</value>
+  </data>
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
+    <value>伪随机嵌入</value>
+  </data>
+  <data name="JointAnalysis.LinearHiding" xml:space="preserve">
+    <value>顺序嵌入</value>
+  </data>
+  <data name="JointAnalysis.RsEstimation" xml:space="preserve">
+    <value>RS 评估</value>
+  </data>
+  <data name="JointAnalysis.CsaEstimation" xml:space="preserve">
+    <value>CSA 评估</value>
+  </data>
+  <data name="JointAnalysis.SectorsDescription" xml:space="preserve">
+    <value>区块描述</value>
+  </data>
+  <data name="JointAnalysis.EmptyContainer" xml:space="preserve">
+    <value>空容器</value>
+  </data>
+  <data name="JointAnalysis.ResultTitle" xml:space="preserve">
+    <value>CSA+RS 联合结论结果</value>
+  </data>
+  <data name="Params.Csa.Title" xml:space="preserve">
+    <value>卡方检验 (CSA) 参数</value>
+  </data>
+  <data name="Params.Rs.Title" xml:space="preserve">
+    <value>RS 分析参数</value>
+  </data>
+  <data name="Params.Zca.Title" xml:space="preserve">
+    <value>Zhilkin 压缩分析参数 (ZCA)</value>
+  </data>
+  <data name="Params.Fan.Title" xml:space="preserve">
+    <value>FAN (HCF-COM) 分析参数</value>
+  </data>
+  <data name="Params.Spa.Title" xml:space="preserve">
+    <value>SPA 分析参数</value>
+  </data>
+  <data name="Params.Kzha.Title" xml:space="preserve">
+    <value>Koch–Zhao 分析参数</value>
+  </data>
+  <data name="Params.ChannelsChoosing" xml:space="preserve">
+    <value>选择分析通道</value>
+  </data>
+  <data name="Params.Channels.Red" xml:space="preserve">
+    <value>红色通道</value>
+  </data>
+  <data name="Params.Channels.Blue" xml:space="preserve">
+    <value>蓝色通道</value>
+  </data>
+  <data name="Params.Channels.Green" xml:space="preserve">
+    <value>绿色通道</value>
+  </data>
+  <data name="Params.TraverseType.Title" xml:space="preserve">
+    <value>像素遍历方式</value>
+  </data>
+  <data name="Params.TraverseType.Vertical" xml:space="preserve">
+    <value>垂直</value>
+  </data>
+  <data name="Params.TraverseType.Horizontal" xml:space="preserve">
+    <value>水平</value>
+  </data>
+  <data name="Params.Blocks.Width" xml:space="preserve">
+    <value>块宽度</value>
+  </data>
+  <data name="Params.Blocks.Height" xml:space="preserve">
+    <value>块高度</value>
+  </data>
+  <data name="Params.Csa.PValueThreshold" xml:space="preserve">
+    <value>p 值阈值</value>
+  </data>
+  <data name="Params.Csa.Visualize" xml:space="preserve">
+    <value>可视化隐藏信息区域</value>
+  </data>
+  <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
+    <value>忽略期望频率为零的对</value>
+  </data>
+  <data name="Params.Csa.UsePreviousCnums" xml:space="preserve">
+    <value>使用累积模式</value>
+  </data>
+  <data name="Params.Csa.UseUnifiedCategories" xml:space="preserve">
+    <value>合并低频类别</value>
+  </data>
+  <data name="Params.Csa.UnifyingThreshold" xml:space="preserve">
+    <value>类别合并阈值</value>
+  </data>
+  <data name="Params.Rs.FlippingMask" xml:space="preserve">
+    <value>翻转掩码</value>
+  </data>
+  <data name="Params.Spa.Direction.Title" xml:space="preserve">
+    <value>选择分析方向</value>
+  </data>
+  <data name="Params.Spa.Direction.Horizontal" xml:space="preserve">
+    <value>水平</value>
+  </data>
+  <data name="Params.Spa.Direction.Vertical" xml:space="preserve">
+    <value>垂直</value>
+  </data>
+  <data name="Params.Spa.Direction.Diagonal" xml:space="preserve">
+    <value>对角</value>
+  </data>
+  <data name="Params.Spa.UseDoubleDirection" xml:space="preserve">
+    <value>使用双遍历</value>
+  </data>
+  <data name="Params.Fan.ComThreshold" xml:space="preserve">
+    <value>马氏距离阈值 (质心, COM)</value>
+  </data>
+  <data name="Params.Kzha.AutoExtract" xml:space="preserve">
+    <value>自动提取信息</value>
+  </data>
+  <data name="Params.Kzha.CutThreshold" xml:space="preserve">
+    <value>可疑值阈值</value>
+  </data>
+  <data name="Params.Kzha.MinThreshold" xml:space="preserve">
+    <value>最小考虑嵌入阈值</value>
+  </data>
+  <data name="Params.Kzha.SelectedCoeffs" xml:space="preserve">
+    <value>选定的系数</value>
+  </data>
+  <data name="Params.Kzha.AvailableCoeffs" xml:space="preserve">
+    <value>可用的系数</value>
+  </data>
+  <data name="Params.Zca.RatioThreshold" xml:space="preserve">
+    <value>压缩比阈值</value>
+  </data>
+  <data name="Params.Zca.OverallCompression" xml:space="preserve">
+    <value>整体分析 (所有通道一起)</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Title" xml:space="preserve">
+    <value>选择压缩方法</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Zip" xml:space="preserve">
+    <value>ZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Gzip" xml:space="preserve">
+    <value>GZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Bzip2" xml:space="preserve">
+    <value>BZIP2</value>
+  </data>
+  <data name="Common.Ms" xml:space="preserve">
+    <value>毫秒</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResultLower" xml:space="preserve">
+    <value>未进行分析</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoDataLower" xml:space="preserve">
+    <value>无数据</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHidingLower" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodEstimation" xml:space="preserve">
+    <value>基于FAN (HCF-COM) 方法的嵌入率评估</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingDetected" xml:space="preserve">
+    <value>已检测</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingNotDetected" xml:space="preserve">
+    <value>未检测</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="Common.WasError" xml:space="preserve">
+    <value>发生错误</value>
+  </data>
+  <data name="SettingsTab.Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Common.Image.Width" xml:space="preserve">
+    <value>宽度</value>
+  </data>
+  <data name="Common.Image.Height" xml:space="preserve">
+    <value>高度</value>
+  </data>
+  <data name="Methods.ComplexMethodTipText" xml:space="preserve">
+    <value>基于训练过的二元分类器的评估：CSA、RS、CKZhA、质量指标、像素数量</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
+    <value>上方显示的文本已被过滤：控制符和替换字符已移除</value>
+  </data>
+  <data name="JointAnalysis.O1SectorTitle" xml:space="preserve">
+    <value>O.1 区域</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O1" xml:space="preserve">
+    <value>O.1 区域：未检测到隐藏消息，容器为空</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O2" xml:space="preserve">
+    <value>O.2 区域：消息占据约 {0:0}%，嵌入为伪随机</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O3" xml:space="preserve">
+    <value>O.3 区域：消息占据约 {0:0}%，嵌入为顺序式</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O4" xml:space="preserve">
+    <value>O.4 区域：消息占据约 {0:0}% ，嵌入为伪随机</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O5" xml:space="preserve">
+    <value>O.5 区域：消息至少占据 80%，嵌入为伪随机</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O6" xml:space="preserve">
+    <value>O.6 区域：消息占据约 100%，嵌入为顺序式</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O7" xml:space="preserve">
+    <value>O.7 区域：消息占据约 100%，嵌入为伪随机</value>
+  </data>
+  <data name="JointAnalysis.Decisions.Undefined" xml:space="preserve">
+    <value>无法得出明确结论，该点不属于任何区域</value>
+  </data>
+  <data name="HiderTab.HiderParams" xml:space="preserve">
+    <value>嵌入参数</value>
+  </data>
+  <data name="HiderTab.HiderParamsAndMethod" xml:space="preserve">
+    <value>嵌入方法与参数</value>
+  </data>
+  <data name="HiderTab.MethodLsb" xml:space="preserve">
+    <value>LSB 方法</value>
+  </data>
+  <data name="HiderTab.MethodKochZhao" xml:space="preserve">
+    <value>Koch-Zhao 方法</value>
+  </data>
+  <data name="HiderTab.HideLinear" xml:space="preserve">
+    <value>顺序</value>
+  </data>
+  <data name="HiderTab.HideRandom" xml:space="preserve">
+    <value>伪随机</value>
+  </data>
+  <data name="HiderTab.RandomKey" xml:space="preserve">
+    <value>PRNG 密钥</value>
+  </data>
+  <data name="HiderTab.StartIndex" xml:space="preserve">
+    <value>起始索引</value>
+  </data>
+  <data name="HiderTab.Threshold" xml:space="preserve">
+    <value>阈值</value>
+  </data>
+  <data name="HiderTab.ChooseData" xml:space="preserve">
+    <value>选择数据文件</value>
+  </data>
+  <data name="HiderTab.ChooseDataTitle" xml:space="preserve">
+    <value>选择要隐藏的数据</value>
+  </data>
+  <data name="HiderTab.RemoveLoadedData" xml:space="preserve">
+    <value>取消选择数据文件</value>
+  </data>
+  <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
+    <value>嵌入后的图像</value>
+  </data>
+  <data name="HiderTab.ResultsExpander" xml:space="preserve">
+    <value>嵌入结果</value>
+  </data>
+  <data name="HiderTab.ImageInLeftPanelInfo" xml:space="preserve">
+    <value>嵌入后的图像显示在左侧面板中</value>
+  </data>
+  <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
+    <value>保存生成的嵌入图像</value>
+  </data>
+  <data name="Common.LoadedImageTitle" xml:space="preserve">
+    <value>已加载图像</value>
+  </data>
+  <data name="Common.CoveredImageTitle" xml:space="preserve">
+    <value>含嵌入的图像</value>
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
+    <value>启动 API</value>
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
+    <value>停止 API</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpAddress" xml:space="preserve">
+    <value>HTTP 地址</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsAddress" xml:space="preserve">
+    <value>HTTPS 地址</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
+    <value>使用 HTTPS 重定向</value>
+  </data>
+  <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
+    <value>API 配置</value>
+  </data>
+  <data name="SettingsTab.Version" xml:space="preserve">
+    <value>应用版本</value>
+  </data>
+  <data name="Histo.Title" xml:space="preserve">
+    <value>DCT 矩阵系数差值幅度直方图</value>
+  </data>
+  <data name="Histo.ChooseCoeffs" xml:space="preserve">
+    <value>系数对</value>
+  </data>
+  <data name="Histo.ShowAllPairs" xml:space="preserve">
+    <value>所有系数对</value>
+  </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>DCT 矩阵频域表示中系数对差值幅度直方图</value>
+  </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>选择像素矩阵（或像素块）遍历方式：按行</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>选择像素矩阵（或像素块）遍历方式：按列</value>
+  </data>
+</root>

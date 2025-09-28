@@ -25,6 +25,9 @@
 		<DataTemplate DataType="{x:Type viewmodels:AnalyzerViewModel}">
 			<views:AnalyzerView/>
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type viewmodels:ApiLauncherViewModel}">
+			<views:ApiLauncherView/>
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type viewmodels:InfoPageViewModel}">
 			<views:InfoPageView/>
 		</DataTemplate>
@@ -43,30 +46,36 @@
 			<StackPanel>
 				<DockPanel VerticalAlignment="Top" LastChildFill="False" Margin="20 0">
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
-						<Button Name="AnalyzerBtn" Content="Стегоанализатор" Classes="HeaderBtn"
+						<Button Name="AnalyzerBtn" Content="{Binding L[Tabs.Analyzer]}" Classes="HeaderBtn"
 								ClickMode="Press" Click="AnalyzerBtn_Click"/>
 						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
-						<Button Name="HiderBtn" Content="Стеганокодер" Classes="HeaderBtn"
-								ClickMode="Press" Click="HiderBtn_Click" IsEnabled="False"/>
-						<Rectangle Margin="0 3 0 0" Height="1" Fill="Gray"/>
+						<Button Name="HiderBtn" Content="{Binding L[Tabs.Hider]}" Classes="HeaderBtn"
+								ClickMode="Press" Click="HiderBtn_Click"/>
+						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Left">
-						<Button Name="ExtractorBtn" Content="Стеганодекодер" Classes="HeaderBtn"
+						<Button Name="ExtractorBtn" Content="{Binding L[Tabs.Extractor]}" Classes="HeaderBtn"
 								ClickMode="Press" Click="ExtractorBtn_Click"/>
 						<Rectangle Margin="0 3 0 0" Height="1" Fill="White"/>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
-						<Button Name="AboutBtn" Content="" Classes="HeaderBtnWithIcon"
+						<Button Name="AboutBtn" Classes="HeaderBtnWithIcon"
 								ClickMode="Press" Click="AboutBtn_Click">
 							<PathIcon Data="{StaticResource IconInfo}"/>
 						</Button>
 					</StackPanel>
 					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
-						<Button Name="SettingsBtn" Content="" Classes="HeaderBtnWithIcon"
+						<Button Name="SettingsBtn" Classes="HeaderBtnWithIcon"
 								ClickMode="Press" Click="SettingsBtn_Click">
 							<PathIcon Data="{StaticResource IconSettings}"/>
+						</Button>
+					</StackPanel>
+					<StackPanel Classes="HeaderBtnStackPanel" DockPanel.Dock="Right">
+						<Button Name="ApiLauncherBtn" Classes="HeaderBtnWithIcon"
+								ClickMode="Press" Click="ApiLauncherBtn_Click">
+							<PathIcon Data="{StaticResource IconApi}"/>
 						</Button>
 					</StackPanel>
 				</DockPanel>

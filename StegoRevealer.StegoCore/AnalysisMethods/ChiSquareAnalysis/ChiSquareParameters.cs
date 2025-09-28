@@ -74,12 +74,12 @@ public class ChiSquareParameters
     /// <summary>
     /// Объединять ли низкочастотные категории (массивов ожидаемых и наблюдаемых частот цветов) вместе
     /// </summary>
-    public bool UseUnifiedCathegories { get; set; } = true;
+    public bool UseUnifiedCategories { get; set; } = true;
 
     /// <summary>
     /// Категори с частотой ниже либо равной этой будут объединены
     /// </summary>
-    public int UnifyingCathegoriesThreshold { get; set; } = 4;
+    public int UnifyingCategoriesThreshold { get; set; } = 4;
 
     /// <summary>
     /// Порог значения p-value<br/>

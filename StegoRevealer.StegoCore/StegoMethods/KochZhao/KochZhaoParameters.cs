@@ -39,7 +39,7 @@ public class KochZhaoParameters : StegoMethodParams, IParams
     /// <summary>
     /// Порог для разницы коэффициентов скрытия
     /// </summary>
-    public double Threshold { get; set; } = 120;
+    public double Threshold { get; set; } = 70;
 
     /// <summary>
     /// Коэффициенты матрицы ДКП для скрытия
@@ -153,7 +153,7 @@ public class KochZhaoParameters : StegoMethodParams, IParams
         Seed = null;
         InterlaceChannels = true;
 
-        Threshold = 120;
+        Threshold = 70;
 
         Channels.Clear();
         Channels.Add(ImgChannel.Blue);

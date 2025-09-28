@@ -11,17 +11,17 @@ public class LoggerHandler
 
     public void LogInfo(string message)
     {
-        _logActions.Add(() => Logger.LogInfo(message));
+        _logActions.Add(() => CommonLogger.LogInfo(message));
     }
 
     public void LogWarning(string message)
     {
-        _logActions.Add(() => Logger.LogWarning(message));
+        _logActions.Add(() => CommonLogger.LogWarning(message));
     }
 
     public void LogError(string message)
     {
-        _logActions.Add(() => Logger.LogError(message));
+        _logActions.Add(() => CommonLogger.LogError(message));
     }
 
     public void Flush()

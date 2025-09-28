@@ -21,7 +21,7 @@
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
 						Grid.Column="0" Grid.Row="0">
 				<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
-					<Button Name="LoadImageButton" Content="Выбор изображения"
+					<Button Name="LoadImageButton" Content="{Binding L[Common.ChooseImage]}"
 							DockPanel.Dock="Left"
 							Height="40" Padding="15 0" Margin="0"
 							VerticalAlignment="Center" HorizontalAlignment="Stretch"
@@ -31,7 +31,7 @@
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 HorizontalAlignment="Stretch"
-							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
 						<ToolTip.Tip>
 							<StackPanel>
 								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
@@ -39,12 +39,12 @@
 						</ToolTip.Tip>
 					</TextBox>
 				</DockPanel>
-				<Image Name="ImagePreview" Source="{Binding Path=DrawedImageSource}"
+				<Image Name="ImagePreview" Source="{Binding Path=DrawnImageSource}"
 					   Margin="10"
 					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
 					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
 				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
-					<TextBox Text="Ширина:"
+					<TextBox Text="{Binding L[Common.Image.Width], StringFormat='{}{0}:'}"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -54,7 +54,7 @@
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
 							 HorizontalAlignment="Stretch"/>
-					<TextBox Text="Высота:" Margin="30 0 0 0"
+					<TextBox Text="{Binding L[Common.Image.Height], StringFormat='{}{0}:'}" Margin="30 0 0 0"
 							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
 							 Classes="ImagePathTb" IsEnabled="False"
 							 FontStyle="Normal"
@@ -74,7 +74,7 @@
 						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 				
 				<!-- Экспандер выбора методов -->
-				<Expander Name="MethodsExpander" Header="Методы стегоанализа"
+				<Expander Name="MethodsExpander" Header="{Binding L[AnalyzerTab.MethodsExpander]}"
 						  Classes="RightPanelMethodsExpander"
 						  IsExpanded="{Binding Path=IsMethodsOpened}"
 						  Expanded="MethodsExpander_Expanded"
@@ -87,7 +87,7 @@
 						  IsEnabled="True">
 					<Grid ColumnDefinitions="*" RowDefinitions="50,*">
 
-						<Label Content="Используемые методы"
+						<Label Content="{Binding L[AnalyzerTab.UsingMethods]}"
 							   FontFamily="Arial" FontWeight="Bold" FontSize="18"
 							   Foreground="#FFECECEC"
 							   Grid.Column="0" Grid.Row="0"
@@ -99,64 +99,75 @@
 						<Grid Name="MethodsSelectGrid" IsEnabled="{Binding Path=HasLoadedImage}"
 							  Grid.Column="0" Grid.Row="1"
 							  Margin="20 10 20 10"
-							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30">
+							  ColumnDefinitions="*,100" RowDefinitions="30,30,30,30,30,30,30,30">
 
-							<CheckBox Name="IsComplexMethodChecked" Content="Методика комплексного стегоанализа"
+							<CheckBox Name="IsComplexMethodChecked" Content="{Binding L[Methods.ComplexMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="0"
 									  IsChecked="{Binding Path=ComplexMethodSelected}"
 									  ToolTip.Placement="Pointer" ToolTip.ShowOnDisabled="True">
 									<ToolTip.Tip>
 										<StackPanel>
-											<TextBlock FontSize="15" Text="{Binding Path=ComplexSaTipText}"/>
+											<TextBlock FontSize="15" Text="{Binding L[Methods.ComplexMethodTipText]}"/>
 										</StackPanel>
 									</ToolTip.Tip>
 								</CheckBox>
-							<CheckBox Name="IsMethodChiSqrChecked" Content="Метод Хи-квадрат (Chi-Square Attack)"
+							<CheckBox Name="IsMethodChiSqrChecked" Content="{Binding L[Methods.ChiSqrMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="1"
 									  IsChecked="{Binding Path=MethodChiSqrSelected}"/>
-							<Button Name="MethodChiSqrParamsBtn" Content="Параметры"
+							<Button Name="MethodChiSqrParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="1"
 									Click="MethodChiSqrParamsBtn_Click"/>
-							<CheckBox Name="IsMethodRsChecked" Content="Метод Regular-Singular"
+							<CheckBox Name="IsMethodRsChecked" Content="{Binding L[Methods.RsMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="2"
 									  IsChecked="{Binding Path=MethodRsSelected}"/>
-							<Button Name="MethodRsParamsBtn" Content="Параметры"
+							<Button Name="MethodRsParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="2"
 									Click="MethodRsParamsBtn_Click"/>
-							<CheckBox Name="IsMethodSpaChecked" Content="Метод Sample Pair Analysis"
+							<CheckBox Name="IsMethodSpaChecked" Content="{Binding L[Methods.SpaMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="3"
 									  IsChecked="{Binding Path=MethodSpaSelected}"/>
-							<Button Name="MethodSpaParamsBtn" Content="Параметры"
+							<Button Name="MethodSpaParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="3"
 									Click="MethodSpaParamsBtn_Click"/>
-							<CheckBox Name="IsMethodFanChecked" Content="Метод Fast Additive Noise (HCF-COM)"
+							<CheckBox Name="IsMethodFanChecked" Content="{Binding L[Methods.FanMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="4"
 									  IsChecked="{Binding Path=MethodFanSelected}"/>
-							<Button Name="MethodFanParamsBtn" Content="Параметры"
+							<Button Name="MethodFanParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="4"
 									Click="MethodFanParamsBtn_Click"/>
-							<CheckBox Name="IsMethodZcaChecked" Content="Метод анализа сжатия по Жилкину"
+							<CheckBox Name="IsMethodZcaChecked" Content="{Binding L[Methods.ZcaMethod]}"
 									  Classes="MethodTurnCheckbox"
 									  Grid.Column="0" Grid.Row="5"
 									  IsChecked="{Binding Path=MethodZcaSelected}"/>
-							<Button Name="MethodZcaParamsBtn" Content="Параметры"
+							<Button Name="MethodZcaParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="5"
 									Click="MethodZcaParamsBtn_Click"/>
-							<CheckBox Name="IsMethodKzaChecked" Content="Стегоанализ последовательного Коха-Жао"
-									  Classes="MethodTurnCheckbox"
-									  Grid.Column="0" Grid.Row="6"
-									  IsChecked="{Binding Path=MethodKzhaSelected}"/>
-							<Button Name="MethodKzaParamsBtn" Content="Параметры"
+							<DockPanel LastChildFill="True" Grid.Column="0" Grid.Row="6" Margin="0 0 5 5">
+								<Button Name="ShowKzhaHisto" DockPanel.Dock="Right" IsVisible="{Binding Path=HasLoadedImage}"
+										Classes="MethodParametersBtn" Margin="0"
+										Click="ShowKzhaHisto_Click">
+									<PathIcon Data="{StaticResource IconHisto}"/>
+									<ToolTip.Tip>
+										<StackPanel>
+											<TextBlock FontSize="15" Text="{Binding L[Histo.BtnToolTip]}"/>
+										</StackPanel>
+									</ToolTip.Tip>
+								</Button>
+								<CheckBox Name="IsMethodKzaChecked" Content="{Binding L[Methods.KzhaMethod]}"
+										  Classes="MethodTurnCheckbox" DockPanel.Dock="Left"
+										  IsChecked="{Binding Path=MethodKzhaSelected}"/>
+							</DockPanel>
+							<Button Name="MethodKzaParamsBtn" Content="{Binding L[Common.Params]}"
 									Classes="MethodParametersBtn"
 									Grid.Column="1" Grid.Row="6"
 									Click="MethodKzaParamsBtn_Click"/>
@@ -172,7 +183,7 @@
 						   RelativePanel.AlignLeftWithPanel="True"/>
 
 				<!-- Экспандер результатов -->
-				<Expander Name="ResultsExpander" Header="Результаты стегоанализа"
+				<Expander Name="ResultsExpander" Header="{Binding L[AnalyzerTab.ResultsExpander]}"
 						  IsExpanded="{Binding Path=!IsMethodsOpened}"
 						  Expanded="ResultsExpander_Expanded"
 						  Collapsed="ResultsExpander_Collapsed"
@@ -188,10 +199,10 @@
 							
 							<DockPanel Name="AutoDetectionResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="AutoDetectionResultDesc" Text="Встраивание согласно методике комплексного стегоанализа: "
+								<TextBlock Name="AutoDetectionResultDesc" Text="{Binding L[AnalyzerTab.Results.ComplexMethodTitle], StringFormat='{}{0}:'} "
 										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										 HorizontalAlignment="Stretch"/>
-								<TextBlock Name="AutoDetectionResultValue" Text="невозможно определить"
+								<TextBlock Name="AutoDetectionResultValue" Text="{Binding L[AnalyzerTab.Results.UndefinedResult]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0" Padding="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
@@ -201,35 +212,35 @@
 									  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
 									<DockPanel Name="ChiFullnessBlock" Grid.Row="0" Grid.Column="0"
-									   LastChildFill="True" Margin="0 10 0 0">
-										<TextBlock Name="ChiFullnessDesc" Text="Оценка заполненности по методу Хи-квадрат: "
+											   LastChildFill="True" Margin="0 10 0 0">
+										<TextBlock Name="ChiFullnessDesc" Text="{Binding L[AnalyzerTab.Results.CsaMethodTitle], StringFormat='{}{0}:'} "
 												 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 												 HorizontalAlignment="Stretch"/>
-										<TextBlock Name="ChiFullnessValue" Text="Анализ не проводился"
-												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
+										<TextBlock Name="ChiFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
+												   TextAlignment="Left" Height="25" Margin="20 0 0 0" TextWrapping="WrapWithOverflow"
 												   DockPanel.Dock="Left" ToolTip.Placement="Bottom"/>
 									</DockPanel>
 
 									<DockPanel Name="RsFullnessBlock" Grid.Row="1" Grid.Column="0"
 											   LastChildFill="True">
-										<TextBlock Name="RsFullnessDesc" Text="Оценка заполненности по методу RS: "
+										<TextBlock Name="RsFullnessDesc" Text="{Binding L[AnalyzerTab.Results.RsMethodTitle], StringFormat='{}{0}:'} "
 												   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 												   HorizontalAlignment="Stretch"/>
-										<TextBlock Name="RsFullnessValue" Text="Анализ не проводился"
+										<TextBlock Name="RsFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
 												   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 												   DockPanel.Dock="Left"/>
 									</DockPanel>
 									
-									<Button Name="JointDesicionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
+									<Button Name="JointDecisionOpenBtn" Grid.Column="1" Grid.RowSpan="2" Grid.Row="0"
 											HorizontalAlignment="Center" VerticalAlignment="Center"
 											HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-											Padding="5 10 5 10" Content="Совместный вывод" TextBlock.TextWrapping="WrapWithOverflow"
+											Padding="5 10 5 10" Content="{Binding L[AnalyzerTab.Results.JointDecisionTitle]}" TextBlock.TextWrapping="WrapWithOverflow"
 											TextBlock.TextAlignment="Center" IsVisible="False"
 											ToolTip.ShowOnDisabled="True" ToolTip.Placement="Pointer"
-											Click="JointDesicionOpenBtn_Click">
+											Click="JointDecisionOpenBtn_Click">
 										<ToolTip.Tip>
 											<StackPanel>
-												<TextBlock FontSize="15" Text="Методика формирования вывода при совместном применении методов CSA и RS"/>
+												<TextBlock FontSize="15" Text="{Binding L[Methods.JointDecisionMethod]}"/>
 											</StackPanel>
 										</ToolTip.Tip>
 									</Button>
@@ -239,199 +250,201 @@
 
 							<DockPanel Name="SpaFullnessBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="SpaFullnessDesc" Text="Оценка заполненности по методу SPA: "
+								<TextBlock Name="SpaFullnessDesc" Text="{Binding L[AnalyzerTab.Results.SpaMethodTitle], StringFormat='{}{0}:'} "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="SpaFullnessValue" Text="Анализ не проводился"
+								<TextBlock Name="SpaFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 
 							<DockPanel Name="FanResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="FanResultDesc" Text="Встраивание по методу анализа FAN (HCF-COM): "
+								<TextBlock Name="FanResultDesc" Text="{Binding L[AnalyzerTab.Results.FanMethodTitle], StringFormat='{}{0}:'} "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="FanResultValue" Text="Анализ не проводился"
+								<TextBlock Name="FanResultValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							
 							<DockPanel Name="ZcaResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="ZcaResultDesc" Text="Встраивание по методу анализа сжатия по Жилкину: "
+								<TextBlock Name="ZcaResultDesc" Text="{Binding L[AnalyzerTab.Results.ZcaMethodTitle], StringFormat='{}{0}:'} "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="ZcaResultValue" Text="Анализ не проводился"
+								<TextBlock Name="ZcaResultValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0" Padding="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 						
 							<DockPanel Name="KzhaIntervalFoundedBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaIntervalFoundedDesc" Text="Обнаружен подозрительный интервал при стегоанализе Коха-Жао: "
+								<TextBlock Name="KzhaIntervalFoundedDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.FoundInterval], StringFormat='{}{0}:'} "
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
-								<TextBlock Name="KzhaIntervalFoundedValue" Text="Анализ не проводился"
+								<TextBlock Name="KzhaIntervalFoundedValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="KzhaBitsNumBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaBitsNumDesc" Text="Количество бит скрытой информации: "
+								<TextBlock Name="KzhaBitsNumDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.BitsNum], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="KzhaBitsNumValue" Text="Нет данных"
+								<TextBlock Name="KzhaBitsNumValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="KzhaSuspiciousIntervalBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaSuspiciousIntervalDesc" Text="Индексы блоков подозрительного интервала: "
+								<TextBlock Name="KzhaSuspiciousIntervalDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Indexes], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="KzhaSuspiciousIntervalValue" Text="Нет данных"
+								<TextBlock Name="KzhaSuspiciousIntervalValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="KzhaThresholdBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaThresholdDesc" Text="Предполагаемый порог встраивания: "
+								<TextBlock Name="KzhaThresholdDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Threshold], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="KzhaThresholdValue" Text="Нет данных"
+								<TextBlock Name="KzhaThresholdValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="KzhaCoeffsBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaCoeffsDesc" Text="Коэффициенты предполагаемого встраивания: "
+								<TextBlock Name="KzhaCoeffsDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Coeffs], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="KzhaCoeffsValue" Text="Нет данных"
+								<TextBlock Name="KzhaCoeffsValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="KzhaExtractedDataBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaExtractedDataLabel" Text="Извлечённая информация: "
+								<TextBlock Name="KzhaExtractedDataLabel" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.ExtractedData], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="KzhaExtractedDataLabelValue" Text="Отсутствует"
+								<TextBlock Name="KzhaExtractedDataLabelValue" Text="{Binding L[AnalyzerTab.Results.NoHiding]}"
 										   TextAlignment="Left" Height="25" Margin="20 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<TextBox Name="KzhaExtractedDataValue" Text="" DockPanel.Dock="Top"
-									 TextAlignment="Left" TextWrapping="Wrap"
+									 TextAlignment="Left" TextWrapping="Wrap" 
+									 ScrollViewer.VerticalScrollBarVisibility="Visible"
+									 ScrollViewer.AllowAutoHide="True"
 									 Height="150" Margin="30 0 15 0"
 									 VerticalContentAlignment="Top"
 									 IsVisible="False"/>
 
 							<DockPanel Name="StatResultsTitle" DockPanel.Dock="Top"
 									   LastChildFill="True" Margin="0 10 0 0">
-								<TextBlock Name="StatResultsTitleName" Text="Статистические характеристики изображения:"
+								<TextBlock Name="StatResultsTitleName" Text="{Binding L[Methods.Stats], StringFormat='{}{0}:'}"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsNoise2Block" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsNoise2Desc" Text="Уровень шума: "
+								<TextBlock Name="StatResultsNoise2Desc" Text="{Binding L[Stats.Noise], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsNoise2Value" Text="Нет данных"
+								<TextBlock Name="StatResultsNoise2Value" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsSharpnessBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsSharpnessDesc" Text="Уровень резкости: "
+								<TextBlock Name="StatResultsSharpnessDesc" Text="{Binding L[Stats.Sharpness], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsSharpnessValue" Text="Нет данных"
+								<TextBlock Name="StatResultsSharpnessValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsBlurBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsBlurDesc" Text="Уровень размытости: "
+								<TextBlock Name="StatResultsBlurDesc" Text="{Binding L[Stats.Blur], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsBlurValue" Text="Нет данных"
+								<TextBlock Name="StatResultsBlurValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsContrastBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsContrastDesc" Text="Уровень контраста: "
+								<TextBlock Name="StatResultsContrastDesc" Text="{Binding L[Stats.Contrast], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsContrastValue" Text="Нет данных"
+								<TextBlock Name="StatResultsContrastValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<!--<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия Цаллиса: "
+								<TextBlock Text="{Binding L[Stats.Entropy.Tsallis], StringFormat='{}{0}:'} "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsEntropyTsallisValue" Text="Нет данных"
+								<TextBlock Name="StatResultsEntropyTsallisValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyVaidaBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия Вайда: "
+								<TextBlock Text="{Binding L[Stats.Entropy.Vaida], StringFormat='{}{0}:'} "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsEntropyVaidaValue" Text="Нет данных"
+								<TextBlock Name="StatResultsEntropyVaidaValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>-->
 							<DockPanel Name="StatResultsEntropyShennonBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsEntropyShennonDesc" Text="Энтропия Шеннона: "
+								<TextBlock Name="StatResultsEntropyShennonDesc" Text="{Binding L[Stats.Entropy.Shennon], StringFormat='{}{0}:'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsEntropyShennonValue" Text="Нет данных"
+								<TextBlock Name="StatResultsEntropyShennonValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyRenyiBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="Энтропия Реньи (α = 1,1): "
+								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="{Binding L[Stats.Entropy.Renyi], StringFormat='{}{0} (α = 1,1):'} "
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsEntropyRenyiValue" Text="Нет данных"
+								<TextBlock Name="StatResultsEntropyRenyiValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>
 							<!--<DockPanel Name="StatResultsEntropyHavardBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="Энтропия Хаварда-Чарвата: "
+								<TextBlock Text="{Binding L[Stats.Entropy.Havard], StringFormat='{}{0}:'} "
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
-								<TextBlock Name="StatResultsEntropyHavardValue" Text="Нет данных"
+								<TextBlock Name="StatResultsEntropyHavardValue" Text="{Binding L[AnalyzerTab.Results.NoData]}"
 										   TextAlignment="Left" Height="25" Margin="10 0 0 0"
 										   DockPanel.Dock="Left"/>
 							</DockPanel>-->
 
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">
-								<TextBlock Name="ElapsedTimeLabel" Text="Затрачено времени: "
+								<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
 										   FontStyle="Italic" Padding="0 0 5 0" VerticalAlignment="Center"
 										   HorizontalAlignment="Stretch" DockPanel.Dock="Left"
 										   TextAlignment="Left" Height="25"/>
@@ -441,19 +454,19 @@
 										   DockPanel.Dock="Left"/>
 								<StackPanel Name="ResultsHandlerBlock" DockPanel.Dock="Left" Orientation="Horizontal" 
 											VerticalAlignment="Center" HorizontalAlignment="Right">
-									<Button Name="CopyAsTextBtn" Content="" Click="CopyAsTextBtn_Click">
+									<Button Name="CopyAsTextBtn" Click="CopyAsTextBtn_Click">
 										<PathIcon Data="{StaticResource IconCopyText}"/>
 										<ToolTip.Tip>
 											<StackPanel>
-												<TextBlock FontSize="15" Text="Копировать результаты"/>
+												<TextBlock FontSize="15" Text="{Binding L[AnalyzerTab.Results.CopyResults]}"/>
 											</StackPanel>
 										</ToolTip.Tip>
 									</Button>
-									<Button Name="CopyAsJsonBtn" Content="" Click="CopyAsJsonBtn_Click">
+									<Button Name="CopyAsJsonBtn" Click="CopyAsJsonBtn_Click">
 										<PathIcon Data="{StaticResource IconCopyJson}"/>
 										<ToolTip.Tip>
 											<StackPanel>
-												<TextBlock FontSize="15" Text="Копировать результаты (raw JSON)"/>
+												<TextBlock FontSize="15" Text="{Binding L[AnalyzerTab.Results.CopyResults], StringFormat='{}{0} (raw JSON)'}"/>
 											</StackPanel>
 										</ToolTip.Tip>
 									</Button>
@@ -467,7 +480,7 @@
 			</RelativePanel>
 			<!-- / Правая панель выбора методов и результатов -->
 
-			<Button Name="StartAnalysis" Content="Запуск"
+			<Button Name="StartAnalysis" Content="{Binding L[Common.Start]}"
 					FontSize="24" FontWeight="Bold"
 					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
 					MinHeight="50" Padding="100 15" Margin="0 15 0 0"

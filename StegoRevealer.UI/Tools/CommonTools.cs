@@ -5,12 +5,14 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using SkiaSharp;
 using StegoRevealer.Common;
 using StegoRevealer.StegoCore.AnalysisMethods;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.UI.Lib;
+using StegoRevealer.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +21,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Tools;
 
@@ -58,10 +61,41 @@ public static class CommonTools
         var symbolsArray = rawString.Select(c => IsBadSymbol(c) ? symb : c).ToArray();
         return new string(symbolsArray);
     }
-    public static string FilterBadSymbols(string rawString)
+    public static string FilterBadSymbols(string rawString, bool useSimpleFiltration = false)
     {
-        var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�')).ToArray();
-        return new string(symbolsArray);
+        string result = string.Empty;
+
+        if (!useSimpleFiltration)
+        {
+            try
+            {
+                var filteringOptions = new TextSanitizer.Options()
+                {
+                    AllowTab = true,
+                    KeepPrivateUse = false,
+                    KeepVariationSelectors = false,
+                    KeepBidiMarks = false,
+                    CollapseSpaces = false,
+                    NormalizeCRLFtoLF = true,
+                    Normalization = System.Text.NormalizationForm.FormC
+                };
+                result = TextSanitizer.FilterBadSymbols(rawString, filteringOptions);
+            }
+            catch (Exception ex)
+            {
+                CommonLogger.LogError($"Error while text sanitization: {ex.Message}");
+                result = rawString;
+                useSimpleFiltration = true;
+            }
+        }
+
+        if (useSimpleFiltration)
+        {
+            var symbolsArray = rawString.Where(c => !IsBadSymbol(c) && !c.Equals('�') && !c.Equals('޸')).ToArray();
+            result = new string(symbolsArray);
+        }
+
+        return result;
     }
 
     private static char[] AllowedSymbols = new char[] { '\r', '\n' };
@@ -154,6 +188,9 @@ public static class CommonTools
     private static List<Key> AllowedDigitKeys = new List<Key>() { Key.D0, Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9 };
     private const Key DoubleSeparatorKey = Key.OemComma;
     private const Key MinusKey = Key.OemMinus;
+    private static List<char> AllowedDigitKeysChars = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private const char DoubleSeparatorKeyChar = ',';
+    private const char MinusKeyChar = '-';
     public static void FilterInput(TextBox textBox, KeyEventArgs e, FilterInputStrategy strategy)
     {
         if (strategy is FilterInputStrategy.AllowAll)
@@ -185,12 +222,83 @@ public static class CommonTools
             }
         }
     }
+    public static void FilterInput(TextBox textBox, TextInputEventArgs e, FilterInputStrategy strategy)
+    {
+        if (strategy is FilterInputStrategy.AllowAll || e.Text is null)
+            return;
+
+        bool allAllowed = true;
+        foreach (var c in e.Text)
+        {
+            if (strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble
+                or FilterInputStrategy.AllowPositiveInteger or FilterInputStrategy.AllowPositiveDouble)
+            {
+                // Проверяем ввод числа
+                if (!AllowedDigitKeysChars.Contains(c))
+                {
+                    // При вводе числа разрешён минус
+                    if (c == MinusKeyChar)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowInteger or FilterInputStrategy.AllowDouble)
+                            && textBox.CaretIndex == 0 && (!textBox.Text?.Contains('-') ?? true))
+                            continue;
+                    }
+
+                    // При вводе числа разрешён ввод разделителя дробной части
+                    if (c == DoubleSeparatorKeyChar)
+                    {
+                        if ((strategy is FilterInputStrategy.AllowDouble or FilterInputStrategy.AllowPositiveDouble)
+                            && (textBox.CaretIndex > 0 && (!textBox.Text?.Contains(',') ?? true)))
+                            continue;
+                    }
+
+                    allAllowed = false;
+                    break;
+                }
+            }
+        }
+
+        if (allAllowed)
+            return;
+        e.Handled = true;
+    }
     public static void FilterInput(object? sender, KeyEventArgs e, FilterInputStrategy strategy)
     {
         var tb = sender as TextBox;
         if (tb is null)
             return;
         FilterInput(tb, e, strategy);
+    }
+    public static void FilterInput(object? sender, TextInputEventArgs e, FilterInputStrategy strategy)
+    {
+        var tb = sender as TextBox;
+        if (tb is null)
+            return;
+        FilterInput(tb, e, strategy);
+    }
+    public async static Task FilterInput(object? sender, RoutedEventArgs e, FilterInputStrategy strategy)
+    {
+        var topLevel = TopLevel.GetTopLevel(sender as TextBox);
+        if (topLevel?.Clipboard is not null)
+        {
+            string? text = await topLevel.Clipboard.GetTextAsync();
+            if (!string.IsNullOrEmpty(text))
+            {
+                var args = new TextInputEventArgs()
+                {
+                    Source = sender,
+                    Text = text,
+                    Handled = false
+                };
+                FilterInput(sender, args, FilterInputStrategy.AllowPositiveDouble);
+                if (args.Handled)
+                    e.Handled = true;
+                else
+                    return;
+            }
+        }
+
+        e.Handled = true;
     }
 
     public static SKColor MapToSkiaColor(Color color) =>
@@ -217,12 +325,39 @@ public static class CommonTools
             }
             else
             {
-                Logger.LogError("Not supported OS for folder openin method");
+                CommonLogger.LogError("Not supported OS for folder openin method");
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
+            CommonLogger.LogError($"Can't open folder '{path}' because of error: {ex.Message}");
         }
     }
+
+    public static async Task<string> ChooseSingleFile(Visual? window, IEnumerable<FilePickerFileType> fileTypes, string dialogTitle = "Выбор файла")
+    {
+        var topLevel = TopLevel.GetTopLevel(window);
+        if (topLevel is null)
+            return string.Empty;
+
+        string path = string.Empty;
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = dialogTitle,
+            AllowMultiple = false,
+            FileTypeFilter = fileTypes.ToArray()
+        });
+
+        if (files is not null && files.Count > 0)
+            path = files[0].Path.LocalPath;
+        return path;
+    }
+
+    public static string GetAppVersion()
+    {
+        var version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
+        return version?.ToString() ?? string.Empty;
+    }
+
+
 }

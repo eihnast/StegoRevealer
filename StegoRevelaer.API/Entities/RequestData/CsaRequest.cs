@@ -12,8 +12,8 @@ public class CsaRequest : BaseAnalysisRequest
     public bool UseUnitedCnum { get; set; } = true;
     public bool UsePreviousCnums { get; set; } = true;
     public bool ExcludeZeroPairs { get; set; } = true;
-    public bool UseUnifiedCathegories { get; set; } = true;
-    public int UnifyingCathegoriesThreshold { get; set; } = 4;
+    public bool UseUnifiedCategories { get; set; } = true;
+    public int UnifyingCategoriesThreshold { get; set; } = 4;
     public double Threshold { get; set; } = 0.95;
     public ImgChannel[] Channels { get; set; }
         = new ImgChannel[] { ImgChannel.Red, ImgChannel.Green, ImgChannel.Blue };
@@ -30,8 +30,8 @@ public class CsaRequest : BaseAnalysisRequest
             UseUnitedCnum = UseUnitedCnum,
             UsePreviousCnums = UsePreviousCnums,
             ExcludeZeroPairs = ExcludeZeroPairs,
-            UseUnifiedCathegories = UseUnifiedCathegories,
-            UnifyingCathegoriesThreshold = UnifyingCathegoriesThreshold,
+            UseUnifiedCategories = UseUnifiedCategories,
+            UnifyingCategoriesThreshold = UnifyingCategoriesThreshold,
             Threshold = Threshold
         };
 

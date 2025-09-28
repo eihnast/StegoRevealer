@@ -16,7 +16,7 @@
 			  ColumnDefinitions="*,*" RowDefinitions="40,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры стегоанализа по критерию Хи-квадрат"
+			<Label Name="TitleLabel" Content="{Binding L[Params.Csa.Title]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"
@@ -26,58 +26,60 @@
 
 			<StackPanel Grid.Column="0" Grid.Row="1" Margin="0 0 5 0"
 						HorizontalAlignment="Center">
-				<CheckBox Name="IsVisualizeChecked" Content="Визуализировать область скрытой&#10;информации" 
+				<CheckBox Name="IsVisualizeChecked" Content="{Binding L[Params.Csa.Visualize]}" 
 						  IsChecked="{Binding Path=Visualize}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0" 
 						  Foreground="#FFE6E6E6" FontSize="12" 
 						  Margin="0 5 0 0"/>
-				<CheckBox Name="IsExcludeZeroPairsChecked" Content="Не учитывать пары с нулевой&#10;ожидаемой частотой" 
+				<CheckBox Name="IsExcludeZeroPairsChecked" Content="{Binding L[Params.Csa.ExcludeZeroPairs]}" 
 						  IsChecked="{Binding Path=ExcludeZeroPairs}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0" 
 						  Foreground="#FFE6E6E6" FontSize="12" 
 						  Margin="0 5 0 0"/>
-				<CheckBox Name="IsUsePreviousCnumsChecked" Content="Использовать режим накопления"
+				<CheckBox Name="IsUsePreviousCnumsChecked" Content="{Binding L[Params.Csa.UsePreviousCnums]}"
 						  IsChecked="{Binding Path=UsePreviousCnums}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
 						  Margin="0 5 0 0"/>
-				<CheckBox Name="IsUseUnifiedCathegoriesChecked" Content="Объединять низкочастотные категории"
-						  IsChecked="{Binding Path=UseUnifiedCathegories}"
+				<CheckBox Name="IsUseUnifiedCategoriesChecked" Content="{Binding L[Params.Csa.UseUnifiedCategories]}"
+						  IsChecked="{Binding Path=UseUnifiedCategories}"
                           Background="{x:Null}" BorderBrush="#FFE0E0E0"
 						  Foreground="#FFE6E6E6" FontSize="12"
 						  Margin="0 5 0 0"/>
 				
-				<DockPanel Name="UnifyingCathegoriesThresholdGroup" 
+				<DockPanel Name="UnifyingCategoriesThresholdGroup" 
 						   LastChildFill="True" 
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="Порог объединения категорий:" 
+					<Label Content="{Binding L[Params.Csa.UnifyingThreshold], StringFormat='{}{0}:'}" 
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
-					<TextBox Name="UnifyingCathegoriesThreshold"
-							Text="{Binding Path=UnifyingCathegoriesThresholdValue}"
+					<TextBox Name="UnifyingCategoriesThreshold"
+							Text="{Binding Path=UnifyingCategoriesThresholdValue}"
 							FontSize="12"
 							MinWidth="80" MinHeight="25" MaxHeight="25"
 							Padding="8 1 8 1" Margin="5 0 0 0"
 							VerticalContentAlignment="Center"
-							KeyDown="FilterForPositiveInteger_KeyDown"/>
+							KeyDown="FilterForPositiveInteger_KeyDown"
+							TextInput="FilterForPositiveInteger_TextInput"
+							PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 				</DockPanel>
 
 				<!-- Выбор каналов -->
-				<Label Content="Выбор анализируемых каналов" 
+				<Label Content="{Binding L[Params.ChannelsChoosing]}" 
 					   FontSize="13" Foreground="#FFE0E0E0"
 					   Margin="0 20 0 0"
                        Background="{x:Null}" BorderBrush="{x:Null}" />
-				<ToggleButton Name="IsChannelChecked_Red" Content="Красный канал"
+				<ToggleButton Name="IsChannelChecked_Red" Content="{Binding L[Params.Channels.Red]}"
 							  IsChecked="{Binding Path=ChannelRedChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Green" Content="Зелёный канал"
+				<ToggleButton Name="IsChannelChecked_Green" Content="{Binding L[Params.Channels.Green]}"
 							  IsChecked="{Binding Path=ChannelGreenChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
-				<ToggleButton Name="IsChannelChecked_Blue" Content="Синий канал"
+				<ToggleButton Name="IsChannelChecked_Blue" Content="{Binding L[Params.Channels.Blue]}"
 							  IsChecked="{Binding Path=ChannelBlueChecked}"
 							  MinWidth="150" Margin="20 0 0 0" HorizontalAlignment="Left"
 							  HorizontalContentAlignment="Center"/>
@@ -85,16 +87,16 @@
 
 			<StackPanel Grid.Column="1" Grid.Row="1" Margin="5 0 0 0"
 						HorizontalAlignment="Center">
-				<Label Content="Выбор обхода массива"
+				<Label Content="{Binding L[Params.TraverseType.Title]}"
 					   FontSize="13" Foreground="#FFE0E0E0"
                        Background="{x:Null}" BorderBrush="{x:Null}"/>
-				<RadioButton Name="TraverseChoice_Horizontal" Content="Горизонтальный"
+				<RadioButton Name="TraverseChoice_Horizontal" Content="{Binding L[Params.TraverseType.Horizontal]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
 							 IsChecked="{Binding Path=TraverseHorizontal}"
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-				<RadioButton Name="TraverseChoice_Vertical" Content="Вертикальный"
+				<RadioButton Name="TraverseChoice_Vertical" Content="{Binding L[Params.TraverseType.Vertical]}"
 							 Foreground="#FFE6E6E6" FontSize="12" GroupName="TraverseGroup"
 							 Padding="10 0 0 0" Margin="20 0 0 0"
 							 Background="{x:Null}" BorderBrush="#FFE0E0E0" BorderThickness="0"
@@ -102,7 +104,7 @@
 							 VerticalAlignment="Center" VerticalContentAlignment="Center"/>
 
 				<DockPanel LastChildFill="True" Margin="0 25 0 0" HorizontalAlignment="Left">
-					<Label Content="Порог pValue:"
+					<Label Content="{Binding L[Params.Csa.PValueThreshold], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -113,10 +115,12 @@
 							 MinWidth="80" MinHeight="25" MaxHeight="25"
 							 Padding="8,1,8,1"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveDouble_KeyDown"/>
+							 KeyDown="FilterForPositiveDouble_KeyDown"
+							 TextInput="FilterForPositiveDouble_TextInput"
+							 PastingFromClipboard="FilterForPositiveDouble_PastingFromClipboard"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="Ширина блока:"
+					<Label Content="{Binding L[Params.Blocks.Width], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -127,10 +131,12 @@
 							 MinWidth="80" MinHeight="25" MaxHeight="25"
 							 Padding="8,1,8,1"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveInteger_KeyDown"/>
+							 KeyDown="FilterForPositiveInteger_KeyDown"
+							 TextInput="FilterForPositiveInteger_TextInput"
+							 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 				</DockPanel>
 				<DockPanel LastChildFill="True" Margin="0 5 0 0" HorizontalAlignment="Left">
-					<Label Content="Высота блока:"
+					<Label Content="{Binding L[Params.Blocks.Height], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Width="110" Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
@@ -141,7 +147,9 @@
 							 MinWidth="80" MinHeight="25" MaxHeight="25"
 							 Padding="8,1,8,1"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveInteger_KeyDown"/>
+							 KeyDown="FilterForPositiveInteger_KeyDown"
+							 TextInput="FilterForPositiveInteger_TextInput"
+							 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
 				</DockPanel>
 			</StackPanel>
 		</Grid>

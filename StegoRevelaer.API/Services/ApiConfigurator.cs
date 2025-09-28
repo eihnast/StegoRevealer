@@ -77,9 +77,9 @@ public class ApiConfigurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"API Configuration initializeing failed due to an error:\n" + ex.Message);
+            ApiLogger.LogError($"API Configuration initializeing failed due to an error:\n" + ex.Message);
             ApiConfig = new ApiConfig();
-            Logger.LogInfo($"Created default ApiConfig with no saving operation");
+            ApiLogger.LogInfo($"Created default ApiConfig with no saving operation");
         }
     }
 
@@ -104,7 +104,7 @@ public class ApiConfigurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Loading ApiConfig from '{SettingsPath}' failed due to an error:\n" + ex.Message);
+            ApiLogger.LogError($"Loading ApiConfig from '{SettingsPath}' failed due to an error:\n" + ex.Message);
         }
 
         return null;
@@ -123,7 +123,7 @@ public class ApiConfigurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Saving actual ApiConfig to '{SettingsPath}' failed due to an error:\n" + ex.Message);
+            ApiLogger.LogError($"Saving actual ApiConfig to '{SettingsPath}' failed due to an error:\n" + ex.Message);
         }
     }
 }

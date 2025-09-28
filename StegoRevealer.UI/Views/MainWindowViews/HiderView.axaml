@@ -3,6 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
+			 xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
              mc:Ignorable="d"
 			 d:DesignWidth="1250" d:DesignHeight="650" MinWidth="1250" MinHeight="650"
              x:Class="StegoRevealer.UI.Views.MainWindowViews.HiderView">
@@ -10,6 +12,356 @@
 	<Design.DataContext>
 		<vm:HiderViewModel/>
 	</Design.DataContext>
-	Hider
+
+	<!-- Внешняя сетка -->
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<!-- Внутренняя сетка -->
+		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15"
+			  ColumnDefinitions="*,20,*" RowDefinitions="*,80">
+
+			<!-- Левая панель выбора изображения -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"
+						Grid.Column="0" Grid.Row="0">
+				<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+					<Button Name="LoadImageButton" Content="{Binding L[Common.ChooseImage]}"
+							DockPanel.Dock="Left"
+							Height="40" Padding="15 0" Margin="0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="LoadImageButton_Click"/>
+					<TextBox Name="ImagePathLabel" Text="{Binding Path=ImagePath}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 HorizontalAlignment="Stretch"
+							 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="{Binding Path=HasLoadedImage}">
+						<ToolTip.Tip>
+							<StackPanel>
+								<TextBlock FontSize="15" Text="{Binding Path=ImagePath}"/>
+							</StackPanel>
+						</ToolTip.Tip>
+					</TextBox>
+				</DockPanel>
+				<Image Name="ImagePreview" Source="{Binding Path=DrawnImageSource}"
+					   Margin="10"
+					   MaxWidth="{Binding Path=ImagePreviewMaxWidth}"
+					   MaxHeight="{Binding Path=ImagePreviewMaxHeight}"/>
+				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasLoadedImage}">
+					<TextBox Text="{Binding L[Common.Image.Width], StringFormat='{}{0}:'}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageWidthValue" Text="{Binding Path=CurrentImageWidth}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Text="{Binding L[Common.Image.Height], StringFormat='{}{0}:'}" Margin="30 0 0 0"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+					<TextBox Name="ImageHeightValue" Text="{Binding Path=CurrentImageHeight}"
+							 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+							 Classes="ImagePathTb" IsEnabled="False"
+							 FontStyle="Normal"
+							 HorizontalAlignment="Stretch"/>
+				</DockPanel>
+				<DockPanel HorizontalAlignment="Center" IsVisible="{Binding Path=HasResults}" LastChildFill="False">
+					<Button Name="LoadedImageBtn" Content="{Binding L[Common.LoadedImageTitle]}"
+							DockPanel.Dock="Left"
+							Height="30" Padding="15 0" Margin="0 0 10 0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="LoadedImageBtn_Click"/>
+					<Button Name="CoveredImageBtn" Content="{Binding L[Common.CoveredImageTitle]}"
+							DockPanel.Dock="Right"
+							Height="30" Padding="15 0" Margin="10 0 0 0"
+							VerticalAlignment="Center" HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+							Click="CoveredImageBtn_Click"/>
+				</DockPanel>
+			</StackPanel>
+			<!-- / Левая панель выбора изображения -->
+
+			<!-- Правая панель выбора параметров встраивания и результатов -->
+			<RelativePanel Name="RightPanel"
+						   Grid.Column="2" Grid.Row="0"
+						   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+				<!-- Экспандер выбора параметров встраивания -->
+				<Expander Name="ParamsExpander" Header="{Binding L[HiderTab.HiderParams]}"
+						  Classes="RightPanelParamsExpander"
+						  IsExpanded="{Binding Path=IsParamsOpened}"
+						  Expanded="ParamsExpander_Expanded"
+						  Collapsed="ParamsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignTopWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="True">
+					<Grid ColumnDefinitions="*" RowDefinitions="35,*">
+
+						<Label Content="{Binding L[HiderTab.HiderParamsAndMethod]}"
+							   FontFamily="Arial" FontWeight="Bold" FontSize="18"
+							   Foreground="#FFECECEC"
+							   Grid.Column="0" Grid.Row="0"
+							   Padding="0" Margin="5"
+							   VerticalAlignment="Center" HorizontalAlignment="Center"
+							   Background="{x:Null}" BorderBrush="{x:Null}"/>
+
+						<!-- Сетка параметров для выбора -->
+						<Grid Name="ParamsGrid" IsEnabled="{Binding Path=HasLoadedImage}"
+							  Grid.Column="0" Grid.Row="1"
+							  Margin="0 5 0 10"
+							  ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto,*">
+
+							<!-- Выбор метода -->
+							<StackPanel Name="MethodChoice" Orientation="Horizontal"
+										Grid.Column="0" Grid.Row="0"
+										Margin="0 0 0 0" Height="40"
+										HorizontalAlignment="Center">
+								<ToggleButton Name="MethodChoice_Lsb" Content="{Binding L[HiderTab.MethodLsb]}"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=MethodLsbSelected}"
+											  Checked="SetLsbMethod" Unchecked="SetKzMethod"/>
+								<ToggleButton Name="MethodChoice_Kzh" Content="{Binding L[HiderTab.MethodKochZhao]}"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=MethodKzSelected}"
+											  Checked="SetKzMethod" Unchecked="SetLsbMethod"/>
+							</StackPanel>
+							<!-- / Выбор метода -->
+
+							<!-- Выбор последовательный/псевдослучайный -->
+							<StackPanel Name="HidewayChoice" Orientation="Horizontal"
+										Grid.Column="0" Grid.Row="1"
+										Margin="0 5 0 0" Height="40"
+										HorizontalAlignment="Center">
+								<ToggleButton Name="HidewayChoice_Linear" Content="{Binding L[HiderTab.HideLinear]}"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=LinearModeSelected}"
+											  Checked="SetLinearMode" Unchecked="SetRandomMode"/>
+								<ToggleButton Name="HidewayChoice_Random" Content="{Binding L[HiderTab.HideRandom]}"
+											  Classes="SelectorToggleButton"
+											  IsChecked="{Binding Path=RandomModeSelected}"
+											  Checked="SetRandomMode" Unchecked="SetLinearMode"/>
+							</StackPanel>
+							<!-- / Выбор последовательный/псевдослучайный -->
+
+							<!-- Параметры для метода НЗБ -->
+							<Grid Name="LsbParamsGrid" IsVisible="{Binding Path=MethodLsbSelected}"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40"
+								  Grid.Column="0" Grid.Row="2" Margin="0 5 0 0">
+
+								<Label Content="{Binding L[HiderTab.RandomKey]}"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="0" Grid.Column="1"/>
+								<Label Content="{Binding L[HiderTab.StartIndex]}"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="1" Grid.Column="1"/>
+
+								<TextBox Name="LsbParamsGrid_RandomSeed"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="0" Grid.Column="2"
+                                         Text="{Binding Path=LsbRandomSeedValue}"
+										 IsEnabled="{Binding Path=LsbRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
+								<TextBox Name="LsbParamsGrid_StartIndex"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="1" Grid.Column="2"
+                                         Text="{Binding Path=LsbStartIndexValue}"
+										 IsEnabled="{Binding Path=LsbStartIndexSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
+
+								<CheckBox Name="LsbParamsGrid_RandomSeedCheckBox"
+										  Grid.Row="0" Grid.Column="3"
+										  IsChecked="{Binding Path=LsbRandomSeedSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="LsbParamsGrid_StartIndexCheckBox"
+										  Grid.Row="1" Grid.Column="3"
+										  IsChecked="{Binding Path=LsbStartIndexSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Grid>
+							<!-- / Параметры для метода НЗБ -->
+
+							<!-- Параметры для метода Коха-Жао -->
+							<Grid Name="KzhParamsGrid" IsVisible="{Binding Path=MethodKzSelected}"
+								  ColumnDefinitions="*,2*,3*,40,*" RowDefinitions="40,40"
+								  Grid.Column="0" Grid.Row="2" Margin="0 5 0 0">
+
+								<Label Content="{Binding L[HiderTab.RandomKey]}"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="0" Grid.Column="1"/>
+								<Label Content="{Binding L[HiderTab.Threshold]}"
+									   Classes="ExtractorParamsLabel"
+									   Grid.Row="1" Grid.Column="1"/>
+
+								<TextBox Name="KzhParamsGrid_RandomSeed"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="0" Grid.Column="2"
+                                         Text="{Binding Path=KzRandomSeedValue}"
+										 IsEnabled="{Binding Path=KzRandomSeedSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
+								<TextBox Name="KzhParamsGrid_Threshold"
+										 Classes="ExtractorParamsTextBox"
+										 Grid.Row="1" Grid.Column="2"
+                                         Text="{Binding Path=KzThresholdValue}"
+										 IsEnabled="{Binding Path=KzThresholdSelected}"
+										 KeyDown="FilterForPositiveInteger_KeyDown"
+										 TextInput="FilterForPositiveInteger_TextInput"
+										 PastingFromClipboard="FilterForPositiveInteger_PastingFromClipboard"/>
+
+								<CheckBox Name="KzhParamsGrid_RandomSeedCheckBox"
+										  Grid.Row="0" Grid.Column="3"
+										  IsChecked="{Binding Path=KzRandomSeedSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+								<CheckBox Name="KzhParamsGrid_ThresholdCheckBox"
+										  Grid.Row="1" Grid.Column="3"
+										  IsChecked="{Binding Path=KzThresholdSelected}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Grid>
+							<!-- / Параметры для метода Коха-Жао -->
+
+							<!-- Выбор скрываемых данных -->
+							<Grid Name="HidingData" Grid.Column="0" Grid.Row="3"
+								  Margin="0 5 0 0" HorizontalAlignment="Stretch" RowDefinitions="Auto,*">
+								
+								<DockPanel HorizontalAlignment="Stretch" LastChildFill="True" Grid.Row="0">
+									<Button Name="LoadDataButton" Content="{Binding L[HiderTab.ChooseData]}"
+											DockPanel.Dock="Left"
+											Height="30" Padding="15 0" Margin="0"
+											VerticalAlignment="Center" HorizontalAlignment="Stretch"
+											HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+											Click="LoadDataButton_Click"/>
+									<Button Name="RemoveLoadedData" IsVisible="{Binding Path=HasLoadedDataFile}"
+											DockPanel.Dock="Right"
+											Height="30" Padding="10 0" Margin="0"
+											VerticalAlignment="Center" HorizontalAlignment="Stretch"
+											HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+											Click="RemoveLoadedData_Click">
+										<PathIcon Data="{StaticResource IconTrash}"/>
+									</Button>
+									<TextBox Name="DataPathLabel" Text="{Binding Path=DataPath}"
+											 DockPanel.Dock="Left" HorizontalContentAlignment="Stretch"
+											 Classes="ImagePathTb" IsEnabled="False"
+											 HorizontalAlignment="Stretch"
+											 ToolTip.Placement="Bottom" ToolTip.ShowOnDisabled="True">
+										<ToolTip.Tip>
+											<StackPanel>
+												<TextBlock FontSize="15" Text="{Binding Path=DataPath}"/>
+											</StackPanel>
+										</ToolTip.Tip>
+									</TextBox>
+								</DockPanel>
+
+								<Border Grid.Row="1">
+									<TextBox Name="HidingTextTb" Text="{Binding DataToHide}" 
+											 MinHeight="150" DockPanel.Dock="Top"
+											 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+											 HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+											 IsEnabled="{Binding !HasLoadedDataFile}"
+											 AcceptsReturn="True" TextWrapping="Wrap"
+											 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+											 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+								</Border>
+								
+							</Grid>
+							<!-- / Выбор скрываемых данных -->
+
+						</Grid>
+						<!-- / Сетка параметров для выбора -->
+					</Grid>
+				</Expander>
+				<!-- / Экспандер выбора параметров встраивания -->
+
+				<Rectangle Name="RightPanelSeparator"
+						   HorizontalAlignment="Stretch" Height="1"
+						   RelativePanel.AlignRightWithPanel="True"
+						   RelativePanel.AlignLeftWithPanel="True"/>
+
+				<!-- Экспандер результатов -->
+				<Expander Name="ResultsExpander" Header="{Binding L[HiderTab.ResultsExpander]}"
+						  IsExpanded="{Binding Path=!IsParamsOpened}"
+						  Expanded="ResultsExpander_Expanded"
+						  Collapsed="ResultsExpander_Collapsed"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						  VerticalContentAlignment="Stretch"
+						  RelativePanel.AlignBottomWithPanel="True"
+						  RelativePanel.AlignRightWithPanel="True"
+						  RelativePanel.AlignLeftWithPanel="True"
+						  IsEnabled="{Binding Path=HasResults}">
+					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+							   LastChildFill="False">
+						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
+									DockPanel.Dock="Bottom" Margin="0 15 0 0">
+							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
+									   FontStyle="Italic" TextDecorations=""
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+							<TextBlock Name="ElapsedTimeValue" Text="0 мс"
+									   FontStyle="Italic" TextAlignment="Left"
+									   Height="25" Margin="20 0 0 0"/>
+						</StackPanel>
+						<DockPanel DockPanel.Dock="Top" Margin="0 15 0 0" LastChildFill="True">
+							<TextBlock Name="CoveredImageLabel"
+									   Text="{Binding L[HiderTab.Results.CoveredImageName], StringFormat='{}{0}:'}"
+									   DockPanel.Dock="Left"
+									   Margin="0 0 8 0"
+									   VerticalAlignment="Top"/>
+							<TextBlock Name="CoveredImageValue"
+									   Text="{Binding CoveredImagePath}"
+									   TextWrapping="WrapWithOverflow"
+									   TextAlignment="Left"/>
+						</DockPanel>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+									DockPanel.Dock="Top" Margin="0 5 0 0">
+							<TextBlock Text="{Binding L[HiderTab.ImageInLeftPanelInfo]}"
+									   FontStyle="Italic" TextDecorations="" FontFamily="10"
+									   HorizontalAlignment="Stretch"
+									   TextAlignment="Left" Height="25"/>
+						</StackPanel>
+						<StackPanel DockPanel.Dock="Top"
+									Orientation="Horizontal" Margin="0 15 0 0"
+									HorizontalAlignment="Center">
+							<Button Name="SaveCoveredImage" Content="{Binding L[HiderTab.SaveCoveredImage]}"
+									Padding="10 10 10 10" Margin="0 0 3 0"
+									Background="{StaticResource SrDarkLight}"
+									Click="SaveCoveredImage_Click"/>
+						</StackPanel>
+					</DockPanel>
+				</Expander>
+				<!-- / Экспандер результатов -->
+			</RelativePanel>
+			<!-- / Правая панель выбора параметров Встраивания и результатов -->
+
+			<Button Name="StartHiding" Content="{Binding L[Common.Start]}"
+					FontSize="24" FontWeight="Bold"
+					Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+					MinHeight="50" Padding="100 15" Margin="0 15 0 0"
+					HorizontalAlignment="Center"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					Click="StartHiding_Click" IsEnabled="{Binding Path=HasDataForHiding}"/>
+		</Grid>
+		<!-- / Внутренняя сетка -->
+
+		<!-- Оверлей с анимацией загрузки -->
+		<Border Name="LoadingOverlay" IsVisible="False" ZIndex="1000"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Grid>
+				<ProgressBar IsIndeterminate="True" Width="400" Height="40"
+							 Background="{StaticResource ResourceKey=SrDarkLight}" Foreground="{StaticResource ResourceKey=SrDark}"
+							 BorderBrush="#000000" BorderThickness="1"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
+	</Grid>
+	<!-- / Внешняя сетка -->
 	
 </UserControl>

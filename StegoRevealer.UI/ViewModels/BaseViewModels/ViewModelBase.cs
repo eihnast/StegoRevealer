@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using StegoRevealer.UI.Tools;
 
 namespace StegoRevealer.UI.ViewModels.BaseViewModels;
 
@@ -7,5 +8,5 @@ namespace StegoRevealer.UI.ViewModels.BaseViewModels;
 /// </summary>
 public class ViewModelBase : ReactiveObject
 {
-    // Пока отсутствует общая логика
+    public LocalizationService L { get; } = LocalizationService.Instance;
 }

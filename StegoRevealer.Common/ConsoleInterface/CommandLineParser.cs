@@ -41,7 +41,7 @@ public static class CommandLineParser
 
     private static async Task ExecuteSaCommandAsync(string[] filenames, bool chiMethodOptionValue, bool rsMethodOptionValue, bool kzhaMethodOptionValue, bool allMethodsOptionValue)
     {
-        Logger.LogInfo("Starting steganalysis");
+        CommonLogger.LogInfo("Starting steganalysis");
 
         var tasks = new List<Task>();
         foreach (var filename in filenames)
@@ -50,7 +50,7 @@ public static class CommandLineParser
             await task;
 
         ClearTemp();
-        Logger.LogInfo("Ending steganalysis");
+        CommonLogger.LogInfo("Ending steganalysis");
     }
 
     private static void ClearTemp()

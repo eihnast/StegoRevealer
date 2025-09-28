@@ -1,8 +1,12 @@
-﻿using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
+﻿using MathNet.Numerics;
+using Newtonsoft.Json;
+using StegoRevealer.StegoCore.AnalysisMethods.KochZhaoAnalysis;
 using StegoRevealer.StegoCore.AnalysisMethods.RsMethod;
 using StegoRevealer.StegoCore.CommonLib;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
 using StegoRevealer.StegoCore.ImageHandlerLib;
+using StegoRevealer.StegoCore.ScMath;
+using StegoRevealer.StegoCore.StegoMethods;
 using StegoRevealer.StegoCore.StegoMethods.KochZhao;
 using StegoRevealer.StegoCore.StegoMethods.Lsb;
 using System.Collections;
@@ -34,6 +38,23 @@ public class HidingExtractionTests
 
         var extractedData = lsbExtractor.Extract().GetResultData();
         Assert.AreEqual(data, extractedData);
+    }
+
+    [TestMethod]
+    public void HidingExtractionLsb_WhithFewData()
+    {
+        string imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "image0a.png");
+        var lsbHider = new LsbHider(new ImageHandler(imagePath));
+
+        string data = "Data";
+
+        var resultPath = lsbHider.Hide(data).GetResultPath();
+        Assert.IsFalse(string.IsNullOrEmpty(resultPath));
+
+        var lsbExtractor = new LsbExtractor(new ImageHandler(resultPath));
+
+        var extractedData = lsbExtractor.Extract().GetResultData();
+        Assert.IsTrue(extractedData?.StartsWith(data), $"Extracted data must starts with '{data}', but was '{extractedData?[..10]}'");
     }
 
     [TestMethod]
@@ -228,7 +249,7 @@ public class HidingExtractionTests
         kzHider.Params.TraverseType = TraverseType.Horizontal;
 
         string data = "Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = 120.";
-        var hidingResult = kzHider.Hide(data, "customNameKzh");
+        var hidingResult = kzHider.Hide(data, "customNameKzh.png");
 
         var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
 
@@ -246,6 +267,121 @@ public class HidingExtractionTests
             str += logEntry.ToString() + "\n";
 
         Assert.IsTrue(saResult.ExtractedData?.StartsWith(data), str + $"data = {saResult.ExtractedData}");
+    }
+
+    [TestMethod]
+    public void KochZhaoHidingExtractionLowThresholdTest()
+    {
+        int threshold = 15;
+
+        var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "imgForKz2.png");
+        var image = new ImageHandler(imagePath);
+        var kzHider = new KochZhaoHider(image);
+
+        kzHider.Params.Threshold = threshold;
+
+        string data = $"Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = {threshold}.";
+        var hidingResult = kzHider.Hide(data, "customNameKzh2.png");
+
+        var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
+
+        var kzExtractor = new KochZhaoExtractor(newImage);
+
+        var extractionResult = kzExtractor.Extract();
+        var extractedData = extractionResult.GetResultData();
+        Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
+    }
+
+    //[TestMethod]
+    //public void KochZhaoHidingExtractionBadImageTest()
+    //{
+    //    int threshold = 15;
+
+    //    var imagePath = Path.Combine(Helper.GetAssemblyDir(), "TestData", "kzhaBadImage.png");
+    //    var image = new ImageHandler(imagePath);
+    //    var kzHider = new KochZhaoHider(image);
+
+    //    kzHider.Params.Threshold = threshold;
+
+    //    string data = $"Данные для скрытия по методу Коха-Жао. Горизонтальный обход. Порог = {threshold}.";
+    //    var hidingResult = kzHider.Hide(data, "kzhaBadImageCovered.png");
+
+    //    var newImage = new ImageHandler(hidingResult.GetResultPath() ?? throw new OperationException("hidingResult.Path is null"));
+
+    //    var kzExtractor = new KochZhaoExtractor(newImage);
+
+    //    var extractionResult = kzExtractor.Extract();
+    //    var extractedData = extractionResult.GetResultData();
+    //    Assert.IsTrue(extractedData?.StartsWith(data), $"extractedData = {extractedData}");
+    //}
+
+    [TestMethod]
+    public void KochZhaoHidingExtractionOneBitHidingTest()
+    {
+        var coeffs = HidingCoefficients.Coeff45;
+        byte[,] block = new byte[8, 8]
+        {
+                { 157, 154, 153, 154, 157, 157, 155, 153 },
+                { 159, 157, 154, 152, 153, 155, 157, 158 },
+                { 159, 159, 158, 157, 155, 155, 158, 159 },
+                { 159, 160, 162, 162, 160, 158, 157, 157 },
+                { 159, 161, 164, 164, 160, 158, 157, 157 },
+                { 161, 161, 159, 159, 157, 157, 158, 159 },
+                { 161, 159, 158, 157, 158, 159, 161, 162 },
+                { 159, 159, 159, 160, 164, 165, 165, 164 },
+        };
+        Console.WriteLine($"Коэффициенты: {coeffs}");
+
+
+        // Проверка корректности обратного ДКП
+        var dct = FrequencyViewTools.DctBlock(block);
+        var idct = FrequencyViewTools.IDctBlock(dct);
+        Assert.AreEqual(JsonConvert.SerializeObject(block), JsonConvert.SerializeObject(FrequencyViewTools.NormalizeBlock(idct)));
+
+
+        // Проверка встраиваний бита
+        var dctForHide = FrequencyViewTools.DctBlock(block);
+        int threshold = 25;
+
+        var coefValues = FrequencyViewTools.GetBlockCoeffs(dctForHide, coeffs);  // Значения коэффициентов
+        Console.WriteLine($"Значения коэффициентов оригинального блока ДКП: {coefValues}");
+
+        var difference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
+        Console.WriteLine($"Разница значений коэффициентов оригинального блока ДКП: {difference}");
+
+        var newCoeffValues = FrequencyViewTools.GetModifiedCoeffsOriginal(coefValues, threshold, false);
+        Console.WriteLine($"Новые значения коэффициентов коэффициентов оригинального блока ДКП: {newCoeffValues}");
+
+        (int coefInd1, int coefInd2) = coeffs.AsTuple();
+        dctForHide[coefInd1, coefInd2] = newCoeffValues.val1;
+        dctForHide[coefInd2, coefInd1] = newCoeffValues.val2;
+
+        var checkCoefValues = FrequencyViewTools.GetBlockCoeffs(dctForHide, coeffs);  // Значения коэффициентов
+        Console.WriteLine($"Значения коэффициентов изменённого блока ДКП: {checkCoefValues}");
+
+        var newDifference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
+        Console.WriteLine($"Новая величина разницы значений коэффициентов изменённого блока ДКП: {newDifference}");
+
+        Assert.IsTrue(newDifference < threshold);
+
+        var hidedIdct = FrequencyViewTools.IDctBlock(dctForHide);
+        var hidedBlock = FrequencyViewTools.NormalizeBlock(hidedIdct);
+
+        var hidedBlockDct = FrequencyViewTools.DctBlock(hidedBlock);
+
+        var extractionCoefValues = FrequencyViewTools.GetBlockCoeffs(hidedBlockDct, coeffs);  // Значения коэффициентов
+        Console.WriteLine($"Значения коэффициентов при извлечении измённого блока ДКП: {extractionCoefValues}");
+
+        var extractionDifference = MathMethods.GetModulesDiff(extractionCoefValues);  // Разница коэффициентов
+        Console.WriteLine($"Разница значений коэффициентов при извлечении измённого блока ДКП: {extractionDifference}");
+
+        bool? bit = null;  // Извлечение бита может быть неудачным
+        if (difference > 0)
+            bit = true;
+        else if (difference < 0)
+            bit = false;
+
+        Assert.IsTrue(bit == false);
     }
 
     //[TestMethod]

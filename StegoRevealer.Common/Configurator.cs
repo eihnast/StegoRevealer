@@ -76,9 +76,9 @@ public class Configurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Configuration initializeing failed due to an error:\n" + ex.Message);
+            CommonLogger.LogError($"Configuration initializeing failed due to an error:\n" + ex.Message);
             AppConfig = new AppConfig();
-            Logger.LogInfo($"Created default AppConfig with no saving operation");
+            CommonLogger.LogInfo($"Created default AppConfig with no saving operation");
         }
     }
 
@@ -103,7 +103,7 @@ public class Configurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Loading AppConfig from '{SettingsPath}' failed due to an error:\n" + ex.Message);
+            CommonLogger.LogError($"Loading AppConfig from '{SettingsPath}' failed due to an error:\n" + ex.Message);
         }
 
         return null;
@@ -122,7 +122,7 @@ public class Configurator : IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogError($"Saving actual AppConfig to '{SettingsPath}' failed due to an error:\n" + ex.Message);
+            CommonLogger.LogError($"Saving actual AppConfig to '{SettingsPath}' failed due to an error:\n" + ex.Message);
         }
     }
 }

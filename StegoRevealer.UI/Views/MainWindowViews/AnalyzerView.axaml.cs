@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -19,11 +20,11 @@ namespace StegoRevealer.UI.Views.MainWindowViews;
 public partial class AnalyzerView : UserControl
 {
     // Стандартные сообщения и заглушки
-    private static string MessageNotAnalyzed = Constants.ResultsDefaults.NotAnalyzed;
-    private static string MessageUnknown = Constants.ResultsDefaults.NoData;
-    private static string MessageNotFoundData = Constants.ResultsDefaults.NotFoundData;
-    private static string MessageNullElapsedTime = Constants.ResultsDefaults.NullElapsedTime + " " + Constants.ResultsDefaults.ElapsedTimeMeasure;
-    private static string IsHidingDecisionCannotBeCalculated = Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated;
+    private string MessageNotAnalyzed = Constants.ResultsDefaults.NotAnalyzed;
+    private string MessageUnknown = Constants.ResultsDefaults.NoData;
+    private string MessageNotFoundData = Constants.ResultsDefaults.NotFoundData;
+    private string MessageNullElapsedTime = Constants.ResultsDefaults.NullElapsedTime + " " + Constants.ResultsDefaults.ElapsedTimeMeasure;
+    private string IsHidingDecisionCannotBeCalculated = Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated;
 
     private static SolidColorBrush BadTextBrush = CommonTools.GetBrush("SrDarkRed");
     private static SolidColorBrush GoodTextBrush = CommonTools.GetBrush("SrDarkGreen");
@@ -46,34 +47,44 @@ public partial class AnalyzerView : UserControl
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
         UpdateResults();
 
+        MessageNotAnalyzed = _vm.L["AnalyzerTab.Results.NotAnalyzedResultLower"];
+        MessageUnknown = _vm.L["AnalyzerTab.Results.NoDataLower"];
+        MessageNotFoundData = _vm.L["AnalyzerTab.Results.NoHidingLower"];
+        MessageNullElapsedTime = Constants.ResultsDefaults.NullElapsedTime + " " + _vm.L["Common.Ms"];
+        IsHidingDecisionCannotBeCalculated = _vm.L["AnalyzerTab.Results.UndefinedResult"];
+
+        SetImagePathText();
+
         // Установка текста блоков результатов
-        AutoDetectionResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.HidingDesicionDetection);
-        ChiFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ChiSqrValue);
-        RsFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.RsValue);
-        SpaFullnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.SpaValue);
-        FanResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.FanValue);
-        ZcaResultDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.ZcaValue);
-        KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaDetection);
-        KzhaBitsNumDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaBitsNum);
-        KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaIndexes);
-        KzhaThresholdDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaThreshold);
-        KzhaCoeffsDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaCoeffs);
-        KzhaExtractedDataLabel.Text = Common.Tools.AddColon(Constants.ResultsNames.KzhaExtractedInfo);
-        StatResultsTitleName.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmLabel);
-        StatResultsNoise2Desc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmNoise);
-        StatResultsSharpnessDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmSharpness);
-        StatResultsBlurDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmBlur);
-        StatResultsContrastDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmContrast);
-        StatResultsEntropyShennonDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmShennon);
-        StatResultsEntropyRenyiDesc.Text = Common.Tools.AddColon(Constants.ResultsNames.StatmRenyi);
-        ElapsedTimeLabel.Text = Common.Tools.AddColon(Constants.ResultsNames.ElapsedTime);
+        AutoDetectionResultDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.ComplexMethodTitle"]);
+        ChiFullnessDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.CsaMethodTitle"]);
+        RsFullnessDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.RsMethodTitle"]);
+        SpaFullnessDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.SpaMethodTitle"]);
+        FanResultDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.FanMethodEstimation"]);
+        ZcaResultDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.ZcaMethodTitle"]);
+        KzhaIntervalFoundedDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.FoundInterval"]);
+        KzhaBitsNumDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.BitsNum"]);
+        KzhaSuspiciousIntervalDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.Indexes"]);
+        KzhaThresholdDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.Threshold"]);
+        KzhaCoeffsDesc.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.Coeffs"]);
+        KzhaExtractedDataLabel.Text = Common.Tools.AddColon(_vm.L["AnalyzerTab.Results.KzchaMethod.ExtractedData"]);
+        StatResultsTitleName.Text = Common.Tools.AddColon(_vm.L["Methods.Stats"]);
+        StatResultsNoise2Desc.Text = Common.Tools.AddColon(_vm.L["Stats.Noise"]);
+        StatResultsSharpnessDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Sharpness"]);
+        StatResultsBlurDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Blur"]);
+        StatResultsContrastDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Contrast"]);
+        StatResultsEntropyShennonDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Entropy.Shennon"]);
+        StatResultsEntropyRenyiDesc.Text = Common.Tools.AddColon(_vm.L["Stats.Entropy.Renyi"]);
     }
 
     private async void LoadImageButton_Click(object sender, RoutedEventArgs e)
     {
         _vm.ResetResults();
         ResetResultsExpander();  // При попытке загрузке изображения в любом случае сбрасываем форму результатов
+        ResetImagePathText();
+
         await _vm.TryLoadImage();
+        SetImagePathText();
     }
 
 
@@ -133,7 +144,7 @@ public partial class AnalyzerView : UserControl
         // FAN
         if (IsMethodStateExecuted(results.MethodFanState))
         {
-            string fanHidingDetectedText = results.IsFanHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            string fanHidingDetectedText = results.IsFanHidingDetected ? _vm.L["AnalyzerTab.Results.HidingDetected"] : _vm.L["AnalyzerTab.Results.HidingNotDetected"];
             if (results.FanMahalanobisDistance is not null)
                 fanHidingDetectedText += $" ({Math.Round(results.FanMahalanobisDistance.Value, 3)})";
             var fanHidingDetectedTextBrush = results.IsFanHidingDetected ? BadTextBrush : GoodTextBrush;
@@ -146,7 +157,7 @@ public partial class AnalyzerView : UserControl
         // ZCA
         if (IsMethodStateExecuted(results.MethodZcaState))
         {
-            string zcaHidingDetectedText = results.IsZcaHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            string zcaHidingDetectedText = results.IsZcaHidingDetected ? _vm.L["AnalyzerTab.Results.HidingDetected"] : _vm.L["AnalyzerTab.Results.HidingNotDetected"];
             var zcaHidingDetectedTextBrush = results.IsZcaHidingDetected ? BadTextBrush : GoodTextBrush;
             ZcaResultValue.Foreground = zcaHidingDetectedTextBrush;
             ZcaResultValue.Text = zcaHidingDetectedText;
@@ -157,7 +168,7 @@ public partial class AnalyzerView : UserControl
         // Kzha
         if (IsMethodStateExecuted(results.MethodKzhaState))
         {
-            KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? Constants.ResultsDefaults.Yes : Constants.ResultsDefaults.No;
+            KzhaIntervalFoundedValue.Text = results.KzhaSuspiciousIntervalIsFound ? _vm.L["Common.Yes"] : _vm.L["Common.No"];
 
             if (results.KzhaSuspiciousIntervalIsFound)
             {
@@ -235,7 +246,7 @@ public partial class AnalyzerView : UserControl
         // Вывод о наличии встраивания
         if (IsMethodStateExecuted(results.ComplexMethodState))
         {
-            string hidingDecisionText = results.IsHidingDetected ? Constants.ResultsDefaults.Detected : Constants.ResultsDefaults.NotDetected;
+            string hidingDecisionText = results.IsHidingDetected ? _vm.L["AnalyzerTab.Results.HidingDetected"] : _vm.L["AnalyzerTab.Results.HidingNotDetected"];
             var hidingDecisionTextBrush = results.IsHidingDetected ? BadTextBrush : GoodTextBrush;
             AutoDetectionResultValue.Foreground = hidingDecisionTextBrush;
             AutoDetectionResultValue.Text = hidingDecisionText;
@@ -247,23 +258,23 @@ public partial class AnalyzerView : UserControl
         if ((results.MethodChiSqrState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors) && 
             (results.MethodRsState is SaMethodExecutionState.Executed or SaMethodExecutionState.WithErrors))
         {
-            JointDesicionOpenBtn.IsVisible = true;
+            JointDecisionOpenBtn.IsVisible = true;
         }
         else
         {
-            JointDesicionOpenBtn.IsVisible = false;
+            JointDecisionOpenBtn.IsVisible = false;
         }
     }
 
     private static bool IsMethodStateExecuted(SaMethodExecutionState state) =>
         state == SaMethodExecutionState.Executed || state == SaMethodExecutionState.WithErrors;
 
-    private static void SetErroredResult(TextBlock tb, ILoggedAnalysisResult result) => SetErroredResult(tb, result.AsLog().GetErrors().Select(x => x.ToString()));
-    private static void SetErroredResult(TextBlock tb, IEnumerable<string> errors)
+    private void SetErroredResult(TextBlock tb, ILoggedAnalysisResult result) => SetErroredResult(tb, result.AsLog().GetErrors().Select(x => x.ToString()));
+    private  void SetErroredResult(TextBlock tb, IEnumerable<string> errors)
     {
         string error = string.Join("\n", errors);
         tb.Foreground = ErrorTextBrush;
-        tb.Text = Constants.ResultsDefaults.WasFatalError;
+        tb.Text = _vm.L["Common.WasError"];
 
         var tipText = new TextBlock
         {
@@ -297,7 +308,7 @@ public partial class AnalyzerView : UserControl
     private async void MethodKzaParamsBtn_Click(object sender, RoutedEventArgs e) =>
         await _vm.OpenParametersWindow(AnalysisMethod.KochZhaoAnalysis);
 
-    private async void JointDesicionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+    private async void JointDecisionOpenBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         await _vm.OpenJointDecisionWindow();
 
 
@@ -364,10 +375,42 @@ public partial class AnalyzerView : UserControl
 
     private static void ResetToolTip(TextBlock tb) => ToolTip.SetTip(tb, null);
     private static void ResetTextForeground(TextBlock tb) => tb.Foreground = DefaultTextBrush;
-    private static void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
-    private static void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
+    private void ResetTextValueToMessageUnknown(TextBlock tb) => tb.Text = MessageUnknown;
+    private void ResetTextValueToMessageNotAnalyzed(TextBlock tb) => tb.Text = MessageNotAnalyzed;
 
     private async void CopyAsTextBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsTextToClipboard();
 
     private async void CopyAsJsonBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await _vm.CopyResultsJsonToClipboard();
+
+    private void SetImagePathText()
+    {
+        if (string.IsNullOrEmpty(_vm.ImagePath))
+            ResetImagePathText();
+        else
+            BindImagePathText();
+    }
+    private void RemoveImagePathBinding() => BindingOperations.GetBindingExpressionBase(ImagePathLabel, TextBox.TextProperty)?.Dispose();
+    private void ResetImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "L[Common.ImageNotSelected]",
+            Mode = BindingMode.TwoWay
+        });
+    }
+    private void BindImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "ImagePath",
+            Mode = BindingMode.TwoWay
+        });
+    }
+
+    private async void ShowKzhaHisto_Click(object? sender, RoutedEventArgs e) =>
+        await _vm.OpenKzhaHistoWindow();
 }

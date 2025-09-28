@@ -1,0 +1,640 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnalyzerTab.UsingMethods" xml:space="preserve">
+    <value>Applied Methods</value>
+  </data>
+  <data name="AnalyzerTab.MethodsExpander" xml:space="preserve">
+    <value>Steganalysis Methods</value>
+  </data>
+  <data name="AnalyzerTab.ResultsExpander" xml:space="preserve">
+    <value>Steganalysis Results</value>
+  </data>
+  <data name="Common.ChooseImage" xml:space="preserve">
+    <value>Select Image</value>
+  </data>
+  <data name="Common.ImageNotSelected" xml:space="preserve">
+    <value>No Image Selected</value>
+  </data>
+  <data name="Common.Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Common.On" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Common.Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="ExtractorTab.KzhaHided" xml:space="preserve">
+    <value>Koch–Zhao Hidden Data</value>
+  </data>
+  <data name="ExtractorTab.LsbHided" xml:space="preserve">
+    <value>LSB Hidden Data</value>
+  </data>
+  <data name="ExtractorTab.ParametersExpander" xml:space="preserve">
+    <value>Extraction Parameters</value>
+  </data>
+  <data name="ExtractorTab.ResultsExpander" xml:space="preserve">
+    <value>Extraction Results</value>
+  </data>
+  <data name="InfoTab.AboutText" xml:space="preserve">
+    <value>Stego Revealer is a software suite for performing steganalysis and working with steganographic methods of hiding and extracting information.
+
+Available steganalysis methods:
+    - Comprehensive Steganalysis Method;
+    - Chi-Square Attack (CSA);
+    - Regular-Singular (RS) Analysis;
+    - Sample Pair Analysis (SPA);
+    - Fast Additive Noise (FAN, HCF-COM) Method;
+    - Zhilkin’s Compression Analysis (ZCA);
+    - Sequential Koch–Zhao Embedding Analysis (CKZhA).
+
+Available steganographic extraction methods:
+    - LSB Method;
+    - Koch–Zhao Method.
+
+Developer: Iaroslav Grachev
+Scientific Advisor: V. G. Sidorenko</value>
+  </data>
+  <data name="Methods.ChiSqrMethod" xml:space="preserve">
+    <value>Chi-Square Attack Method</value>
+  </data>
+  <data name="Methods.ComplexMethod" xml:space="preserve">
+    <value>Comprehensive Steganalysis Method</value>
+  </data>
+  <data name="Methods.FanMethod" xml:space="preserve">
+    <value>Fast Additive Noise (HCF-COM) Method</value>
+  </data>
+  <data name="Methods.KzhaMethod" xml:space="preserve">
+    <value>Sequential Koch–Zhao Steganalysis</value>
+  </data>
+  <data name="Methods.RsMethod" xml:space="preserve">
+    <value>Regular-Singular (RS) Method</value>
+  </data>
+  <data name="Methods.SpaMethod" xml:space="preserve">
+    <value>Sample Pair Analysis (SPA) Method</value>
+  </data>
+  <data name="Methods.ZcaMethod" xml:space="preserve">
+    <value>Zhilkin’s Compression Analysis (ZCA)</value>
+  </data>
+  <data name="SettingsTab.Logging" xml:space="preserve">
+    <value>Logging</value>
+  </data>
+  <data name="Tabs.Analyzer" xml:space="preserve">
+    <value>Steganalyzer</value>
+  </data>
+  <data name="Tabs.Extractor" xml:space="preserve">
+    <value>Stegano Decoder</value>
+  </data>
+  <data name="Tabs.Hider" xml:space="preserve">
+    <value>Stegano Encoder</value>
+  </data>
+  <data name="Common.Params" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="AnalyzerTab.Results.ComplexMethodTitle" xml:space="preserve">
+    <value>Embedding Detected by Comprehensive Steganalysis</value>
+  </data>
+  <data name="AnalyzerTab.Results.UndefinedResult" xml:space="preserve">
+    <value>Cannot Determine</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResult" xml:space="preserve">
+    <value>Analysis Not Performed</value>
+  </data>
+  <data name="AnalyzerTab.Results.CsaMethodTitle" xml:space="preserve">
+    <value>Embedding Rate Evaluation (Chi-Square Method)</value>
+  </data>
+  <data name="AnalyzerTab.Results.RsMethodTitle" xml:space="preserve">
+    <value>Embedding Rate Evaluation (RS Method)</value>
+  </data>
+  <data name="AnalyzerTab.Results.SpaMethodTitle" xml:space="preserve">
+    <value>Embedding Rate Evaluation (SPA Method)</value>
+  </data>
+  <data name="AnalyzerTab.Results.ZcaMethodTitle" xml:space="preserve">
+    <value>Embedding Detected by Zhilkin’s Compression Analysis</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.FoundInterval" xml:space="preserve">
+    <value>Suspicious Interval Detected by Koch–Zhao Steganalysis</value>
+  </data>
+  <data name="AnalyzerTab.Results.JointDecisionTitle" xml:space="preserve">
+    <value>Joint Decision</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodTitle" xml:space="preserve">
+    <value>Embedding Detected by FAN (HCF-COM) Analysis</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.BitsNum" xml:space="preserve">
+    <value>Number of Hidden Bits</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Indexes" xml:space="preserve">
+    <value>Block Indices of Suspicious Interval</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Threshold" xml:space="preserve">
+    <value>Estimated Embedding Threshold</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.Coeffs" xml:space="preserve">
+    <value>Estimated Embedding Coefficients</value>
+  </data>
+  <data name="AnalyzerTab.Results.KzchaMethod.ExtractedData" xml:space="preserve">
+    <value>Extracted Information</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoData" xml:space="preserve">
+    <value>No Data</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHiding" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Methods.Stats" xml:space="preserve">
+    <value>Image Statistical Characteristics</value>
+  </data>
+  <data name="Stats.Noise" xml:space="preserve">
+    <value>Noise Level</value>
+  </data>
+  <data name="Stats.Sharpness" xml:space="preserve">
+    <value>Sharpness Level</value>
+  </data>
+  <data name="Stats.Contrast" xml:space="preserve">
+    <value>Contrast Level</value>
+  </data>
+  <data name="Stats.Blur" xml:space="preserve">
+    <value>Blur Level</value>
+  </data>
+  <data name="Stats.Entropy.Shennon" xml:space="preserve">
+    <value>Shannon Entropy</value>
+  </data>
+  <data name="Stats.Entropy.Renyi" xml:space="preserve">
+    <value>Rényi Entropy</value>
+  </data>
+  <data name="Stats.Entropy.Tsallis" xml:space="preserve">
+    <value>Tsallis Entropy</value>
+  </data>
+  <data name="Stats.Entropy.Vaida" xml:space="preserve">
+    <value>Vajda Entropy</value>
+  </data>
+  <data name="Stats.Entropy.Havard" xml:space="preserve">
+    <value>Havarda–Charvat Entropy</value>
+  </data>
+  <data name="Common.ElapseTime" xml:space="preserve">
+    <value>Elapsed Time</value>
+  </data>
+  <data name="AnalyzerTab.Results.CopyResults" xml:space="preserve">
+    <value>Copy Results</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParams" xml:space="preserve">
+    <value>Extraction Parameters</value>
+  </data>
+  <data name="ExtractorTab.ExtractionParamsAndMethod" xml:space="preserve">
+    <value>Extraction Method and Parameters</value>
+  </data>
+  <data name="ExtractorTab.HidingLinear" xml:space="preserve">
+    <value>Sequential</value>
+  </data>
+  <data name="ExtractorTab.HidingRandom" xml:space="preserve">
+    <value>Pseudo-Random</value>
+  </data>
+  <data name="ExtractorTab.RandomKey" xml:space="preserve">
+    <value>PRNG Key</value>
+  </data>
+  <data name="ExtractorTab.StartIndex" xml:space="preserve">
+    <value>Start Index</value>
+  </data>
+  <data name="ExtractorTab.ByteLength" xml:space="preserve">
+    <value>Length (bytes)</value>
+  </data>
+  <data name="ExtractorTab.BlocksIndexes" xml:space="preserve">
+    <value>Block Indices</value>
+  </data>
+  <data name="ExtractorTab.Threshold" xml:space="preserve">
+    <value>Threshold</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataTitle" xml:space="preserve">
+    <value>Raw Extracted Data</value>
+  </data>
+  <data name="Common.OpenInEditor" xml:space="preserve">
+    <value>Open in Editor</value>
+  </data>
+  <data name="Common.SaveToFile" xml:space="preserve">
+    <value>Save to File</value>
+  </data>
+  <data name="Methods.JointDecisionMethod" xml:space="preserve">
+    <value>Joint Decision Method (CSA + RS)</value>
+  </data>
+  <data name="JointAnalysis.RandomHiding" xml:space="preserve">
+    <value>pseudo-random embedding</value>
+  </data>
+  <data name="JointAnalysis.LinearHiding" xml:space="preserve">
+    <value>sequential embedding</value>
+  </data>
+  <data name="JointAnalysis.RsEstimation" xml:space="preserve">
+    <value>RS estimation</value>
+  </data>
+  <data name="JointAnalysis.CsaEstimation" xml:space="preserve">
+    <value>CSA estimation</value>
+  </data>
+  <data name="JointAnalysis.SectorsDescription" xml:space="preserve">
+    <value>Sector Description</value>
+  </data>
+  <data name="JointAnalysis.EmptyContainer" xml:space="preserve">
+    <value>Empty Container</value>
+  </data>
+  <data name="JointAnalysis.ResultTitle" xml:space="preserve">
+    <value>Result of Joint Decision Method (CSA + RS)</value>
+  </data>
+  <data name="Params.Csa.Title" xml:space="preserve">
+    <value>Chi-Square Analysis Parameters</value>
+  </data>
+  <data name="Params.Rs.Title" xml:space="preserve">
+    <value>RS Analysis Parameters</value>
+  </data>
+  <data name="Params.Zca.Title" xml:space="preserve">
+    <value>ZCA Compression Analysis Parameters</value>
+  </data>
+  <data name="Params.Fan.Title" xml:space="preserve">
+    <value>FAN (HCF-COM) Analysis Parameters</value>
+  </data>
+  <data name="Params.Spa.Title" xml:space="preserve">
+    <value>SPA Analysis Parameters</value>
+  </data>
+  <data name="Params.Kzha.Title" xml:space="preserve">
+    <value>Koch–Zhao Analysis Parameters</value>
+  </data>
+  <data name="Params.ChannelsChoosing" xml:space="preserve">
+    <value>Select Channels for Analysis</value>
+  </data>
+  <data name="Params.Channels.Red" xml:space="preserve">
+    <value>Red Channel</value>
+  </data>
+  <data name="Params.Channels.Blue" xml:space="preserve">
+    <value>Blue Channel</value>
+  </data>
+  <data name="Params.Channels.Green" xml:space="preserve">
+    <value>Green Channel</value>
+  </data>
+  <data name="Params.TraverseType.Title" xml:space="preserve">
+    <value>Pixel Traversal Type</value>
+  </data>
+  <data name="Params.TraverseType.Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Params.TraverseType.Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Params.Blocks.Width" xml:space="preserve">
+    <value>Block Width</value>
+  </data>
+  <data name="Params.Blocks.Height" xml:space="preserve">
+    <value>Block Height</value>
+  </data>
+  <data name="Params.Csa.PValueThreshold" xml:space="preserve">
+    <value>pValue Threshold</value>
+  </data>
+  <data name="Params.Csa.Visualize" xml:space="preserve">
+    <value>Visualize Hidden Data Area</value>
+  </data>
+  <data name="Params.Csa.ExcludeZeroPairs" xml:space="preserve">
+    <value>Exclude Pairs with Zero Expected Frequency</value>
+  </data>
+  <data name="Params.Csa.UsePreviousCnums" xml:space="preserve">
+    <value>Use Accumulation Mode</value>
+  </data>
+  <data name="Params.Csa.UseUnifiedCategories" xml:space="preserve">
+    <value>Unify Low-Frequency Categories</value>
+  </data>
+  <data name="Params.Csa.UnifyingThreshold" xml:space="preserve">
+    <value>Category Unification Threshold</value>
+  </data>
+  <data name="Params.Rs.FlippingMask" xml:space="preserve">
+    <value>Flipping Mask</value>
+  </data>
+  <data name="Params.Spa.Direction.Title" xml:space="preserve">
+    <value>Select Analysis Direction</value>
+  </data>
+  <data name="Params.Spa.Direction.Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Params.Spa.Direction.Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Params.Spa.Direction.Diagonal" xml:space="preserve">
+    <value>Diagonal</value>
+  </data>
+  <data name="Params.Spa.UseDoubleDirection" xml:space="preserve">
+    <value>Use Double Pass</value>
+  </data>
+  <data name="Params.Fan.ComThreshold" xml:space="preserve">
+    <value>Mahalanobis Distance Threshold (Center of Mass, COM)</value>
+  </data>
+  <data name="Params.Kzha.AutoExtract" xml:space="preserve">
+    <value>Automatically Extract Information</value>
+  </data>
+  <data name="Params.Kzha.CutThreshold" xml:space="preserve">
+    <value>Suspicious Values Threshold</value>
+  </data>
+  <data name="Params.Kzha.MinThreshold" xml:space="preserve">
+    <value>Minimum Considered Embedding Threshold</value>
+  </data>
+  <data name="Params.Kzha.SelectedCoeffs" xml:space="preserve">
+    <value>Selected Coefficients</value>
+  </data>
+  <data name="Params.Kzha.AvailableCoeffs" xml:space="preserve">
+    <value>Available Coefficients</value>
+  </data>
+  <data name="Params.Zca.RatioThreshold" xml:space="preserve">
+    <value>Compression Ratio Threshold</value>
+  </data>
+  <data name="Params.Zca.OverallCompression" xml:space="preserve">
+    <value>Analyze Entirely (All Channels Combined)</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Title" xml:space="preserve">
+    <value>Select Compression Method</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Zip" xml:space="preserve">
+    <value>ZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Gzip" xml:space="preserve">
+    <value>GZIP</value>
+  </data>
+  <data name="Params.Zca.CompressMethod.Bzip2" xml:space="preserve">
+    <value>BZIP2</value>
+  </data>
+  <data name="Common.Ms" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="AnalyzerTab.Results.NotAnalyzedResultLower" xml:space="preserve">
+    <value>analysis not performed</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoDataLower" xml:space="preserve">
+    <value>no data</value>
+  </data>
+  <data name="AnalyzerTab.Results.NoHidingLower" xml:space="preserve">
+    <value>none</value>
+  </data>
+  <data name="AnalyzerTab.Results.FanMethodEstimation" xml:space="preserve">
+    <value>Embedding Rate Evaluation (FAN, HCF-COM Method)</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingDetected" xml:space="preserve">
+    <value>detected</value>
+  </data>
+  <data name="AnalyzerTab.Results.HidingNotDetected" xml:space="preserve">
+    <value>not detected</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>yes</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>no</value>
+  </data>
+  <data name="Common.WasError" xml:space="preserve">
+    <value>error</value>
+  </data>
+  <data name="SettingsTab.Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Common.Image.Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="Common.Image.Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="Methods.ComplexMethodTipText" xml:space="preserve">
+    <value>Evaluation using a trained binary classifier on feature set: CSA, RS, CKZhA estimates, quality metrics, number of pixels</value>
+  </data>
+  <data name="ExtractorTab.ExtractedDataDisclaimer" xml:space="preserve">
+    <value>The displayed text above has been filtered: control and replacement characters have been removed</value>
+  </data>
+  <data name="JointAnalysis.O1SectorTitle" xml:space="preserve">
+    <value>Sector O.1</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O1" xml:space="preserve">
+    <value>Sector O.1: No hidden message detected, container is empty</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O2" xml:space="preserve">
+    <value>Sector O.2: The message occupies about {0:0}%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O3" xml:space="preserve">
+    <value>Sector O.3: The message occupies about {0:0}%, embedding is sequential</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O4" xml:space="preserve">
+    <value>Sector O.4: The message occupies about {0:0}%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O5" xml:space="preserve">
+    <value>Sector O.5: The message occupies at least 80%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O6" xml:space="preserve">
+    <value>Sector O.6: The message occupies about 100%, embedding is sequential</value>
+  </data>
+  <data name="JointAnalysis.Decisions.O7" xml:space="preserve">
+    <value>Sector O.7: The message occupies about 100%, embedding is pseudo-random</value>
+  </data>
+  <data name="JointAnalysis.Decisions.Undefined" xml:space="preserve">
+    <value>No definite conclusion can be drawn, the point does not fall into any sector</value>
+  </data>
+  <data name="HiderTab.HiderParams" xml:space="preserve">
+    <value>Embedding parameters</value>
+  </data>
+  <data name="HiderTab.HiderParamsAndMethod" xml:space="preserve">
+    <value>Embedding method and parameters</value>
+  </data>
+  <data name="HiderTab.MethodLsb" xml:space="preserve">
+    <value>LSB method</value>
+  </data>
+  <data name="HiderTab.MethodKochZhao" xml:space="preserve">
+    <value>Koch-Zhao method</value>
+  </data>
+  <data name="HiderTab.HideLinear" xml:space="preserve">
+    <value>Sequential</value>
+  </data>
+  <data name="HiderTab.HideRandom" xml:space="preserve">
+    <value>Pseudorandom</value>
+  </data>
+  <data name="HiderTab.RandomKey" xml:space="preserve">
+    <value>PRNG key</value>
+  </data>
+  <data name="HiderTab.StartIndex" xml:space="preserve">
+    <value>Start index</value>
+  </data>
+  <data name="HiderTab.Threshold" xml:space="preserve">
+    <value>Threshold</value>
+  </data>
+  <data name="HiderTab.ChooseData" xml:space="preserve">
+    <value>Choose data file</value>
+  </data>
+  <data name="HiderTab.ChooseDataTitle" xml:space="preserve">
+    <value>Select data to hide</value>
+  </data>
+  <data name="HiderTab.RemoveLoadedData" xml:space="preserve">
+    <value>Cancel data file selection</value>
+  </data>
+  <data name="HiderTab.Results.CoveredImageName" xml:space="preserve">
+    <value>Image with embedding</value>
+  </data>
+  <data name="HiderTab.ResultsExpander" xml:space="preserve">
+    <value>Embedding results</value>
+  </data>
+  <data name="HiderTab.ImageInLeftPanelInfo" xml:space="preserve">
+    <value>Image with embedding is displayed in the left panel</value>
+  </data>
+  <data name="HiderTab.SaveCoveredImage" xml:space="preserve">
+    <value>Save generated image with embedding</value>
+  </data>
+  <data name="Common.LoadedImageTitle" xml:space="preserve">
+    <value>Loaded Image</value>
+  </data>
+  <data name="Common.CoveredImageTitle" xml:space="preserve">
+    <value>Image with Embedding</value>
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Start" xml:space="preserve">
+    <value>Start API</value>
+  </data>
+  <data name="ApiLauncherTab.LaunchBtn.Stop" xml:space="preserve">
+    <value>Stop API</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpAddress" xml:space="preserve">
+    <value>HTTP Address</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsAddress" xml:space="preserve">
+    <value>HTTPS Address</value>
+  </data>
+  <data name="ApiLauncherTab.Config.HttpsRedirection" xml:space="preserve">
+    <value>Use HTTPS Redirection</value>
+  </data>
+  <data name="ApiLauncherTab.Config.Title" xml:space="preserve">
+    <value>API Configuration</value>
+  </data>
+  <data name="SettingsTab.Version" xml:space="preserve">
+    <value>Application Version</value>
+  </data>
+  <data name="Histo.Title" xml:space="preserve">
+    <value>Histogram of DCT matrix coefficient difference magnitudes</value>
+  </data>
+  <data name="Histo.ChooseCoeffs" xml:space="preserve">
+    <value>Coefficient pair</value>
+  </data>
+  <data name="Histo.ShowAllPairs" xml:space="preserve">
+    <value>All coefficient pairs</value>
+  </data>
+  <data name="Histo.BtnToolTip" xml:space="preserve">
+    <value>Histogram of magnitude differences of coefficient pairs in DCT matrix frequency representation</value>
+  </data>
+  <data name="Histo.TraverseTooltipHorizontal" xml:space="preserve">
+    <value>Select pixel (or pixel block) matrix traversal method: by rows</value>
+  </data>
+  <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
+    <value>Select pixel (or pixel block) matrix traversal method: by columns</value>
+  </data>
+</root>

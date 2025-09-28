@@ -1,19 +1,21 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using StegoRevealer.Common;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.Views.MainWindowViews;
 
 public partial class ExtractorView : UserControl
 {
     // Стандартные сообщения и заглушки
-    private const string MessageNullElapsedTime = "0 мс";
+    private string MessageNullElapsedTime = "0 мс";
 
 
     private ExtractorViewModel _vm = null!;
@@ -29,6 +31,10 @@ public partial class ExtractorView : UserControl
         _vm = CommonTools.GetViewModel<ExtractorViewModel>(this.DataContext);
         _vm.WindowResizeAction();  // Для изначальной установки MaxWidth и MaxHeight для изображения
 
+        MessageNullElapsedTime = "0 " + _vm.L["Common.Ms"];
+
+        SetImagePathText();
+
         if (_vm.LinearModeSelected)
             SetupFieldsForLinearMode();
         else if (_vm.RandomModeSelected)
@@ -40,18 +46,32 @@ public partial class ExtractorView : UserControl
     {
         _vm.ResetResults();
         ResetResultsExpander();  // При попытке загрузке изображения в любом случае сбрасываем форму результатов
+        ResetImagePathText();
+
         await _vm.TryLoadImage();
+        SetImagePathText();
     }
 
 
-    private void StartExtraction_Click(object sender, RoutedEventArgs e)
+    private async void StartExtraction_Click(object sender, RoutedEventArgs e)
     {
+        StartExtraction.IsEnabled = false;  // Блокириуем кнопку запуска СА
+        LoadImageButton.IsEnabled = false;  // Блокируем кнопку выбора изображения
+        ParamsExpander.IsEnabled = false;  // Блокируем всю панель выбора методов
+        LoadingOverlay.IsVisible = true;
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
+
         _vm.ResetResults();
         ResetResultsExpander();
-        _vm.StartExtraction();
+        await Task.Run(_vm.StartExtraction);
 
         UpdateResults();
         _vm.IsParamsOpened = false;
+
+        LoadingOverlay.IsVisible = false;
+        LoadImageButton.IsEnabled = true;  // Снимаем блокировку кнопки выбора изображения
+        ParamsExpander.IsEnabled = true;  // Снимаем блокировку всей панели выбора методов
+        StartExtraction.IsEnabled = true;  // Снимаем блокировку кнопки запуска СА
     }
 
     private void UpdateResults()
@@ -64,10 +84,13 @@ public partial class ExtractorView : UserControl
                 return;
 
             // Вывод результатов на форму
-            _ = ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            Dispatcher.UIThread.Post(() => { ExtractedMessage.UpdateLayout(); });
 
             // Затрачено времени
-            ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " мс";
+            ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " " + _vm.L["Common.Ms"];
+
+            ExtractedMessage.ScrollToTop();
         }
     }
 
@@ -102,7 +125,7 @@ public partial class ExtractorView : UserControl
         _vm.IsParamsOpened = true;
 
         // Сброс формы результатов
-        _ = ExtractedMessage.SetText(string.Empty);
+        ExtractedMessage.SetText(string.Empty);
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
 
@@ -160,7 +183,7 @@ public partial class ExtractorView : UserControl
         string filePath = Path.Combine(tempDir, fileName);
 
         File.WriteAllText(filePath, _vm.CurrentResults.ExtractedMessage);
-        Logger.LogInfo($"Raw extracted text saved to temp dir as '{filePath}'");
+        CommonLogger.LogInfo($"Raw extracted text saved to temp dir as '{filePath}'");
 
         var process = new Process
         {
@@ -173,4 +196,54 @@ public partial class ExtractorView : UserControl
     }
 
     private async void SaveExtractedText_Click(object? sender, RoutedEventArgs e) => await _vm.TrySaveExtractedText();
+
+    private void SetImagePathText()
+    {
+        if (string.IsNullOrEmpty(_vm.ImagePath))
+            ResetImagePathText();
+        else
+            BindImagePathText();
+    }
+    private void RemoveImagePathBinding() => BindingOperations.GetBindingExpressionBase(ImagePathLabel, TextBox.TextProperty)?.Dispose();
+    private void ResetImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "L[Common.ImageNotSelected]",
+            Mode = BindingMode.TwoWay
+        });
+    }
+    private void BindImagePathText()
+    {
+        RemoveImagePathBinding();
+        ImagePathLabel.Bind(TextBox.TextProperty, new Binding
+        {
+            Source = _vm,
+            Path = "ImagePath",
+            Mode = BindingMode.TwoWay
+        });
+    }
+
+
+    #region Input Filtering
+
+    private void FilterForInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
+    private void FilterForInteger_TextInput(object? sender, Avalonia.Input.TextInputEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
+    private async void FilterForInteger_PastingFromClipboard(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowInteger);
+
+    private void FilterForDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
+    private void FilterForDouble_TextInput(object? sender, Avalonia.Input.TextInputEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
+    private async void FilterForDouble_PastingFromClipboard(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowDouble);
+
+    private void FilterForPositiveInteger_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
+    private void FilterForPositiveInteger_TextInput(object? sender, Avalonia.Input.TextInputEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
+    private async void FilterForPositiveInteger_PastingFromClipboard(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveInteger);
+
+    private void FilterForPositiveDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
+    private void FilterForPositiveDouble_TextInput(object? sender, Avalonia.Input.TextInputEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
+    private async void FilterForPositiveDouble_PastingFromClipboard(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
+
+    #endregion
 }

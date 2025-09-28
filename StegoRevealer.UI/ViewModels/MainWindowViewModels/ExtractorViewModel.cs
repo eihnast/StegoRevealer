@@ -22,9 +22,6 @@ namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 
 public class ExtractorViewModel : MainWindowViewModelBaseChild
 {
-    // Стандартные значения текстовых полей
-    private const string ImageNotSelectedText = "Изображение не выбрано";
-
     // Параметры извлечения
     private LsbParameters? _lsbParameters = null;
     private KochZhaoParameters? _kzhParameters = null;
@@ -39,10 +36,10 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         set
         {
             this.RaiseAndSetIfChanged(ref _imagePath, value);
-            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !value.Equals(ImageNotSelectedText);
+            HasLoadedImage = !string.IsNullOrWhiteSpace(value) && !string.IsNullOrEmpty(value);
         }
     }
-    private string _imagePath = ImageNotSelectedText;
+    private string _imagePath = string.Empty;
 
     /// <summary>
     /// Загружено ли изображение для анализа
@@ -248,7 +245,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         get => _kzThresholdValue;
         set => this.RaiseAndSetIfChanged(ref _kzThresholdValue, value);
     }
-    private double _kzThresholdValue = 120.0;
+    private double _kzThresholdValue = 70.0;
 
     /// <summary>
     /// 
@@ -342,16 +339,16 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Обработчик текущего отображаемого изображения (может не соответствовать изначально выбранному)
     /// </summary>
-    public ImageHandler? DrawedImage
+    public ImageHandler? DrawnImage
     {
         get => _drawedImage;
         set
         {
             _drawedImage = value;
             if (_drawedImage is not null)
-                DrawedImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
+                DrawnImageSource = CommonTools.GetAvaloniaBitmapFromImageHandler(_drawedImage);
             else
-                DrawedImageSource = null;
+                DrawnImageSource = null;
         }
     }
     private ImageHandler? _drawedImage;
@@ -359,7 +356,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// <summary>
     /// Источник текущего отображаемого изображения
     /// </summary>
-    public Bitmap? DrawedImageSource
+    public Bitmap? DrawnImageSource
     {
         get => _drawedImageSource;
         private set => this.RaiseAndSetIfChanged(ref _drawedImageSource, value);
@@ -414,14 +411,15 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             CurrentImage = new ImageHandler(path);
             TempManager.Instance.RememberHandler(CurrentImage);
             ActualizeParameters();  // Обновит ссылку на изображение в параметрах или создат объекты параметров, если их нет
-            Logger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
+            CommonLogger.LogInfo($"Loaded new image for extraction: {CurrentImage.ImgPath}");
 
             DrawCurrentImage();  // Обновит изображение, отображаемое на форме
             return true;
         }
         catch 
         {
-            Logger.LogError($"Не удалось создать обработчик изображния '{path}'");
+            CommonLogger.LogError($"Не удалось создать обработчик изображния '{path}'");
+            ImagePath = string.Empty;
         }
 
         return false;
@@ -438,6 +436,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
         if (!string.IsNullOrEmpty(path))
         {
             ImagePath = path;
+            CommonLogger.LogInfo($"Loading new image for extraction: '{path}' copying to Temp");
 
             // Загрузка
             var tempPath = Common.Tools.CopyFileToTemp(path);
@@ -446,6 +445,10 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             {
                 TempManager.Instance.RememberTempImage(path, tempPath);
                 return CreateCurrentImageHandler(tempPath);
+            }
+            else
+            {
+                ImagePath = string.Empty;
             }
         }
 
@@ -504,7 +507,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             using var streamWriter = new StreamWriter(stream);
             await streamWriter.WriteLineAsync(CurrentResults.ExtractedMessage);
 
-            Logger.LogInfo($"Saved file with raw extracted text: '{file.Path.LocalPath}'");
+            CommonLogger.LogInfo($"Saved file with raw extracted text: '{file.Path.LocalPath}'");
         }
     }
 
@@ -514,11 +517,11 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     /// </summary>
     public void StartExtraction()
     {
-        Logger.LogInfo("Starting extraction");
+        CommonLogger.LogInfo("Starting extraction");
         UpdateParameters();
 
         var timer = Stopwatch.StartNew();  // Запуск таймера - подсчёт времени работы непосредственно методов стеганографии
-        Logger.LogInfo("Starting extraction operations");
+        CommonLogger.LogInfo("Starting extraction operations");
 
         // Запуск
         if (_lsbParameters is null && _kzhParameters is null)
@@ -549,15 +552,15 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
             results.ExtractedMessage = kzResult?.ResultData ?? string.Empty;
         }
 
-        Logger.LogInfo("Extraction operations completed");
+        CommonLogger.LogInfo("Extraction operations completed");
         timer.Stop();  // Остановка таймера
 
         results.ElapsedTime = timer.ElapsedMilliseconds;
 
         CurrentResults = results;
-        Logger.LogInfo("Results of extraction:\n" + Logger.Separator
+        CommonLogger.LogInfo("Results of extraction:\n" + Constants.LogSeparator
             + $"\nExtracted data length: {CurrentResults.ExtractedMessage.Length}"
-            + $"\nElapsed time = {CurrentResults.ElapsedTime}\n" + Logger.Separator);
+            + $"\nElapsed time = {CurrentResults.ElapsedTime}\n" + Constants.LogSeparator);
     }
 
     public void UpdateParameters()
@@ -620,7 +623,7 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     public void DrawCurrentImage()
     {
         if (CurrentImage is not null)
-            DrawedImage = CurrentImage;
+            DrawnImage = CurrentImage;
     }
 
     /// <summary>
@@ -632,8 +635,8 @@ public class ExtractorViewModel : MainWindowViewModelBaseChild
     // Сбрасывает данные об изображении и результатах
     private void ResetImageAndResults()
     {
-        ImagePath = ImageNotSelectedText;
-        DrawedImage = null;
+        ImagePath = string.Empty;
+        DrawnImage = null;
         ResetResults();
 
         if (CurrentImage is not null)

@@ -27,9 +27,9 @@ public class ChiSqrMethodParametersViewModel : ParametersWindowViewModelBaseChil
 
         Visualize = chiSqrParamsDto.Visualize;
         ExcludeZeroPairs = chiSqrParamsDto.ExcludeZeroPairs;
-        UseUnifiedCathegories = chiSqrParamsDto.UseUnifiedCathegories;
+        UseUnifiedCategories = chiSqrParamsDto.UseUnifiedCategories;
         UsePreviousCnums = chiSqrParamsDto.UsePreviousCnums;
-        UnifyingCathegoriesThresholdValue = chiSqrParamsDto.UnifyingCathegoriesThreshold;
+        UnifyingCategoriesThresholdValue = chiSqrParamsDto.UnifyingCategoriesThreshold;
         ChannelRedChecked = chiSqrParamsDto.Channels.Contains(ImgChannel.Red);
         ChannelGreenChecked = chiSqrParamsDto.Channels.Contains(ImgChannel.Green);
         ChannelBlueChecked = chiSqrParamsDto.Channels.Contains(ImgChannel.Blue);
@@ -47,9 +47,9 @@ public class ChiSqrMethodParametersViewModel : ParametersWindowViewModelBaseChil
         result.Visualize = Visualize;
         result.ExcludeZeroPairs = ExcludeZeroPairs;
         result.UsePreviousCnums = UsePreviousCnums;
-        result.UseUnifiedCathegories = UseUnifiedCathegories;
+        result.UseUnifiedCategories = UseUnifiedCategories;
 
-        result.UnifyingCathegoriesThreshold = UnifyingCathegoriesThresholdValue;
+        result.UnifyingCategoriesThreshold = UnifyingCategoriesThresholdValue;
 
         result.Channels = new();
         if (ChannelRedChecked)
@@ -87,11 +87,11 @@ public class ChiSqrMethodParametersViewModel : ParametersWindowViewModelBaseChil
         set => this.RaiseAndSetIfChanged(ref _excludeZeroPairs, value);
     }
 
-    private bool _useUnifiedCathegories = true;
-    public bool UseUnifiedCathegories
+    private bool _useUnifiedCategories = true;
+    public bool UseUnifiedCategories
     {
-        get => _useUnifiedCathegories;
-        set => this.RaiseAndSetIfChanged(ref _useUnifiedCathegories, value);
+        get => _useUnifiedCategories;
+        set => this.RaiseAndSetIfChanged(ref _useUnifiedCategories, value);
     }
 
     private bool _usePreviousCnums = true;
@@ -101,11 +101,11 @@ public class ChiSqrMethodParametersViewModel : ParametersWindowViewModelBaseChil
         set => this.RaiseAndSetIfChanged(ref _usePreviousCnums, value);
     }
 
-    private int _unifyingCathegoriesThresholdValue = 4;
-    public int UnifyingCathegoriesThresholdValue
+    private int _unifyingCategoriesThresholdValue = 4;
+    public int UnifyingCategoriesThresholdValue
     {
-        get => _unifyingCathegoriesThresholdValue;
-        set => this.RaiseAndSetIfChanged(ref _unifyingCathegoriesThresholdValue, value);
+        get => _unifyingCategoriesThresholdValue;
+        set => this.RaiseAndSetIfChanged(ref _unifyingCategoriesThresholdValue, value);
     }
 
     private bool _channelRedChecked = true;

@@ -132,8 +132,8 @@ public class ChiSquareAnalyser
             var (expected, observed) = CreateChiArrays(cnumArr);
 
             // Объединение низкочастотных категорий, если задана настройка
-            if (Params.UseUnifiedCathegories && expected.Count >= 2)
-                (expected, observed) = UnifyCathegories(expected, observed);
+            if (Params.UseUnifiedCategories && expected.Count >= 2)
+                (expected, observed) = UnifyCategories(expected, observed);
 
             // Вычисление результатов оценки
             var chiSqr = MathMethods.ChiSqr(expected, observed);
@@ -204,7 +204,7 @@ public class ChiSquareAnalyser
     /// <param name="oldObserved">Список наблюдаемых значений категорий</param>
     /// <returns>Новые списки ожидаемых и наблюдаемых значений</returns>
     /// <exception cref="ArgumentException">Размеры список ожидаемых и наблюдаемых значений не совпадают</exception>
-    private (List<double> expected, List<double> observed) UnifyCathegories(List<double> oldExpected, List<double> oldObserved)
+    private (List<double> expected, List<double> observed) UnifyCategories(List<double> oldExpected, List<double> oldObserved)
     {
         if (oldExpected.Count != oldObserved.Count)
             throw new ArgumentException("Sizes of arrays oldExpected and oldObserved is not equal");
@@ -218,7 +218,7 @@ public class ChiSquareAnalyser
         for (int i = 0; i < oldExpected.Count; i++)
         {
             var expectedValue = oldExpected[i];
-            if (expectedValue > Params.UnifyingCathegoriesThreshold)
+            if (expectedValue > Params.UnifyingCategoriesThreshold)
             {
                 newExpected.Add(expectedValue);
                 newObserved.Add(oldObserved[i]);
@@ -247,7 +247,7 @@ public class ChiSquareAnalyser
 
             // Переносим достаточно высокочастотные категории в основной массив
             for (int i = 0; i < toUnifyExpected.Count; i++)
-                if (toUnifyExpected[i] > Params.UnifyingCathegoriesThreshold)
+                if (toUnifyExpected[i] > Params.UnifyingCategoriesThreshold)
                 {
                     newExpected.Add(toUnifyExpected[i]);
                     toUnifyExpected[i] = -1;
@@ -262,7 +262,7 @@ public class ChiSquareAnalyser
             // Решаем проблему последней категории
             if (toUnifyExpected.Count == 1)
             {
-                if (toUnifyExpected[0] > Params.UnifyingCathegoriesThreshold)  // Если удовлетворяет порогу
+                if (toUnifyExpected[0] > Params.UnifyingCategoriesThreshold)  // Если удовлетворяет порогу
                 {
                     newExpected.Add(toUnifyExpected[0]);
                     newObserved.Add(toUnifyObserved[0]);

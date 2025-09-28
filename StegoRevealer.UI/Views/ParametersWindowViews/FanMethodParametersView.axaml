@@ -13,10 +13,10 @@
 
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			  ColumnDefinitions="*,*" RowDefinitions="40,Auto,*"
+			  ColumnDefinitions="2*,*" RowDefinitions="40,Auto,*"
 			  Margin="20 10 20 10">
 
-			<Label Name="TitleLabel" Content="Параметры стегоанализа метода Fast Additive Noise (HCF-COM)"
+			<Label Name="TitleLabel" Content="{Binding L[Params.Fan.Title]}"
 				   Foreground="#FFE0E0E0" FontWeight="Bold" FontSize="16"
 				   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                    Background="{x:Null}" BorderBrush="{x:Null}"
@@ -28,18 +28,20 @@
 						HorizontalAlignment="Center">
 				<DockPanel LastChildFill="True"
 						   Margin="0 15 0 0" HorizontalAlignment="Left">
-					<Label Content="Порог дистанции Махаланобиса центра масс (COM):"
+					<Label Content="{Binding L[Params.Fan.ComThreshold], StringFormat='{}{0}:'}"
 						   FontSize="12" Foreground="#FFE0E0E0"
 						   Padding="0" HorizontalContentAlignment="Left"
                            Background="{x:Null}" BorderBrush="{x:Null}"
 						   VerticalAlignment="Center"/>
 					<TextBox Name="Threshold"
-							 Text="{Binding Path=ThresholdValue}"
+							 Text="{Binding Path=Threshold}"
 							 FontSize="12"
-							 MinWidth="80" MinHeight="25" MaxHeight="25"
+							 MinWidth="150" MinHeight="25" MaxHeight="25"
 							 Padding="8 1 8 1" Margin="10 0 0 0"
 							 VerticalContentAlignment="Center"
-							 KeyDown="FilterForPositiveDouble_KeyDown"/>
+							 KeyDown="FilterForPositiveDouble_KeyDown"
+							 TextInput="FilterForPositiveDouble_TextInput"
+							 PastingFromClipboard="FilterForPositiveDouble_PastingFromClipboard"/>
 				</DockPanel>
 			</StackPanel>
 

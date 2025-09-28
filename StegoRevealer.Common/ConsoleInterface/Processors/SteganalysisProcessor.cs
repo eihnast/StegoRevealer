@@ -39,7 +39,7 @@ public class SteganalysisProcessor
         if (!imageLoaded)
             return;
 
-        _logger.LogInfo($"Starting steganalysis for file '{_fileName}'");
+        CommonLogger.LogInfo($"Starting steganalysis for file '{_fileName}'");
         var jointAnalysisParams = new JointAnalysisMethodsParameters();
 
         if (_currentImage is null)
@@ -55,15 +55,15 @@ public class SteganalysisProcessor
         jointAnalysisParams.StatmParameters = new StatmParameters(_currentImage);
         jointAnalysisParams.ComplexSaMethodParameters = new ComplexSaMethodParameters(_currentImage);
 
-        _logger.LogInfo("Starting steganalysis operations");
+        CommonLogger.LogInfo("Starting steganalysis operations");
 
         var result = await JointAnalysisStarter.Start(jointAnalysisParams);
 
-        _logger.LogInfo("Steganalysis operations completed");
+        CommonLogger.LogInfo("Steganalysis operations completed");
 
         if (result is null)
         {
-            _logger.LogWarning("Steganalysis result is null");
+            CommonLogger.LogWarning("Steganalysis result is null");
             return;
         }
 
@@ -74,7 +74,7 @@ public class SteganalysisProcessor
         var statmRes = result.StatmResult;
         
         // Запись в лог результатов
-        _logger.LogInfo("Received steganalysis results are:\n" + Logger.Separator
+        CommonLogger.LogInfo("Received steganalysis results are:\n" + Constants.LogSeparator
             + "\nChiSquare = " + Common.Tools.GetFormattedJson(chiRes)
             + "\nLogs of ChiSquare method = \n" + chiRes?.ToString(indent: 1)
             + "\n\nRegular-Singular = " + Common.Tools.GetFormattedJson(rsRes)
@@ -83,10 +83,10 @@ public class SteganalysisProcessor
             + "\nLogs of Koch-Zhao Analysis method = \n" + kzhaRes?.ToString(indent: 1)
             + "\n\nStatistical metrics = " + Common.Tools.GetFormattedJson(statmRes)
             + "\nLogs statistical metrics calculation = \n" + statmRes?.ToString(indent: 1)
-            + $"\n\nElapsed time = {result.ElapsedTime}\n" + Logger.Separator);
+            + $"\n\nElapsed time = {result.ElapsedTime}\n" + Constants.LogSeparator);
 
         PrintResults(result, Path.GetFileNameWithoutExtension(_fileName ?? string.Empty));
-        _logger.LogInfo($"Ended steganalysis for file '{_fileName}'");
+        CommonLogger.LogInfo($"Ended steganalysis for file '{_fileName}'");
 
         _logger.Flush();
         CloseImageHandler();
@@ -103,7 +103,7 @@ public class SteganalysisProcessor
             return false;
 
         var fullPath = Path.GetFullPath(newFilename);
-        _logger.LogInfo($"Loading image '{newFilename}' with full path '{fullPath}'");
+        CommonLogger.LogInfo($"Loading image '{newFilename}' with full path '{fullPath}'");
 
         try
         {
@@ -116,7 +116,7 @@ public class SteganalysisProcessor
 
         if (_currentImage is null)
         {
-            _logger.LogError($"Unsuccess while loading image '{fullPath}'");
+            CommonLogger.LogError($"Unsuccess while loading image '{fullPath}'");
             WinConsole.WriteLine($"Не удалось загрузить файл изображения '{fullPath}'");
             return false;
         }
@@ -136,7 +136,7 @@ public class SteganalysisProcessor
         var outputStr = new StringBuilder();
         outputStr.AppendLine($"Результаты стегоанализа изображения '{imgName}'");
 
-        outputStr.AppendLine(Constants.ResultsNames.HidingDesicionDetection + " " +
+        outputStr.AppendLine(Constants.ResultsNames.HidingDecisionDetection + " " +
             (result.ComplexSaMethodResults is null
             ? Constants.ResultsDefaults.IsHidingDecisionCannotBeCalculated
             : (result.ComplexSaMethodResults.IsHidingDetected ? Constants.ResultsDefaults.Detected.ToUpper() : Constants.ResultsDefaults.NotDetected.ToUpper())));
@@ -187,13 +187,13 @@ public class SteganalysisProcessor
         {
             var imageHandler = new ImageHandler(path);
             TempManager.Instance.RememberHandler(imageHandler);
-            _logger.LogInfo($"Loaded new image for steganalysis: {imageHandler.ImgPath}");
+            CommonLogger.LogInfo($"Loaded new image for steganalysis: {imageHandler.ImgPath}");
 
             return imageHandler;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error while loading image '{path}':\n" + ex.Message);
+            CommonLogger.LogError($"Error while loading image '{path}':\n" + ex.Message);
             WinConsole.WriteLine($"Возникла ошибка при загрузке файла изображения '{path}'\n" + ex.Message);
         }
 

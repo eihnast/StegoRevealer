@@ -29,7 +29,7 @@ public partial class MainWindow : Window
     {
         _vm = CommonTools.GetViewModel<MainWindowViewModel>(this.DataContext);
 
-        _headerButtons = new List<Button> { AnalyzerBtn, HiderBtn, ExtractorBtn, AboutBtn, SettingsBtn };
+        _headerButtons = new List<Button> { AnalyzerBtn, HiderBtn, ExtractorBtn, AboutBtn, SettingsBtn, ApiLauncherBtn };
         UpdateHeaderBtnSelection(AnalyzerBtn);
         _vm.TurnToAnalyzer();
     }
@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         Configurator.SaveConfig();
         TempManager.Instance.DeleteImageHandlers();
         TempManager.Instance.DeleteTempImages();
+        TempManager.Instance.DeleteTempFiles();
     }
 
     private void UpdateHeaderBtnSelection(Button selectedBtn)
@@ -72,5 +73,10 @@ public partial class MainWindow : Window
     {
         UpdateHeaderBtnSelection(SettingsBtn);
         _vm.TurnToSettingsPage();
+    }
+    private void ApiLauncherBtn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        UpdateHeaderBtnSelection(ApiLauncherBtn);
+        _vm.TurnToApiLauncher();
     }
 }

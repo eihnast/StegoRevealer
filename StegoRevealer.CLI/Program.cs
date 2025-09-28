@@ -7,7 +7,7 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        Logger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
+        CommonLogger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
         CommandLineParser.HandleCommand(args).Wait();
     }
 }

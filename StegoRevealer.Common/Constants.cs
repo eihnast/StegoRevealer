@@ -4,7 +4,7 @@ public static class Constants
 {
     public static class ResultsNames
     {
-        public static string HidingDesicionDetection => "Встраивание согласно методике комплексного стегоанализа";
+        public static string HidingDecisionDetection => "Встраивание согласно методике комплексного стегоанализа";
         public static string ChiSqrValue => "Оценка заполненности по методу Хи-квадрат";
         public static string RsValue => "Оценка заполненности по методу RS";
         public static string SpaValue => "Оценка заполненности по методу SPA";
@@ -40,4 +40,31 @@ public static class Constants
         public static string NotDetected => "не обнаружено";
         public static string WasFatalError => "произошла ошибка";
     }
+
+    public static Dictionary<string, string> Languages = new Dictionary<string, string>()
+    {
+        { "ru-RU", "Русский" },
+        { "en-US", "English" },
+        { "fa-IR", "فارسی" },
+        { "zh-CN", "简体中文" },
+        { "ar", "العربية" },
+        { "fr-FR", "Français" },
+        { "es-ES", "Español" },
+    };
+
+    public static Dictionary<LogMessageType, string> LogPrefixDictionary = new Dictionary<LogMessageType, string>()
+    {
+        { LogMessageType.Info, "[Info] " },
+        { LogMessageType.Warning, "[Warning] " },
+        { LogMessageType.Error, "[Error] " }
+    };
+
+    public enum LogMessageType
+    {
+        Info,
+        Warning,
+        Error
+    }
+
+    public static string LogSeparator => "------------------------------";
 }
