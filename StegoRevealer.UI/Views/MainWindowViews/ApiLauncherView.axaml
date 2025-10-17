@@ -93,7 +93,7 @@
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"
 						 MinHeight="300" TextWrapping="WrapWithOverflow"
 						 TextAlignment="Left" VerticalContentAlignment="Top"
-						 VerticalAlignment="Stretch"/>
+						 VerticalAlignment="Stretch" TextChanged="LogsTb_TextChanged"/>
 			</DockPanel>
 			<!-- / Правая панель с логами API -->
 
