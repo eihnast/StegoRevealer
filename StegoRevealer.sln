@@ -18,6 +18,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{21DB7700-0752-4C90-95EC-2F2EF91B1035}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
 		.github\workflows\dotnet-desktop.yml = .github\workflows\dotnet-desktop.yml
 		README.md = README.md
 	EndProjectSection
