@@ -2,7 +2,7 @@
 
 using Avalonia;
 using ALogger = Avalonia.Logging;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 using StegoRevealer.Common;
 using StegoRevealer.Common.ConsoleInterface;
