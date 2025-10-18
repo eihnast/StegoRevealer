@@ -4,36 +4,7 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-
-
-		<PublishSingleFile>true</PublishSingleFile>
-		<DebugType>embedded</DebugType>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-
-		<AssemblyName>StegoRevealerAPI</AssemblyName>
-		<Title>Stego Revealer API Server</Title>
-		<Version>25.9.44</Version>
-		<Authors>Iaroslav Grachev</Authors>
-		<Description>Stego Revealer API</Description>
-		<PackageTags>steganography; steganalysis; stego</PackageTags>
-		<NeutralLanguage>ru-RU</NeutralLanguage>
-		<ApplicationIcon>Assets\AppApiIcon.ico</ApplicationIcon>
-		<FileVersion>25.9.44.0826</FileVersion>
-		<AssemblyVersion>25.9.44.0826</AssemblyVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<ShouldCreateLogs>True</ShouldCreateLogs>
-		<AdvancedSettingsExpanded>True</AdvancedSettingsExpanded>
-		<UpdateAssemblyVersion>True</UpdateAssemblyVersion>
-		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
-		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
-		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
-		<UpdatePackageVersion>True</UpdatePackageVersion>
-		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
-		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
-		<AssemblyVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
+		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>

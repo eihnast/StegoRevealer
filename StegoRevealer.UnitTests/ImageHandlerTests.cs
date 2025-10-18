@@ -84,7 +84,7 @@ public class ImageHandlerTests
         Assert.AreEqual(oldColorByteValue, clonedBeforeChangeHandler.ImgArray[0, 0, 0]);  // Проверяем, что в склонированном до изменений обработчике значение не поменялось
 
         var clonedAfterHandler = handler.Clone();  // Склонировали обработчик (уже после изменения)
-        Assert.AreEqual(0, clonedAfterHandler.ImgArray[0, 0, 0]);  // Промеряем, что в склонированном обработчике осталось старое значение
+        Assert.AreEqual(oldColorByteValue, clonedAfterHandler.ImgArray[0, 0, 0]);  // Промеряем, что в склонированном обработчике осталось старое значение
 
 
         // Проверка сохранения склонированных с многопоточностью

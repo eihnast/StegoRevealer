@@ -5,6 +5,7 @@ using SharpCompress.Compressors.BZip2;
 using StegoRevealer.StegoCore.CommonLib.ScTypes;
 using StegoRevealer.StegoCore.ImageHandlerLib;
 using StegoRevealer.StegoCore.ImageHandlerLib.Blocks;
+
 namespace StegoRevealer.StegoCore.AnalysisMethods.ZhilkinCompressionAnalysis;
 
 public class ZcaAnalyser
@@ -104,48 +105,63 @@ public class ZcaAnalyser
         traversalOptions.Channels = Params.UseOverallCompression || channel is null ? Params.Channels : [channel.Value];
         var iterator = BlocksTraverseHelper.GetForLinearAccessBlocksIndexes(Params.ImgBlocks, traversalOptions);
 
-        double deltaSum = 0;
         int blockNum = 0;  // d
         int ltThresholdBlocks = 0;
 
-        Parallel.ForEach(iterator, async block =>
-        {
-            var blockCoords = Params.ImgBlocks[block.Y, block.X];
-
-            SKBitmap? blockBitmap = null, shuffledBlockBitmap = null;
-            ScPixel[,]? shuffledBlock = null;
-
-            var blockBitmapTask = Task.Run(() => blockBitmap = CreateBlockBitmap(blockCoords, Params.UseOverallCompression ? null : channel));
-            var shuffledBlockTask = Task.Run(() => shuffledBlock = ShuffleBlockLsb(blockCoords, Params.UseOverallCompression ? null : channel));
-
-            shuffledBlockTask.Wait();
-            var shuffledBlockBitmapTask = Task.Run(() => shuffledBlockBitmap = shuffledBlock is null ? null : CreateBlockBitmap(shuffledBlock, channel));
-
-            blockBitmapTask.Wait();
-            shuffledBlockBitmapTask.Wait();
-
-            double fX = 0.0, fY = 0.0;  // Коэффициенты сжатия блоков f(X, n)
-            if (blockBitmap is not null && shuffledBlockBitmap is not null)
+        Parallel.ForEach(
+            source: iterator, 
+            localInit: () => (blocks: 0, lt: 0),
+            body: (block, state, local) =>
             {
-                var compressionRatioTasks = new List<Task>
+                var blockCoords = Params.ImgBlocks[block.Y, block.X];
+
+                SKBitmap? blockBitmap = null, shuffledBlockBitmap = null;
+                ScPixel[,]? shuffledBlock = null;
+
+                Parallel.Invoke(
+                    () =>
+                    {
+                        blockBitmap = CreateBlockBitmap(blockCoords, Params.UseOverallCompression ? null : channel);
+                    },
+                    () =>
+                    {
+                        shuffledBlock = ShuffleBlockLsb(blockCoords, Params.UseOverallCompression ? null : channel);
+                        shuffledBlockBitmap = shuffledBlock is null ? null : CreateBlockBitmap(shuffledBlock, channel);
+                    }
+                );
+
+                try
                 {
-                    Task.Run(() => fX = GetCompressionRatio(blockBitmap)),
-                    Task.Run(() => fY = GetCompressionRatio(shuffledBlockBitmap))
-                };
-                await Task.WhenAll(compressionRatioTasks);
-            }
-            else
-                _writeToLog?.Invoke($"In channel '{channel}' for block {blockNum} blockBitmap or shuffledBlockBitmap is null, deltaSum will be 0");
+                    double fX = 0.0, fY = 0.0;  // Коэффициенты сжатия блоков f(X, n)
+                    if (blockBitmap is not null && shuffledBlockBitmap is not null)
+                    {
+                        Parallel.Invoke(
+                            () => fX = GetCompressionRatio(blockBitmap),
+                            () => fY = GetCompressionRatio(shuffledBlockBitmap)
+                        );
+                    }
+                    else
+                        _writeToLog?.Invoke($"In channel '{channel}' for block {blockNum} blockBitmap or shuffledBlockBitmap is null");
 
-            double delta = Math.Abs(fX - fY);
-            lock (_lock)
+                    double delta = Math.Abs(fX - fY);
+                    local.blocks++;
+                    if (delta <= Params.RatioThreshold)
+                        local.lt++;
+                }
+                finally
+                {
+                    blockBitmap?.Dispose();
+                    shuffledBlockBitmap?.Dispose();
+                }
+
+                return local;
+            },
+            localFinally: local =>
             {
-                deltaSum += delta;
-                if (delta <= Params.RatioThreshold)
-                    ltThresholdBlocks++;
-                blockNum++;
+                Interlocked.Add(ref blockNum, local.blocks);
+                Interlocked.Add(ref ltThresholdBlocks, local.lt);
             }
-        });
+        );
 
         int halfBlocksNum = blockNum / 2;
         bool isHidingDetected = ltThresholdBlocks > halfBlocksNum;
@@ -175,11 +191,11 @@ public class ZcaAnalyser
                 for (int x = blockCoords.Lt.X; x <= blockCoords.Rd.X; x++)
                 {
                     ScPixel px = Params.Image.ImgArray[y, x];
-                    int offset = ((y - blockCoords.Lt.Y) * width + (x - blockCoords.Lt.X)) * 4; // 4 байта на пиксель (BGRA)
+                    int offset = ((y - blockCoords.Lt.Y) * width + (x - blockCoords.Lt.X)) * 4;  // 4 байта на пиксель (BGRA)
 
-                    pixels[offset + 0] = px.Blue;
-                    pixels[offset + 1] = px.Green;
-                    pixels[offset + 2] = px.Red;
+                    pixels[offset + 0] = (channel is null || channel == ImgChannel.Blue) ? px.Blue : (byte)0;
+                    pixels[offset + 1] = (channel is null || channel == ImgChannel.Green) ? px.Green : (byte)0;
+                    pixels[offset + 2] = (channel is null || channel == ImgChannel.Red) ? px.Red : (byte)0;
                     pixels[offset + 3] = px.Alpha;
                 }
             }
@@ -208,9 +224,9 @@ public class ZcaAnalyser
                     ScPixel px = block[y, x];
                     int offset = (y * width + x) * 4; // 4 байта на пиксель (BGRA)
 
-                    pixels[offset + 0] = px.Blue;
-                    pixels[offset + 1] = px.Green;
-                    pixels[offset + 2] = px.Red;
+                    pixels[offset + 0] = (channel is null || channel == ImgChannel.Blue) ? px.Blue : (byte)0;
+                    pixels[offset + 1] = (channel is null || channel == ImgChannel.Green) ? px.Green : (byte)0;
+                    pixels[offset + 2] = (channel is null || channel == ImgChannel.Red) ? px.Red : (byte)0;
                     pixels[offset + 3] = px.Alpha;
                 }
             }
@@ -224,6 +240,8 @@ public class ZcaAnalyser
                     green: (channel is null or ImgChannel.Green ? pixel.Green : (byte)0),
                     blue: (channel is null or ImgChannel.Blue ? pixel.Blue : (byte)0));
 
+    private static readonly ThreadLocal<Random> _rnd = new(() => new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId)));
+
     private ScPixel[,] ShuffleBlockLsb(BlockCoords blockCoords, ImgChannel? channel = null)
     {
         var imar = Params.Image.ImgArray;
@@ -231,7 +249,7 @@ public class ZcaAnalyser
         int height = blockCoords.Rd.Y - blockCoords.Lt.Y + 1;
         int width = blockCoords.Rd.X - blockCoords.Lt.X + 1;
 
-        var rnd = new Random();
+        var rnd = _rnd.Value!;
         var channels = channel is null ? Params.Channels : new UniqueList<ImgChannel> { channel.Value };
 
         var shuffledBlock = new ScPixel[height, width];
@@ -262,6 +280,7 @@ public class ZcaAnalyser
         long compressedLength = GetCompressedLength(raw, Params.CompressingAlgorithm);
         double ratio = (double)compressedLength / raw.Length;
 
+        data.Dispose();
         return ratio;
     }
 
@@ -277,20 +296,26 @@ public class ZcaAnalyser
                 var entry = zip.CreateEntry("image");
                 var entryStream = entry.Open();
                 entryStream.Write(data, 0, data.Length);
+                entryStream.Flush();
                 length = compressedStream.Length;
                 entryStream.Close();
+                zip.Dispose();
                 break;
             case CompressingAlgorithm.GZIP:
                 var gzip = new GZipStream(compressedStream, CompressionMode.Compress);
                 gzip.Write(data, 0, data.Length);
+                gzip.Flush();
                 length = compressedStream.Length;
                 gzip.Close();
+                gzip.Dispose();
                 break;
             case CompressingAlgorithm.BZIP2:
                 var bzip2 = new BZip2Stream(compressedStream, SharpCompress.Compressors.CompressionMode.Compress, true);
                 bzip2.Write(data, 0, data.Length);
+                bzip2.Flush();
                 length = compressedStream.Length;
                 bzip2.Close();
+                bzip2.Dispose();
                 break;
         }
         compressedStream.Close();

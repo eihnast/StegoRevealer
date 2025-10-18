@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
-
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
 	</ItemGroup>
-
 
 	<ItemGroup>
 		<None Remove="Assets\AppIcon.ico" />
@@ -23,7 +22,7 @@
 		<PackageReference Include="Avalonia.Fonts.Inter" />
 		<!--<PackageReference Include="Avalonia.ReactiveUI" />-->
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageReference Include="Avalonia.Diagnostics" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
 		<PackageReference Include="ReactiveUI.Avalonia" />
 	</ItemGroup>
 
@@ -87,4 +86,5 @@
 	    <LastGenOutput>LozalizationData.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
+	
 </Project>

@@ -48,7 +48,7 @@ public static class Program
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         var ex = e.ExceptionObject as Exception;
-        CommonLogger.LogError(ex is null ? "Unknown error" : ex.Message);
+        CommonLogger.LogError(ex is null ? "Unknown error" : ex.Message + "\n" + ex.InnerException + "\n" + ex.StackTrace);
 
         if (e.IsTerminating)
         {

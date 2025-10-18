@@ -1,25 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
 		<TargetFramework>net9.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 
 		<PublishSingleFile>true</PublishSingleFile>
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-		<AssemblyName>StegoRevealerCLI</AssemblyName>
-		<Title>Stego Revealer CLI</Title>
-		<Version>25.10.45</Version>
+		<AssemblyName>StegoRevealerAPI</AssemblyName>
+		<Title>Stego Revealer API Server</Title>
+		<Version>25.10.60</Version>
 		<Authors>Iaroslav Grachev</Authors>
-		<Description>Stego Revealer - steganalysis complex</Description>
+		<Description>Stego Revealer API</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
-		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>25.10.45.0947</FileVersion>
-		<AssemblyVersion>25.10.45.0947</AssemblyVersion>
+		<ApplicationIcon>Assets\AppApiIcon.ico</ApplicationIcon>
+		<FileVersion>25.10.60.1148</FileVersion>
+		<AssemblyVersion>25.10.60.1148</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -28,20 +27,24 @@
 		<UpdateAssemblyVersion>True</UpdateAssemblyVersion>
 		<UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
 		<UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
 		<UpdatePackageVersion>True</UpdatePackageVersion>
 		<AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
 		<InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
-		<AssemblyFileVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyFileVersionSettings>
 		<PackageVersionSettings>AssemblyVersion.Increment.None</PackageVersionSettings>
 		<AssemblyVersionSettings>ShortYearStamp.MonthStamp.Increment.TimeStamp</AssemblyVersionSettings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="Assets\AppIcon.ico" />
+		<Content Include="Assets\AppApiIcon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\StegoRevelaer.API\StegoRevelaer.API.csproj" />
 	</ItemGroup>
 
 </Project>
