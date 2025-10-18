@@ -383,7 +383,7 @@ public class BitArrayTests
                 expectedBitArray[i * 8 + j] = currentByteBitArray[j];
         }
 
-        Assert.AreEqual(dataBitArray.Count, expectedBitArray.Count);
+        Assert.HasCount(expectedBitArray.Count, dataBitArray);
         for (int i = 0; i < dataBitArray.Length; i++)
             Assert.AreEqual(expectedBitArray[i], dataBitArray[i], $"Ошибка на {i} бите");
     }
@@ -403,7 +403,7 @@ public class BitArrayTests
                 expectedBitArray[i * 8 + j] = currentByteBitArray[j];
         }
 
-        Assert.AreEqual(dataBitArray.Count, expectedBitArray.Count);
+        Assert.HasCount(expectedBitArray.Count, dataBitArray);
         for (int i = 0; i < dataBitArray.Length; i++)
             Assert.AreEqual(expectedBitArray[i], dataBitArray[i], $"Ошибка на {i} бите");
     }

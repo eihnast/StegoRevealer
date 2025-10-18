@@ -35,10 +35,10 @@ public class StatmTests
         double delta = 0.001;
         var expectedResults = new double[] { 6.047480134869656, 6.910257506824331, 8.161471135741117, 11.35573961616765, 16.566335449520107 };
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(noises[i] - expectedResults[i] < delta, $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Expected: {expectedResults[i]} (diff is {noises[i] - expectedResults[i]})");
+            Assert.IsLessThan(delta, noises[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Expected: {expectedResults[i]} (diff is {noises[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(noises[i] > noises[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Previous '{names[i - 1]}': {noises[i - 1]}");
+            Assert.IsLessThan(noises[i - 1], noises[i], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Previous '{names[i - 1]}': {noises[i - 1]}");
     }
 
     [TestMethod]
@@ -72,10 +72,10 @@ public class StatmTests
         double delta = 0.001;
         var expectedResults = new double[] { 141, 55.45448584199478, 37.56594202199646, 19.833333333333332, 15.333333333333334, 10.119288512538814, 5.963027109421214, 2.4961508830135313 };
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(sharpnesses[i] - expectedResults[i] < delta, $"Error with {names[i]}. Current '{names[i]}' : {sharpnesses[i]}. Expected: {expectedResults[i]} (diff is {sharpnesses[i] - expectedResults[i]})");
+            Assert.IsLessThan(delta, sharpnesses[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {sharpnesses[i]}. Expected: {expectedResults[i]} (diff is {sharpnesses[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(sharpnesses[i] < sharpnesses[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {sharpnesses[i]}. Previous '{names[i - 1]}': {sharpnesses[i - 1]}");
+            Assert.IsLessThan(sharpnesses[i - 1], sharpnesses[i], $"Error with {names[i]}. Current '{names[i]}' : {sharpnesses[i]}. Previous '{names[i - 1]}': {sharpnesses[i - 1]}");
     }
 
     [TestMethod]
@@ -105,10 +105,10 @@ public class StatmTests
         double delta = 0.001;
         var expectedResults = new double[] { 1.072592800309217, 1.2450969222513288, 1.5082807570981482, 6.590850348926516, 18.214285714287755 };
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(blurs[i] - expectedResults[i] < delta, $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Expected: {expectedResults[i]} (diff is {blurs[i] - expectedResults[i]})");
+            Assert.IsLessThan(delta, blurs[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Expected: {expectedResults[i]} (diff is {blurs[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(blurs[i] > blurs[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Previous '{names[i - 1]}': {blurs[i - 1]}");
+            Assert.IsLessThan(blurs[i - 1], blurs[i], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Previous '{names[i - 1]}': {blurs[i - 1]}");
     }
 
     [TestMethod]
@@ -141,10 +141,10 @@ public class StatmTests
         double delta = 0.001;
         var expectedResults = new double[] { 0.5646182891942103, 0.5700369446103237, 0.5775864586843207, 0.5849658258387392, 0.6033360514147779, 0.6471471717645584, 0.7618667759370277 };
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(contrasts[i] - expectedResults[i] < delta, $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Expected: {expectedResults[i]} (diff is {contrasts[i] - expectedResults[i]})");
+            Assert.IsLessThan(delta, contrasts[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Expected: {expectedResults[i]} (diff is {contrasts[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsTrue(contrasts[i] > contrasts[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
+            Assert.IsLessThan(contrasts[i - 1], contrasts[i], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
     }
 
     [TestMethod]
@@ -182,20 +182,20 @@ public class StatmTests
         };
         for (int i = 1; i < names.Count; i++)
         {
-            Assert.IsTrue(entropies[i].Tsallis - expectedResults[i].Tsallis < delta, $"Error with {names[i]} for Tsallis. Current '{names[i]}' : {entropies[i].Tsallis}. Expected: {expectedResults[i].Tsallis} (diff is {entropies[i].Tsallis - expectedResults[i].Tsallis})");
-            Assert.IsTrue(entropies[i].Vaida - expectedResults[i].Vaida < delta, $"Error with {names[i]} for Vaida. Current '{names[i]}' : {entropies[i].Vaida}. Expected: {expectedResults[i].Vaida} (diff is {entropies[i].Vaida - expectedResults[i].Vaida})");
-            Assert.IsTrue(entropies[i].Shennon - expectedResults[i].Shennon < delta, $"Error with {names[i]} for Shennon. Current '{names[i]}' : {entropies[i].Shennon}. Expected: {expectedResults[i].Shennon} (diff is {entropies[i].Shennon - expectedResults[i].Shennon})");
-            Assert.IsTrue(entropies[i].Renyi - expectedResults[i].Renyi < delta, $"Error with {names[i]} for Renyi. Current '{names[i]}' : {entropies[i].Renyi}. Expected: {expectedResults[i].Renyi} (diff is {entropies[i].Renyi - expectedResults[i].Renyi})");
-            Assert.IsTrue(entropies[i].Havard - expectedResults[i].Havard < delta, $"Error with {names[i]} for Havard. Current '{names[i]}' : {entropies[i].Havard}. Expected: {expectedResults[i].Havard} (diff is {entropies[i].Havard - expectedResults[i].Havard})");
+            Assert.IsLessThan(delta, entropies[i].Tsallis - expectedResults[i].Tsallis, $"Error with {names[i]} for Tsallis. Current '{names[i]}' : {entropies[i].Tsallis}. Expected: {expectedResults[i].Tsallis} (diff is {entropies[i].Tsallis - expectedResults[i].Tsallis})");
+            Assert.IsLessThan(delta, entropies[i].Vaida - expectedResults[i].Vaida, $"Error with {names[i]} for Vaida. Current '{names[i]}' : {entropies[i].Vaida}. Expected: {expectedResults[i].Vaida} (diff is {entropies[i].Vaida - expectedResults[i].Vaida})");
+            Assert.IsLessThan(delta, entropies[i].Shennon - expectedResults[i].Shennon, $"Error with {names[i]} for Shennon. Current '{names[i]}' : {entropies[i].Shennon}. Expected: {expectedResults[i].Shennon} (diff is {entropies[i].Shennon - expectedResults[i].Shennon})");
+            Assert.IsLessThan(delta, entropies[i].Renyi - expectedResults[i].Renyi, $"Error with {names[i]} for Renyi. Current '{names[i]}' : {entropies[i].Renyi}. Expected: {expectedResults[i].Renyi} (diff is {entropies[i].Renyi - expectedResults[i].Renyi})");
+            Assert.IsLessThan(delta, entropies[i].Havard - expectedResults[i].Havard, $"Error with {names[i]} for Havard. Current '{names[i]}' : {entropies[i].Havard}. Expected: {expectedResults[i].Havard} (diff is {entropies[i].Havard - expectedResults[i].Havard})");
         }
 
         for (int i = 1; i < names.Count; i++)
         {
-            Assert.IsTrue(entropies[i].Tsallis >= entropies[i - 1].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
-            Assert.IsTrue(entropies[i].Vaida >= entropies[i - 1].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
-            Assert.IsTrue(entropies[i].Shennon >= entropies[i - 1].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
-            Assert.IsTrue(entropies[i].Renyi >= entropies[i - 1].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
-            Assert.IsTrue(entropies[i].Havard >= entropies[i - 1].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
+            Assert.IsGreaterThanOrEqualTo(entropies[i - 1].Tsallis, entropies[i].Tsallis, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Tsallis}. Previous '{names[i - 1]}': {entropies[i - 1].Tsallis}");
+            Assert.IsGreaterThanOrEqualTo(entropies[i - 1].Vaida, entropies[i].Vaida, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Vaida}. Previous '{names[i - 1]}': {entropies[i - 1].Vaida}");
+            Assert.IsGreaterThanOrEqualTo(entropies[i - 1].Shennon, entropies[i].Shennon, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Shennon}. Previous '{names[i - 1]}': {entropies[i - 1].Shennon}");
+            Assert.IsGreaterThanOrEqualTo(entropies[i - 1].Renyi, entropies[i].Renyi, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Renyi}. Previous '{names[i - 1]}': {entropies[i - 1].Renyi}");
+            Assert.IsGreaterThanOrEqualTo(entropies[i - 1].Havard, entropies[i].Havard, $"Error with {names[i]}. Current '{names[i]}' : {entropies[i].Havard}. Previous '{names[i - 1]}': {entropies[i - 1].Havard}");
         }
     }
 

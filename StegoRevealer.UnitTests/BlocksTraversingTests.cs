@@ -38,7 +38,7 @@ public class BlocksTraversingTests
         foreach (var block in iterator)
             iteratedBlocks.Add(block);
 
-        Assert.AreEqual(12, iteratedBlocks.Count);
+        Assert.HasCount(12, iteratedBlocks);
         foreach (var expectedColor in expectedColors)
             Assert.AreEqual(expectedColor.Value, iteratedBlocks[expectedColor.Key][0, 0]);
     }
@@ -63,7 +63,7 @@ public class BlocksTraversingTests
         foreach (var block in iterator)
             iteratedBlocks.Add(block);
 
-        Assert.AreEqual(12, iteratedBlocks.Count);
+        Assert.HasCount(12, iteratedBlocks);
         foreach (var expectedColor in expectedColors)
             Assert.AreEqual(expectedColor.Value, iteratedBlocks[expectedColor.Key][0, 0]);
     }
@@ -95,7 +95,7 @@ public class BlocksTraversingTests
         foreach (var blockIndex in iterator)
             iteratedBlocksIndexes.Add(blockIndex);
 
-        Assert.AreEqual(12, iteratedBlocksIndexes.Count);
+        Assert.HasCount(12, iteratedBlocksIndexes);
         for (int i = 0; i < 12; i++)
             Assert.IsTrue(IsEqual(expectedIndexes[i], iteratedBlocksIndexes[i]));
         for (int i = 0; i < 12; i++)
@@ -130,7 +130,7 @@ public class BlocksTraversingTests
         foreach (var blockIndex in iterator)
             iteratedBlocksIndexes.Add(blockIndex);
 
-        Assert.AreEqual(12, iteratedBlocksIndexes.Count);
+        Assert.HasCount(12, iteratedBlocksIndexes);
         for (int i = 0; i < 12; i++)
             Assert.IsTrue(IsEqual(expectedIndexes[i], iteratedBlocksIndexes[i]));
         for (int i = 0; i < 12; i++)

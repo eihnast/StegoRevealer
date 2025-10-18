@@ -362,7 +362,7 @@ public class HidingExtractionTests
         var newDifference = MathMethods.GetModulesDiff(coefValues);  // Разница коэффициентов
         Console.WriteLine($"Новая величина разницы значений коэффициентов изменённого блока ДКП: {newDifference}");
 
-        Assert.IsTrue(newDifference < threshold);
+        Assert.IsLessThan(threshold, newDifference);
 
         var hidedIdct = FrequencyViewTools.IDctBlock(dctForHide);
         var hidedBlock = FrequencyViewTools.NormalizeBlock(hidedIdct);
@@ -381,7 +381,7 @@ public class HidingExtractionTests
         else if (difference < 0)
             bit = false;
 
-        Assert.IsTrue(bit == false);
+        Assert.IsFalse(bit);
     }
 
     //[TestMethod]

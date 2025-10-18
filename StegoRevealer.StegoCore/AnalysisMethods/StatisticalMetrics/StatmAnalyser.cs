@@ -22,7 +22,7 @@ public class StatmAnalyser
     /// </summary>
     private Action<string> _writeToLog = (string str) => new string(str);
 
-    private bool _verboseLog = false;
+    // private bool _verboseLog = false;
 
 
     public StatmAnalyser(ImageHandler image)

@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -281,7 +282,7 @@ public static class CommonTools
         var topLevel = TopLevel.GetTopLevel(sender as TextBox);
         if (topLevel?.Clipboard is not null)
         {
-            string? text = await topLevel.Clipboard.GetTextAsync();
+            string? text = await topLevel.Clipboard.TryGetTextAsync();
             if (!string.IsNullOrEmpty(text))
             {
                 var args = new TextInputEventArgs()
