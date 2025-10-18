@@ -108,7 +108,7 @@
 			<!-- Правая панель с логами API -->
 			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 					   Grid.Column="2" Grid.Row="0">
-				<TextBox Name="LogsTb" Text="{Binding Logs}"
+				<TextBox Name="LogsTb" Text="{Binding Logs, Mode=OneWay}"
 						 AcceptsReturn="True" IsReadOnly="True"
 						 FontFamily="Consolas, Menlo, monospace" FontSize="12"
 						 ScrollViewer.VerticalScrollBarVisibility="Auto"

@@ -77,7 +77,7 @@ public partial class ApiLauncherView : UserControl
     {
         if (sender is TextBox tb)
         {
-            tb.UpdateLayout();
+            // tb.UpdateLayout();
             tb.CaretIndex = tb.Text?.Length ?? 0;
         }
     }
