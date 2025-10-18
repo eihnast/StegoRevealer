@@ -638,6 +638,6 @@ Director científico: V. G. Sidorenko</value>
     <value>Selección del método de recorrido de la matriz de píxeles (bloques de píxeles): por columnas</value>
   </data>
   <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
-    <value>HTTPS</value>
+    <value>Usar HTTPS</value>
   </data>
 </root>

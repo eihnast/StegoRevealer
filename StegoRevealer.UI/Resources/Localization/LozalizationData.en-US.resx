@@ -638,6 +638,6 @@ Scientific Advisor: V. G. Sidorenko</value>
     <value>Select pixel (or pixel block) matrix traversal method: by columns</value>
   </data>
   <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
-    <value>HTTPS</value>
+    <value>Use HTTPS</value>
   </data>
 </root>

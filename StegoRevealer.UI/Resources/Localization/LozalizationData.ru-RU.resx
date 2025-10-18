@@ -638,6 +638,6 @@
     <value>Выбор способа обхода матрицы пикселей (блоков пикселей): по столбцам</value>
   </data>
   <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
-    <value>HTTPS</value>
+    <value>Использовать HTTPS</value>
   </data>
 </root>

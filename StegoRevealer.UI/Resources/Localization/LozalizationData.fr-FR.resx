@@ -638,6 +638,6 @@ Directeur scientifique : V. G. Sidorenko</value>
     <value>Sélection du mode de parcours de la matrice de pixels (blocs de pixels) : par colonnes</value>
   </data>
   <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
-    <value>HTTPS</value>
+    <value>Utiliser HTTPS</value>
   </data>
 </root>
