@@ -1,11 +1,10 @@
-﻿using System;
-
-using Avalonia;
-using ALogger = Avalonia.Logging;
+﻿using Avalonia;
 using ReactiveUI.Avalonia;
-
 using StegoRevealer.Common;
 using StegoRevealer.Common.ConsoleInterface;
+using System;
+using System.Diagnostics;
+using ALogger = Avalonia.Logging;
 
 namespace StegoRevealer.UI.Desktop;
 
@@ -17,6 +16,8 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
         CommonLogger.LogInfo("Starting Stego Revealer App");
