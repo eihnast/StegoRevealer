@@ -163,8 +163,24 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
         _logsSb.Clear();
         Logs = string.Empty;
         var apiHost = await Task.Run(() => _apiHost = new ApiHost(Push));
-        _apiHost?.Start();
-        IsApiLaunched = true;
+
+        try
+        {
+            _apiHost?.Start();
+            IsApiLaunched = true;
+        }
+        catch (Exception ex)
+        {
+            Push($"[ERROR] Не удалось запустить API: {ex.Message}");
+            try
+            {
+                await StopApi();
+            }
+            catch { }
+
+            _apiHost = null;
+            IsApiLaunched = false;
+        }
     }
 
     public async Task StopApi()
