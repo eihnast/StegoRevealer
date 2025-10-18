@@ -44,6 +44,18 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
         }
     }
 
+    private bool _configHttpsEnabled = ApiConfigurator.Settings.EnableHttps;
+    public bool ConfigHttpsEnabled
+    {
+        get => _configHttpsEnabled;
+        set
+        {
+            ApiConfigurator.Settings.EnableHttps = value;
+            ApiConfigurator.SaveConfig();
+            this.RaiseAndSetIfChanged(ref _configHttpsEnabled, value);
+        }
+    }
+
     private string _configHttpsAddressValue = ApiConfigurator.Settings.HttpsAddress;
     public string ConfigHttpsAddressValue
     {

@@ -637,4 +637,7 @@
   <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
     <value>Выбор способа обхода матрицы пикселей (блоков пикселей): по столбцам</value>
   </data>
+  <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
+    <value>HTTPS</value>
+  </data>
 </root>

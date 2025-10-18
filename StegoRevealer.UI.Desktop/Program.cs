@@ -16,7 +16,9 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+        bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
+        if (isWindows)
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
 
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
@@ -25,7 +27,6 @@ public static class Program
         // Запуск в режиме интерфейса командной строки
         if (args.Length > 0)
         {
-            bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
             if (isWindows)
                 WinConsole.ConnectConsole();
             

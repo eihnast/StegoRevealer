@@ -637,4 +637,7 @@
   <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
     <value>انتخاب روش پیمایش ماتریس پیکسل‌ها (بلوک‌های پیکسلی): به‌صورت ستونی</value>
   </data>
+  <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
+    <value>HTTPS</value>
+  </data>
 </root>

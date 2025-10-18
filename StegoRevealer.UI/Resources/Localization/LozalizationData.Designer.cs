@@ -313,6 +313,15 @@ namespace StegoRevealer.UI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на HTTPS.
+        /// </summary>
+        public static string ApiLauncherTab_Config_Https {
+            get {
+                return ResourceManager.GetString("ApiLauncherTab.Config.Https", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Адрес HTTPS.
         /// </summary>
         public static string ApiLauncherTab_Config_HttpsAddress {
