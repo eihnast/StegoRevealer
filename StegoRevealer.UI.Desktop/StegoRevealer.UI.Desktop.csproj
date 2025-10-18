@@ -53,6 +53,10 @@
 	<ItemGroup>
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="System.CommandLine" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
 	</ItemGroup>
 
 	<ItemGroup>

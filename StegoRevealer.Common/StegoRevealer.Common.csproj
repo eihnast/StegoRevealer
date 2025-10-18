@@ -24,6 +24,10 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 		<PackageReference Include="System.CommandLine" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
 	</ItemGroup>
 
 </Project>

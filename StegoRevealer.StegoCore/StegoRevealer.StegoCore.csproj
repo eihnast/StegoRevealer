@@ -63,6 +63,10 @@
 		<PackageReference Include="MessagePack" />
 		<PackageReference Include="SharpCompress" />
 		<PackageReference Include="SkiaSharp" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
 	</ItemGroup>
 
 	<ItemGroup>
