@@ -136,6 +136,9 @@ public class ChiSquareAnalyser
                 (expected, observed) = UnifyCategories(expected, observed);
 
             // Вычисление результатов оценки
+            if (expected.Count() == 1 && Params.ExcludeOneColorBlocks)
+                continue;
+
             var chiSqr = MathMethods.ChiSqr(expected, observed);
             var blockContainsHiddenInfo = chiSqr.pValue > Params.Threshold;
             if (blockContainsHiddenInfo)

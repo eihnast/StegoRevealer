@@ -72,6 +72,13 @@ public class ChiSquareParameters
     public bool ExcludeZeroPairs { get; set; } = true;
 
     /// <summary>
+    /// В одноцевтных блоках размеры массивов expected и observed будут равны 1<br/>
+    /// Если эта настройка включена, такие блоки будут пропущены при анализе<br/>
+    /// Если выключена - метод будет возвращать ошибку
+    /// </summary>
+    public bool ExcludeOneColorBlocks { get; set; } = true;
+
+    /// <summary>
     /// Объединять ли низкочастотные категории (массивов ожидаемых и наблюдаемых частот цветов) вместе
     /// </summary>
     public bool UseUnifiedCategories { get; set; } = true;
