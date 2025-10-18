@@ -5,7 +5,6 @@ using StegoRevealer.UI.ViewModels.BaseViewModels;
 using StegoRevelaer.API;
 using StegoRevelaer.API.Services;
 using System.Reactive;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;

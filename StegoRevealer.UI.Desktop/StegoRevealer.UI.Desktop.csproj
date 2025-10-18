@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
@@ -11,19 +12,20 @@
 		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
 
 		<PublishSingleFile>true</PublishSingleFile>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
 		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
 		<Title>Stego Revealer</Title>
-		<Version>25.9.44</Version>
+		<Version>25.10.60</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>25.9.44.0826</FileVersion>
-		<AssemblyVersion>25.9.44.0826</AssemblyVersion>
+		<FileVersion>25.10.60.1130</FileVersion>
+		<AssemblyVersion>25.10.60.1130</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -43,6 +45,7 @@
 	<ItemGroup>
 		<None Remove="Assets\AppIcon.ico" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<Content Include="Assets\AppIcon.ico" />
 	</ItemGroup>
@@ -56,4 +59,5 @@
 		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
 		<ProjectReference Include="..\StegoRevealer.UI\StegoRevealer.UI.csproj" />
 	</ItemGroup>
+	
 </Project>

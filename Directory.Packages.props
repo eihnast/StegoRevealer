@@ -22,7 +22,7 @@
 		<!--<PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.7" />-->
 		<PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.0" />
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageVersion Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.7" />
+		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.7" />
 		<!-- Test -->
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
 		<PackageVersion Include="MSTest.TestAdapter" Version="4.0.1" />

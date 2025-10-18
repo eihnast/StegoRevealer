@@ -1,15 +1,11 @@
 ﻿using SkiaSharp;
+using System.Runtime.CompilerServices;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
-using System.Collections.Concurrent;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
 
 /*
  * Класс-обёртка над объектом изображения текущей используемой библиотеки (Skia-Sharp)
- * Есть два режима загрузки изображения:
- *   - как ридер: открывается поток чтения файла на диске, и он удерживает файл открытым для манипуляций с изображением
- *   - в память: загружает всё изображение в память при помощи MemoryStream
- * Первый вариант, теоретически, быстрее, а второй предоставляет возможности разделения экземпляров одного изображения - например, клонирование
  */
 
 /// <summary>
@@ -17,307 +13,301 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// </summary>
 public class ScImage : IDisposable
 {
-    /// <summary>
-    /// Объект изображения
-    /// </summary>
+    /// <summary>Объект изображения</summary>
     private SKBitmap? _image = null;
-
-    // Потоки для открытого изображения
-    private FileStream? _file = null;
-    private SKManagedStream? _imgStream = null;
-
-    // Если изображение загружено в память - будет только этот поток
-    private MemoryStream? _memoryStream = null;
-
-
-    /// <summary>
-    /// Хранилище объектов открытых изображений<br/>
-    /// Key - путь, Value - объект
-    /// </summary>
-    private static ConcurrentDictionary<string, ScImage> _loadedImages = new();
-
 
     private string? _path = null;
 
-    /// <summary>
-    /// Путь к файлу
-    /// </summary>
+    private readonly object cloningLock = new object();
+    private readonly object setPixelLock = new object();
+
+    /// <summary>Путь к файлу</summary>
     public string? Path { get => _path; }
+
+    // Unsafe-работа с пикселями
+    private IntPtr _pixelsPtr = IntPtr.Zero;
+    private int _rowBytes;
+    private int _bytesPerPixel;
+    private bool _unsafeHandlingAvailable;  // Доступна ли реально unsafe-работа с пикселями
 
 
     // Параметры изображения
 
-    /// <summary>
-    /// Высота
-    /// </summary>
+    /// <summary>Высота</summary>
     public int Height { get; private set; } = 0;
 
-    /// <summary>
-    /// Ширина
-    /// </summary>
+    /// <summary>Ширина</summary>
     public int Width { get; private set; } = 0;
 
-    /// <summary>
-    /// Глубина
-    /// </summary>
+    /// <summary>Глубина</summary>
     public int Depth { get; private set; } = 0;
 
-    /// <summary>
-    /// Является ли изображением типа TrueColor (RGB, 8 бит)
-    /// </summary>
+    /// <summary>Является ли изображением типа TrueColor (RGB, 8 бит)</summary>
     public bool IsTrueColor { get; } = true;
 
-    /// <summary>
-    /// Является ли изображение загруженным в память
-    /// </summary>
-    public bool IsInMemory { get => _memoryStream is not null; }
+    /// <summary>Использовать ли unsafe-механику чтения матрицы пикселей</summary>
+    public bool UseUnsafeIndexator { get; } = false;
 
 
-    /// <summary>
-    /// Возвращает SKBitmap текущего изображения
-    /// </summary>
+    /// <summary>Возвращает SKBitmap текущего изображения</summary>
     public SKBitmap? GetBitmap() => _image;
 
     // Доступ по индексаторам
     public ScPixel this[int y, int x]
     {
-        get 
+        get
         {
+            if (_isDisposed)
+                throw new ObjectDisposedException("ScImage");
             if (_image is null)
                 throw new IncorrectValueException("Image is null");
-            if (x > Width - 1)
-                throw new IndexOutOfRangeException($"X index out of range: {x} > {Width - 1}");
-            if (y > Height - 1)
-                throw new IndexOutOfRangeException($"Y index out of range: {y} > {Height - 1}");
+            ValidateIndexes(y, x);
+
+            if (UseUnsafeIndexator && _unsafeHandlingAvailable)
+                return UnsafeGet(y, x);
+
             var pixel = _image.GetPixel(x, y);
             return ScPixel.FromSkColor(pixel);
         }
         set
         {
-            if (_image is null)
-                throw new IncorrectValueException("Image is null");
-            if (x > Width - 1)
-                throw new IndexOutOfRangeException($"X index out of range: {x} > {Width - 1}");
-            if (y > Height - 1)
-                throw new IndexOutOfRangeException($"Y index out of range: {y} > {Height - 1}");
-            _image.SetPixel(x, y, value.ToSkColor());
+            lock (setPixelLock)
+            {
+                if (_isDisposed)
+                    throw new ObjectDisposedException("ScImage");
+                if (_image is null)
+                    throw new IncorrectValueException("Image is null");
+                ValidateIndexes(y, x);
+
+                if (UseUnsafeIndexator && _unsafeHandlingAvailable)
+                    UnsafeSet(y, x, value);
+                else
+                    _image.SetPixel(x, y, value.ToSkColor());
+            }
         }
     }
 
+    private void ValidateIndexes(int y, int x)
+    {
+        if (x > Width - 1)
+            throw new IndexOutOfRangeException($"X index out of range: {x} > {Width - 1}");
+        if (x < 0)
+            throw new IndexOutOfRangeException($"X index out of range: {x} < 0");
+        if (y > Height - 1)
+            throw new IndexOutOfRangeException($"Y index out of range: {y} > {Height - 1}");
+        if (y < 0)
+            throw new IndexOutOfRangeException($"Y index out of range: {y} < 0");
+    }
 
-    /// <summary>
-    /// Создаёт новый FileStream для чтения файла изображения
-    /// </summary>
+    private ScPixel UnsafeGet(int y, int x)
+    {
+        if (_image is null) 
+            throw new IncorrectValueException("Image is null");
+
+        if (!_unsafeHandlingAvailable)
+        {
+            var c = _image.GetPixel(x, y);
+            return ScPixel.FromSkColor(c);
+        }
+
+        unsafe
+        {
+            byte* basePtr = (byte*)_pixelsPtr.ToPointer();
+            nint offset = (nint)y * _rowBytes + (nint)x * _bytesPerPixel;
+            byte* p = basePtr + offset;
+
+            var ct = _image.Info.ColorType;
+            byte r, g, b, a;
+
+            if (ct == SKColorType.Bgra8888)
+            {
+                b = p[0]; 
+                g = p[1]; 
+                r = p[2]; 
+                a = p[3];
+            }
+            else // Rgba8888
+            {
+                r = p[0]; 
+                g = p[1]; 
+                b = p[2]; 
+                a = p[3];
+            }
+
+            if (_image.Info.AlphaType == SKAlphaType.Premul)
+            {
+                r = Unpremul(r, a);
+                g = Unpremul(g, a);
+                b = Unpremul(b, a);
+            }
+
+            return new ScPixel(r, g, b, a);
+        }
+    }
+
+    private void UnsafeSet(int y, int x, ScPixel value)
+    {
+        if (_image is null) 
+            throw new IncorrectValueException("Image is null");
+
+        if (!_unsafeHandlingAvailable)
+        {
+            _image.SetPixel(x, y, value.ToSkColor());
+            return;
+        }
+
+        unsafe
+        {
+            byte* basePtr = (byte*)_pixelsPtr.ToPointer();
+            nint offset = (nint)y * _rowBytes + (nint)x * _bytesPerPixel;
+            byte* p = basePtr + offset;
+
+            var ct = _image.Info.ColorType;
+
+            byte r = value.Red, g = value.Green, b = value.Blue;
+            if (_image.Info.AlphaType == SKAlphaType.Premul)
+            {
+                r = Premul(r, value.Alpha);
+                g = Premul(g, value.Alpha);
+                b = Premul(b, value.Alpha);
+            }
+
+            if (ct == SKColorType.Bgra8888)
+            {
+                p[0] = b;
+                p[1] = g;
+                p[2] = r;
+                p[3] = value.Alpha;
+            }
+            else // Rgba8888
+            {
+                p[0] = r; 
+                p[1] = g; 
+                p[2] = b; 
+                p[3] = value.Alpha;
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static byte Premul(byte c, byte a) => (byte)((c * a + 127) / 255);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static byte Unpremul(byte cPremul, byte a) => a == 0 ? (byte)0 : (byte)((cPremul * 255 + (a >> 1)) / a);
+
+
+    /// <summary>Создаёт новый FileStream для чтения файла изображения</summary>
     private static FileStream CreateFileStream(string path) => File.OpenRead(path);
 
-    /// <summary>
-    /// Создаёт SKBitmap по переданному потоку памяти
-    /// </summary>
-    private static SKBitmap CreateBitmapByMemoryStream(MemoryStream memoryStream) => SKBitmap.Decode(memoryStream);
 
-
-    /// <summary>
-    /// Создаёт объект изображения в режиме чтения с диска<br/>
-    /// Т.е. файл "захватывается" потоком чтения и не загружается целиком в оперативную память
-    /// </summary>
-    private void CreateAsReader(string path)
-    {
-        _file = CreateFileStream(path);
-        _imgStream = new SKManagedStream(_file);
-        _image = SKBitmap.Decode(_imgStream);
-    }
-
-    /// <summary>
-    /// Создаёт объект изображения, загружая его данные в оперативную память
-    /// </summary>
-    /// <param name="path">Путь к изображению</param>
-    private void CreateInMemory(string path)
+    /// <summary>Создаёт объект изображения</summary>
+    private void ReadImage(string path)
     {
         var file = CreateFileStream(path);
-        CreateInMemory(file);
+
+        var imgStream = new SKManagedStream(file);
+        _image = SKBitmap.Decode(imgStream);
+        imgStream.Dispose();
+
         file?.Close();
-    }
+        file?.Dispose();
 
-    /// <summary>
-    /// Создаёт объект изображения, загружая его данные в оперативную память<br/>
-    /// Не закрывает переданный файловый поток!<br/>
-    /// Поток file может быть закрыт после создания объекта вызывающей стороной
-    /// </summary>
-    /// <param name="file">Поток чтения файла изображения</param>
-    private void CreateInMemory(FileStream file)
-    {
-        _memoryStream = CreateMemoryStream(file);
-        _image = CreateBitmapByMemoryStream(_memoryStream);
-    }
-
-    /// <summary>
-    /// Обеспечивает копирование файла изображения в оперативную память в MemoryStream<br/>
-    /// Поток file может быть закрыт после создания объекта вызывающей стороной
-    /// </summary>
-    /// <param name="file">Поток чтения файла изображения</param>
-    private static MemoryStream CreateMemoryStream(FileStream file)
-    {
-        var memoryStream = new MemoryStream();
-
-        var position = file.Position;
-        file.Seek(0, SeekOrigin.Begin);
-        file.CopyToAsync(memoryStream).Wait();
-        file.Seek(position, SeekOrigin.Begin);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-
-        return memoryStream;
+        var info = _image.Info;
+        _pixelsPtr = _image.GetPixels();
+        _rowBytes = _image.RowBytes;
+        _bytesPerPixel = info.BytesPerPixel;
+        _unsafeHandlingAvailable = _pixelsPtr != IntPtr.Zero && _bytesPerPixel == 4 && (info.ColorType == SKColorType.Bgra8888 || info.ColorType == SKColorType.Rgba8888);
     }
 
 
     // Конструторы
 
-    /// <summary>
-    /// Приватный конструктор с выбором создания объекта изображения в качестве ридера или в памяти
-    /// </summary>
+    /// <summary>Приватный конструктор загрузки изображения</summary>
     /// <param name="path">Путь к файлу изображения</param>
-    /// <param name="loadToMemory">Загружать ли изображение в память</param>
-    private ScImage(string path, bool loadToMemory = false)
+    private ScImage(string path)
     {
         _path = path;
-
-        if (loadToMemory)
-            CreateInMemory(path);
-        else
-            CreateAsReader(path);
-
+        ReadImage(path);
         DefineSizes();
     }
 
-    /// <summary>
-    /// Приватный конструктор для создания объекта изображения в памяти<br/>
-    /// Поток file может быть закрыт после создания объекта вызывающей стороной
-    /// </summary>
-    /// <param name="file">Поток чтения файла изображения</param>
+    /// <summary>Приватный конструктор создания объекта изображения из готового битмапа</summary>
+    /// <param name="bitmap">Данные изображения</param>
     /// <param name="path">Путь к файлу изображения</param>
-    private ScImage(FileStream file, string path)
+    private ScImage(SKBitmap bitmap, string? path)
     {
+        _image = bitmap;
         _path = path;
-        CreateInMemory(file);
         DefineSizes();
     }
 
-    /// <summary>
-    /// Приватный конструктор для создания объекта изображения для переданного потока памяти
-    /// </summary>
-    /// <param name="memoryStream">Текущий поток изображения</param>
+    /// <summary>Загрузка изображения</summary>
     /// <param name="path">Путь к файлу изображения</param>
-    private ScImage(MemoryStream memoryStream, string? path)
+    public static ScImage LoadImageFile(string path)
     {
-        _path = path;
-        _memoryStream = memoryStream;
-        _image = CreateBitmapByMemoryStream(_memoryStream);
-        DefineSizes();
-    }
-
-    /// <summary>
-    /// Загрузка изображения в качестве ридера<br/>
-    /// "Захватывает" и читает файл на диске, не загружая в оперативную память
-    /// </summary>
-    /// <param name="path">Путь к файлу изображения</param>
-    public static ScImage LoadToReader(string path)
-    {
-        // При открытии как ридера учитывается, что нельзя дважды открыть на чтение файл изображения
-        // при повторном открытии вернётся уже сохранённый существующий экземпляр
-        if (_loadedImages.ContainsKey(path))
-            return _loadedImages[path];
-
-        var image = new ScImage(path, false);
-        _loadedImages.TryAdd(path, image);
+        var image = new ScImage(path);
         return image;
     }
 
-    /// <summary>
-    /// Загрузка изображения целиком в оперативную память
-    /// </summary>
+    /// <summary>Загрузка изображения</summary>
     /// <param name="path">Путь к файлу изображения</param>
-    public static ScImage LoadToMemory(string path)
+    public static ScImage Load(string path)
     {
-        var image = new ScImage(path, true);
-        return image;
-    }
-
-    /// <summary>
-    /// Загрузка изображения
-    /// </summary>
-    /// <param name="path">Путь к файлу изображения</param>
-    /// <param name="loadToMemory">Загружать ли изображение в память (либо читать его с диска)</param>
-    /// <returns></returns>
-    public static ScImage Load(string path, bool loadToMemory = false)
-    {
-        if (loadToMemory)
-            return LoadToMemory(path);
-        return LoadToReader(path);
+        // Основной внешний метод загрузки изображения
+        return LoadImageFile(path);
     }
 
 
     /// <summary>
-    /// Клонирование изображения<br/>
-    /// Всегда создаёт копию текущего изображения в оперативной памяти, вне зависимости от режима загрузки текущего изображения
+    /// Клонирование изображения: загрузка ещё одной копии текущего изображения в отдельный ScImage<br/>
+    /// Не клонирует изменения, внесённые в текущий экземпляр загруженного изображения!
     /// </summary>
-    public ScImage Clone(bool cloneInMemoryImagesDirectly = true)
+    public ScImage Clone()
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(ScImage));
+        if (_image is null)
+            throw new IncorrectValueException("Image is null");
+
         lock (cloningLock)
         {
-            FileStream? fileStream;
-            bool shouldCloseFileStream = false;
-            ScImage clonedImage;
+            if (string.IsNullOrEmpty(_path))
+                throw new OperationException("Error while cloning ScImage: path is null");
 
-            // Прямое копирование для загруженных в память изображение подразумевает копирование данных из памяти
-            if (IsInMemory && cloneInMemoryImagesDirectly)
-            {
-                if (_memoryStream is null)
-                    throw new OperationException("Error while cloning image: memory stream is null");
-                var clonedMemoryStream = CloneMemoryStream(_memoryStream);
-                return new ScImage(clonedMemoryStream, _path);
-            }
+            if (!File.Exists(_path))
+                throw new OperationException("Error while cloning ScImage: file not exists");
 
-            // Если непрямое копирование - будет либо взят файловый поток текущего изображения (если оно уже открыто как ридер),
-            // либо создан новый поток чтения файла по текущему пути на время клонирования
-            if (IsInMemory && !string.IsNullOrEmpty(_path))
-            {
-                if (_loadedImages.ContainsKey(_path))
-                    fileStream = _loadedImages[_path]._file;
-                else
-                {
-                    fileStream = CreateFileStream(_path);
-                    shouldCloseFileStream = true;
-                }
-            }
-            else  // Иначе текущее изображение открыто в режиме ридера, и у него должен быть открыт поток чтения файла
-                fileStream = _file;
-
-            if (fileStream is null)
-                throw new OperationException("Error while cloning ScImage: fileStream is null");
-
-            clonedImage = new ScImage(fileStream, _path ?? string.Empty);
-            // _path должен быть, но если нет - для клонированного изображения не критично, если реальный путь не запишется
-
-            if (shouldCloseFileStream)
-                fileStream.Close();
+            var clonedImage = new ScImage(_path);
 
             return clonedImage;
         }
     }
 
-    private readonly object cloningLock = new object();
-
-    // Клонирует MemoryStream
-    private static MemoryStream CloneMemoryStream(MemoryStream memoryStream)
+    /// <summary>Клонирование изображения: полное клонирование текущей версии изображения</summary>
+    public ScImage DeepClone()
     {
-        var clonedMemoryStream = new MemoryStream();
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(ScImage));
+        if (_image is null)
+            throw new IncorrectValueException("Image is null");
 
-        var position = memoryStream.Position;
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        memoryStream.CopyToAsync(clonedMemoryStream).Wait();
-        memoryStream.Seek(position, SeekOrigin.Begin);
-        clonedMemoryStream.Seek(0, SeekOrigin.Begin);
+        lock (cloningLock)
+        {
+            var info = _image.Info;
+            var clonedBitmap = new SKBitmap(info);
 
-        return clonedMemoryStream;
+            if (!_image.CopyTo(clonedBitmap, info.ColorType))
+            {
+                using var srcPix = _image.PeekPixels();
+                if (srcPix is null)
+                    throw new OperationException("Error while deep cloning ScImage: cannot access pixels.");
+
+                if (!srcPix.ReadPixels(info, clonedBitmap.GetPixels(), clonedBitmap.RowBytes, 0, 0))
+                    throw new OperationException("Error while deep cloning ScImage: pixel copy failed.");
+            }
+
+            return new ScImage(clonedBitmap, _path);
+        }
     }
 
 
@@ -333,23 +323,17 @@ public class ScImage : IDisposable
             Depth = 4;  // SkiaSharp предоставляет доступ всегда к RGB и Alpha
     }
 
-    
+
     // Закрытие потоков доступа к изображению
     private void CloseCurrentStreams()
     {
-        if (IsInMemory)  // Если загружено в память - должен быть только поток памяти
-        {
-            _memoryStream?.Close();
-            _memoryStream?.Dispose();
-        }
+        _image?.Dispose();
+        _image = null;
 
-        else  // Если загружено как ридер - актуальны все три потока
-        {
-            _image?.Dispose();
-            _imgStream?.Dispose();
-            _file?.Close();
-            _file?.Dispose();
-        }
+        _pixelsPtr = IntPtr.Zero;
+        _rowBytes = 0;
+        _bytesPerPixel = 0;
+        _unsafeHandlingAvailable = false;
     }
 
 
@@ -368,8 +352,6 @@ public class ScImage : IDisposable
         if (disposing)
         {
             CloseCurrentStreams();  // Закрытие открытых потоков
-            if (!IsInMemory && _path is not null)  // Удаление текущего изображения из списка загруженных
-                _loadedImages.TryRemove(_path, out _);  // (оно должно было быть сюда добавлено, если загружено не в память)
         }
 
         _isDisposed = true;
@@ -379,49 +361,42 @@ public class ScImage : IDisposable
 
     // Методы сохранения
 
-    /// <summary>
-    /// Сохранение текущей версии изображения: текущим изображением становится сохранённое
-    /// </summary>
+    /// <summary>Сохранение текущей версии изображения: текущим изображением становится сохранённое</summary>
     public void SaveAndLoad(string path, ImageFormat format)
     {
-        if (_image is not null)
-        {
-            var outFile = File.OpenWrite(path);
-            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format), 100);
-            imgEncoded.SaveTo(outFile);
-            outFile.Close();
+        if (_image is null || string.IsNullOrEmpty(path))
+            return;
 
-            _path = path;
+        Save(path, format);
+        _path = path;
 
-            CloseCurrentStreams();
-            if (IsInMemory)
-                CreateInMemory(_path);
-            else
-                CreateAsReader(_path);
-        }
+        CloseCurrentStreams();
+        ReadImage(_path);
     }
 
-    /// <summary>
-    /// Сохранение текущей версии изображения без перехода на новое
-    /// </summary>
+    /// <summary>Сохранение текущей версии изображения без перехода на новое</summary>
     /// <param name="path">Полный путь к файлу изображения с расширением</param>
     /// <param name="format">Формат изображения, если не указан - такой же, что у оригинального изображения</param>
     public string? Save(string path, ImageFormat? format = null)
     {
-        if (_image is not null)
-        {
-            // Сохранение файла
-            format ??= GetFormat();
+        if (_image is null)
+            return null;
 
-            var outFile = File.OpenWrite(path);
-            var imgEncoded = _image.Encode(ImageFormatToSkFormat(format.Value), 100);
-            imgEncoded.SaveTo(outFile);
-            outFile.Close();
+        // Сохранение файла
+        format ??= GetFormat();
 
-            return path;
-        }
+        var dirPath = System.IO.Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(dirPath) && !Directory.Exists(dirPath))
+            Directory.CreateDirectory(dirPath);
 
-        return null;
+        var outFile = File.OpenWrite(path);
+        var imgEncoded = _image.Encode(ImageFormatToSkFormat(format.Value), 100);
+        imgEncoded.SaveTo(outFile);
+        imgEncoded.Dispose();
+        outFile.Close();
+        outFile.Dispose();
+
+        return path;
     }
 
 

@@ -1,0 +1,6 @@
+@StegoRevelaer.API.Launcher_HostAddress = http://localhost:11038
+
+GET {{StegoRevelaer.API.Launcher_HostAddress}}/api/sa/
+Accept: application/json
+
+###
