@@ -24,12 +24,21 @@
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
 		<PackageReference Include="ReactiveUI.Avalonia" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
-		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
-		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) Or '$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86'">
+		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+	</ItemGroup>
+	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) Or '$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'linux-arm64'">
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser' Or '$(TargetFramework)' == 'net9.0-browser'">
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
+	</ItemGroup>
+	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) Or '$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
+		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
 		<ProjectReference Include="..\StegoRevealer.StegoCore.DecisionModule\StegoRevealer.StegoCore.DecisionModule.csproj" />
