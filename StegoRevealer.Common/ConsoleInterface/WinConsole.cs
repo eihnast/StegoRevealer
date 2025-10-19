@@ -5,143 +5,98 @@ namespace StegoRevealer.Common.ConsoleInterface;
 
 public static class WinConsole
 {
-    public static bool UseClearInput { get; set; } = false;
-
-    private static string PromptLine = string.Empty;
-    private static nint? SavedStdHandle;
-    private static Coord? SavedCursorPosition;
-
-
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll")] 
     private static extern bool AttachConsole(int dwProcessId);
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll")] 
     private static extern bool AllocConsole();
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll")] 
     private static extern bool FreeConsole();
 
-    [DllImport("kernel32.dll")]
-    private static extern IntPtr GetConsoleWindow();
+    [DllImport("kernel32.dll")] 
+    private static extern IntPtr GetStdHandle(int nStdHandle);
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll")] 
     private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll")] 
     private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
     [DllImport("kernel32.dll")]
-    private static extern bool SetConsoleCursorPosition(IntPtr hConsoleOutput, Coord dwCursorPosition);
+    private static extern uint GetConsoleOutputCP();
 
     [DllImport("kernel32.dll")]
-    private static extern IntPtr GetStdHandle(int nStdHandle);
-
-    [DllImport("kernel32.dll")]
-    private static extern bool ReadConsoleOutputCharacter(IntPtr hConsoleOutput, [Out] StringBuilder lpCharacter, uint nLength, Coord dwReadCoord, out uint lpNumberOfCharsRead);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Coord
-    {
-        public short X;
-        public short Y;
-    }
+    private static extern uint GetConsoleCP();
 
     private const int ATTACH_PARENT_PROCESS = -1;
-    private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
     private const int STD_OUTPUT_HANDLE = -11;
+    private const int STD_ERROR_HANDLE = -12;
+    private const int STD_INPUT_HANDLE = -10;
+    private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
 
-    private static void SavePromptLine()
-    {
-        // Сохраняем текущую позицию курсора и строку приглашения ввода
-        IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-        Coord cursorPosition;
-        cursorPosition.X = 0;
-        cursorPosition.Y = (short)Console.CursorTop;
+    private static bool _attached;
 
-        // Читаем строку приглашения ввода
-        StringBuilder promptLine = new StringBuilder(Console.WindowWidth);
-        uint charsRead;
-        ReadConsoleOutputCharacter(stdHandle, promptLine, (uint)Console.WindowWidth, cursorPosition, out charsRead);
-
-        // Находим позицию символа приглашения (например, '>')
-        int promptEndIndex = promptLine.ToString().LastIndexOf('>') + 1;
-        if (promptEndIndex <= 0)
-        {
-            // Если символ приглашения не найден, используем всю строку
-            promptEndIndex = (int)charsRead;
-        }
-
-        // Сохраняем только часть строки до символа приглашения
-        PromptLine = promptLine.ToString(0, promptEndIndex);
-
-        SavedStdHandle = stdHandle;
-        SavedCursorPosition = cursorPosition;
-    }
-
-    public static void RestorePrompt()
-    {
-        if (SavedStdHandle is not null && SavedCursorPosition is not null)
-        {
-            // Восстанавливаем строку приглашения ввода
-            SetConsoleCursorPosition(SavedStdHandle.Value, SavedCursorPosition.Value);
-            Console.Write(PromptLine);
-        }
-    }
+    private static Encoding? _encIn, _encOut;
 
     public static void ConnectConsole()
     {
-        UseClearInput = true;  // Если пытаемся присоединиться к консоли, это Win и нужно задействовать весь инструмент вывода
+        if (_attached)
+            return;
 
-        // Проверяем, есть ли уже консоль
-        if (GetConsoleWindow() == IntPtr.Zero)
-        {
-            // Попытка подключиться к консоли, из которой было запущено приложение
-            bool consoleAttached = AttachConsole(ATTACH_PARENT_PROCESS);
+        if (!AttachConsole(ATTACH_PARENT_PROCESS))
+            AllocConsole();
 
-            // Если не удалось подключиться, создаем новую консоль
-            if (!consoleAttached)
-                AllocConsole();
-        }
+        _attached = true;
 
-        // Включаем обработку виртуальных терминалов для корректного вывода
-        IntPtr consoleHandle = GetConsoleWindow();
-        if (consoleHandle != IntPtr.Zero)
-        {
-            GetConsoleMode(consoleHandle, out uint mode);
-            SetConsoleMode(consoleHandle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-        }
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var cpOut = (int)GetConsoleOutputCP();
+        var cpIn = (int)GetConsoleCP();
+        _encOut = Encoding.GetEncoding(cpOut);
+        _encIn = Encoding.GetEncoding(cpIn);
 
-        SavePromptLine();
+        Console.OutputEncoding = _encOut;
+        Console.InputEncoding = _encIn;
+
+        ReopenStandardStreams();
+
+        TryEnableVtProcessing(STD_OUTPUT_HANDLE);
+        TryEnableVtProcessing(STD_ERROR_HANDLE);
     }
 
-    public static void StopConsole()
+    public static void DetachConsole()
     {
-        // Освобождаем консоль, если она была создана
+        if (!_attached) return;
         FreeConsole();
+        _attached = false;
     }
 
-    private static void ClearInput()
+    private static void ReopenStandardStreams()
     {
-        // Очищаем строку приглашения ввода
-        IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-        Coord cursorPosition;
-        cursorPosition.X = 0;
-        cursorPosition.Y = (short)(Console.CursorTop - 0); // Перемещаем курсор на строку выше
-        SetConsoleCursorPosition(stdHandle, cursorPosition);
-        Console.Write(new string(' ', Console.WindowWidth)); // Очищаем строку
-        SetConsoleCursorPosition(stdHandle, cursorPosition); // Возвращаем курсор
+        var encOut = _encOut ?? Console.OutputEncoding;
+        var encIn = _encIn ?? Console.InputEncoding;
+
+        // stdout
+        var stdOut = Console.OpenStandardOutput();
+        var writerOut = new StreamWriter(stdOut, encOut) { AutoFlush = true };
+        Console.SetOut(writerOut);
+
+        // stderr
+        var stdErr = Console.OpenStandardError();
+        var writerErr = new StreamWriter(stdErr, encOut) { AutoFlush = true };
+        Console.SetError(writerErr);
+
+        // stdin
+        var stdIn = Console.OpenStandardInput();
+        var readerIn = new StreamReader(stdIn, encIn);
+        Console.SetIn(readerIn);
     }
 
-    public static void Write(string message)
+    private static void TryEnableVtProcessing(int stdHandle)
     {
-        if (UseClearInput)
-            ClearInput();
-        Console.Write(message);
-    }
-    public static void WriteLine(string message)
-    {
-        if (UseClearInput)
-            ClearInput();
-        Console.WriteLine(message);
+        IntPtr handle = GetStdHandle(stdHandle);
+        if (handle == IntPtr.Zero) return;
+        if (!GetConsoleMode(handle, out uint mode)) return;
+        SetConsoleMode(handle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     }
 }

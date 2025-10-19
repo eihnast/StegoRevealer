@@ -28,19 +28,24 @@ public static class Program
         if (args.Length > 0)
         {
             if (isWindows)
+            {
                 WinConsole.ConnectConsole();
+                Console.WriteLine();
+            }
             
             CommonLogger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
-            CommandLineParser.HandleCommand(args).Wait();
+            var exitCode = CommandLineParser.HandleCommand(args).GetAwaiter().GetResult();
 
             if (isWindows)
             {
-                WinConsole.RestorePrompt();
+                Console.Out.Flush();
+                Console.Error.Flush();
+                Console.WriteLine();
 
-                // Освобождаем консоль, если она была создана
-                WinConsole.StopConsole();
+                WinConsole.DetachConsole();
             }
 
+            Environment.Exit(exitCode);
             return;
         }
 
