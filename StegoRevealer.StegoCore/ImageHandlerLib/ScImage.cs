@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
-using System.Runtime.CompilerServices;
 using StegoRevealer.StegoCore.CommonLib.Exceptions;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace StegoRevealer.StegoCore.ImageHandlerLib;
 
@@ -30,6 +31,14 @@ public class ScImage : IDisposable
     private int _bytesPerPixel;
     private bool _unsafeHandlingAvailable;  // Доступна ли реально unsafe-работа с пикселями
 
+    // Кэш пикселей
+    private ScPixel[]? _pixelCache;
+    private int[]? _filledFlags;
+    private int[]? _dirtyFlags;
+    private ConcurrentQueue<int>? _dirtyQueue;
+    private CancellationTokenSource? _cacheCts;
+    private Task? _cacheTask;
+    private int _remainingToFill;
 
     // Параметры изображения
 
@@ -46,7 +55,10 @@ public class ScImage : IDisposable
     public bool IsTrueColor { get; } = true;
 
     /// <summary>Использовать ли unsafe-механику чтения матрицы пикселей</summary>
-    public bool UseUnsafeIndexator { get; } = false;
+    public bool UseUnsafeIndexator { get; } = false;  // В текущей реализации замедляет работу, не включать!
+
+    /// <summary>Использовать ли кэш пикселей</summary>
+    public bool UsePixelsCache { get; } = true;
 
 
     /// <summary>Возвращает SKBitmap текущего изображения</summary>
@@ -63,6 +75,22 @@ public class ScImage : IDisposable
                 throw new IncorrectValueException("Image is null");
             ValidateIndexes(y, x);
 
+            if (UsePixelsCache && _pixelCache != null && _filledFlags != null)
+            {
+                int idx = y * Width + x;
+                if (_filledFlags[idx] == 1)
+                    return _pixelCache[idx];
+
+                var p = (UseUnsafeIndexator && _unsafeHandlingAvailable)
+                        ? UnsafeGet(y, x)
+                        : ScPixel.FromSkColor(_image.GetPixel(x, y));
+
+                _pixelCache[idx] = p;
+                if (Interlocked.CompareExchange(ref _filledFlags[idx], 1, 0) == 0)
+                    Interlocked.Decrement(ref _remainingToFill);
+                return p;
+            }
+
             if (UseUnsafeIndexator && _unsafeHandlingAvailable)
                 return UnsafeGet(y, x);
 
@@ -78,6 +106,21 @@ public class ScImage : IDisposable
                 if (_image is null)
                     throw new IncorrectValueException("Image is null");
                 ValidateIndexes(y, x);
+
+                if (UsePixelsCache && _pixelCache != null && _filledFlags != null && _dirtyFlags != null && _dirtyQueue != null)
+                {
+                    int idx = y * Width + x;
+
+                    _pixelCache[idx] = value;
+
+                    if (Interlocked.CompareExchange(ref _filledFlags[idx], 1, 0) == 0)
+                        Interlocked.Decrement(ref _remainingToFill);
+
+                    if (Interlocked.CompareExchange(ref _dirtyFlags[idx], 1, 0) == 0)
+                        _dirtyQueue.Enqueue(idx);
+
+                    return;
+                }
 
                 if (UseUnsafeIndexator && _unsafeHandlingAvailable)
                     UnsafeSet(y, x, value);
@@ -217,6 +260,62 @@ public class ScImage : IDisposable
         _rowBytes = _image.RowBytes;
         _bytesPerPixel = info.BytesPerPixel;
         _unsafeHandlingAvailable = _pixelsPtr != IntPtr.Zero && _bytesPerPixel == 4 && (info.ColorType == SKColorType.Bgra8888 || info.ColorType == SKColorType.Rgba8888);
+
+        DefineSizes();
+
+        if (UsePixelsCache)
+        {
+            int n = Width * Height;
+            _pixelCache = new ScPixel[n];
+            _filledFlags = new int[n];
+            _dirtyFlags = new int[n];
+            _dirtyQueue = new ConcurrentQueue<int>();
+            _remainingToFill = n;
+
+            _cacheCts?.Cancel();
+            _cacheCts = new CancellationTokenSource();
+            var token = _cacheCts.Token;
+
+            _cacheTask = Task.Run(() =>
+            {
+                try
+                {
+                    for (int y = 0; y < Height; y++)
+                    {
+                        if (token.IsCancellationRequested) 
+                            break;
+                        for (int x = 0; x < Width; x++)
+                        {
+                            int idx = y * Width + x;
+
+                            if (_filledFlags![idx] == 1)
+                                continue;
+
+                            var p = (_unsafeHandlingAvailable && UseUnsafeIndexator)
+                                    ? UnsafeGet(y, x)
+                                    : ScPixel.FromSkColor(_image!.GetPixel(x, y));
+
+                            _pixelCache![idx] = p;
+                            if (Interlocked.CompareExchange(ref _filledFlags[idx], 1, 0) == 0)
+                            {
+                                Interlocked.Decrement(ref _remainingToFill);
+                                if (_remainingToFill == 0) 
+                                    return;
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }, token);
+        }
+        else
+        {
+            _pixelCache = null;
+            _filledFlags = null;
+            _dirtyFlags = null;
+            _dirtyQueue = null;
+            _remainingToFill = 0;
+        }
     }
 
 
@@ -228,7 +327,6 @@ public class ScImage : IDisposable
     {
         _path = path;
         ReadImage(path);
-        DefineSizes();
     }
 
     /// <summary>Приватный конструктор создания объекта изображения из готового битмапа</summary>
@@ -306,7 +404,65 @@ public class ScImage : IDisposable
                     throw new OperationException("Error while deep cloning ScImage: pixel copy failed.");
             }
 
-            return new ScImage(clonedBitmap, _path);
+            var clonedImage = new ScImage(clonedBitmap, _path);
+
+            if (UsePixelsCache && _pixelCache != null && _filledFlags != null && _dirtyFlags != null)
+            {
+                int n = Width * Height;
+                clonedImage._pixelCache = new ScPixel[n];
+                clonedImage._filledFlags = new int[n];
+                clonedImage._dirtyFlags = new int[n];
+                clonedImage._dirtyQueue = new ConcurrentQueue<int>();
+
+                Array.Copy(_pixelCache, clonedImage._pixelCache, n);
+                Array.Copy(_filledFlags, clonedImage._filledFlags, n);
+                Array.Copy(_dirtyFlags, clonedImage._dirtyFlags, n);
+
+                for (int i = 0; i < n; i++)
+                    if (clonedImage._dirtyFlags[i] == 1)
+                        clonedImage._dirtyQueue.Enqueue(i);
+
+                clonedImage._remainingToFill = 0;
+                for (int i = 0; i < n; i++)
+                    if (clonedImage._filledFlags[i] == 0) clonedImage._remainingToFill++;
+            }
+
+            return clonedImage;
+        }
+    }
+
+    /// <summary>Заливка кэша пикселей в Bitmap</summary>
+    private void FlushDirtyToBitmap()
+    {
+        if (!UsePixelsCache || _pixelCache == null || _dirtyQueue == null || _dirtyFlags == null || _image is null)
+            return;
+
+        unsafe
+        {
+            byte* basePtr = (byte*)_pixelsPtr.ToPointer();
+            bool premul = (_image.Info.AlphaType == SKAlphaType.Premul);
+            bool bgra = (_image.Info.ColorType == SKColorType.Bgra8888);
+            int bpp = _bytesPerPixel;
+            int stride = _rowBytes;
+
+            while (_dirtyQueue.TryDequeue(out int idx))
+            {
+                if (_dirtyFlags[idx] == 0) continue; // вдруг уже сбросили
+
+                int y = idx / Width;
+                int x = idx % Width;
+                var px = _pixelCache[idx];
+
+                byte r = px.Red, g = px.Green, b = px.Blue, a = px.Alpha;
+                if (premul) { r = Premul(r, a); g = Premul(g, a); b = Premul(b, a); }
+
+                byte* row = basePtr + (nint)y * stride;
+                byte* p = row + (nint)x * bpp;
+                if (bgra) { p[0] = b; p[1] = g; p[2] = r; p[3] = a; }
+                else { p[0] = r; p[1] = g; p[2] = b; p[3] = a; }
+
+                _dirtyFlags[idx] = 0;
+            }
         }
     }
 
@@ -330,10 +486,24 @@ public class ScImage : IDisposable
         _image?.Dispose();
         _image = null;
 
+        // Unsafe-механика
         _pixelsPtr = IntPtr.Zero;
         _rowBytes = 0;
         _bytesPerPixel = 0;
         _unsafeHandlingAvailable = false;
+
+        // Кэш пикселей
+        _cacheCts?.Cancel();
+        try { _cacheTask?.Wait(50); } catch { }
+        _cacheTask = null;
+        _cacheCts?.Dispose();
+        _cacheCts = null;
+
+        _pixelCache = null;
+        _filledFlags = null;
+        _dirtyFlags = null;
+        _dirtyQueue = null;
+        _remainingToFill = 0;
     }
 
 
@@ -381,6 +551,8 @@ public class ScImage : IDisposable
     {
         if (_image is null)
             return null;
+
+        FlushDirtyToBitmap();
 
         // Сохранение файла
         format ??= GetFormat();
