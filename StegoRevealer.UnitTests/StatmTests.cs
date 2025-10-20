@@ -38,7 +38,7 @@ public class StatmTests
             Assert.IsLessThan(delta, noises[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Expected: {expectedResults[i]} (diff is {noises[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsLessThan(noises[i - 1], noises[i], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Previous '{names[i - 1]}': {noises[i - 1]}");
+            Assert.IsLessThan(noises[i], noises[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {noises[i]}. Previous '{names[i - 1]}': {noises[i - 1]}");
     }
 
     [TestMethod]
@@ -108,7 +108,7 @@ public class StatmTests
             Assert.IsLessThan(delta, blurs[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Expected: {expectedResults[i]} (diff is {blurs[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsLessThan(blurs[i - 1], blurs[i], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Previous '{names[i - 1]}': {blurs[i - 1]}");
+            Assert.IsLessThan(blurs[i], blurs[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {blurs[i]}. Previous '{names[i - 1]}': {blurs[i - 1]}");
     }
 
     [TestMethod]
@@ -144,7 +144,7 @@ public class StatmTests
             Assert.IsLessThan(delta, contrasts[i] - expectedResults[i], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Expected: {expectedResults[i]} (diff is {contrasts[i] - expectedResults[i]})");
 
         for (int i = 1; i < names.Count; i++)
-            Assert.IsLessThan(contrasts[i - 1], contrasts[i], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
+            Assert.IsLessThan(contrasts[i], contrasts[i - 1], $"Error with {names[i]}. Current '{names[i]}' : {contrasts[i]}. Previous '{names[i - 1]}': {contrasts[i - 1]}");
     }
 
     [TestMethod]
