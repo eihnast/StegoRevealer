@@ -135,7 +135,7 @@ public class RsCsaO1Graph : Control
         canvas.DrawText("CSA (%)", margin + plotWidth / 2, margin - 10, SKTextAlign.Center, largeFont, largeTextPaint);
         canvas.Save();
         canvas.RotateDegrees(-90, margin - 10, margin + plotHeight / 2);
-        canvas.DrawText("RS (%)", margin - 10, margin + plotHeight / 2, SKTextAlign.Right, largeFont, largeTextPaint);
+        canvas.DrawText("RS (%)", margin - 10, margin + plotHeight / 2, SKTextAlign.Center, largeFont, largeTextPaint);
         canvas.Restore();
 
         // Подписи значений на осях
