@@ -1,46 +1,44 @@
 <Project>
-	<PropertyGroup>
-		<!-- Enable central package management, https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management -->
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-	</PropertyGroup>
-	<ItemGroup>
-		<!-- Math -->
-		<PackageVersion Include="Accord.Math" Version="3.8.0" />
-		<PackageVersion Include="Accord.Statistics" Version="3.8.0" />
-		<PackageVersion Include="MathNet.Numerics" Version="5.0.0" />
-		<!-- ML -->
-		<PackageVersion Include="Microsoft.ML" Version="4.0.2" />
-		<PackageVersion Include="Microsoft.ML.FastTree" Version="4.0.2" />
-		<PackageVersion Include="Microsoft.ML.LightGbm" Version="4.0.2" />
-		<!-- Avalonia -->
-		<PackageVersion Include="Avalonia" Version="11.3.7" />
-		<PackageVersion Include="Avalonia.Desktop" Version="11.3.7" />
-		<PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.7" />
-		<PackageVersion Include="Avalonia.Skia" Version="11.3.7" />
-		<PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
-		<PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.7" />
-		<!--<PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.7" />-->
-		<PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.0" />
-		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.7" />
-		<!-- Test -->
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
-		<PackageVersion Include="MSTest.TestAdapter" Version="4.0.1" />
-		<PackageVersion Include="MSTest.TestFramework" Version="4.0.1" />
-		<!-- SkiaSharp -->
-		<PackageVersion Include="SkiaSharp" Version="3.119.1" />
-		<PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
-		<PackageVersion Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
-		<PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
-		<PackageVersion Include="SkiaSharp.NativeAssets.WebAssembly" Version="3.119.1" />
-		<!-- Other -->
-		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
-		<PackageVersion Include="MessagePack" Version="3.1.4" />
-		<PackageVersion Include="SharpCompress" Version="0.41.0" />
-		<PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-		<PackageVersion Include="Plotly.NET" Version="5.1.0" />
-		<PackageVersion Include="CsvHelper" Version="33.1.0" />
-		<PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
-	</ItemGroup>
+  <PropertyGroup>
+    <!-- Enable central package management, https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Math -->
+    <PackageVersion Include="Accord.Math" Version="3.8.0" />
+    <PackageVersion Include="Accord.Statistics" Version="3.8.0" />
+    <PackageVersion Include="MathNet.Numerics" Version="5.0.0" />
+    <!-- ML -->
+    <PackageVersion Include="Microsoft.ML" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.ML.FastTree" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.ML.LightGbm" Version="5.0.0" />
+    <!-- Avalonia -->
+    <PackageVersion Include="Avalonia" Version="11.3.9" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.9" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+    <PackageVersion Include="Avalonia.Skia" Version="11.3.9" />
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.9" />
+    <PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.8" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.9" />
+    <!-- Test -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="4.0.2" />
+    <PackageVersion Include="MSTest.TestFramework" Version="4.0.2" />
+    <!-- SkiaSharp -->
+    <PackageVersion Include="SkiaSharp" Version="3.119.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.WebAssembly" Version="3.119.1" />
+    <!-- Other -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="MessagePack" Version="3.1.4" />
+    <PackageVersion Include="SharpCompress" Version="0.42.0" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageVersion Include="Plotly.NET" Version="5.1.0" />
+    <PackageVersion Include="CsvHelper" Version="33.1.0" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
+  </ItemGroup>
 </Project>

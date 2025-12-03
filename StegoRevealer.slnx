@@ -1,0 +1,30 @@
+<Solution>
+  <Folder Name="/Src/">
+    <File Path=".github/workflows/dotnet-desktop.yml" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Src/Docs/">
+    <File Path="Docs/APILogo.png" />
+    <File Path="Docs/AppLogo.png" />
+    <File Path="Docs/ForBase64Image.png" />
+    <File Path="Docs/GuiApiWindow.png" />
+    <File Path="Docs/HidingExtractionExample.gif" />
+    <File Path="Docs/HistoExample.gif" />
+    <File Path="Docs/JointConclusionWindow.jpg" />
+    <File Path="Docs/SteganalysisExample.gif" />
+    <File Path="Docs/TempBtnScreen.png" />
+  </Folder>
+  <Project Path="StegoRevealer.CLI/StegoRevealer.CLI.csproj" />
+  <Project Path="StegoRevealer.Common/StegoRevealer.Common.csproj" />
+  <Project Path="StegoRevealer.StegoCore.DecisionModule/StegoRevealer.StegoCore.DecisionModule.csproj" />
+  <Project Path="StegoRevealer.StegoCore.TrainingModule/StegoRevealer.StegoCore.TrainingModule.csproj" />
+  <Project Path="StegoRevealer.StegoCore/StegoRevealer.StegoCore.csproj" />
+  <Project Path="StegoRevealer.UI.Desktop/StegoRevealer.UI.Desktop.csproj" />
+  <Project Path="StegoRevealer.UI/StegoRevealer.UI.csproj" />
+  <Project Path="StegoRevealer.UnitTests/StegoRevealer.UnitTests.csproj" />
+  <Project Path="StegoRevelaer.API.Launcher/StegoRevelaer.API.Launcher.csproj" />
+  <Project Path="StegoRevelaer.API/StegoRevelaer.API.csproj" />
+</Solution>
