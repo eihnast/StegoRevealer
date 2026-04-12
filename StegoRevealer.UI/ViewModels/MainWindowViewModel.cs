@@ -4,8 +4,8 @@ using StegoRevealer.UI.ViewModels.MainWindowViewModels;
 using StegoRevealer.UI.Windows;
 using ReactiveUI;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Input.Platform;
 
 namespace StegoRevealer.UI.ViewModels;
 

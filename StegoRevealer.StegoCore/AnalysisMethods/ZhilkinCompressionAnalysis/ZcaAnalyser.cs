@@ -310,7 +310,7 @@ public class ZcaAnalyser
                 gzip.Dispose();
                 break;
             case CompressingAlgorithm.BZIP2:
-                var bzip2 = new BZip2Stream(compressedStream, SharpCompress.Compressors.CompressionMode.Compress, true);
+                var bzip2 = BZip2Stream.Create(compressedStream, SharpCompress.Compressors.CompressionMode.Compress, true);
                 bzip2.Write(data, 0, data.Length);
                 bzip2.Flush();
                 length = compressedStream.Length;

@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.ParametersWindowViewModels"
              mc:Ignorable="d"
 			 d:DesignWidth="800" d:DesignHeight="500" Width="800" Height="500" MinWidth="800" MinHeight="500"
-             x:Class="StegoRevealer.UI.Views.ParametersWindowViews.ChiSqrMethodParametersView">
+             x:Class="StegoRevealer.UI.Views.ParametersWindowViews.ChiSqrMethodParametersView"
+			 x:DataType="vm:ChiSqrMethodParametersViewModel">
 
 	<Design.DataContext>
 		<vm:ChiSqrMethodParametersViewModel/>

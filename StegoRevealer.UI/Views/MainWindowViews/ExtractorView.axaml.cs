@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -244,6 +245,66 @@ public partial class ExtractorView : UserControl
     private void FilterForPositiveDouble_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
     private void FilterForPositiveDouble_TextInput(object? sender, Avalonia.Input.TextInputEventArgs e) => CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
     private async void FilterForPositiveDouble_PastingFromClipboard(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => await CommonTools.FilterInput(sender, e, Lib.FilterInputStrategy.AllowPositiveDouble);
+
+    private void MethodChoice_Lsb_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetLsbMethod(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetKzMethod(sender, e);
+        }
+    }
+
+    private void MethodChoice_Kzh_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetKzMethod(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetLsbMethod(sender, e);
+        }
+    }
+
+    private void HidewayChoice_Linear_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetLinearMode(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetRandomMode(sender, e);
+        }
+    }
+
+    private void HidewayChoice_Random_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetRandomMode(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetLinearMode(sender, e);
+        }
+    }
 
     #endregion
 }

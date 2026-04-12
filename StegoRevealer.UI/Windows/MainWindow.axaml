@@ -9,6 +9,7 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
 		d:DesignWidth="1250" d:DesignHeight="700" MinWidth="1250" MinHeight="700" Width="1250" Height="700"
         x:Class="StegoRevealer.UI.Windows.MainWindow"
+		x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/AppIcon.ico"
         Title="Stego Revealer">
 
