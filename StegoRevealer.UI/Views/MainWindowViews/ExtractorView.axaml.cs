@@ -84,13 +84,13 @@ public partial class ExtractorView : UserControl
                 return;
 
             // Вывод результатов на форму
-            ExtractedMessage.SetText(CommonTools.FilterBadSymbols(results.ExtractedMessage));
+            ExtractedMessage.Text = CommonTools.FilterBadSymbols(results.ExtractedMessage);
             Dispatcher.UIThread.Post(() => { ExtractedMessage.UpdateLayout(); });
 
             // Затрачено времени
             ElapsedTimeValue.Text = results.ElapsedTime.ToString() + " " + _vm.L["Common.Ms"];
 
-            ExtractedMessage.ScrollToTop();
+            // ExtractedMessage.ScrollToTop();
         }
     }
 
@@ -125,7 +125,7 @@ public partial class ExtractorView : UserControl
         _vm.IsParamsOpened = true;
 
         // Сброс формы результатов
-        ExtractedMessage.SetText(string.Empty);
+        ExtractedMessage.Text = string.Empty;
         ElapsedTimeValue.Text = MessageNullElapsedTime;
     }
 

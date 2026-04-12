@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StegoRevealer.UI.Components"
+             x:Class="StegoRevealer.UI.Components.HugeTextBox">
+  <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+    <Border x:Name="PART_OuterBorder"
+            Grid.Row="0"
+            Grid.Column="0"
+            ClipToBounds="True"
+            Margin="0,0,1,1">
+      <Grid>
+        <Border x:Name="PART_ContentBorder"
+                ClipToBounds="True">
+          <local:HugeTextSurface x:Name="PART_Surface"
+                                 Focusable="True" />
+        </Border>
+
+        <TextBlock x:Name="PART_Placeholder"
+                   Margin="8,6,8,6"
+                   IsHitTestVisible="False"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top"
+                   HorizontalAlignment="Stretch"
+                   Opacity="0.65" />
+      </Grid>
+    </Border>
+
+    <ScrollBar x:Name="PART_VerticalScrollBar"
+               Grid.Row="0"
+               Grid.Column="1"
+               Orientation="Vertical"
+               IsVisible="False"
+               Minimum="0"
+               SmallChange="16"
+               LargeChange="120" />
+
+    <ScrollBar x:Name="PART_HorizontalScrollBar"
+               Grid.Row="1"
+               Grid.Column="0"
+               Orientation="Horizontal"
+               IsVisible="False"
+               Minimum="0"
+               SmallChange="16"
+               LargeChange="120" />
+
+    <Border x:Name="PART_ScrollCorner"
+            Grid.Row="1"
+            Grid.Column="1"
+            IsVisible="False" />
+  </Grid>
+</UserControl>
