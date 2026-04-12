@@ -12,14 +12,14 @@
 
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-		<Version>25.10.60</Version>
+		<Version>26.4.61</Version>
 		<Title>Stego Revealer Core</Title>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer Core - ядро методов стеганографии и стегоанализа проекта Stego Revealer</Description>
 		<PackageIcon>Assets\AppCoreIconPackage.png</PackageIcon>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
-		<FileVersion>25.10.60.1146</FileVersion>
-		<AssemblyVersion>25.10.60.1146</AssemblyVersion>
+		<FileVersion>26.4.61.1842</FileVersion>
+		<AssemblyVersion>26.4.61.1842</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

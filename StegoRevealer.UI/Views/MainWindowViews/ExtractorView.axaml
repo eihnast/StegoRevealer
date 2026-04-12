@@ -301,7 +301,7 @@
 						</DockPanel>
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
-							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
+							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'}"
 									   FontStyle="Italic" TextDecorations=""
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
@@ -316,10 +316,17 @@
 								 AcceptsReturn="True" AcceptsTab="True"
 								 IsEnabled="{Binding Path=HasResults}"
 								 MinHeight="300" IsReadOnly="True"/>-->
-						<cmp:VirtualTextViewer Name="ExtractedMessage"
+<!--						<cmp:VirtualTextViewer Name="ExtractedMessage"
 								 Classes="ExtractedText"
 								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
 								 FontSize="12" EnableSanitization="True"
+								 Background="{StaticResource SrDarkMiddle}" ContentBackground="{StaticResource SrDark}"
+								 IsEnabled="{Binding Path=HasResults}"
+								 MinHeight="300" />-->
+						<cmp:HugeTextBox Name="ExtractedMessage"
+								 Classes="ExtractedText" IsReadOnly="True"
+								 DockPanel.Dock="Top" VerticalAlignment="Stretch"
+								 FontSize="12" SanitizationMode="Safe" TextWrapping="Wrap"
 								 Background="{StaticResource SrDarkMiddle}" ContentBackground="{StaticResource SrDark}"
 								 IsEnabled="{Binding Path=HasResults}"
 								 MinHeight="300" />

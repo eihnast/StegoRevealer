@@ -12,14 +12,14 @@
 
 		<AssemblyName>StegoRevealerCLI</AssemblyName>
 		<Title>Stego Revealer CLI</Title>
-		<Version>25.10.45</Version>
+		<Version>26.4.46</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>25.10.45.0947</FileVersion>
-		<AssemblyVersion>25.10.45.0947</AssemblyVersion>
+		<FileVersion>26.4.46.1842</FileVersion>
+		<AssemblyVersion>26.4.46.1842</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
