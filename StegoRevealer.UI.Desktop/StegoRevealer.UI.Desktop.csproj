@@ -18,14 +18,14 @@
 
 		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
 		<Title>Stego Revealer</Title>
-		<Version>26.4.61</Version>
+		<Version>26.4.62</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>26.4.61.1842</FileVersion>
-		<AssemblyVersion>26.4.61.1842</AssemblyVersion>
+		<FileVersion>26.4.62.1943</FileVersion>
+		<AssemblyVersion>26.4.62.1943</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -57,6 +57,7 @@
 		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
 		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+		<PackageReference Include="Tmds.DBus.Protocol" />
 	</ItemGroup>
 
 	<ItemGroup>

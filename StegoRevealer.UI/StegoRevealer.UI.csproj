@@ -32,7 +32,7 @@
 	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) Or '$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'linux-arm64'">
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-browser' Or '$(TargetFramework)' == 'net9.0-browser'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-browser' Or '$(TargetFramework)' == 'net9.0-browser'">
 		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
 	</ItemGroup>
 	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) Or '$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">

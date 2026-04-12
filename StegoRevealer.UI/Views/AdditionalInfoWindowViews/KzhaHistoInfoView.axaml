@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels"
 			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="900" MinWidth="1280" MinHeight="700"
-             x:Class="StegoRevealer.UI.Views.AdditionalInfoWindowViews.KzhaHistoInfoView">
+             x:Class="StegoRevealer.UI.Views.AdditionalInfoWindowViews.KzhaHistoInfoView"
+			 x:DataType="vm:KzhaHistoInfoViewModel">
 
 	<Design.DataContext>
 		<vm:KzhaHistoInfoViewModel/>
@@ -35,8 +36,7 @@
 							HorizontalAlignment="Center">
 					<ToggleButton Name="HorizontalTraverseChoice"
 								  Classes="SelectorToggleButtonMini"
-								  IsChecked="{Binding Path=!IsVerticalTraverseSelected}"
-								  Checked="SetHorizontalTraverse" Unchecked="SetVerticalTraverse">
+								  IsChecked="{Binding Path=!IsVerticalTraverseSelected}" IsCheckedChanged="HorizontalTraverseChoice_IsCheckedChanged">
 						<ToggleButton.Content>
 							<TextBlock Text="{Binding L[Params.TraverseType.Horizontal]}"/>
 						</ToggleButton.Content>
@@ -48,8 +48,7 @@
 					</ToggleButton>
 					<ToggleButton Name="VerticalTraverseChoice"
 								  Classes="SelectorToggleButtonMini"
-								  IsChecked="{Binding Path=IsVerticalTraverseSelected}"
-								  Checked="SetVerticalTraverse" Unchecked="SetHorizontalTraverse">
+								  IsChecked="{Binding Path=IsVerticalTraverseSelected}" IsCheckedChanged="VerticalTraverseChoice_IsCheckedChanged">
 						<ToggleButton.Content>
 							<TextBlock Text="{Binding L[Params.TraverseType.Vertical]}"/>
 						</ToggleButton.Content>

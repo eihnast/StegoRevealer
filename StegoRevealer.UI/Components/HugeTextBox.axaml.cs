@@ -129,7 +129,7 @@ public partial class HugeTextBox : UserControl
     private int[] _sourceLineDisplayCounts = new[] { 1 };
     private DisplayLineInfo[] _displayLines = new[] { DisplayLineInfo.Empty };
 
-    private bool _isApplyingOuterText;
+    // private bool _isApplyingOuterText;
     private bool _isUpdatingOuterText;
     private bool _isUpdatingScrollBars;
     private bool _suspendCaretBlink;
@@ -561,8 +561,8 @@ public partial class HugeTextBox : UserControl
 
     private void ReapplySanitization(string reason)
     {
-        if (_isApplyingOuterText)
-            return;
+        //if (_isApplyingOuterText)
+        //    return;
 
         SetSourceText(_sourceText, resetSelection: false, reason: reason);
     }
@@ -1211,7 +1211,7 @@ public partial class HugeTextBox : UserControl
         context.DrawRectangle(CaretBrush, null, caretRect);
     }
 
-    private void SurfaceOnGotFocus(object? sender, GotFocusEventArgs e)
+    private void SurfaceOnGotFocus(object? sender, FocusChangedEventArgs e)
     {
         _showCaret = true;
         _suspendCaretBlink = false;
@@ -1219,7 +1219,7 @@ public partial class HugeTextBox : UserControl
         _surface.InvalidateVisual();
     }
 
-    private void SurfaceOnLostFocus(object? sender, RoutedEventArgs e)
+    private void SurfaceOnLostFocus(object? sender, FocusChangedEventArgs e)
     {
         _caretBlinkTimer.Stop();
         _showCaret = false;

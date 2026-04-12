@@ -21,6 +21,7 @@
 		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
 		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+		<PackageReference Include="Tmds.DBus.Protocol" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using StegoRevealer.UI.Tools;
 using StegoRevealer.UI.ViewModels.AdditionalInfoWindowViewModels;
@@ -41,5 +42,35 @@ public partial class KzhaHistoInfoView : UserControl
     {
         if (_vm is not null)
             await _vm.SetVerticalTraverse();
+    }
+
+    private void VerticalTraverseChoice_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetVerticalTraverse(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetHorizontalTraverse(sender, e);
+        }
+    }
+
+    private void HorizontalTraverseChoice_IsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton tb)
+            return;
+
+        if (tb.IsChecked == true)
+        {
+            SetVerticalTraverse(sender, e);
+        }
+        else if (tb.IsChecked == false)
+        {
+            SetHorizontalTraverse(sender, e);
+        }
     }
 }

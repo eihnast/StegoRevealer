@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:StegoRevealer.UI.ViewModels.MainWindowViewModels"
              mc:Ignorable="d" 
 			 d:DesignWidth="1250" d:DesignHeight="650" MinWidth="1250" MinHeight="650"
-             x:Class="StegoRevealer.UI.Views.MainWindowViews.AnalyzerView">
+             x:Class="StegoRevealer.UI.Views.MainWindowViews.AnalyzerView"
+			 x:DataType="vm:AnalyzerViewModel">
 
 	<Design.DataContext>
 		<vm:AnalyzerViewModel/>
@@ -199,7 +200,7 @@
 							
 							<DockPanel Name="AutoDetectionResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="AutoDetectionResultDesc" Text="{Binding L[AnalyzerTab.Results.ComplexMethodTitle], StringFormat='{}{0}:'} "
+								<TextBlock Name="AutoDetectionResultDesc" Text="{Binding L[AnalyzerTab.Results.ComplexMethodTitle], StringFormat='{}{0}:'}"
 										 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										 HorizontalAlignment="Stretch"/>
 								<TextBlock Name="AutoDetectionResultValue" Text="{Binding L[AnalyzerTab.Results.UndefinedResult]}"
@@ -213,7 +214,7 @@
 
 									<DockPanel Name="ChiFullnessBlock" Grid.Row="0" Grid.Column="0"
 											   LastChildFill="True" Margin="0 10 0 0">
-										<TextBlock Name="ChiFullnessDesc" Text="{Binding L[AnalyzerTab.Results.CsaMethodTitle], StringFormat='{}{0}:'} "
+										<TextBlock Name="ChiFullnessDesc" Text="{Binding L[AnalyzerTab.Results.CsaMethodTitle], StringFormat='{}{0}:'}"
 												 TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 												 HorizontalAlignment="Stretch"/>
 										<TextBlock Name="ChiFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -223,7 +224,7 @@
 
 									<DockPanel Name="RsFullnessBlock" Grid.Row="1" Grid.Column="0"
 											   LastChildFill="True">
-										<TextBlock Name="RsFullnessDesc" Text="{Binding L[AnalyzerTab.Results.RsMethodTitle], StringFormat='{}{0}:'} "
+										<TextBlock Name="RsFullnessDesc" Text="{Binding L[AnalyzerTab.Results.RsMethodTitle], StringFormat='{}{0}:'}"
 												   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 												   HorizontalAlignment="Stretch"/>
 										<TextBlock Name="RsFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -250,7 +251,7 @@
 
 							<DockPanel Name="SpaFullnessBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="SpaFullnessDesc" Text="{Binding L[AnalyzerTab.Results.SpaMethodTitle], StringFormat='{}{0}:'} "
+								<TextBlock Name="SpaFullnessDesc" Text="{Binding L[AnalyzerTab.Results.SpaMethodTitle], StringFormat='{}{0}:'}"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="SpaFullnessValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -260,7 +261,7 @@
 
 							<DockPanel Name="FanResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="FanResultDesc" Text="{Binding L[AnalyzerTab.Results.FanMethodTitle], StringFormat='{}{0}:'} "
+								<TextBlock Name="FanResultDesc" Text="{Binding L[AnalyzerTab.Results.FanMethodTitle], StringFormat='{}{0}:'}"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="FanResultValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -270,7 +271,7 @@
 							
 							<DockPanel Name="ZcaResultBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="ZcaResultDesc" Text="{Binding L[AnalyzerTab.Results.ZcaMethodTitle], StringFormat='{}{0}:'} "
+								<TextBlock Name="ZcaResultDesc" Text="{Binding L[AnalyzerTab.Results.ZcaMethodTitle], StringFormat='{}{0}:'}"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="ZcaResultValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -280,7 +281,7 @@
 						
 							<DockPanel Name="KzhaIntervalFoundedBlock" DockPanel.Dock="Top"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaIntervalFoundedDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.FoundInterval], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaIntervalFoundedDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.FoundInterval], StringFormat='{}{0}:'}"
 										   TextAlignment="Left" Height="25" DockPanel.Dock="Left" Padding="0 0 5 0"
 										   HorizontalAlignment="Stretch"/>
 								<TextBlock Name="KzhaIntervalFoundedValue" Text="{Binding L[AnalyzerTab.Results.NotAnalyzedResult]}"
@@ -289,7 +290,7 @@
 							</DockPanel>
 							<DockPanel Name="KzhaBitsNumBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaBitsNumDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.BitsNum], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaBitsNumDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.BitsNum], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -299,7 +300,7 @@
 							</DockPanel>
 							<DockPanel Name="KzhaSuspiciousIntervalBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaSuspiciousIntervalDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Indexes], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaSuspiciousIntervalDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Indexes], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -309,7 +310,7 @@
 							</DockPanel>
 							<DockPanel Name="KzhaThresholdBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaThresholdDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Threshold], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaThresholdDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Threshold], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -319,7 +320,7 @@
 							</DockPanel>
 							<DockPanel Name="KzhaCoeffsBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaCoeffsDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Coeffs], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaCoeffsDesc" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.Coeffs], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -329,7 +330,7 @@
 							</DockPanel>
 							<DockPanel Name="KzhaExtractedDataBlock" DockPanel.Dock="Top" IsVisible="False"
 									   LastChildFill="True">
-								<TextBlock Name="KzhaExtractedDataLabel" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.ExtractedData], StringFormat='{}{0}:'} "
+								<TextBlock Name="KzhaExtractedDataLabel" Text="{Binding L[AnalyzerTab.Results.KzchaMethod.ExtractedData], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -353,7 +354,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsNoise2Block" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsNoise2Desc" Text="{Binding L[Stats.Noise], StringFormat='{}{0}:'} "
+								<TextBlock Name="StatResultsNoise2Desc" Text="{Binding L[Stats.Noise], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -363,7 +364,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsSharpnessBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsSharpnessDesc" Text="{Binding L[Stats.Sharpness], StringFormat='{}{0}:'} "
+								<TextBlock Name="StatResultsSharpnessDesc" Text="{Binding L[Stats.Sharpness], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -373,7 +374,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsBlurBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsBlurDesc" Text="{Binding L[Stats.Blur], StringFormat='{}{0}:'} "
+								<TextBlock Name="StatResultsBlurDesc" Text="{Binding L[Stats.Blur], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -383,7 +384,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsContrastBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsContrastDesc" Text="{Binding L[Stats.Contrast], StringFormat='{}{0}:'} "
+								<TextBlock Name="StatResultsContrastDesc" Text="{Binding L[Stats.Contrast], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -393,7 +394,7 @@
 							</DockPanel>
 							<!--<DockPanel Name="StatResultsEntropyTsallisBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="{Binding L[Stats.Entropy.Tsallis], StringFormat='{}{0}:'} "
+								<TextBlock Text="{Binding L[Stats.Entropy.Tsallis], StringFormat='{}{0}:'}"
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -403,7 +404,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyVaidaBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="{Binding L[Stats.Entropy.Vaida], StringFormat='{}{0}:'} "
+								<TextBlock Text="{Binding L[Stats.Entropy.Vaida], StringFormat='{}{0}:'}"
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -413,7 +414,7 @@
 							</DockPanel>-->
 							<DockPanel Name="StatResultsEntropyShennonBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsEntropyShennonDesc" Text="{Binding L[Stats.Entropy.Shennon], StringFormat='{}{0}:'} "
+								<TextBlock Name="StatResultsEntropyShennonDesc" Text="{Binding L[Stats.Entropy.Shennon], StringFormat='{}{0}:'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -423,7 +424,7 @@
 							</DockPanel>
 							<DockPanel Name="StatResultsEntropyRenyiBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="{Binding L[Stats.Entropy.Renyi], StringFormat='{}{0} (α = 1,1):'} "
+								<TextBlock Name="StatResultsEntropyRenyiDesc" Text="{Binding L[Stats.Entropy.Renyi], StringFormat='{}{0} (α = 1,1):'}"
 										   Padding="30 0 5 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -433,7 +434,7 @@
 							</DockPanel>
 							<!--<DockPanel Name="StatResultsEntropyHavardBlock" DockPanel.Dock="Top" IsVisible="True"
 									   LastChildFill="True">
-								<TextBlock Text="{Binding L[Stats.Entropy.Havard], StringFormat='{}{0}:'} "
+								<TextBlock Text="{Binding L[Stats.Entropy.Havard], StringFormat='{}{0}:'}"
 										   Padding="30 0 0 0" DockPanel.Dock="Left"
 										   HorizontalAlignment="Stretch"
 										   TextAlignment="Left" Height="25"/>
@@ -444,7 +445,7 @@
 
 							<DockPanel Name="ElapsedTimeBlock" DockPanel.Dock="Bottom"
 									   LastChildFill="True">
-								<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
+								<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'}"
 										   FontStyle="Italic" Padding="0 0 5 0" VerticalAlignment="Center"
 										   HorizontalAlignment="Stretch" DockPanel.Dock="Left"
 										   TextAlignment="Left" Height="25"/>

@@ -7,7 +7,8 @@
 			 xmlns:cmp="clr-namespace:StegoRevealer.UI.Components"
              mc:Ignorable="d"
 			 d:DesignWidth="1250" d:DesignHeight="650" MinWidth="1250" MinHeight="650"
-             x:Class="StegoRevealer.UI.Views.MainWindowViews.HiderView">
+             x:Class="StegoRevealer.UI.Views.MainWindowViews.HiderView"
+			 x:DataType="vm:HiderViewModel">
 
 	<Design.DataContext>
 		<vm:HiderViewModel/>
@@ -124,12 +125,10 @@
 										HorizontalAlignment="Center">
 								<ToggleButton Name="MethodChoice_Lsb" Content="{Binding L[HiderTab.MethodLsb]}"
 											  Classes="SelectorToggleButton"
-											  IsChecked="{Binding Path=MethodLsbSelected}"
-											  Checked="SetLsbMethod" Unchecked="SetKzMethod"/>
+											  IsChecked="{Binding Path=MethodLsbSelected}" IsCheckedChanged="MethodChoice_Lsb_IsCheckedChanged"/>
 								<ToggleButton Name="MethodChoice_Kzh" Content="{Binding L[HiderTab.MethodKochZhao]}"
 											  Classes="SelectorToggleButton"
-											  IsChecked="{Binding Path=MethodKzSelected}"
-											  Checked="SetKzMethod" Unchecked="SetLsbMethod"/>
+											  IsChecked="{Binding Path=MethodKzSelected}" IsCheckedChanged="MethodChoice_Kzh_IsCheckedChanged"/>
 							</StackPanel>
 							<!-- / Выбор метода -->
 
@@ -140,12 +139,10 @@
 										HorizontalAlignment="Center">
 								<ToggleButton Name="HidewayChoice_Linear" Content="{Binding L[HiderTab.HideLinear]}"
 											  Classes="SelectorToggleButton"
-											  IsChecked="{Binding Path=LinearModeSelected}"
-											  Checked="SetLinearMode" Unchecked="SetRandomMode"/>
+											  IsChecked="{Binding Path=LinearModeSelected}" IsCheckedChanged="HidewayChoice_Linear_IsCheckedChanged"/>
 								<ToggleButton Name="HidewayChoice_Random" Content="{Binding L[HiderTab.HideRandom]}"
 											  Classes="SelectorToggleButton"
-											  IsChecked="{Binding Path=RandomModeSelected}"
-											  Checked="SetRandomMode" Unchecked="SetLinearMode"/>
+											  IsChecked="{Binding Path=RandomModeSelected}" IsCheckedChanged="HidewayChoice_Random_IsCheckedChanged"/>
 							</StackPanel>
 							<!-- / Выбор последовательный/псевдослучайный -->
 
@@ -301,8 +298,8 @@
 							   LastChildFill="False">
 						<StackPanel Name="ElapsedTimeBlock" Orientation="Horizontal"
 									DockPanel.Dock="Bottom" Margin="0 15 0 0">
-							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'} "
-									   FontStyle="Italic" TextDecorations=""
+							<TextBlock Name="ElapsedTimeLabel" Text="{Binding L[Common.ElapseTime], StringFormat='{}{0}:'}"
+									   FontStyle="Italic" TextDecorations="{x:Null}"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 							<TextBlock Name="ElapsedTimeValue" Text="0 мс"
@@ -323,7 +320,7 @@
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
 									DockPanel.Dock="Top" Margin="0 5 0 0">
 							<TextBlock Text="{Binding L[HiderTab.ImageInLeftPanelInfo]}"
-									   FontStyle="Italic" TextDecorations="" FontFamily="10"
+									   FontStyle="Italic" TextDecorations="{x:Null}" FontFamily="10"
 									   HorizontalAlignment="Stretch"
 									   TextAlignment="Left" Height="25"/>
 						</StackPanel>

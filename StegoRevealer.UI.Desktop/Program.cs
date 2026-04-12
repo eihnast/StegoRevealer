@@ -74,5 +74,9 @@ public static class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace(ALogger.LogEventLevel.Debug)
-            .UseReactiveUI();
+            .UseReactiveUI(rxui =>
+            {
+                // Optional: add custom registration here via rxui.WithRegistration(...)
+            })
+            .RegisterReactiveUIViewsFromEntryAssembly();
 }

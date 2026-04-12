@@ -41,6 +41,17 @@ public class HiderViewModel : MainWindowViewModelBaseChild
     }
     private string _imagePath = string.Empty;
 
+
+    /// <summary>
+    /// Путь к файлу изображения
+    /// </summary>
+    public string CoveredImagePath
+    {
+        get => _coveredImagePath;
+        set => this.RaiseAndSetIfChanged(ref _coveredImagePath, value);
+    }
+    private string _coveredImagePath = string.Empty;
+
     /// <summary>
     /// Путь к файлу данных
     /// </summary>
@@ -592,6 +603,7 @@ public class HiderViewModel : MainWindowViewModelBaseChild
         CommonLogger.LogInfo("Hiding operations completed");
         timer.Stop();  // Остановка таймера
         results.ElapsedTime = timer.ElapsedMilliseconds;
+        CoveredImagePath = results.NewFilePath ?? string.Empty;
 
         ProcessAnalysisResults(results);
 
