@@ -1,11 +1,10 @@
-﻿using System;
-
-using Avalonia;
-using ALogger = Avalonia.Logging;
-using Avalonia.ReactiveUI;
-
+﻿using Avalonia;
+using ReactiveUI.Avalonia;
 using StegoRevealer.Common;
 using StegoRevealer.Common.ConsoleInterface;
+using System;
+using System.Diagnostics;
+using ALogger = Avalonia.Logging;
 
 namespace StegoRevealer.UI.Desktop;
 
@@ -17,6 +16,10 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
+        if (isWindows)
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
         CommonLogger.LogInfo("Starting Stego Revealer App");
@@ -24,21 +27,25 @@ public static class Program
         // Запуск в режиме интерфейса командной строки
         if (args.Length > 0)
         {
-            bool isWindows = Environment.OSVersion.Platform is PlatformID.Win32NT;
             if (isWindows)
+            {
                 WinConsole.ConnectConsole();
+                Console.WriteLine();
+            }
             
             CommonLogger.LogInfo($"Started with command line args: {string.Join(", ", args)}");
-            CommandLineParser.HandleCommand(args).Wait();
+            var exitCode = CommandLineParser.HandleCommand(args).GetAwaiter().GetResult();
 
             if (isWindows)
             {
-                WinConsole.RestorePrompt();
+                Console.Out.Flush();
+                Console.Error.Flush();
+                Console.WriteLine();
 
-                // Освобождаем консоль, если она была создана
-                WinConsole.StopConsole();
+                WinConsole.DetachConsole();
             }
 
+            Environment.Exit(exitCode);
             return;
         }
 
@@ -48,7 +55,7 @@ public static class Program
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         var ex = e.ExceptionObject as Exception;
-        CommonLogger.LogError(ex is null ? "Unknown error" : ex.Message);
+        CommonLogger.LogError(ex is null ? "Unknown error" : ex.Message + "\n" + ex.InnerException + "\n" + ex.StackTrace);
 
         if (e.IsTerminating)
         {

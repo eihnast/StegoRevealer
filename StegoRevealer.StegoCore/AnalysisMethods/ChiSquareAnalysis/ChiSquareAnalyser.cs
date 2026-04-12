@@ -83,7 +83,7 @@ public class ChiSquareAnalyser
         }
         else
         {
-            var tasks = Params.Channels.Select(async channel =>
+            var tasks = Params.Channels.Select(channel => Task.Run(() =>
             {
                 var channelFullness = RealizeChiSquareAttack(channel, _verboseLog);
                 lock (_lock)
@@ -91,7 +91,7 @@ public class ChiSquareAnalyser
                     result.MessageRelativeVolumesByChannels![channel] = channelFullness;
                     _writeToLog?.Invoke($"Relative message volume at channel '{channel}': {channelFullness}");
                 }
-            });
+            }));
 
             await Task.WhenAll(tasks);
             fullness = result.MessageRelativeVolumesByChannels!.Values.Average();
@@ -136,6 +136,9 @@ public class ChiSquareAnalyser
                 (expected, observed) = UnifyCategories(expected, observed);
 
             // Вычисление результатов оценки
+            if (expected.Count() == 1 && Params.ExcludeOneColorBlocks)
+                continue;
+
             var chiSqr = MathMethods.ChiSqr(expected, observed);
             var blockContainsHiddenInfo = chiSqr.pValue > Params.Threshold;
             if (blockContainsHiddenInfo)

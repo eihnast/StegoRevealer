@@ -637,4 +637,7 @@ Directeur scientifique : V. G. Sidorenko</value>
   <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
     <value>Sélection du mode de parcours de la matrice de pixels (blocs de pixels) : par colonnes</value>
   </data>
+  <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
+    <value>Utiliser HTTPS</value>
+  </data>
 </root>

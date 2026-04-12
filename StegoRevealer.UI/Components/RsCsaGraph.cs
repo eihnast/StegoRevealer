@@ -129,13 +129,17 @@ public class RsCsaGraph : Control
             cy /= points.Length;
 
             // Подпись
-            canvas.DrawText(label, cx, cy + textMarginY, new SKPaint
+            var font = new SKFont
+            {
+                Size = 16,
+                Edging = SKFontEdging.Antialias
+            };
+            using var paint = new SKPaint
             {
                 Color = textColor ?? SKColors.Black,
-                TextSize = 16,
-                TextAlign = SKTextAlign.Center,
                 IsAntialias = true
-            });
+            };
+            canvas.DrawText(label, cx, cy + textMarginY, SKTextAlign.Center, font, paint);
         }
 
         // Пунктирные линии
@@ -180,23 +184,43 @@ public class RsCsaGraph : Control
         DrawZone(o1Real, SKColors.White, "O.1", -15, SKColor.Parse("#FFE0E0E0"), false);
 
         // Подписи осей
-        var largeTextPaint = new SKPaint { Color = SKColor.Parse("#FFE0E0E0"), TextSize = 16,
-            TextAlign = SKTextAlign.Center, TextScaleX = 1.5f, FakeBoldText = true, IsAntialias = true };
-        var smallTextPaint = new SKPaint { Color = SKColor.Parse("#FFE0E0E0"), TextSize = 14,
-            TextAlign = SKTextAlign.Center, TextScaleX = 1.0f, FakeBoldText = false, IsAntialias = true };
+        var largeFont = new SKFont
+        {
+            Size = 16,
+            ScaleX = 1.5f,
+            Embolden = true,
+            Edging = SKFontEdging.Antialias
+        };
+        var smallFont = new SKFont
+        {
+            Size = 14,
+            ScaleX = 1.0f,
+            Embolden = false,
+            Edging = SKFontEdging.Antialias
+        };
+        var largeTextPaint = new SKPaint
+        {
+            Color = SKColor.Parse("#FFE0E0E0"),
+            IsAntialias = true
+        };
+        var smallTextPaint = new SKPaint
+        {
+            Color = SKColor.Parse("#FFE0E0E0"),
+            IsAntialias = true
+        };
 
-        canvas.DrawText("CSA (%)", margin + plotWidth / 2, margin - 10, largeTextPaint);
+        canvas.DrawText("CSA (%)", margin + plotWidth / 2, margin - 10, SKTextAlign.Center, largeFont, largeTextPaint);
         canvas.Save();
         canvas.RotateDegrees(-90, margin - 10, margin + plotHeight / 2);
-        canvas.DrawText("RS (%)", margin - 10, margin + plotHeight / 2, largeTextPaint);
+        canvas.DrawText("RS (%)", margin - 10, margin + plotHeight / 2, SKTextAlign.Right, largeFont, largeTextPaint);
         canvas.Restore();
 
         // Подписи значений на осях
-        canvas.DrawText("30", margin - 15, MapY(30) + 3, smallTextPaint);
-        canvas.DrawText("80", margin - 15, MapY(80) + 3, smallTextPaint);
-        canvas.DrawText("100", margin - 15, MapY(100) + 3, smallTextPaint);
-        canvas.DrawText("30", MapX(30), margin - 10, smallTextPaint);
-        canvas.DrawText("100", MapX(100), margin - 10, smallTextPaint);
+        canvas.DrawText("30", margin - 15, MapY(30) + 3, SKTextAlign.Right, smallFont, smallTextPaint);
+        canvas.DrawText("80", margin - 15, MapY(80) + 3, SKTextAlign.Right, smallFont, smallTextPaint);
+        canvas.DrawText("100", margin - 15, MapY(100) + 3, SKTextAlign.Right, smallFont, smallTextPaint);
+        canvas.DrawText("30", MapX(30), margin - 10, SKTextAlign.Center, smallFont, smallTextPaint);
+        canvas.DrawText("100", MapX(100), margin - 10, SKTextAlign.Center, smallFont, smallTextPaint);
 
         // Отрисовка заданной точки, если она установлена
         if (_rsValue.HasValue && _csaValue.HasValue)

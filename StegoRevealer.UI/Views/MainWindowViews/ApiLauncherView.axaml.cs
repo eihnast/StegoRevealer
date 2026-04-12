@@ -72,4 +72,13 @@ public partial class ApiLauncherView : UserControl
             Mode = BindingMode.TwoWay
         });
     }
+
+    private void LogsTb_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        if (sender is TextBox tb)
+        {
+            // tb.UpdateLayout();
+            tb.CaretIndex = tb.Text?.Length ?? 0;
+        }
+    }
 }

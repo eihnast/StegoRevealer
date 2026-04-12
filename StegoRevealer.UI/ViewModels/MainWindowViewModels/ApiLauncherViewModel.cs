@@ -4,6 +4,8 @@ using StegoRevealer.UI.Tools.MvvmTools;
 using StegoRevealer.UI.ViewModels.BaseViewModels;
 using StegoRevelaer.API;
 using StegoRevelaer.API.Services;
+using System;
+using System.Collections.Concurrent;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +15,14 @@ namespace StegoRevealer.UI.ViewModels.MainWindowViewModels;
 public class ApiLauncherViewModel : MainWindowViewModelBaseChild
 {
     private ApiHost? _apiHost;
+
+    private readonly ConcurrentQueue<string> _pending = new();
+    private readonly StringBuilder _logsSb = new();
+    private readonly DispatcherTimer _flushTimer;
+
+    private const int FlushIntervalMs = 33;
+    private const int MaxChars = 1_000_000;   // Лимит размера текста логов
+    private const int TrimToChars = 800_000;
 
     /// <summary>Запущен ли сервер API</summary>
     public bool IsApiLaunched
@@ -42,6 +52,18 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
             ApiConfigurator.Settings.HttpsRedirection = value;
             ApiConfigurator.SaveConfig();
             this.RaiseAndSetIfChanged(ref _configHttpsRedirectionEnabled, value);
+        }
+    }
+
+    private bool _configHttpsEnabled = ApiConfigurator.Settings.EnableHttps;
+    public bool ConfigHttpsEnabled
+    {
+        get => _configHttpsEnabled;
+        set
+        {
+            ApiConfigurator.Settings.EnableHttps = value;
+            ApiConfigurator.SaveConfig();
+            this.RaiseAndSetIfChanged(ref _configHttpsEnabled, value);
         }
     }
 
@@ -81,12 +103,24 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
 
     public void Push(string line)
     {
-        Dispatcher.UIThread.Post(() =>
+        _pending.Enqueue(line);
+    }
+
+    private void FlushPending()
+    {
+        if (_pending.IsEmpty) return;
+
+        while (_pending.TryDequeue(out var line))
+            _logsSb.AppendLine(line);
+
+        if (_logsSb.Length > MaxChars)
         {
-            // _logsBuilder.AppendLine(line);
-            // Logs = _logsBuilder.ToString();
-            Logs += line + "\n";
-        }, DispatcherPriority.Background);
+            var s = _logsSb.ToString();
+            _logsSb.Clear();
+            _logsSb.Append(s.AsSpan(s.Length - TrimToChars));
+        }
+
+        Logs = _logsSb.ToString();
     }
 
 
@@ -101,21 +135,52 @@ public class ApiLauncherViewModel : MainWindowViewModelBaseChild
     public ApiLauncherViewModel(MainWindowViewModel rootViewModel, InstancesListAccessor viewModelsList) : base(rootViewModel, viewModelsList)
     {
         CreateDefaults();
+
+        _flushTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(FlushIntervalMs)
+        };
+        _flushTimer.Tick += (_, __) => FlushPending();
+        _flushTimer.Start();
     }
 
     [Experimental]
     public ApiLauncherViewModel() : base()
     {
         CreateDefaults();
+
+        _flushTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(FlushIntervalMs)
+        };
+        _flushTimer.Tick += (_, __) => FlushPending();
+        _flushTimer.Start();
     }
 
 
     public async Task LaunchApi()
     {
+        _logsSb.Clear();
         Logs = string.Empty;
         var apiHost = await Task.Run(() => _apiHost = new ApiHost(Push));
-        _apiHost?.Start();
-        IsApiLaunched = true;
+
+        try
+        {
+            _apiHost?.Start();
+            IsApiLaunched = true;
+        }
+        catch (Exception ex)
+        {
+            Push($"[ERROR] Не удалось запустить API: {ex.Message}");
+            try
+            {
+                await StopApi();
+            }
+            catch { }
+
+            _apiHost = null;
+            IsApiLaunched = false;
+        }
     }
 
     public async Task StopApi()

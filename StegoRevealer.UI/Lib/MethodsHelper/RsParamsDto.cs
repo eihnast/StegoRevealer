@@ -33,7 +33,9 @@ public class RsParamsDto : IParamsDto<RsParameters>
         foreach (var channel in parameters.Channels)
             Channels.Add(channel);
 
+#pragma warning disable CS0618 // Тип или член устарел
         PixelsGroupLength = parameters.PixelsGroupLength;
+#pragma warning restore CS0618 // Тип или член устарел
         FlippingMask = (int[])parameters.FlippingMask.Clone();
 
         BlockWidth = parameters.BlockWidth;
@@ -52,7 +54,9 @@ public class RsParamsDto : IParamsDto<RsParameters>
         foreach (var channel in Channels)
             parameters.Channels.Add(channel);
 
+#pragma warning disable CS0618 // Тип или член устарел
         parameters.PixelsGroupLength = PixelsGroupLength;
+#pragma warning restore CS0618 // Тип или член устарел
         parameters.FlippingMask = (int[])FlippingMask.Clone();
 
         parameters.BlockWidth = BlockWidth;

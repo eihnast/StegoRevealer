@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
 		    One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -11,19 +12,20 @@
 		<!--<AllowUnsafeBlocks>true</AllowUnsafeBlocks>-->
 
 		<PublishSingleFile>true</PublishSingleFile>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
 		<DebugType>embedded</DebugType>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
 		<AssemblyName>$(MSBuildProjectName.Split(".")[0])</AssemblyName>
 		<Title>Stego Revealer</Title>
-		<Version>25.9.44</Version>
+		<Version>26.4.61</Version>
 		<Authors>Iaroslav Grachev</Authors>
 		<Description>Stego Revealer - steganalysis complex</Description>
 		<PackageTags>steganography; steganalysis; stego</PackageTags>
 		<NeutralLanguage>ru-RU</NeutralLanguage>
 		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-		<FileVersion>25.9.44.0826</FileVersion>
-		<AssemblyVersion>25.9.44.0826</AssemblyVersion>
+		<FileVersion>26.4.61.1842</FileVersion>
+		<AssemblyVersion>26.4.61.1842</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -43,17 +45,23 @@
 	<ItemGroup>
 		<None Remove="Assets\AppIcon.ico" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<Content Include="Assets\AppIcon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
-		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="System.CommandLine" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+		<PackageReference Include="SkiaSharp.NativeAssets.macOS" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\StegoRevealer.Common\StegoRevealer.Common.csproj" />
 		<ProjectReference Include="..\StegoRevealer.UI\StegoRevealer.UI.csproj" />
 	</ItemGroup>
+	
 </Project>

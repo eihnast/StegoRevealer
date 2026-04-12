@@ -637,4 +637,7 @@
   <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
     <value>选择像素矩阵（或像素块）遍历方式：按列</value>
   </data>
+  <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
+    <value>使用 HTTPS</value>
+  </data>
 </root>

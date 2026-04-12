@@ -330,7 +330,7 @@ public class StegoAnalysisTests
         var hidingResult = hider.Hide(hidingData, coveredImgName);
         var coveredImagePath = hidingResult.GetResultPath();
 
-        Assert.IsTrue(Path.GetFileName(coveredImagePath) == coveredImgName, 
+        Assert.AreEqual(coveredImgName, Path.GetFileName(coveredImagePath),
             $"Real covered filename: '{Path.GetFileName(coveredImagePath)}', expected: {coveredImgName}");
         Assert.IsTrue(File.Exists(coveredImagePath), "Covered image file not exists");
 
@@ -343,7 +343,7 @@ public class StegoAnalysisTests
         var extractionData = extractionResult.GetResultData();
 
         Assert.IsFalse(string.IsNullOrEmpty(extractionData), "No extracted data");
-        Assert.IsTrue(extractionData.StartsWith(hidingData), $"Extracted data is \n'{extractionData}'\nBut hiding data is \n'{hidingData}'");
+        Assert.StartsWith(hidingData, extractionData, $"Extracted data is \n'{extractionData}'\nBut hiding data is \n'{hidingData}'");
 
         // Проверка на стегоанализ
         var analyser = new KzhaAnalyser(coveredImg);

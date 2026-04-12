@@ -637,4 +637,7 @@
   <data name="Histo.TraverseTooltipVertical" xml:space="preserve">
     <value>اختيار طريقة اجتياز مصفوفة البكسلات (أو كتل البكسلات): حسب الأعمدة</value>
   </data>
+  <data name="ApiLauncherTab.Config.Https" xml:space="preserve">
+    <value>استخدام HTTPS</value>
+  </data>
 </root>

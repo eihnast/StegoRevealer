@@ -24,7 +24,10 @@ public class ApiHost
         }
         ApiLogger.DefaultLogger = builder.Logging.Services.BuildServiceProvider().GetService<ILoggerFactory>()?.CreateLogger("ApiHost");
 
-        builder.WebHost.UseUrls(config.HttpAddress, config.HttpsAddress);
+        if (config.EnableHttps)
+            builder.WebHost.UseUrls(config.HttpAddress, config.HttpsAddress);
+        else
+            builder.WebHost.UseUrls(config.HttpAddress);
 
         builder.Services
             .AddControllers()
@@ -44,7 +47,7 @@ public class ApiHost
             app.MapOpenApi();
         }
 
-        if (config.HttpsRedirection)
+        if (config.EnableHttps && config.HttpsRedirection)
             app.UseHttpsRedirection();
 
         app.UseAuthorization();

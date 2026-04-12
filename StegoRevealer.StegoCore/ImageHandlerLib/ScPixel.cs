@@ -7,98 +7,39 @@ namespace StegoRevealer.StegoCore.ImageHandlerLib;
 /// </summary>
 public struct ScPixel
 {
-    // Значения цветов по каналам
-    private readonly byte[] _pixelArray = new byte[] { 0, 0, 0, 0 };
+    public byte Red { get; set; }
+    public byte Green { get; set; }
+    public byte Blue { get; set; }
+    public byte Alpha { get; set; }
 
-    /// <summary>
-    /// Размер массива значений пикселя (число каналов)
-    /// </summary>
-    public int Length { get { return _pixelArray.Length; } }
+    public int Length => 4;
 
-    /// <summary>
-    /// Значение красного канала
-    /// </summary>
-    public byte Red 
-    { 
-        get { return _pixelArray[0]; } 
-        set { _pixelArray[0] = value; }
-    }
-
-    /// <summary>
-    /// Значение зелёного канала
-    /// </summary>
-    public byte Green
-    { 
-        get { return _pixelArray[1]; } 
-        set { _pixelArray[1] = value; }
-    }
-
-    /// <summary>
-    /// Значение синего канала
-    /// </summary>
-    public byte Blue
-    { 
-        get { return _pixelArray[2]; } 
-        set { _pixelArray[2] = value; }
-    }
-
-    /// <summary>
-    /// Значение альфа-канала
-    /// </summary>
-    public byte Alpha
-    { 
-        get { return _pixelArray[3]; } 
-        set { _pixelArray[3] = value; }
-    }
-
-
-    public ScPixel() => _pixelArray = new byte[] { 0, 0, 0, 0 };
-
-    public ScPixel(byte red, byte green, byte blue, byte alpha = 255) : this()
+    public ScPixel(byte red, byte green, byte blue, byte alpha = 255)
     {
-        Red = red;
-        Green = green;
-        Blue = blue;
-        Alpha = alpha;
+        Red = red; Green = green; Blue = blue; Alpha = alpha;
     }
 
-    public ScPixel(SKColor color) : this()
+    public ScPixel(SKColor c)
     {
-        Red = color.Red;
-        Green = color.Green;
-        Blue = color.Blue;
-        Alpha = color.Alpha;
+        Red = c.Red; Green = c.Green; Blue = c.Blue; Alpha = c.Alpha;
     }
-
-
-    // Доступ по индексаторам
 
     public byte this[int i]
     {
-        get
-        {
-            return _pixelArray[i];
-        }
+        get => i switch { 0 => Red, 1 => Green, 2 => Blue, 3 => Alpha, _ => throw new IndexOutOfRangeException() };
         set
         {
-            _pixelArray[i] = value;
+            switch (i)
+            {
+                case 0: Red = value; break;
+                case 1: Green = value; break;
+                case 2: Blue = value; break;
+                case 3: Alpha = value; break;
+                default: throw new IndexOutOfRangeException();
+            }
         }
     }
 
-
-    /// <summary>
-    /// Преобразование SKColor в ScPixel
-    /// </summary>
-    public static ScPixel FromSkColor(SKColor color)
-    {
-        return new ScPixel(color);
-    }
-
-    /// <summary>
-    /// Преобразование ScPixel в SKColor
-    /// </summary>
-    public SKColor ToSkColor()
-    {
-        return new SKColor(Red, Green, Blue, Alpha);
-    }
+    public static ScPixel FromSkColor(SKColor color) => new ScPixel(color);
+    public SKColor ToSkColor() => new SKColor(Red, Green, Blue, Alpha);
 }
