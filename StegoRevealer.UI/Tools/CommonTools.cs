@@ -359,6 +359,4 @@ public static class CommonTools
         var version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
         return version?.ToString() ?? string.Empty;
     }
-
-
 }

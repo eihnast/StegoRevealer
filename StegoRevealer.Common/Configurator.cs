@@ -76,7 +76,7 @@ public class Configurator : IDisposable
         }
         catch (Exception ex)
         {
-            CommonLogger.LogError($"Configuration initializeing failed due to an error:\n" + ex.Message);
+            CommonLogger.LogError($"Configuration initializing failed due to an error:\n" + ex.Message);
             AppConfig = new AppConfig();
             CommonLogger.LogInfo($"Created default AppConfig with no saving operation");
         }
